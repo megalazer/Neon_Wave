@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -96,14 +96,24 @@ function LogHeaderSection({ entriesEmpty }) {
 }
 
 export default function LogScreen() {
+  const listRef = useRef(null);
   const entries = useStore((s) => s.log.entries);
+  const entryCount = entries.length;
+
+  useEffect(() => {
+    if (listRef.current && entryCount > 0) {
+      requestAnimationFrame(() => {
+        listRef.current?.scrollToEnd({ animated: true });
+      });
+    }
+  }, [entryCount]);
 
   return (
     <View style={styles.screen}>
-      <LogHeaderSection entriesEmpty={entries.length === 0} />
+      <LogHeaderSection entriesEmpty={entryCount === 0} />
 
-      {/* inverted keeps newest entry at the top; auto-anchors on new entries */}
       <FlatList
+        ref={listRef}
         data={entries}
         keyExtractor={(item) => item.id}
         renderItem={({ item, index }) => (

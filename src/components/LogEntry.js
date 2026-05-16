@@ -1,16 +1,38 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import Animated, { FadeInUp } from 'react-native-reanimated';
+import Animated, {
+  LinearTransition,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import { colors } from '../theme/colors';
 import { labelCaps, bodyMd } from '../theme/fonts';
+
+// Entry unfolds from zero height then siblings slide down via LinearTransition
+const unfoldFromTop = () => {
+  'worklet';
+  return {
+    initialValues: {
+      opacity: 0,
+      transform: [{ scaleY: 0 }],
+    },
+    animations: {
+      opacity: withTiming(1, { duration: 300, easing: Easing.out(Easing.cubic) }),
+      transform: [
+        { scaleY: withTiming(1, { duration: 350, easing: Easing.out(Easing.cubic) }) },
+      ],
+    },
+  };
+};
 
 export default function LogEntry({ entry, index }) {
   const entryNum = String(index + 1).padStart(3, '0');
 
   return (
     <Animated.View
-      entering={FadeInUp.duration(300).delay(50)}
+      entering={unfoldFromTop}
+      layout={LinearTransition.duration(350)}
       style={styles.container}
     >
       <View style={styles.header}>
