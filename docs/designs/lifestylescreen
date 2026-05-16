@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NEURAL_CHRONICLE_OS // LIFESTYLE</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&amp;family=JetBrains+Mono:wght@400;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>/* Custom Font Override for Kode Mono feel via JetBrains Mono */
+body {
+    font-family: "JetBrains Mono", monospace;
+    background-color: #131315;
+    color: #e5e1e4;
+    background-image: linear-gradient(rgba(18, 18, 20, 0.95), rgba(18, 18, 20, 0.95)), repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 243, 255, 0.03) 3px);
+    background-size: 100% 100%, 100% 4px
+    }
+.scanline-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+    z-index: 100
+    }
+.neon-border-magenta {
+    box-shadow: 0 0 10px rgba(254, 0, 254, 0.4)
+    }
+.neon-border-cyan {
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.3)
+    }
+.noise-bg {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCwdEX08dqEdsu3KrPd42DGEa9Ia7JSlHXjmEiytcSDLUerVjE8AaaumXGCrYfaUgfmCpMswWg98FnzlSg4xRGCobEfIhqB3EfP-ShxNw5oIAtkPzuxd-WJjSTQfODvB4iX_2bFiFbFNcVcjEB3SwSYfKi_JvR7gnwWOiXf4z8J3x76pe0_sIFeqlDJggd9Mo0WbQ1rWVjg9CZfKTg2CTbkCtlKLxnA9kGh5SJB-eiLXrd9gi0TLOfPx5iu3QgDWjKtvjLmVJvZUXVy)
+    }</style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "on-primary-container": "#006b71",
+                "outline": "#849495",
+                "inverse-surface": "#e5e1e4",
+                "on-tertiary": "#053900",
+                "on-primary": "#00373a",
+                "error-container": "#93000a",
+                "on-error-container": "#ffdad6",
+                "on-tertiary-fixed": "#022100",
+                "surface-container-highest": "#353437",
+                "primary-container": "#00f3ff",
+                "on-secondary": "#5b005b",
+                "surface-container-lowest": "#0e0e10",
+                "outline-variant": "#3a494b",
+                "on-surface": "#e5e1e4",
+                "on-secondary-fixed-variant": "#810081",
+                "inverse-on-surface": "#313032",
+                "primary": "#e3fdff",
+                "primary-fixed": "#6ff6ff",
+                "surface-variant": "#353437",
+                "primary-fixed-dim": "#00dce6",
+                "surface-dim": "#131315",
+                "secondary-fixed": "#ffd7f5",
+                "surface-container-low": "#1c1b1d",
+                "on-primary-fixed": "#002022",
+                "on-surface-variant": "#b9cacb",
+                "surface-tint": "#00dce6",
+                "on-secondary-fixed": "#380038",
+                "on-primary-fixed-variant": "#004f53",
+                "tertiary-container": "#36fd0f",
+                "error": "#ffb4ab",
+                "on-tertiary-container": "#107000",
+                "on-error": "#690005",
+                "surface-container-high": "#2a2a2c",
+                "on-tertiary-fixed-variant": "#095300",
+                "surface-container": "#201f21",
+                "tertiary": "#e8ffda",
+                "tertiary-fixed-dim": "#2ae500",
+                "on-secondary-container": "#500050",
+                "tertiary-fixed": "#79ff5b",
+                "surface-bright": "#39393b",
+                "secondary-container": "#fe00fe",
+                "surface": "#131315",
+                "inverse-primary": "#00696f",
+                "secondary-fixed-dim": "#ffabf3",
+                "secondary": "#ffabf3",
+                "on-background": "#e5e1e4",
+                "background": "#131315"
+              },
+              "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+              },
+              "spacing": {
+                "unit": "4px",
+                "margin": "24px",
+                "gutter": "16px",
+                "container-max": "1440px"
+              },
+              "fontFamily": {
+                "headline-lg": ["Space Grotesk"],
+                "body-md": ["JetBrains Mono"],
+                "headline-md": ["Space Grotesk"],
+                "label-caps": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                "headline-xl": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                "body-md": ["14px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface selection:bg-secondary-container selection:text-white">
+<div class="scanline-overlay"></div>
+<!-- Navigation Shell Top -->
+<header class="fixed top-0 left-0 w-full z-50 flex flex-col px-margin py-unit h-auto border-b-2 border-primary-container bg-surface/80 backdrop-blur-md dark:bg-surface/80 shadow-[0_0_15px_rgba(0,243,255,0.3)]">
+<div class="flex justify-between items-center w-full py-2">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container/20 border border-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">terminal</span>
+</div>
+<h1 class="font-headline-md text-headline-md font-bold tracking-tighter text-primary-fixed-dim uppercase">NEURAL_CHRONICLE_OS // LIFESTYLE</h1>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-caps text-label-caps text-primary-fixed-dim">CR: 1,240,500 | RENOWN: EXALTED</span>
+<span class="font-label-caps text-[10px] text-outline opacity-70">SYST_TIME: 2.44.09 // LOCAL_NET: ENCRYPTED</span>
+</div>
+</div>
+</header>
+<main class="pt-32 pb-24 px-margin max-w-container-max mx-auto">
+<!-- Owned Assets Summary -->
+<div class="mb-gutter flex flex-wrap gap-4 items-center justify-between border-l-4 border-secondary-container bg-surface-container-low p-4 noise-bg">
+<div class="flex gap-8">
+<div>
+<p class="font-label-caps text-label-caps text-outline uppercase">Owned Real Estate</p>
+<p class="font-headline-md text-headline-md text-primary-fixed-dim">02 <span class="text-body-md font-body-md text-outline">/ 12</span></p>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-outline uppercase">Vehicle Fleet</p>
+<p class="font-headline-md text-headline-md text-primary-fixed-dim">05 <span class="text-body-md font-body-md text-outline">/ 20</span></p>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-outline uppercase">Luxury Items</p>
+<p class="font-headline-md text-headline-md text-primary-fixed-dim">14 <span class="text-body-md font-body-md text-outline">/ ∞</span></p>
+</div>
+</div>
+<div class="hidden md:block text-right">
+<p class="font-label-caps text-[10px] text-secondary">ACTIVE_PROTOCOL: ASSET_ACQUISITION</p>
+<div class="h-1 w-32 bg-secondary-container/20 mt-1 relative overflow-hidden">
+<div class="absolute inset-0 bg-secondary-container w-2/3"></div>
+</div>
+</div>
+</div>
+<!-- Section 1: REAL_ESTATE -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-6">
+<h2 class="font-headline-md text-headline-md text-primary uppercase tracking-widest">01 // REAL_ESTATE</h2>
+<div class="flex-grow h-px bg-outline-variant"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Item 1 -->
+<div class="group relative bg-surface-container-lowest border border-outline-variant hover:border-primary-container transition-all duration-300 noise-bg overflow-hidden">
+<div class="absolute top-0 left-0 p-2 bg-primary-container text-on-primary-fixed font-label-caps text-[10px] z-10">LISTING_ID: 9942-X</div>
+<div class="aspect-[16/9] overflow-hidden">
+<img class="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" data-alt="A cinematic interior view of a futuristic cyberpunk penthouse featuring sleek carbon-fiber floors and floor-to-ceiling windows. Outside, a sprawling neon-lit metropolis glows in deep blues and vibrant pinks under a dark night sky. The lighting inside is dim and moody, with sharp cyan accents reflecting off metallic surfaces. The atmosphere is quiet, luxurious, and technologically advanced." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDl8tkpq5xCzWw2FY3n4Z8_wVC7OKA6FuloRqEFm6LWA3aJ51mmd5wFEr9DOe5YVlNvdJQY85or_QdKhekjSmn1uCkRKl3Bsz_SPeSxkzkasuFSuIlPM4QPBHoGmDy-0et9AAoiqaXg7p2koubqUbjdvq5sHLqVuCazwEHh2Zi1jUUOwTdYjUuqKchBFudLSlpAsFeiQ3FIhM4z1wOlbxc3RLMv_pboNaSJP9wqMuDwsNK02pDdVU-QVtFxdYOzIPQ9DLalyuoFEon5"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-md text-headline-md text-primary uppercase">Skyline Apex Suite</h3>
+<p class="font-body-md text-body-md text-outline mt-1">Carbon-fiber floors, 360-degree night city view.</p>
+</div>
+<div class="text-right">
+<p class="font-label-caps text-label-caps text-secondary">PRICE</p>
+<p class="font-headline-md text-headline-md text-on-surface">5,000,000 <span class="text-body-md text-outline">CR</span></p>
+</div>
+</div>
+<div class="flex gap-2 mb-6">
+<span class="bg-surface-container-highest px-2 py-1 font-label-caps text-[10px] text-primary">LUXURY_GRADE: S</span>
+<span class="bg-surface-container-highest px-2 py-1 font-label-caps text-[10px] text-primary">SECURITY: MAX</span>
+<span class="bg-surface-container-highest px-2 py-1 font-label-caps text-[10px] text-primary">NET_ISOLATION: 100%</span>
+</div>
+<button class="w-full py-4 bg-primary-container/10 border border-primary-container text-primary-fixed-dim font-label-caps text-label-caps hover:bg-primary-container hover:text-on-primary-fixed transition-all active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">lock_open</span>
+                            INITIATE_PURCHASE_PROTOCOL
+                        </button>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="group relative bg-surface-container-lowest border border-outline-variant hover:border-primary-container transition-all duration-300 noise-bg overflow-hidden">
+<div class="absolute top-0 left-0 p-2 bg-primary-container text-on-primary-fixed font-label-caps text-[10px] z-10">LISTING_ID: 2120-K</div>
+<div class="aspect-[16/9] overflow-hidden">
+<img class="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" data-alt="A compact and cozy cyberpunk micro-loft in the heart of a neon-drenched district. The space is filled with high-tech screens, modular furniture, and dense industrial textures. Outside the small window, vibrant magenta and cyan neon signs blur into a beautiful city glow. The room is warmly lit by orange and teal lights, creating a high-contrast and intimate tech-focused environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9BZBoZ8n5BSAkLYYPCWm9SMVYGW1KZV-1UdzFAQiXZLLSAfTu3kxV5MoVeUIK8_nJGQVd_XYo4tm2YVt5kZQlZKPgTKQU2Tt4LmZdi9LeNgmy0PPL-po6Owr7mG3u2TikfdPj32Z-7v3mAAPyUIfQCzEQnPXVs5xO6nxzj5-PlaokAnakJpLrY9YKF0Fe_pZVdZ7G6XH_zn81919oypOSC5wTn1Qz3tF7eLquaaf_Wa5SHroczRArdPEVHP8q3L-B6e7wcdU0WlAL"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-md text-headline-md text-primary uppercase">Kabuki Micro-Loft</h3>
+<p class="font-body-md text-body-md text-outline mt-1">Cozy, high-security, near the neon district.</p>
+</div>
+<div class="text-right">
+<p class="font-label-caps text-label-caps text-secondary">PRICE</p>
+<p class="font-headline-md text-headline-md text-on-surface">150,000 <span class="text-body-md text-outline">CR</span></p>
+</div>
+</div>
+<div class="flex gap-2 mb-6">
+<span class="bg-surface-container-highest px-2 py-1 font-label-caps text-[10px] text-primary">LUXURY_GRADE: C</span>
+<span class="bg-surface-container-highest px-2 py-1 font-label-caps text-[10px] text-primary">SECURITY: MED</span>
+<span class="bg-surface-container-highest px-2 py-1 font-label-caps text-[10px] text-primary">VIBE: NEON_CITY</span>
+</div>
+<button class="w-full py-4 bg-primary-container/10 border border-primary-container text-primary-fixed-dim font-label-caps text-label-caps hover:bg-primary-container hover:text-on-primary-fixed transition-all active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">lock_open</span>
+                            INITIATE_PURCHASE_PROTOCOL
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: VEHICLES -->
+<section class="mb-12">
+<div class="flex items-center gap-4 mb-6">
+<h2 class="font-headline-md text-headline-md text-secondary uppercase tracking-widest">02 // VEHICLES</h2>
+<div class="flex-grow h-px bg-outline-variant"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Vehicle 1 -->
+<div class="group relative bg-surface-container-lowest border border-outline-variant hover:border-secondary transition-all duration-300 noise-bg overflow-hidden">
+<div class="absolute top-0 right-0 p-2 bg-secondary text-on-secondary font-label-caps text-[10px] z-10">SERIAL: EX-9000</div>
+<div class="aspect-[16/9] overflow-hidden">
+<img class="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" data-alt="A luxurious, sleek aerodyne vehicle floating above a dark, rainy cyberpunk landing pad. The aerodyne features smooth, chrome and matte-black surfaces with glowing magenta jet intake lights. The surrounding environment is filled with vertical city lights and thick mist. The overall mood is cold, exclusive, and hyper-modern, rendered in high-contrast neon tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0CbBvRiS3RIR00ke7Hk37drOIOEHV-1nuXkY-nXGgGj00jjkyBIxmBPJMZsSoJIEMgJLBoBbe7saCIy43me1yBHwBEfXLnwcPtfTBFZVI05xbjV4AP3r47y-L4Wj-oDGfUQCEjgDxRll1NwbeV-VxsMQRvRwk0BxXgNmPa_0JlfaAiCy7JUxPebcBtC7Xg0IY231cYEjP2C8eBw23cjoRHd_rSYF6n73dmM0T3gYlC5J_RLfP0EMq0FpVF6fySGfxeEUHS8Ybti5I"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-md text-headline-md text-secondary uppercase">Rayfield Excalibur</h3>
+<p class="font-body-md text-body-md text-outline mt-1">The pinnacle of luxury aerodynes.</p>
+</div>
+<div class="text-right">
+<p class="font-label-caps text-label-caps text-primary">PRICE</p>
+<p class="font-headline-md text-headline-md text-on-surface">1,200,000 <span class="text-body-md text-outline">CR</span></p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mb-6">
+<div class="bg-surface-container-high p-2">
+<p class="text-[10px] text-outline uppercase">Speed</p>
+<div class="h-1 w-full bg-outline-variant mt-1"><div class="h-full bg-secondary w-full"></div></div>
+</div>
+<div class="bg-surface-container-high p-2">
+<p class="text-[10px] text-outline uppercase">Armor</p>
+<div class="h-1 w-full bg-outline-variant mt-1"><div class="h-full bg-secondary w-1/3"></div></div>
+</div>
+</div>
+<button class="w-full py-4 bg-secondary/10 border border-secondary text-secondary-fixed-dim font-label-caps text-label-caps hover:bg-secondary hover:text-on-secondary transition-all active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">electric_car</span>
+                            DEPLOY_FUNDS_TRANSFER
+                        </button>
+</div>
+</div>
+<!-- Vehicle 2 -->
+<div class="group relative bg-surface-container-lowest border border-outline-variant hover:border-secondary transition-all duration-300 noise-bg overflow-hidden">
+<div class="absolute top-0 right-0 p-2 bg-secondary text-on-secondary font-label-caps text-[10px] z-10">SERIAL: CT-3X-RED</div>
+<div class="aspect-[16/9] overflow-hidden">
+<img class="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" data-alt="A sleek, low-slung cyberpunk sport motorcycle with neon rim lights parked in a dark alleyway. Wet pavement reflects the vibrant pink and blue neon signs from the background. The bike is matte red and black with exposed machinery and glowing digital dials. The composition is dynamic and edgy, emphasizing the fast and dangerous persona of the vehicle." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMJ2H4xG6N17UEAFUoop-9EyYjptA7_bI1l_cUoq5wfVsZ6WavnfBaLmHhLWtfP1iwD1C7RHW-r5XyWJkSXLuRnQD8cGevn7IJgA3s6h8kPY1VX7HQFF5pBaKu6nxupNfy22rNXnf-XKxNqPsKPPYGQjUMpGYScMGuEdDeUMyDVPvE59sbqEoG9lGKxdqlZkTdDJxClSm151ATJWr3P4v9PU2smUurRZxSujKnY1bt-xcSv4hVOq7_CGF-lMOgFPxTAF7UoR2OnHcn"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-md text-headline-md text-secondary uppercase">Kusanagi CT-3X</h3>
+<p class="font-body-md text-body-md text-outline mt-1">Fast, sleek, and dangerous.</p>
+</div>
+<div class="text-right">
+<p class="font-label-caps text-label-caps text-primary">PRICE</p>
+<p class="font-headline-md text-headline-md text-on-surface">85,000 <span class="text-body-md text-outline">CR</span></p>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 mb-6">
+<div class="bg-surface-container-high p-2">
+<p class="text-[10px] text-outline uppercase">Handling</p>
+<div class="h-1 w-full bg-outline-variant mt-1"><div class="h-full bg-secondary w-[90%]"></div></div>
+</div>
+<div class="bg-surface-container-high p-2">
+<p class="text-[10px] text-outline uppercase">Heat_Sign</p>
+<div class="h-1 w-full bg-outline-variant mt-1"><div class="h-full bg-secondary w-[80%]"></div></div>
+</div>
+</div>
+<button class="w-full py-4 bg-secondary/10 border border-secondary text-secondary-fixed-dim font-label-caps text-label-caps hover:bg-secondary hover:text-on-secondary transition-all active:scale-95 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">two_wheeler</span>
+                            DEPLOY_FUNDS_TRANSFER
+                        </button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Navigation Shell Bottom -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 h-16 border-t-2 border-secondary-container bg-surface-container-lowest/90 backdrop-blur-xl dark:bg-surface-container-lowest/90 shadow-[0_-8px_20px_rgba(254,0,254,0.2)]">
+<!-- Neural -->
+<a class="flex flex-col items-center justify-center text-outline px-2 py-1 grayscale hover:bg-secondary/10 hover:grayscale-0 transition-colors duration-75 active:scale-95 cursor-pointer" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-label-caps text-label-caps">NEURAL</span>
+</a>
+<!-- Haven -->
+<a class="flex flex-col items-center justify-center text-outline px-2 py-1 grayscale hover:bg-secondary/10 hover:grayscale-0 transition-colors duration-75 active:scale-95 cursor-pointer" href="#">
+<span class="material-symbols-outlined">nightlife</span>
+<span class="font-label-caps text-label-caps">HAVEN</span>
+</a>
+<!-- Cyber -->
+<a class="flex flex-col items-center justify-center text-outline px-2 py-1 grayscale hover:bg-secondary/10 hover:grayscale-0 transition-colors duration-75 active:scale-95 cursor-pointer" href="#">
+<span class="material-symbols-outlined">memory</span>
+<span class="font-label-caps text-label-caps">CYBER</span>
+</a>
+<!-- Gigs -->
+<a class="flex flex-col items-center justify-center text-outline px-2 py-1 grayscale hover:bg-secondary/10 hover:grayscale-0 transition-colors duration-75 active:scale-95 cursor-pointer" href="#">
+<span class="material-symbols-outlined">terminal</span>
+<span class="font-label-caps text-label-caps">JOBS</span>
+</a>
+<!-- Lifestyle (ACTIVE) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container/20 text-secondary border-t-2 border-secondary px-2 py-1 transition-colors duration-75 active:scale-95 cursor-pointer neon-border-magenta" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">diamond</span>
+<span class="font-label-caps text-label-caps">LIFESTYLE</span>
+</a>
+</nav>
+</body></html>

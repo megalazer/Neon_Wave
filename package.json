@@ -1,0 +1,31 @@
+{
+  "name": "neon-terminus",
+  "version": "1.0.0",
+  "main": "App.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@expo-google-fonts/kode-mono": "^0.4.1",
+    "@expo/vector-icons": "^15.0.2",
+    "expo": "~55.0.0",
+    "expo-blur": "~55.0.14",
+    "expo-font": "~55.0.7",
+    "expo-haptics": "~55.0.14",
+    "expo-linear-gradient": "~55.0.14",
+    "immer": "^11.1.8",
+    "nativewind": "^4.2.4",
+    "react": "19.2.0",
+    "react-native": "0.83.6",
+    "react-native-reanimated": "4.2.1",
+    "zustand": "^5.0.13"
+  },
+  "private": true,
+  "devDependencies": {
+    "babel-preset-expo": "^55.0.21",
+    "tailwindcss": "^3.4.19"
+  }
+}

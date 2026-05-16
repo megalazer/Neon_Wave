@@ -1,0 +1,17 @@
+export const PLACEHOLDER_LINES = [
+  "Rain hits the synthglass like static. Nothing moves in Sector 7.",
+  "A drone passes overhead, scanner blinking red, then gone.",
+  "Someone left a half-eaten noodle pack on the bar. Cold by now.",
+  "The neon sign across the street flickers, then steadies.",
+  "You hear gunfire two blocks over. Not your problem tonight.",
+  "Helix billboards cycle through their evening propaganda loop.",
+  "A fixer you don't recognize nods at you from the corner booth.",
+  "Power flickers across the district. Back online in three seconds.",
+  "The bartender slides a drink toward you without asking what.",
+  "Somewhere in the distance, the mag-rail screams past.",
+  "Acid rain. Again. Your coat sheds it but the smell lingers.",
+  "Onyx Bureau patrol checkpoint went up on 4th Street.",
+  "An anonymous credit transfer hits your account. 12 CR. Suspicious.",
+  "Your subdermal pings — temperature regulating, all systems nominal.",
+  "Static on the wire. Someone's running a scrambler nearby.",
+];

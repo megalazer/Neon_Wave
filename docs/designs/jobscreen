@@ -1,0 +1,325 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>NEURAL_CHRONICLE_OS - ACTIVITIES</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;family=Space+Grotesk:wght@600;700&amp;family=Kode+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        body {
+            font-family: 'Kode Mono', monospace;
+            background-color: #131315;
+            color: #e5e1e4;
+            overflow-x: hidden;
+        }
+        .scanline-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .crt-flicker {
+            animation: flicker 0.15s infinite;
+        }
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            5% { opacity: 0.95; }
+            10% { opacity: 0.9; }
+            15% { opacity: 0.98; }
+            20% { opacity: 0.92; }
+            100% { opacity: 1; }
+        }
+        .neon-border-cyan {
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.4), inset 0 0 5px rgba(0, 243, 255, 0.2);
+            border: 1px solid #00f3ff;
+        }
+        .neon-border-magenta {
+            box-shadow: 0 0 10px rgba(254, 0, 254, 0.4), inset 0 0 5px rgba(254, 0, 254, 0.2);
+            border: 1px solid #fe00fe;
+        }
+        .glitch-text:hover {
+            text-shadow: 2px 0 #fe00fe, -2px 0 #00f3ff;
+        }
+        .segmented-clip {
+            clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#107000",
+                        "on-primary": "#00373a",
+                        "primary-fixed-dim": "#00dce6",
+                        "outline": "#849495",
+                        "on-secondary": "#5b005b",
+                        "primary-container": "#00f3ff",
+                        "primary-fixed": "#6ff6ff",
+                        "on-secondary-container": "#500050",
+                        "tertiary-container": "#36fd0f",
+                        "surface-tint": "#00dce6",
+                        "tertiary": "#e8ffda",
+                        "on-background": "#e5e1e4",
+                        "on-tertiary-fixed-variant": "#095300",
+                        "secondary-fixed": "#ffd7f5",
+                        "on-error": "#690005",
+                        "on-surface": "#e5e1e4",
+                        "surface-dim": "#131315",
+                        "surface-container-low": "#1c1b1d",
+                        "on-secondary-fixed": "#380038",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-high": "#2a2a2c",
+                        "tertiary-fixed-dim": "#2ae500",
+                        "tertiary-fixed": "#79ff5b",
+                        "surface-container-highest": "#353437",
+                        "primary": "#e3fdff",
+                        "error-container": "#93000a",
+                        "secondary-container": "#fe00fe",
+                        "on-tertiary": "#053900",
+                        "surface": "#131315",
+                        "secondary": "#ffabf3",
+                        "outline-variant": "#3a494b",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#0e0e10",
+                        "background": "#131315",
+                        "inverse-on-surface": "#313032",
+                        "on-tertiary-fixed": "#022100",
+                        "surface-variant": "#353437",
+                        "surface-container": "#201f21",
+                        "on-primary-container": "#006b71",
+                        "inverse-surface": "#e5e1e4",
+                        "inverse-primary": "#00696f",
+                        "on-surface-variant": "#b9cacb",
+                        "surface-bright": "#39393b",
+                        "secondary-fixed-dim": "#ffabf3",
+                        "on-primary-fixed": "#002022",
+                        "on-secondary-fixed-variant": "#810081",
+                        "on-primary-fixed-variant": "#004f53"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "gutter": "16px",
+                        "margin": "24px",
+                        "container-max": "1440px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Kode Mono"],
+                        "body-md": ["Kode Mono"],
+                        "headline-md": ["Space Grotesk"],
+                        "headline-xl": ["Space Grotesk"],
+                        "label-caps": ["Kode Mono"],
+                        "headline-lg-mobile": ["Space Grotesk"],
+                        "headline-lg": ["Space Grotesk"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background selection:bg-secondary-container selection:text-white">
+<div class="scanline-overlay"></div>
+<!-- Top Navigation Header -->
+<header class="fixed top-0 left-0 w-full z-50 flex flex-col px-margin py-unit h-auto border-b-2 border-primary-container bg-surface/80 backdrop-blur-md dark:bg-surface/80 shadow-[0_0_15px_rgba(0,243,255,0.3)]">
+<div class="flex items-center justify-between py-2">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 neon-border-cyan overflow-hidden">
+<img alt="Hacker Profile" class="w-full h-full object-cover grayscale brightness-125" data-alt="A gritty cyberpunk character profile portrait with neon cyan facial implants and glowing cybernetic eyes. The character has a shaved head with circuit-like tattoos, set against a dark, rainy urban alley background with magenta and blue light reflections. The mood is intense and futuristic, utilizing high-contrast lighting and a tech-noir aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxZ7qN4wg6ewc4mBFm26TLThX2_Viy0Yuv1IGpRAQxxbHG9Wui01cdvu5xN_i9gVcJTEs80SgEX_a-Uy1G_FyaCRhbOvLpPtYONPdljR7aEpla86UIZEq2d3Byvb3hgkG0_h6GqDF1JwKB7yRKrNLG8HxMvkssCpKGhn1UdZH5IxriS9cM1JQo18mtfYIFvd_lA6NiTDZojhVO_QRMmvst1WB0fsh_NOxR3qhqalr4X5w-8rHl8D1lyBjIuyZ0VXTiKc6KYGdRERlo">
+</div>
+<h1 class="font-bold tracking-tighter text-primary-fixed-dim uppercase text-[18px]">NEURAL_CHRONICLE_OS</h1>
+</div>
+<div class="text-primary-fixed-dim text-[10px] font-bold">
+                CR: 50,420 | RENOWN: EXALTED
+            </div>
+</div>
+</header>
+<main class="pt-20 pb-24 px-margin min-h-screen">
+<!-- Unit Status Monitor (2x2 Grid) -->
+<section class="mb-gutter p-unit bg-surface-container-low neon-border-cyan relative">
+<div class="absolute -top-3 left-4 bg-background px-2 text-[10px] text-primary-fixed-dim font-bold tracking-widest uppercase">
+                [ UNIT_STATUS_MONITOR ]
+            </div>
+<div class="grid grid-cols-2 gap-4 mt-2">
+<!-- Party Member 1 -->
+<div class="flex items-center gap-2">
+<img alt="Unit 01" class="w-10 h-10 border border-primary-fixed-dim grayscale" data-alt="Close-up headshot of a female hacker with holographic goggles glowing in deep magenta. Her skin is pale with subtle glowing data-ports on her temple. The background is a blur of blue and purple binary code. The lighting is harsh and electronic, emphasizing a high-tech brutalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnzmMnMBPXm0BKvw8F_8q4NImggme2AppOJTsyB4GBXeYMbY4hnwIoyZ7hGsh16ySvNAOSMxf7B-ir5S_xdprVQ9jVQ3h4am3f5pteGli4fY4qq7FYQ-r2B1WLoBRSZpo6PLZ7xZ5XW9ff1MzU-FEFj2lF5ffuI-aX_jxAi7CuEu90qPWXWag-MhsfGMqqJklHJZLm4HjH90gNngwzKHYy5QqAolIuul_VwRBGKDKpWKYQ1QachrHlSkJIv3AXRL0uvm1Z4_MbxJni">
+<div class="flex-1">
+<div class="text-[10px] font-bold text-primary-fixed-dim">V-SPECTRE</div>
+<div class="w-full h-1.5 bg-surface-container-highest mt-1 relative">
+<div class="absolute top-0 left-0 h-full bg-primary-container w-[85%]"></div>
+</div>
+<div class="w-full h-1 bg-surface-container-highest mt-0.5 relative">
+<div class="absolute top-0 left-0 h-full bg-secondary-container w-[40%]"></div>
+</div>
+</div>
+</div>
+<!-- Party Member 2 -->
+<div class="flex items-center gap-2">
+<img alt="Unit 02" class="w-10 h-10 border border-primary-fixed-dim grayscale" data-alt="Portrait of a cybernetic combat specialist wearing a heavy tactical mask with glowing cyan optics. He has metallic armor plates integrated into his neck. The environment is a dark industrial server room with flickering red warning lights. The image features a gritty, high-detail texture with chromatic aberration effects." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWkBrP3t--vXG-bsCQ0oFv2IHqCp8gvqWk3v0T54wzI21rJDSZIye6eNIHW3mlTLeoX5EvFhR4JHvCGHEpsh2YwI-TwvFz306m7Uif7LTwO4zhv-EfI7BaCRxKzwTC17UiUddOLdVRlE9qnDzH5gXQFn_RQumNCaISS2etZz0RpIwAcem4hrEDBiMPvfOcT1sWtVev2SiDbs6z0dj3sI2MdTUrtjofkIm7yosIlugyY0e1dvO59FX7LWLd2D5AJDC7AuXksWkHdYlV">
+<div class="flex-1">
+<div class="text-[10px] font-bold text-primary-fixed-dim">RAZOR_REED</div>
+<div class="w-full h-1.5 bg-surface-container-highest mt-1 relative">
+<div class="absolute top-0 left-0 h-full bg-primary-container w-[62%]"></div>
+</div>
+<div class="w-full h-1 bg-surface-container-highest mt-0.5 relative">
+<div class="absolute top-0 left-0 h-full bg-secondary-container w-[90%]"></div>
+</div>
+</div>
+</div>
+<!-- Party Member 3 -->
+<div class="flex items-center gap-2">
+<img alt="Unit 03" class="w-10 h-10 border border-primary-fixed-dim grayscale" data-alt="A tech-shaman character with long glowing fiber-optic hair that cycles through shades of cyan and violet. Her face is partially obscured by a digital veil of light. She is standing in a minimalist white-walled laboratory filled with floating holographic screens. The mood is sterile, advanced, and ethereal." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJQB01KVu-rZRjkErLL5n4ra4OGkgR3LNipMal5GCYjqb4v2YH8-pWiKyHNFtx_A9enzJJx8vu869709FOM1GSRsRM8_0YNguqiXr42D1zE-LP4ou40piFXAeSMQvKZvu58GS_JKcAtiVWpfnMkeEmwZ7C-WPpRvn2RzttGnWzqvxZvDEg3neHRropF8XIsslhjbj5XQMmewi8xz0dTnOJAC_bYDLXEUA_nmcBaAddPoOJsdoogHlZw5x2qLa39Skq_C0vNA59kphv">
+<div class="flex-1">
+<div class="text-[10px] font-bold text-primary-fixed-dim">GLITCH_SOUL</div>
+<div class="w-full h-1.5 bg-surface-container-highest mt-1 relative">
+<div class="absolute top-0 left-0 h-full bg-primary-container w-[100%]"></div>
+</div>
+<div class="w-full h-1 bg-surface-container-highest mt-0.5 relative">
+<div class="absolute top-0 left-0 h-full bg-secondary-container w-[20%]"></div>
+</div>
+</div>
+</div>
+<!-- Party Member 4 -->
+<div class="flex items-center gap-2">
+<img alt="Unit 04" class="w-10 h-10 border border-primary-fixed-dim grayscale" data-alt="An older cyborg veteran with a heavy metallic jaw and a bionic eye that emits a sharp magenta laser beam. He wears a worn leather jacket over a chrome chest plate. The background is a dense, neon-lit cityscape seen through a rainy window. The lighting is cinematic and moody, with deep shadows and vibrant highlights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBlsQPMXm-k0RT0NWJJWEzQMqJt_pr5wJrCIn16qhnltPuFhPTXm7NG0HxYDfxFVdqbOPYigPAlt7VzIQNWfJg7_nhjYKUr7unDlBmYPtGMdVZdGcBQHuWKKSfF34ubvuUQSJk9-QSHDGYa7cOea8pnS1AACll8NuUsx7JTshqAeJdmlyuEQsHekHKU_tgeo0d_gv_Re_M4C_YSFLbd8C6PpUTu3g-9NlJ6GxILOwgbCjrIpT-JwGsjHHhE1R_s3s898b3Mya1hP4qQ">
+<div class="flex-1">
+<div class="text-[10px] font-bold text-primary-fixed-dim">KODAK_7</div>
+<div class="w-full h-1.5 bg-surface-container-highest mt-1 relative">
+<div class="absolute top-0 left-0 h-full bg-primary-container w-[45%]"></div>
+</div>
+<div class="w-full h-1 bg-surface-container-highest mt-0.5 relative">
+<div class="absolute top-0 left-0 h-full bg-secondary-container w-[55%]"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4 pt-2 border-t border-primary-container/30 flex justify-between items-center">
+<div class="text-[12px] text-primary-container font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">bolt</span>
+                    PWR: 8.4k
+                </div>
+<div class="text-[10px] text-outline italic">SYSTEMS_NOMINAL</div>
+</div>
+</section>
+<!-- Segmented Tab Bar -->
+<nav class="flex w-full mb-gutter h-10 bg-surface-container-highest overflow-hidden p-1 gap-1">
+<button class="flex-1 text-[12px] font-bold text-outline hover:text-primary-fixed transition-colors">
+                CONTRACTS
+            </button>
+<button class="flex-1 bg-secondary-container/20 text-secondary border-b-2 border-secondary font-bold text-[12px] flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">terminal</span>
+                ACTIVITIES
+            </button>
+</nav>
+<!-- Scrolling List of Activities -->
+<div class="space-y-4">
+<!-- Packet Sniffer -->
+<div class="bg-surface-container-lowest/80 border-l-4 border-primary-container p-4 relative group hover:bg-surface-container-low transition-all">
+<div class="flex justify-between items-start mb-2">
+<div>
+<span class="text-[10px] text-primary-fixed-dim font-bold block mb-1">MODULE // 001</span>
+<h3 class="text-[18px] font-bold text-primary-container glitch-text">Packet Sniffer</h3>
+</div>
+<span class="material-symbols-outlined text-primary-container">wifi_tethering</span>
+</div>
+<p class="text-[12px] text-on-surface-variant leading-relaxed mb-4">
+                    Siphon encrypted data streams. High risk, high reward. Intercept corporate comms for valuable intel.
+                </p>
+<div class="flex gap-4 mb-4">
+<div class="bg-surface-container-high px-2 py-1 text-[10px] font-bold">
+                        1,500 <span class="text-primary-container">CR</span>
+</div>
+<div class="bg-surface-container-high px-2 py-1 text-[10px] font-bold">
+                        200 <span class="text-secondary">EXP</span>
+</div>
+</div>
+<button class="w-full py-2 bg-transparent border border-primary-container text-primary-container font-bold text-[12px] hover:bg-primary-container hover:text-background transition-all active:scale-[0.98] tracking-widest">
+                    EXECUTE PROTOCOL
+                </button>
+<!-- Subtle noise overlay for card -->
+<div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+</div>
+<!-- Daemon Hunt -->
+<div class="bg-surface-container-lowest/80 border-l-4 border-secondary-container p-4 relative group hover:bg-surface-container-low transition-all">
+<div class="flex justify-between items-start mb-2">
+<div>
+<span class="text-[10px] text-secondary font-bold block mb-1">MODULE // 002</span>
+<h3 class="text-[18px] font-bold text-secondary glitch-text">Daemon Hunt</h3>
+</div>
+<span class="material-symbols-outlined text-secondary">security</span>
+</div>
+<p class="text-[12px] text-on-surface-variant leading-relaxed mb-4">
+                    Purge the sub-net of malicious code. Track and delete rogue AI fragments before they infect your deck.
+                </p>
+<div class="flex gap-4 mb-4">
+<div class="bg-surface-container-high px-2 py-1 text-[10px] font-bold">
+                        2,800 <span class="text-primary-container">CR</span>
+</div>
+<div class="bg-surface-container-high px-2 py-1 text-[10px] font-bold">
+                        450 <span class="text-secondary">EXP</span>
+</div>
+</div>
+<button class="w-full py-2 bg-transparent border border-secondary-container text-secondary font-bold text-[12px] hover:bg-secondary-container hover:text-background transition-all active:scale-[0.98] tracking-widest">
+                    INITIALIZE HUNT
+                </button>
+<div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+</div>
+<!-- Placeholder for third activity -->
+<div class="bg-surface-container-lowest/80 border-l-4 border-outline p-4 opacity-50 grayscale">
+<div class="flex justify-between items-start mb-2">
+<div>
+<span class="text-[10px] text-outline font-bold block mb-1">MODULE // ???</span>
+<h3 class="text-[18px] font-bold text-outline">Neural Breach</h3>
+</div>
+<span class="material-symbols-outlined text-outline">lock_open</span>
+</div>
+<p class="text-[12px] text-on-surface-variant mb-4">LOCKED: Requires RENOWN LEVEL 'EXALTED_II'</p>
+<div class="w-full h-8 bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">lock</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 h-16 border-t-2 border-secondary-container bg-surface-container-lowest/90 backdrop-blur-xl dark:bg-surface-container-lowest/90 shadow-[0_-8px_20px_rgba(254,0,254,0.2)]">
+<div class="flex flex-col items-center justify-center text-outline px-2 py-1 grayscale hover:bg-secondary/10 hover:grayscale-0 transition-colors duration-75 active:scale-95 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-label-caps text-label-caps mt-1">NEURAL</span>
+</div>
+<div class="flex flex-col items-center justify-center text-outline px-2 py-1 grayscale hover:bg-secondary/10 hover:grayscale-0 transition-colors duration-75 active:scale-95 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="nightlife">nightlife</span>
+<span class="font-label-caps text-label-caps mt-1">HAVEN</span>
+</div>
+<div class="flex flex-col items-center justify-center text-outline px-2 py-1 grayscale hover:bg-secondary/10 hover:grayscale-0 transition-colors duration-75 active:scale-95 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="memory">memory</span>
+<span class="font-label-caps text-label-caps mt-1">CYBER</span>
+</div>
+<!-- Active Tab: Gigs (Activities) -->
+<div class="flex flex-col items-center justify-center bg-secondary-container/20 text-secondary border-t-2 border-secondary px-2 py-1 active:scale-95 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-caps text-label-caps mt-1">GIGS</span>
+</div>
+<div class="flex flex-col items-center justify-center text-outline px-2 py-1 grayscale hover:bg-secondary/10 hover:grayscale-0 transition-colors duration-75 active:scale-95 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+<span class="font-label-caps text-label-caps mt-1">JOBS</span>
+</div>
+</nav>
+</body></html>

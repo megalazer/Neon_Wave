@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "Neon Terminus",
+    "slug": "neon-terminus",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#0e0e10"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.neon.terminus"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0e0e10"
+      },
+      "package": "com.neon.terminus"
+    },
+    "plugins": [
+      "expo-font"
+    ]
+  }
+}

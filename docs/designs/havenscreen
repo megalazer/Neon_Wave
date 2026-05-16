@@ -1,0 +1,400 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Haven - Recruitment &amp; Recovery Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-tertiary": "#053900",
+                        "primary-container": "#00f3ff",
+                        "outline": "#849495",
+                        "on-error": "#690005",
+                        "on-tertiary-container": "#107000",
+                        "on-secondary-fixed": "#380038",
+                        "on-surface-variant": "#b9cacb",
+                        "on-primary-container": "#006b71",
+                        "on-secondary-container": "#500050",
+                        "tertiary-container": "#36fd0f",
+                        "tertiary-fixed": "#79ff5b",
+                        "on-secondary-fixed-variant": "#810081",
+                        "background": "#131315",
+                        "surface-container-low": "#1c1b1d",
+                        "secondary-container": "#fe00fe",
+                        "tertiary": "#e8ffda",
+                        "on-tertiary-fixed-variant": "#095300",
+                        "surface-container-highest": "#353437",
+                        "on-surface": "#e5e1e4",
+                        "surface-container-lowest": "#0e0e10",
+                        "on-primary-fixed": "#002022",
+                        "on-secondary": "#5b005b",
+                        "error": "#ffb4ab",
+                        "primary-fixed-dim": "#00dce6",
+                        "on-primary": "#00373a",
+                        "surface-tint": "#00dce6",
+                        "secondary-fixed": "#ffd7f5",
+                        "secondary-fixed-dim": "#ffabf3",
+                        "on-primary-fixed-variant": "#004f53",
+                        "surface-dim": "#131315",
+                        "secondary": "#ffabf3",
+                        "outline-variant": "#3a494b",
+                        "on-error-container": "#ffdad6",
+                        "error-container": "#93000a",
+                        "surface-bright": "#39393b",
+                        "surface": "#131315",
+                        "surface-variant": "#353437",
+                        "inverse-primary": "#00696f",
+                        "inverse-on-surface": "#313032",
+                        "inverse-surface": "#e5e1e4",
+                        "surface-container-high": "#2a2a2c",
+                        "primary": "#e3fdff",
+                        "on-background": "#e5e1e4",
+                        "surface-container": "#201f21",
+                        "on-tertiary-fixed": "#022100",
+                        "tertiary-fixed-dim": "#2ae500",
+                        "primary-fixed": "#6ff6ff"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    spacing: {
+                        unit: "4px",
+                        gutter: "16px",
+                        margin: "24px",
+                        "container-max": "1440px"
+                    },
+                    fontFamily: {
+                        "headline-lg": ["Kode Mono"],
+                        "label-caps": ["Kode Mono"],
+                        "headline-md": ["Kode Mono"],
+                        "headline-lg-mobile": ["Kode Mono"],
+                        "body-md": ["Kode Mono"],
+                        "headline-xl": ["Kode Mono"],
+                        "body-lg": ["Kode Mono"]
+                    },
+                    fontSize: {
+                        "headline-lg": ["40px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "label-caps": ["12px", { lineHeight: "1.0", letterSpacing: "0.1em", fontWeight: "700" }],
+                        "headline-md": ["24px", { lineHeight: "1.3", fontWeight: "600" }],
+                        "headline-lg-mobile": ["32px", { lineHeight: "1.2", fontWeight: "700" }],
+                        "body-md": ["14px", { lineHeight: "1.6", fontWeight: "400" }],
+                        "headline-xl": ["64px", { lineHeight: "1.1", letterSpacing: "-0.04em", fontWeight: "700" }],
+                        "body-lg": ["18px", { lineHeight: "1.6", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .scanlines {
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+        .crt-overlay {
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
+        .neon-border-primary {
+            border: 1px solid theme('colors.primary-container');
+            box-shadow: 0 0 8px rgba(0, 243, 255, 0.3);
+        }
+        .neon-border-secondary {
+            border: 1px solid theme('colors.secondary-container');
+            box-shadow: 0 0 8px rgba(254, 0, 254, 0.3);
+        }
+        .neon-glow-hover:hover {
+            box-shadow: 0 0 16px rgba(0, 243, 255, 0.6);
+            background-color: theme('colors.primary-container');
+            color: theme('colors.on-primary-container');
+        }
+        .noise-bg {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen relative font-body-md overflow-x-hidden pb-24 pt-20">
+<div class="fixed inset-0 scanlines z-50"></div>
+<div class="fixed inset-0 crt-overlay z-50"></div>
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-40 flex items-center justify-between px-margin py-unit bg-background/90 border-b border-primary-container/30 shadow-[0_4px_12px_rgba(0,243,255,0.2)] backdrop-blur-md">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">terminal</span>
+<span class="font-label-caps text-headline-md text-primary-container uppercase tracking-widest">NEURAL_CHRONICLE_OS</span>
+</div>
+<div class="font-label-caps text-label-caps text-primary-container">
+            CR: 52.4K | RN: 09
+        </div>
+</header>
+<main class="max-w-container-max mx-auto px-gutter md:px-margin flex flex-col gap-8 relative z-10">
+<!-- Top Section: AVAILABLE_OPERATIVES -->
+<section class="flex flex-col gap-4">
+<h2 class="font-label-caps text-label-caps text-primary-container tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">group_add</span>
+                [AVAILABLE_OPERATIVES]
+            </h2>
+<div class="flex overflow-x-auto hide-scrollbar gap-4 pb-4">
+<!-- Operative Card 1 -->
+<div class="min-w-[280px] bg-surface-container-low/80 backdrop-blur-sm neon-border-primary p-4 flex flex-col gap-4 relative noise-bg group">
+<div class="absolute top-0 right-0 bg-primary-container text-on-primary-container font-label-caps text-[10px] px-2 py-1">ID:001</div>
+<div class="h-32 bg-surface-container-high neon-border-secondary relative overflow-hidden">
+<img alt="Operative Portrait" class="w-full h-full object-cover opacity-80 mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-300" data-alt="A striking portrait of a cyberpunk netrunner operative. The character is illuminated by harsh, high-contrast neon lights in cyan and magenta. They have visible cybernetic implants on their face and wear dark, industrial-style clothing. The background is a blurry, gritty near-future megalopolis. The aesthetic is raw, technical, and unapologetically digital." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcgACnRGGeH7Jmh9cBkXrUNlhKOLFyQ0vuRHRis-Yr-rusWSFr_74vzmlQmVd1DieEoI_v6wsdY6qrnVt8qqGV41HMfaJTxxVE_h646BAUivh--xFLiepFjzbJnvq0yG7qQr6ihThuo4-_bcWu7QWI3sJ1XNFzrY9mBAk6BGLQ0MGVzcIvOLJd_IyGRgdjRiVrQnsPmKo3iLVBGfyHPvoi6DgVTA-hAB5b9QZAgJmz6DW5j0Yb9hBmqKmlkz3FDiJP5alTucmiNcJ5">
+</div>
+<div class="flex flex-col">
+<h3 class="font-headline-md text-headline-md text-primary-container">Kaelen_Vex</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Class: Netrunner</p>
+</div>
+<div class="flex justify-between items-center mt-2 pt-2 border-t border-surface-container-high">
+<span class="font-label-caps text-label-caps text-tertiary-container">12,500 CR</span>
+<button class="bg-transparent border border-primary-container text-primary-container px-4 py-1 font-label-caps text-label-caps neon-glow-hover transition-all duration-75 uppercase">Recruit</button>
+</div>
+</div>
+<!-- Operative Card 2 -->
+<div class="min-w-[280px] bg-surface-container-low/80 backdrop-blur-sm neon-border-primary p-4 flex flex-col gap-4 relative noise-bg group">
+<div class="absolute top-0 right-0 bg-primary-container text-on-primary-container font-label-caps text-[10px] px-2 py-1">ID:042</div>
+<div class="h-32 bg-surface-container-high neon-border-secondary relative overflow-hidden">
+<img alt="Operative Portrait" class="w-full h-full object-cover opacity-80 mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-300" data-alt="A portrait of a heavily armored street samurai in a cyberpunk setting. The lighting is dark and moody, punctuated by sharp neon pinks and blues. The character wears a mechanized exo-suit and a glowing visor that obscures their face. The environment feels like a gritty, high-tech back alley. The overall style is brutalist and industrial." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-Q84W9DxdozkcbAsp8ErwtdHwSvrk8Ofy3XDtd5EzKwfZq44BEnEV6Y4oPNy87ONicjYzDWUUM-HoD4z2TBvrH1xGfPHc2rUSqJCyXR-YiuyypHEjrW03XVbsjmKDlXap8zREq5v06vonttO1atIUed6m_xX91GobVJQCUJ9dCdmDTL5UJB7tuHa8g-GdcqTqEVSsOJ_xyClmY-0uqXvLg774oSEN8CRR_Pmz56eFlPE4Q31gUmqphUId2MkMznTOnQtYcaaRFHNe">
+</div>
+<div class="flex flex-col">
+<h3 class="font-headline-md text-headline-md text-primary-container">Jax_Ironhide</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Class: Street Samurai</p>
+</div>
+<div class="flex justify-between items-center mt-2 pt-2 border-t border-surface-container-high">
+<span class="font-label-caps text-label-caps text-tertiary-container">18,200 CR</span>
+<button class="bg-transparent border border-primary-container text-primary-container px-4 py-1 font-label-caps text-label-caps neon-glow-hover transition-all duration-75 uppercase">Recruit</button>
+</div>
+</div>
+<!-- Operative Card 3 -->
+<div class="min-w-[280px] bg-surface-container-low/80 backdrop-blur-sm neon-border-primary p-4 flex flex-col gap-4 relative noise-bg group">
+<div class="absolute top-0 right-0 bg-primary-container text-on-primary-container font-label-caps text-[10px] px-2 py-1">ID:089</div>
+<div class="h-32 bg-surface-container-high neon-border-secondary relative overflow-hidden">
+<img alt="Operative Portrait" class="w-full h-full object-cover opacity-80 mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-300" data-alt="A close-up portrait of a cyberpunk medic or tech-specialist. The scene is lit by cool, clinical cyan lighting against a deep obsidian background. The character has intricate, illuminated neural jacks embedded in their neck and wears a sterile, geometric jacket. The visual style is highly detailed, evoking a complex heads-up display." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgMaBG0DRydtbUkH9TZp5foaaC1BdLsfXicpmpM7mEFPTNJLCw1SxcjWwjsAjATrsyoI8HLE_9HsX_AFmD270TlTxlz7aMm9D070dDLd_KoPy_d8rVqErvr-6ijkrYI2rbE3PTuqQSqgmOgiG2SDHkH-h8y-dLbdtTO8Y3U7eutI-UCrxU9n_fF4l70-UX-94ekUbnO_qcUVmh9OYkavDEzfItYdMOZ0V8ZDaz479acDrrtXiTMAOfOPLfHdpk8wSxDGESGDPUtbmX">
+</div>
+<div class="flex flex-col">
+<h3 class="font-headline-md text-headline-md text-primary-container">Dr_Nova</h3>
+<p class="font-label-caps text-label-caps text-on-surface-variant">Class: Bio-Hacker</p>
+</div>
+<div class="flex justify-between items-center mt-2 pt-2 border-t border-surface-container-high">
+<span class="font-label-caps text-label-caps text-tertiary-container">21,000 CR</span>
+<button class="bg-transparent border border-primary-container text-primary-container px-4 py-1 font-label-caps text-label-caps neon-glow-hover transition-all duration-75 uppercase">Recruit</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Middle Section: RECHARGE_BAR -->
+<section class="flex flex-col gap-4">
+<h2 class="font-label-caps text-label-caps text-secondary-container tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">local_bar</span>
+                [RECHARGE_BAR: Drinks &amp; Stimulants]
+            </h2>
+<div class="flex flex-col gap-2 mb-6">
+<span class="font-label-caps text-[10px] text-on-surface-variant uppercase mb-2 text-center">Select Recipient:</span>
+<div class="flex overflow-x-auto hide-scrollbar gap-4 pb-2 justify-center">
+<!-- Member: Valerius -->
+<div class="flex-shrink-0 flex flex-col items-center gap-1 cursor-pointer group">
+<div class="w-12 h-12 rounded-sm overflow-hidden border-2 border-primary-container neon-border-primary bg-surface-container-highest">
+<img alt="Valerius" class="w-full h-full object-cover mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9CaFyIWl-jKTd0TPYhOen6AjMqBrNQ-dKYmZZkBQJrDq0ER7JCgG6_7TAMtLhnpxEVZS8OcxGRmzeVVf3lq4oQQEhlFZHz3j1w-KY94vH698OriJuXEGR3mqty3eQyCdLs0i1RlPCjbGfAwf_ciCPJTww_MLt-kGcyCqAmaI0nTIxVh0btCdVuDApsC0_pjGKoVHwSagfOw6nKwF0RU4EWiT0lxegX39Qhiz7RrylK7PFFM3TMlLz4aCoxu6E2t4NvAs09ghnoJla">
+</div>
+<span class="font-label-caps text-[10px] text-primary-container">Valerius</span>
+</div>
+<!-- Member: Elara -->
+<div class="flex-shrink-0 flex flex-col items-center gap-1 cursor-pointer group opacity-60 hover:opacity-100 transition-opacity">
+<div class="w-12 h-12 rounded-sm overflow-hidden border-2 border-outline-variant hover:border-primary-container transition-colors bg-surface-container-highest">
+<img alt="Elara" class="w-full h-full object-cover mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAckOdvRzWOlHIHhczt5P3K33ZAgL_KwSaMPa_Bbe5aywZd3DwuKpcMIRzxn0L9M34sSriKxe1ncGNODEfRNTKfm5KamGdIzBZfXhM57UnhQVHgiGiuRvhX3wYZIV5qTmA_NhyvlTOM462a9j_wREuGVm3LXz-UlHaLJP6lvTu0v_1f7hUFsnTQG5PtTcAPnHpkAR4waXmy5Z0MTmjoM7tAGRa4aBincYvwFwO7Hv2V5Gxopr9XflqC_MinjlTWZyuKwUhc1xTM2s_r">
+</div>
+<span class="font-label-caps text-[10px] text-on-surface-variant group-hover:text-primary-container transition-colors">Elara</span>
+</div>
+<!-- Member: Kaelen -->
+<div class="flex-shrink-0 flex flex-col items-center gap-1 cursor-pointer group opacity-60 hover:opacity-100 transition-opacity">
+<div class="w-12 h-12 rounded-sm overflow-hidden border-2 border-outline-variant hover:border-primary-container transition-colors bg-surface-container-highest">
+<img alt="Kaelen" class="w-full h-full object-cover mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAlUpdsNDCugt6M3YewodP4I0XCq4-TcM1wKsOrccl6UYshV33y8_8CrwY1KLl2McSH7XK-71g2I97E7FXuWWTYbZ4E_08nrjNTvM7mhVYdKQZ_k6gMDU0qZIIZ7iXj3L0K3NzzFk7fGKy7jfLmtILs_QoJgB6d5Vf5zOOfGpd2JEokLoByLp9vQ6I1GAA4vWCCVCQlTltQEP27qjbIxBUY2qTl532AMqEy2u9BVvmzIAGn3W_ZTaM2LyAE0eBadO0vQolmb2n_Aps">
+</div>
+<span class="font-label-caps text-[10px] text-on-surface-variant group-hover:text-primary-container transition-colors">Kaelen</span>
+</div>
+<!-- Member: Lyra -->
+<div class="flex-shrink-0 flex flex-col items-center gap-1 cursor-pointer group opacity-60 hover:opacity-100 transition-opacity">
+<div class="w-12 h-12 rounded-sm overflow-hidden border-2 border-outline-variant hover:border-primary-container transition-colors bg-surface-container-highest">
+<img alt="Lyra" class="w-full h-full object-cover mix-blend-luminosity group-hover:mix-blend-normal transition-all duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_acMtldVKnUBjLVqSS5wzMh2OhM9c07PGSZTshZ6TSo0C2nEArVjhbXTG3UctBNXmTq2KUGtPjEQLnaRduL2i-zcgC9Csx-eUIAU7AD0haSb2Bb0z6pihh9y13HYu6uHkDMEdO3kExWLAQLT6B4GiC37YP2ir57AJMgOozJB0eeQoDU4UG3xNgGbCKLZYi1b4GLZ-mYRtjDhVKNSNDg44Jr2BF9CcTmBczndYbjNhpN9ENb2kCHjzsgA9rbASpBbIhscrrAVY87Ts">
+</div>
+<span class="font-label-caps text-[10px] text-on-surface-variant group-hover:text-primary-container transition-colors">Lyra</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Drink 1 -->
+<div class="bg-surface-container-highest/50 neon-border-secondary p-4 flex items-center justify-between noise-bg hover:bg-surface-container-high transition-colors cursor-pointer group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-lowest border border-secondary-container flex items-center justify-center text-secondary-container group-hover:bg-secondary-container group-hover:text-on-secondary-container transition-colors">
+<span class="material-symbols-outlined">liquor</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-[18px] text-on-surface">Neon_Ale</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Restores 50 HP</span>
+</div>
+</div>
+<div class="flex flex-col items-end gap-1">
+<span class="font-label-caps text-label-caps text-secondary-container">150 CR</span>
+<div class="flex gap-[2px]">
+<div class="w-2 h-4 bg-tertiary-container"></div>
+<div class="w-2 h-4 bg-tertiary-container"></div>
+<div class="w-2 h-4 bg-surface-container-low"></div>
+</div>
+</div>
+</div>
+<!-- Stim 1 -->
+<div class="bg-surface-container-highest/50 neon-border-secondary p-4 flex items-center justify-between noise-bg hover:bg-surface-container-high transition-colors cursor-pointer group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-lowest border border-secondary-container flex items-center justify-center text-secondary-container group-hover:bg-secondary-container group-hover:text-on-secondary-container transition-colors">
+<span class="material-symbols-outlined">science</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-[18px] text-on-surface">Overclock_Stim</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Restores 100 MP</span>
+</div>
+</div>
+<div class="flex flex-col items-end gap-1">
+<span class="font-label-caps text-label-caps text-secondary-container">300 CR</span>
+<div class="flex gap-[2px]">
+<div class="w-2 h-4 bg-primary-container"></div>
+<div class="w-2 h-4 bg-primary-container"></div>
+<div class="w-2 h-4 bg-primary-container"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Section: PARTY_ROSTER -->
+<section class="flex flex-col gap-4">
+<h2 class="font-label-caps text-label-caps text-primary-container tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">view_list</span>
+                [PARTY_ROSTER]
+            </h2>
+<div class="flex flex-col gap-2 mb-6">
+<!-- Roster Member 1 -->
+<div class="bg-surface-container-low/80 neon-border-primary p-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 noise-bg hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-3">
+<span class="font-label-caps text-label-caps text-on-surface-variant">001 |</span>
+<span class="font-headline-md text-[18px] text-primary-container">Cipher</span>
+</div>
+<div class="flex-1 flex flex-col md:flex-row gap-4 w-full md:w-auto">
+<div class="flex flex-col w-full md:w-48">
+<div class="flex justify-between font-label-caps text-[10px] text-tertiary-container mb-1">
+<span class="">HP</span>
+<span class="">80/100</span>
+</div>
+<div class="h-2 w-full flex gap-[1px]">
+<div class="h-full bg-tertiary-container w-[80%]"></div>
+<div class="h-full bg-surface-container-highest w-[20%]"></div>
+</div>
+</div>
+<div class="flex flex-col w-full md:w-48">
+<div class="flex justify-between font-label-caps text-[10px] text-primary-container mb-1">
+<span class="">MP</span>
+<span class="">45/100</span>
+</div>
+<div class="h-2 w-full flex gap-[1px]">
+<div class="h-full bg-primary-container w-[45%]"></div>
+<div class="h-full bg-surface-container-highest w-[55%]"></div>
+</div>
+</div>
+</div>
+<button class="bg-surface-container-highest border border-error text-error px-3 py-1 font-label-caps text-label-caps hover:bg-error hover:text-on-error transition-colors uppercase mt-2 md:mt-0 w-full md:w-auto">DISMISS</button>
+</div>
+<!-- Roster Member 2 -->
+<div class="bg-surface-container-low/80 neon-border-primary p-3 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 noise-bg hover:bg-surface-container-high transition-colors">
+<div class="flex items-center gap-3">
+<span class="font-label-caps text-label-caps text-on-surface-variant">002 |</span>
+<span class="font-headline-md text-[18px] text-primary-container">Ronin_X</span>
+</div>
+<div class="flex-1 flex flex-col md:flex-row gap-4 w-full md:w-auto">
+<div class="flex flex-col w-full md:w-48">
+<div class="flex justify-between font-label-caps text-[10px] text-tertiary-container mb-1">
+<span class="">HP</span>
+<span class="">120/150</span>
+</div>
+<div class="h-2 w-full flex gap-[1px]">
+<div class="h-full bg-tertiary-container w-[80%]"></div>
+<div class="h-full bg-surface-container-highest w-[20%]"></div>
+</div>
+</div>
+<div class="flex flex-col w-full md:w-48">
+<div class="flex justify-between font-label-caps text-[10px] text-primary-container mb-1">
+<span class="">MP</span>
+<span class="">10/50</span>
+</div>
+<div class="h-2 w-full flex gap-[1px]">
+<div class="h-full bg-primary-container w-[20%]"></div>
+<div class="h-full bg-surface-container-highest w-[80%]"></div>
+</div>
+</div>
+</div>
+<button class="bg-surface-container-highest border border-error text-error px-3 py-1 font-label-caps text-label-caps hover:bg-error hover:text-on-error transition-colors uppercase mt-2 md:mt-0 w-full md:w-auto">DISMISS</button>
+</div>
+<!-- Vacant Slot -->
+<div class="bg-surface-container-lowest/50 border border-dashed border-outline-variant p-3 flex items-center justify-center gap-4 h-[72px] noise-bg hover:bg-surface-container-low transition-colors group cursor-pointer">
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary-container transition-colors">add</span>
+<span class="font-label-caps text-label-caps text-outline-variant group-hover:text-primary-container transition-colors uppercase">[ASSIGN_OPERATIVE]</span>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-stretch h-16 border-t border-secondary-container/50 bg-background/95 shadow-[0_-4px_16px_rgba(254,0,254,0.3)] md:hidden">
+<a class="flex flex-col items-center justify-center text-secondary font-label-caps opacity-60 hover:bg-secondary-container/20 hover:opacity-100 flex-1" href="#">
+<span class="material-symbols-outlined">neurology</span>
+<span class="text-[10px] mt-1">NEURAL</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container p-unit border-x border-secondary-container shadow-[0_0_15px_rgba(254,0,254,0.5)] animate-pulse scale-105 flex-1 font-label-caps" href="#">
+<span class="material-symbols-outlined">local_bar</span>
+<span class="text-[10px] mt-1">HAVEN</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary font-label-caps opacity-60 hover:bg-secondary-container/20 hover:opacity-100 flex-1" href="#">
+<span class="material-symbols-outlined">memory</span>
+<span class="text-[10px] mt-1">CYBER</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary font-label-caps opacity-60 hover:bg-secondary-container/20 hover:opacity-100 flex-1" href="#">
+<span class="material-symbols-outlined">work</span>
+<span class="text-[10px] mt-1">JOBS</span>
+</a>
+</nav>
+<!-- Desktop SideNav/TopNav counterpart (Hidden on mobile) - Simplified for brevity, focusing on BottomNav as per prompt constraints, but standard web behavior usually requires a side or top nav. Using the BottomNav logic as requested. -->
+<div class="hidden md:flex fixed left-0 top-0 h-full w-20 flex-col items-center border-r border-secondary-container/50 bg-background/95 pt-24 z-30 shadow-[4px_0_16px_rgba(254,0,254,0.1)]">
+<a class="flex flex-col items-center justify-center text-secondary font-label-caps opacity-60 hover:bg-secondary-container/20 hover:opacity-100 w-full py-4 mb-2" href="#">
+<span class="material-symbols-outlined">neurology</span>
+<span class="text-[10px] mt-1">NEURAL</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container p-unit border-y border-secondary-container shadow-[0_0_15px_rgba(254,0,254,0.5)] w-full py-4 mb-2 relative" href="#">
+<span class="material-symbols-outlined">local_bar</span>
+<span class="text-[10px] mt-1">HAVEN</span>
+<div class="absolute left-0 top-0 h-full w-1 bg-white"></div>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary font-label-caps opacity-60 hover:bg-secondary-container/20 hover:opacity-100 w-full py-4 mb-2" href="#">
+<span class="material-symbols-outlined">memory</span>
+<span class="text-[10px] mt-1">CYBER</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary font-label-caps opacity-60 hover:bg-secondary-container/20 hover:opacity-100 w-full py-4" href="#">
+<span class="material-symbols-outlined">work</span>
+<span class="text-[10px] mt-1">JOBS</span>
+</a>
+</div>
+</body></html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>NEURAL_CHRONICLE_OS | CYBERWARE_EQUIP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;family=Space+Grotesk:wght@600;700&amp;family=Kode+Mono:wght@400;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+        body {
+            background-color: #131315;
+            color: #e5e1e4;
+            font-family: 'Kode Mono', 'JetBrains Mono', monospace;
+            cursor: crosshair;
+        }
+        .scanline-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .hud-border {
+            clip-path: polygon(0 0, 100% 0, 100% 70%, 95% 100%, 0 100%);
+        }
+        .cyber-grid {
+            background-image: linear-gradient(to right, #1c1b1d 1px, transparent 1px), linear-gradient(to bottom, #1c1b1d 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed-variant": "#004f53",
+                      "primary-fixed-dim": "#00dce6",
+                      "surface-container": "#201f21",
+                      "inverse-primary": "#00696f",
+                      "secondary-fixed": "#ffd7f5",
+                      "secondary": "#ffabf3",
+                      "error-container": "#93000a",
+                      "error": "#ffb4ab",
+                      "on-surface": "#e5e1e4",
+                      "on-secondary-fixed": "#380038",
+                      "surface-tint": "#00dce6",
+                      "inverse-surface": "#e5e1e4",
+                      "on-tertiary-fixed-variant": "#095300",
+                      "primary-container": "#00f3ff",
+                      "on-surface-variant": "#b9cacb",
+                      "on-tertiary-fixed": "#022100",
+                      "on-tertiary-container": "#107000",
+                      "background": "#131315",
+                      "tertiary-fixed-dim": "#2ae500",
+                      "surface-dim": "#131315",
+                      "on-secondary-container": "#500050",
+                      "surface-variant": "#353437",
+                      "on-background": "#e5e1e4",
+                      "tertiary": "#e8ffda",
+                      "on-secondary-fixed-variant": "#810081",
+                      "on-error-container": "#ffdad6",
+                      "tertiary-container": "#36fd0f",
+                      "on-tertiary": "#053900",
+                      "on-error": "#690005",
+                      "surface": "#131315",
+                      "secondary-fixed-dim": "#ffabf3",
+                      "outline": "#849495",
+                      "primary-fixed": "#6ff6ff",
+                      "secondary-container": "#fe00fe",
+                      "surface-bright": "#39393b",
+                      "surface-container-highest": "#353437",
+                      "surface-container-low": "#1c1b1d",
+                      "primary": "#e3fdff",
+                      "outline-variant": "#3a494b",
+                      "surface-container-lowest": "#0e0e10",
+                      "on-secondary": "#5b005b",
+                      "on-primary-fixed": "#002022",
+                      "tertiary-fixed": "#79ff5b",
+                      "inverse-on-surface": "#313032",
+                      "on-primary": "#00373a",
+                      "surface-container-high": "#2a2a2c",
+                      "on-primary-container": "#006b71"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "margin": "24px",
+                      "container-max": "1440px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "label-caps": ["Kode Mono"],
+                      "headline-md": ["Space Grotesk"],
+                      "headline-lg-mobile": ["Space Grotesk"],
+                      "headline-xl": ["Space Grotesk"],
+                      "body-md": ["Kode Mono"],
+                      "headline-lg": ["Space Grotesk"],
+                      "body-lg": ["Kode Mono"]
+              },
+              "fontSize": {
+                      "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "headline-xl": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                      "body-md": ["14px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-lg": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background overflow-x-hidden cyber-grid">
+<div class="scanline-overlay"></div>
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex flex-col px-margin py-unit h-auto border-b-2 border-primary-container bg-surface/80 backdrop-blur-md dark:bg-surface/80 shadow-[0_0_15px_rgba(0,243,255,0.3)]">
+<div class="flex items-center justify-between w-full h-14">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 border-2 border-primary-fixed-dim p-0.5 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A gritty cyberpunk hacker portrait with glowing blue optic implants and a neon-lit interface reflected in their visor. The art style is high-contrast with heavy shadows and sharp cyan light highlights against a dark industrial background. Cinematic lighting emphasizes the technological details of the cybernetic implants and facial sigils." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcbTD5-t0DZvFcOWjLJEmbGOoZ2sbKrc86fE2xaXSs6TN_3O-DWJb2By310ukoesJYH6lRBW9wNpl23mI3qqz_zOLx43VkHdq-GuxXwsJAqSCH4-zbcAciFDQpMjM1iZ8ZVw-0GkDlrbP8SNvS5uRyefAqd_79zjvIX_TwQpmrWBumLUlIBYXb_P36UVXE3SjRxUOof_eBS2eI2tf6SbInD9NpRIMurWhs9qubiOJNaXWuwEUcqwJ_kS8ZqNytwgdOUYLIWgX4MEux">
+</div>
+<h1 class="font-headline-md text-headline-md font-bold tracking-tighter text-primary-fixed-dim uppercase">NEURAL_CHRONICLE_OS</h1>
+</div>
+<div class="hidden md:block font-body-md text-body-md text-primary">
+                CR: 50,420 | RENOWN: EXALTED
+            </div>
+</div>
+</header>
+<main class="mt-20 mb-20 px-margin flex flex-col gap-6">
+<!-- Character Selector -->
+<section class="flex flex-col gap-4">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<span class="font-label-caps text-label-caps text-primary-fixed-dim uppercase">Active_Personnel</span>
+<span class="font-label-caps text-label-caps text-outline">004/012</span>
+</div>
+<div class="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+<!-- Valerius -->
+<button class="flex-shrink-0 w-48 border-2 border-primary-container bg-surface-container-low p-3 shadow-[4px_4px_0px_#00f3ff]">
+<div class="flex gap-3 items-center">
+<img class="w-12 h-12 grayscale hover:grayscale-0 transition-all border border-primary-fixed-dim" data-alt="Close-up of a futuristic male character with pale skin, intense blue eyes, and visible circuitry lines running down his jaw. The environment is dark with sharp magenta and cyan highlights. The aesthetic is digital brutalism, emphasizing technical precision and character depth through high-fidelity textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1yAwqw0K1Um-0Aa9QLuVHfs_xDyP7Wz-BAzMQvvDHfGF3C1427UYjcTSCBtFN9LmQ-75atSMep_njh1E4Oy15aBttRvCyJb4VBaWlXRjugd8xeaV_XxFJiDKFE1snK2NtyeWKHanCqPfxAD05BCwI1gQpBj-LOJr_QarSmSynff7bDuqFI1PuaQVC_P1YTc8TQBIjRzS8R45PPiEBvjd6Glyci21pYuooWpOLcE3j2r-sbwRwFJYPwnnz2cZ_iLzOTLt23e4X5ttz">
+<div class="flex flex-col text-left">
+<span class="font-bold text-primary-fixed-dim text-sm">VALERIUS</span>
+<span class="text-[10px] text-outline">LVL 24 DECKER</span>
+</div>
+</div>
+<div class="mt-3 space-y-1">
+<div class="h-1 bg-surface-variant w-full">
+<div class="h-full bg-primary-container w-[82%]"></div>
+</div>
+<div class="flex justify-between text-[9px] uppercase font-bold">
+<span class="">HP: 82/100</span>
+<span class="text-primary-container">SYNC: OK</span>
+</div>
+</div>
+</button>
+<!-- Elara -->
+<button class="flex-shrink-0 w-48 border-2 border-outline-variant bg-surface-container-lowest p-3 opacity-60">
+<div class="flex gap-3 items-center">
+<img class="w-12 h-12 grayscale border border-outline" data-alt="A female cyborg portrait featuring neon pink light reflecting off chrome skin elements and long synthetic hair. Dark industrial setting with rain particles illuminated by streetlights. The visual style is aggressive and technical, with a focus on high-stakes digital aesthetics and near-future megalopolis grit." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6JdNjAUo8UUlh8lqBxWD37HWN_61XwoZbwmHVLRhUClt1CxDMGwleecOPFu3GKg12Za8M_cQ2ZpOOR1XTd8r99-p1pyFtU_U_4m6ZUiBJJArzcKawMwbpbmr6VCi_k_uETsihQJFUj9S4ek39ri8zAQF0cBK_FBx3TrW9GTFiplD8xtWXMqSJUlt_Ck0KEMJmXf0KHgjm8WK-Ut9PSKc4gHleCpfKKfwMfvrxCbcmeTZFniewiJNDGeUpQWX6TOxvCRjE3MGo2Yy8">
+<div class="flex flex-col text-left">
+<span class="font-bold text-outline text-sm uppercase">ELARA</span>
+<span class="text-[10px] text-outline">LVL 19 TECHIE</span>
+</div>
+</div>
+<div class="mt-3 space-y-1">
+<div class="h-1 bg-surface-variant w-full">
+<div class="h-full bg-error w-[45%]"></div>
+</div>
+<div class="flex justify-between text-[9px] uppercase font-bold text-error">
+<span class="">HP: 45/110</span>
+<span class="">CRIT_DMG</span>
+</div>
+</div>
+</button>
+<!-- Kael -->
+<button class="flex-shrink-0 w-48 border-2 border-outline-variant bg-surface-container-lowest p-3 opacity-60">
+<div class="flex gap-3 items-center">
+<img class="w-12 h-12 grayscale border border-outline" data-alt="A portrait of a male street samurai character with an eye patch that has a glowing red lens. Hard lighting from above creates deep shadows on his rugged face. The color palette consists of obsidian grays, deep reds, and metallic blacks, evoking a high-stakes cyberpunk atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQ29GiZKxq3s5oyOaJqtPgLZ8A9lP8WavE_UXfIHnR50Ijz66ON5GNjd_QpDYiVYq1CZeJZur30203nfNG2AHIvWWOFTeNIh-NWex0Pd6ArEKztccscuC63AXZrpmfPsXNmIcnRZ8N4Jfq1o1HI4_eNrASkdwKaGkyDNZSH5stR-LKWUg4lrRxOAM2iIXPVR3zbFoLFGcpfMaJIhg2wfdVG1aglt0kMCikCHbWegqSd50pRFcYpZZhs7RjQlQQpcpLqg3fxAnzkfSW">
+<div class="flex flex-col text-left">
+<span class="font-bold text-outline text-sm uppercase">KAEL</span>
+<span class="text-[10px] text-outline">LVL 31 SOLO</span>
+</div>
+</div>
+<div class="mt-3 space-y-1">
+<div class="h-1 bg-surface-variant w-full">
+<div class="h-full bg-primary-container w-[95%]"></div>
+</div>
+<div class="flex justify-between text-[9px] uppercase font-bold">
+<span class="">HP: 95/140</span>
+<span class="">OPTIMAL</span>
+</div>
+</div>
+</button>
+</div>
+</section>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Equipped Section -->
+<section class="flex flex-col gap-4">
+<div class="flex items-center gap-2 border-l-4 border-secondary-container pl-3 py-1">
+<span class="font-headline-md text-headline-md font-bold text-secondary uppercase">Equipped_Nodes</span>
+<span class="bg-secondary-container text-on-secondary px-2 font-bold text-xs">6/8</span>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Item 1 -->
+<div class="relative group">
+<div class="absolute inset-0 bg-secondary/10 -m-1 blur-sm opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="relative bg-surface-container-low border border-secondary p-4 flex gap-4 items-start">
+<div class="w-12 h-12 flex items-center justify-center bg-secondary-container/20 text-secondary border border-secondary/50">
+<span class="material-symbols-outlined text-3xl">psychology</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h3 class="font-bold text-primary">Neural_Link_Mk4</h3>
+<span class="text-secondary font-bold text-xs">001</span>
+</div>
+<div class="flex gap-2 mt-1">
+<span class="bg-surface-variant text-[10px] px-2 py-0.5 border border-outline-variant">SLOT: NEURAL</span>
+<span class="bg-error-container/30 text-error text-[10px] px-2 py-0.5 border border-error/50">HUM: 8</span>
+</div>
+<div class="mt-3 flex gap-4 text-[11px] font-bold text-primary-fixed-dim">
+<span class="">REF +2</span>
+<span class="">INT +3</span>
+<span class="text-outline">WIFI: ENABLED</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="relative bg-surface-container-low border border-secondary p-4 flex gap-4 items-start">
+<div class="w-12 h-12 flex items-center justify-center bg-secondary-container/20 text-secondary border border-secondary/50">
+<span class="material-symbols-outlined text-3xl">visibility</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h3 class="font-bold text-primary">Kiroshi_Optic_v3</h3>
+<span class="text-secondary font-bold text-xs">002</span>
+</div>
+<div class="flex gap-2 mt-1">
+<span class="bg-surface-variant text-[10px] px-2 py-0.5 border border-outline-variant">SLOT: OPTIC</span>
+<span class="bg-error-container/30 text-error text-[10px] px-2 py-0.5 border border-error/50">HUM: 4</span>
+</div>
+<div class="mt-3 flex gap-4 text-[11px] font-bold text-primary-fixed-dim">
+<span class="">PER +4</span>
+<span class="text-secondary">SCANNER_V2</span>
+</div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="relative bg-surface-container-low border border-secondary p-4 flex gap-4 items-start">
+<div class="w-12 h-12 flex items-center justify-center bg-secondary-container/20 text-secondary border border-secondary/50">
+<span class="material-symbols-outlined text-3xl">bolt</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h3 class="font-bold text-primary">Sandevistan_Apex</h3>
+<span class="text-secondary font-bold text-xs">003</span>
+</div>
+<div class="flex gap-2 mt-1">
+<span class="bg-surface-variant text-[10px] px-2 py-0.5 border border-outline-variant">SLOT: OS</span>
+<span class="bg-error-container/30 text-error text-[10px] px-2 py-0.5 border border-error/50">HUM: 15</span>
+</div>
+<div class="mt-3 flex gap-4 text-[11px] font-bold text-primary-fixed-dim">
+<span class="">INI +10</span>
+<span class="">REF +1</span>
+<span class="text-secondary">OVERLOAD</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Available Inventory -->
+<section class="flex flex-col gap-4">
+<div class="flex items-center gap-2 border-l-4 border-primary-container pl-3 py-1">
+<span class="font-headline-md text-headline-md font-bold text-primary-container uppercase">Available_Inventory</span>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Available 1 -->
+<div class="group bg-surface-container-lowest border border-outline-variant p-4 flex gap-4 items-start opacity-70 hover:opacity-100 transition-opacity hover:border-primary-container cursor-pointer">
+<div class="w-12 h-12 flex items-center justify-center bg-surface-variant text-outline border border-outline-variant group-hover:border-primary-container group-hover:text-primary-container">
+
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h3 class="font-bold text-on-surface">Bio-Monitor_X10</h3>
+<button class="text-[10px] text-primary-container border border-primary-container px-2 font-bold uppercase hover:bg-primary-container hover:text-black transition-colors">Equip</button>
+</div>
+<div class="flex gap-2 mt-1">
+<span class="bg-surface-variant text-[10px] px-2 py-0.5">INTERNAL</span>
+<span class="text-error text-[10px] px-2 py-0.5 font-bold">HUM: 2</span>
+</div>
+<div class="mt-3 text-[11px] font-bold text-outline group-hover:text-primary">
+                                CON +1 | AUTO-MEDIC: ON
+                            </div>
+</div>
+</div>
+<!-- Available 2 -->
+<div class="group bg-surface-container-lowest border border-outline-variant p-4 flex gap-4 items-start opacity-70 hover:opacity-100 transition-opacity hover:border-primary-container cursor-pointer">
+<div class="w-12 h-12 flex items-center justify-center bg-surface-variant text-outline border border-outline-variant group-hover:border-primary-container group-hover:text-primary-container">
+<span class="material-symbols-outlined text-3xl">hand_gesture</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h3 class="font-bold text-on-surface">Gorilla_Arms_v1</h3>
+<button class="text-[10px] text-primary-container border border-primary-container px-2 font-bold uppercase hover:bg-primary-container hover:text-black transition-colors">Equip</button>
+</div>
+<div class="flex gap-2 mt-1">
+<span class="bg-surface-variant text-[10px] px-2 py-0.5">ARMS</span>
+<span class="text-error text-[10px] px-2 py-0.5 font-bold">HUM: 12</span>
+</div>
+<div class="mt-3 text-[11px] font-bold text-outline group-hover:text-primary">
+                                BODY +3 | CRUSH: 2d10
+                            </div>
+</div>
+</div>
+<!-- Available 3 -->
+<div class="group bg-surface-container-lowest border border-outline-variant p-4 flex gap-4 items-start opacity-70 hover:opacity-100 transition-opacity hover:border-primary-container cursor-pointer">
+<div class="w-12 h-12 flex items-center justify-center bg-surface-variant text-outline border border-outline-variant group-hover:border-primary-container group-hover:text-primary-container">
+<span class="material-symbols-outlined text-3xl">memory</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<h3 class="font-bold text-on-surface">Skill_Chip_Crawl</h3>
+<button class="text-[10px] text-primary-container border border-primary-container px-2 font-bold uppercase hover:bg-primary-container hover:text-black transition-colors">Equip</button>
+</div>
+<div class="flex gap-2 mt-1">
+<span class="bg-surface-variant text-[10px] px-2 py-0.5">CHIP</span>
+<span class="text-error text-[10px] px-2 py-0.5 font-bold">HUM: 0</span>
+</div>
+<div class="mt-3 text-[11px] font-bold text-outline group-hover:text-primary">
+                                STEALTH +2 | LEVEL: ELITE
+                            </div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Global Stats Overlay -->
+<div class="fixed bottom-20 left-1/2 -translate-x-1/2 w-[90%] md:w-[600px] bg-surface-container-lowest/90 backdrop-blur-lg border-2 border-primary-container p-4 shadow-[0_0_30px_rgba(0,243,255,0.2)]">
+<div class="flex justify-between items-center">
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-primary uppercase">Current_Humanity</span>
+<div class="flex items-center gap-4 mt-1">
+<span class="text-3xl font-bold text-primary-fixed-dim">42/80</span>
+<div class="h-4 bg-surface-variant w-48 border border-outline-variant">
+<div class="h-full bg-primary-container w-[52%]"></div>
+</div>
+</div>
+</div>
+<div class="text-right flex flex-col items-end">
+<span class="font-label-caps text-label-caps text-error uppercase">Psychosis_Risk</span>
+<span class="text-2xl font-bold text-error uppercase">MODERATE</span>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 h-16 border-t-2 border-secondary-container bg-surface-container-lowest/90 backdrop-blur-xl dark:bg-surface-container-lowest/90 shadow-[0_-8px_20px_rgba(254,0,254,0.2)]">
+<!-- NEURAL -->
+<div class="flex flex-col items-center justify-center text-outline px-2 py-1 grayscale hover:bg-secondary/10 hover:grayscale-0 transition-colors duration-75 active:scale-95 cursor-pointer">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-label-caps text-label-caps uppercase mt-1">NEURAL</span>
+</div>
+<!-- HAVEN -->
+<div class="flex flex-col items-center justify-center text-outline px-2 py-1 grayscale hover:bg-secondary/10 hover:grayscale-0 transition-colors duration-75 active:scale-95 cursor-pointer">
+<span class="material-symbols-outlined">nightlife</span>
+<span class="font-label-caps text-label-caps uppercase mt-1">HAVEN</span>
+</div>
+<!-- CYBER (ACTIVE) -->
+<div class="flex flex-col items-center justify-center bg-secondary-container/20 text-secondary border-t-2 border-secondary px-2 py-1 active:scale-95 cursor-pointer">
+<span class="material-symbols-outlined">memory</span>
+<span class="font-label-caps text-label-caps uppercase mt-1">CYBER</span>
+</div>
+<!-- GIGS -->
+<div class="flex flex-col items-center justify-center text-outline px-2 py-1 grayscale hover:bg-secondary/10 hover:grayscale-0 transition-colors duration-75 active:scale-95 cursor-pointer">
+<span class="material-symbols-outlined">star</span>
+<span class="font-label-caps text-label-caps uppercase mt-1">GIGS</span>
+</div>
+<!-- JOBS -->
+<div class="flex flex-col items-center justify-center text-outline px-2 py-1 grayscale hover:bg-secondary/10 hover:grayscale-0 transition-colors duration-75 active:scale-95 cursor-pointer">
+<span class="material-symbols-outlined">terminal</span>
+<span class="font-label-caps text-label-caps uppercase mt-1">JOBS</span>
+</div>
+</nav>
+
+
+</body></html>

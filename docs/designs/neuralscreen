@@ -1,0 +1,265 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>NEURAL_CHRONICLE_OS | Cyberpunk Protocol</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed-variant": "#095300",
+                    "secondary-container": "#fe00fe",
+                    "secondary": "#ffabf3",
+                    "surface-container-lowest": "#0e0e10",
+                    "tertiary": "#e8ffda",
+                    "surface-dim": "#131315",
+                    "surface-variant": "#353437",
+                    "on-background": "#e5e1e4",
+                    "tertiary-fixed-dim": "#2ae500",
+                    "on-surface-variant": "#b9cacb",
+                    "outline-variant": "#3a494b",
+                    "surface": "#131315",
+                    "on-tertiary": "#053900",
+                    "primary-fixed": "#00f3ff",
+                    "surface-container-high": "#2a2a2c",
+                    "secondary-fixed-dim": "#fe00fe",
+                    "outline": "#849495",
+                    "surface-tint": "#00f3ff",
+                    "on-tertiary-fixed": "#022100",
+                    "error": "#ffb4ab",
+                    "error-container": "#93000a",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary-container": "#500050",
+                    "primary-fixed-dim": "#00f3ff",
+                    "primary-container": "#00f3ff",
+                    "surface-bright": "#39393b",
+                    "on-error": "#690005",
+                    "on-secondary": "#5b005b",
+                    "on-primary": "#00373a",
+                    "inverse-surface": "#e5e1e4",
+                    "surface-container-low": "#1c1b1d",
+                    "background": "#0e0e10",
+                    "on-secondary-fixed": "#380038",
+                    "on-primary-container": "#006b71",
+                    "secondary-fixed": "#ffd7f5",
+                    "primary": "#00f3ff",
+                    "on-primary-fixed": "#002022",
+                    "tertiary-container": "#36fd0f",
+                    "tertiary-fixed": "#79ff5b",
+                    "on-secondary-fixed-variant": "#810081",
+                    "on-surface": "#e5e1e4",
+                    "inverse-on-surface": "#313032",
+                    "surface-container-highest": "#353437",
+                    "on-tertiary-container": "#107000",
+                    "inverse-primary": "#00696f",
+                    "surface-container": "#201f21",
+                    "on-primary-fixed-variant": "#004f53"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0px",
+                    "lg": "0px",
+                    "xl": "0px",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "container-max": "1440px",
+                    "gutter": "16px",
+                    "unit": "4px",
+                    "margin": "24px"
+            },
+            "fontFamily": {
+                    "headline-xl": ["Kode Mono"],
+                    "body-lg": ["Kode Mono"],
+                    "headline-lg": ["Kode Mono"],
+                    "headline-lg-mobile": ["Kode Mono"],
+                    "headline-md": ["Kode Mono"],
+                    "body-md": ["Kode Mono"],
+                    "label-caps": ["Kode Mono"]
+            },
+            "fontSize": {
+                    "headline-xl": ["64px", {"lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0e0e10;
+            background-image: 
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03), rgba(254, 0, 254, 0.02), rgba(0, 243, 255, 0.03));
+            background-size: 100% 4px, 3px 100%;
+            position: relative;
+            font-family: 'Kode Mono', monospace;
+        }
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(254, 0, 254, 0.05), rgba(0, 243, 255, 0.02), rgba(254, 0, 254, 0.05));
+            z-index: 100;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+        .neon-border-cyan {
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.4), inset 0 0 5px rgba(0, 243, 255, 0.2);
+        }
+        .neon-border-magenta {
+            box-shadow: 0 0 10px rgba(254, 0, 254, 0.4), inset 0 0 5px rgba(254, 0, 254, 0.2);
+        }
+        .neon-text-primary {
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.6);
+        }
+        .neon-text-secondary {
+            text-shadow: 0 0 8px rgba(254, 0, 254, 0.6);
+        }
+        .scanline-sweep {
+            position: relative;
+            overflow: hidden;
+        }
+        .scanline-sweep::after {
+            content: "";
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0, 243, 255, 0.1) 50%, transparent 100%);
+            pointer-events: none;
+            animation: sweep 8s linear infinite;
+        }
+        @keyframes sweep {
+            0% { top: -100%; }
+            100% { top: 100%; }
+        }
+        .glitch-pulse {
+            animation: pulse-glow 2s infinite;
+        }
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 10px rgba(0, 243, 255, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(0, 243, 255, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(0, 243, 255, 0.5); }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0e0e10;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #00f3ff;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="dark text-on-background font-body-md overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Navigation Shell -->
+<main class="pb-32 px-margin max-w-container-max mx-auto min-h-screen pt-8">
+<!-- Compact Party Block -->
+<section class="bg-surface-container-low/50 border border-primary/20 mb-8 scanline-sweep relative mt-4"><div class="grid grid-cols-2 divide-x divide-y divide-primary/10"></div><div class="grid grid-cols-2 divide-x divide-y divide-primary/10"></div><div class="grid grid-cols-2 divide-x divide-y divide-primary/10"></div><div class="grid grid-cols-2 divide-x divide-y divide-primary/10"></div><div class="grid grid-cols-2 divide-x divide-y divide-primary/10"><!-- Valerius --><div class="p-2 flex items-center gap-3 group hover:bg-primary/5 transition-colors cursor-crosshair"><div class="w-8 h-8 border border-primary/40 shrink-0 overflow-hidden"><img alt="Valerius" class="w-full h-full object-cover grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANnft4ypblzUqPPI5t48eJ3VaA2OW-CwGEOUGfjtBV4MdYnnNzJ-rUUV7XJveBhhPxlAlftBMt_JkEm5aojc8PrynGVSloXZCSIMWkJ6J2vE5UpqlwfGy2NfeBQBqsCJsmQ1w1Nl4AZfxsKL7gseSm50AK4vKPgR90GWaZ3OLwjhfYgkRLAuoOUHR3Uy_XWa71SUt5Oru2ZU3L4OuzSU_CU-ZFob57t4sX-h3sWl3s4etxN_4VFmfj1IbcihEbUmXAlvR0u3LueiJS"></div><div class="flex-1 min-w-0"><span class="block font-label-caps text-xs text-primary uppercase mb-1">VALERIUS</span><div class="space-y-0.5"><div class="h-1 bg-surface-container-high overflow-hidden"><div class="h-full bg-tertiary-fixed-dim" style="width: 100%"></div></div><div class="h-1 bg-surface-container-high overflow-hidden"><div class="h-full bg-primary" style="width: 40%"></div></div></div></div></div><!-- Elara --><div class="p-2 flex items-center gap-3 group hover:bg-primary/5 transition-colors cursor-crosshair"><div class="w-8 h-8 border border-primary/40 shrink-0 overflow-hidden"><img alt="Elara" class="w-full h-full object-cover grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANnft4ypblzUqPPI5t48eJ3VaA2OW-CwGEOUGfjtBV4MdYnnNzJ-rUUV7XJveBhhPxlAlftBMt_JkEm5aojc8PrynGVSloXZCSIMWkJ6J2vE5UpqlwfGy2NfeBQBqsCJsmQ1w1Nl4AZfxsKL7gseSm50AK4vKPgR90GWaZ3OLwjhfYgkRLAuoOUHR3Uy_XWa71SUt5Oru2ZU3L4OuzSU_CU-ZFob57t4sX-h3sWl3s4etxN_4VFmfj1IbcihEbUmXAlvR0u3LueiJS"></div><div class="flex-1 min-w-0"><span class="block font-label-caps text-xs text-primary uppercase mb-1">ELARA</span><div class="space-y-0.5"><div class="h-1 bg-surface-container-high overflow-hidden"><div class="h-full bg-tertiary-fixed-dim" style="width: 75%"></div></div><div class="h-1 bg-surface-container-high overflow-hidden"><div class="h-full bg-primary" style="width: 97%"></div></div></div></div></div><!-- Kaelen --><div class="p-2 flex items-center gap-3 group hover:bg-primary/5 transition-colors cursor-crosshair"><div class="w-8 h-8 border border-primary/40 shrink-0 overflow-hidden"><img alt="Kaelen" class="w-full h-full object-cover grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANnft4ypblzUqPPI5t48eJ3VaA2OW-CwGEOUGfjtBV4MdYnnNzJ-rUUV7XJveBhhPxlAlftBMt_JkEm5aojc8PrynGVSloXZCSIMWkJ6J2vE5UpqlwfGy2NfeBQBqsCJsmQ1w1Nl4AZfxsKL7gseSm50AK4vKPgR90GWaZ3OLwjhfYgkRLAuoOUHR3Uy_XWa71SUt5Oru2ZU3L4OuzSU_CU-ZFob57t4sX-h3sWl3s4etxN_4VFmfj1IbcihEbUmXAlvR0u3LueiJS"></div><div class="flex-1 min-w-0"><span class="block font-label-caps text-xs text-primary uppercase mb-1">KAELEN</span><div class="space-y-0.5"><div class="h-1 bg-surface-container-high overflow-hidden"><div class="h-full bg-tertiary-fixed-dim" style="width: 94%"></div></div><div class="h-1 bg-surface-container-high overflow-hidden"><div class="h-full bg-primary" style="width: 46%"></div></div></div></div></div><!-- Lyra --><div class="p-2 flex items-center gap-3 group hover:bg-primary/5 transition-colors cursor-crosshair"><div class="w-8 h-8 border border-primary/40 shrink-0 overflow-hidden"><img alt="Lyra" class="w-full h-full object-cover grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuANnft4ypblzUqPPI5t48eJ3VaA2OW-CwGEOUGfjtBV4MdYnnNzJ-rUUV7XJveBhhPxlAlftBMt_JkEm5aojc8PrynGVSloXZCSIMWkJ6J2vE5UpqlwfGy2NfeBQBqsCJsmQ1w1Nl4AZfxsKL7gseSm50AK4vKPgR90GWaZ3OLwjhfYgkRLAuoOUHR3Uy_XWa71SUt5Oru2ZU3L4OuzSU_CU-ZFob57t4sX-h3sWl3s4etxN_4VFmfj1IbcihEbUmXAlvR0u3LueiJS"></div><div class="flex-1 min-w-0"><span class="block font-label-caps text-xs text-primary uppercase mb-1">LYRA</span><div class="space-y-0.5"><div class="h-1 bg-surface-container-high overflow-hidden"><div class="h-full bg-tertiary-fixed-dim" style="width: 100%"></div></div><div class="h-1 bg-surface-container-high overflow-hidden"><div class="h-full bg-primary" style="width: 65%"></div></div></div></div></div></div></section><section class="bg-surface-container-low/80 border-y border-secondary/30 mb-6 py-2 px-4 flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm">payments</span>
+<span class="font-label-caps text-primary">CR: 50,420</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-sm">grade</span>
+<span class="font-label-caps text-secondary">REP: URCHIN</span>
+</div>
+</section>
+<!-- Neural Archive Log Section -->
+<section class="grid grid-cols-1 gap-8">
+<div class="space-y-6">
+<div class="flex items-center justify-between border-b border-primary/30 pb-2">
+<h2 class="font-headline-md text-headline-md text-primary neon-text-primary flex items-center gap-3">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+                        NEURAL_ARCHIVE
+                    </h2>
+<span class="font-label-caps text-label-caps text-outline">D_142 // 23:45:01</span>
+</div>
+<div class="space-y-4 max-h-[600px] overflow-y-auto pr-4 custom-scrollbar">
+<!-- Log Entry 1 -->
+<div class="bg-surface-container-low border-l-4 border-primary p-4 hover:bg-primary/5 transition-colors group relative">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-label-caps text-primary/70">ENTRY_882 // MISSION_INTEL</span>
+<span class="material-symbols-outlined text-primary/40 group-hover:text-primary transition-colors text-sm" data-icon="sensors">sensors</span>
+</div>
+<p class="font-body-md text-body-md text-on-background leading-relaxed">
+<span class="text-primary font-bold mr-2">LOG:</span> The crew breaches the 'Whispering Server Farm'. Valerius initiates a silent ping, revealing encrypted firewall layers.
+                        </p>
+</div>
+<!-- Log Entry 2 -->
+<div class="bg-surface-container-low border-l-4 border-secondary p-4 hover:bg-secondary/5 transition-colors group">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-label-caps text-secondary/70">ENTRY_883 // ASSET_EXTRACTION</span>
+<span class="material-symbols-outlined text-secondary/40 group-hover:text-secondary transition-colors text-sm" data-icon="memory">memory</span>
+</div>
+<p class="font-body-md text-body-md text-on-background leading-relaxed">
+<span class="text-secondary font-bold mr-2">ACQUISITION:</span> Kaelen bypasses a security lock and extracts <span class="text-primary">240 Credits</span> and a <span class="text-primary italic">'V3 Neural Interface'</span>.
+                        </p>
+</div>
+<!-- Log Entry 3 -->
+<div class="bg-surface-container-low border-l-4 border-error p-4 hover:bg-error/5 transition-colors group">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-label-caps text-error/70">ENTRY_884 // SYSTEM_BREACH</span>
+<span class="material-symbols-outlined text-error/40 group-hover:text-error transition-colors text-sm" data-icon="report">report</span>
+</div>
+<p class="font-body-md text-body-md text-on-background leading-relaxed">
+<span class="text-error font-bold mr-2">CRITICAL:</span> System breach detected in SECTOR_7. IC Sentinel programs manifest in the grid. Valerius suffers <span class="text-error">14 System Shock</span>.
+                        </p>
+</div>
+<!-- Log Entry 4 -->
+<div class="bg-surface-container-low border-l-4 border-primary/50 p-4 hover:bg-primary/5 transition-colors group">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] font-label-caps text-primary/50">ENTRY_885 // GRID_EXPANSION</span>
+<span class="material-symbols-outlined text-primary/30 group-hover:text-primary transition-colors text-sm" data-icon="hub">hub</span>
+</div>
+<p class="font-body-md text-body-md text-on-background leading-relaxed">
+<span class="text-primary/70 font-bold mr-2">ANALYSIS:</span> Elara detects a high-frequency signal nearby. The subnet splits into three encrypted nodes...
+                        </p>
+</div>
+</div>
+</div>
+<!-- Quick Action / Status Sidebar -->
+</section>
+</main>
+<!-- FAB Action -->
+<button class="fixed bottom-24 right-8 z-[60] bg-primary text-on-primary-container font-headline-md text-lg px-8 py-4 flex items-center gap-3 shadow-[0_0_20px_rgba(0,243,255,0.4)] hover:scale-105 active:scale-95 transition-all duration-75 border-b-4 border-r-4 border-primary-fixed-dim group glitch-pulse">
+<span class="material-symbols-outlined group-hover:rotate-180 transition-transform duration-500" data-icon="bolt" data-weight="fill" style="font-variation-settings: 'FILL' 1;">bolt</span>
+        ADVANCE_CYCLE
+</button>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 h-16 border-t border-secondary/50 bg-surface/95 backdrop-blur-xl">
+<div class="flex flex-col items-center justify-center text-primary h-full px-6 cursor-pointer border-t-2 border-primary bg-primary/5">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-label-caps text-[10px] mt-1">NEURAL</span>
+</div>
+<div class="flex flex-col items-center justify-center text-outline h-full px-6 cursor-pointer hover:text-secondary hover:bg-secondary/5 transition-all">
+<span class="material-symbols-outlined" data-icon="nightlife">nightlife</span>
+<span class="font-label-caps text-[10px] mt-1">HAVEN</span>
+</div>
+<div class="flex flex-col items-center justify-center text-outline h-full px-6 cursor-pointer hover:text-secondary hover:bg-secondary/5 transition-all">
+<span class="material-symbols-outlined" data-icon="memory">memory</span>
+<span class="font-label-caps text-[10px] mt-1">CYBER</span>
+</div>
+<div class="flex flex-col items-center justify-center text-outline h-full px-6 cursor-pointer hover:text-secondary hover:bg-secondary/5 transition-all">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+<span class="font-label-caps text-[10px] mt-1">JOBS</span>
+</div>
+</nav>
+<!-- Overlay Grain / Noise Effect -->
+<div class="fixed inset-0 pointer-events-none z-[100] opacity-[0.05] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+</body></html>
