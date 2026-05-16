@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 import { colors } from '../theme/colors';
 import { labelCaps, bodyMd } from '../theme/fonts';
 
@@ -10,7 +10,7 @@ export default function LogEntry({ entry, index }) {
 
   return (
     <Animated.View
-      entering={FadeInDown.duration(300).delay(50)}
+      entering={FadeInUp.duration(300).delay(50)}
       style={styles.container}
     >
       <View style={styles.header}>

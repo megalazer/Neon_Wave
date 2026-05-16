@@ -1,12 +1,12 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useState } from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
-  Alert,
   StyleSheet,
 } from 'react-native';
+import ConfirmModal from '../components/ConfirmModal';
 import Animated, {
   useSharedValue,
   withTiming,
@@ -151,6 +151,7 @@ function EmptySlot({ onPress }) {
 
 export default function HavenScreen() {
   const scrollRef = useRef(null);
+  const [confirmDismiss, setConfirmDismiss] = useState(null);
   const availableOperatives = useStore((s) => s.crew.availableOperatives);
   const members = useStore((s) => s.crew.members);
   const credits = useStore((s) => s.character.credits);
@@ -162,23 +163,14 @@ export default function HavenScreen() {
     recruitOperative(operativeId);
   }, [recruitOperative]);
 
-  const handleDismiss = useCallback((member) => {
-    Alert.alert(
-      'DISMISS OPERATIVE',
-      `Dismiss ${member.name}? This cannot be undone.`,
-      [
-        { text: 'CANCEL', style: 'cancel' },
-        {
-          text: 'CONFIRM',
-          style: 'destructive',
-          onPress: () => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            dismissMember(member.id);
-          },
-        },
-      ]
-    );
-  }, [dismissMember]);
+  const handleDismissPress = useCallback((member) => {
+    setConfirmDismiss(member);
+  }, []);
+
+  const handleConfirmDismiss = useCallback(() => {
+    dismissMember(confirmDismiss.id);
+    setConfirmDismiss(null);
+  }, [dismissMember, confirmDismiss]);
 
   const scrollToOperatives = useCallback(() => {
     scrollRef.current?.scrollTo({ y: 0, animated: true });
@@ -188,6 +180,7 @@ export default function HavenScreen() {
   const emptySlotCount = Math.max(0, MAX_CREW - members.length);
 
   return (
+    <>
     <ScrollView
       ref={scrollRef}
       style={styles.screen}
@@ -236,13 +229,26 @@ export default function HavenScreen() {
       <View style={styles.section}>
         <SectionHeader icon="view_list" label="[PARTY_ROSTER]" color={colors.primary} />
         {members.map((member, i) => (
-          <RosterRow key={member.id} member={member} index={i} onDismiss={handleDismiss} />
+          <RosterRow key={member.id} member={member} index={i} onDismiss={handleDismissPress} />
         ))}
         {Array.from({ length: emptySlotCount }).map((_, i) => (
           <EmptySlot key={`empty_${i}`} onPress={scrollToOperatives} />
         ))}
       </View>
     </ScrollView>
+
+    <ConfirmModal
+      visible={confirmDismiss !== null}
+      variant="destructive"
+      title="DISMISS_OPERATIVE"
+      body={`Terminate contract with ${confirmDismiss?.name}? Crew member will be removed. This action cannot be reversed.`}
+      warning="Neural binding will be severed."
+      confirmLabel="[EXECUTE_DISMISSAL]"
+      cancelLabel="[ABORT_PROTOCOL]"
+      onConfirm={handleConfirmDismiss}
+      onCancel={() => setConfirmDismiss(null)}
+    />
+    </>
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,6 @@ import LogEntry from '../components/LogEntry';
 import AdvanceCycleFAB from '../components/AdvanceCycleFAB';
 import { advanceTurn } from '../engine/turnPipeline';
 import { colors } from '../theme/colors';
-import { labelCaps, headlineMd } from '../theme/fonts';
 
 const BANNER_HEIGHT = 90;
 
@@ -44,17 +43,16 @@ function CrewSlot({ member }) {
   );
 }
 
-function ListHeader({ entries }) {
+// Rendered as a plain View above the FlatList — always visible, never scrolls away
+function LogHeaderSection({ entriesEmpty }) {
   const members = useStore((s) => s.crew.members);
   const credits = useStore((s) => s.character.credits);
   const now = new Date();
   const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-
-  // Always show 4 display slots (2×2 grid); first 3 can hold crew members
   const displaySlots = [members[0] || null, members[1] || null, members[2] || null, null];
 
   return (
-    <View style={styles.listHeader}>
+    <View style={styles.headerSection}>
       {/* Crew block */}
       <View style={styles.crewBlock}>
         <View style={styles.crewGrid}>
@@ -82,12 +80,10 @@ function ListHeader({ entries }) {
           <MaterialIcons name="terminal" size={20} color={colors.primary} />
           <Text style={styles.archiveTitle}>NEURAL_ARCHIVE</Text>
         </View>
-        <Text style={styles.archiveTimestamp}>
-          D_001 // {timeStr}
-        </Text>
+        <Text style={styles.archiveTimestamp}>D_001 // {timeStr}</Text>
       </View>
 
-      {entries.length === 0 && (
+      {entriesEmpty && (
         <View style={styles.emptyLog}>
           <Text style={styles.emptyText}>{'> AWAITING_PROTOCOL_INPUT...'}</Text>
           <Text style={[styles.emptyText, { marginTop: 4, color: colors.outline }]}>
@@ -101,35 +97,24 @@ function ListHeader({ entries }) {
 
 export default function LogScreen() {
   const entries = useStore((s) => s.log.entries);
-  const flatListRef = useRef(null);
-
-  const handleAdvance = () => {
-    advanceTurn();
-    // Auto-scroll to bottom after state update
-    setTimeout(() => {
-      flatListRef.current?.scrollToEnd({ animated: true });
-    }, 100);
-  };
 
   return (
     <View style={styles.screen}>
+      <LogHeaderSection entriesEmpty={entries.length === 0} />
+
+      {/* inverted keeps newest entry at the top; auto-anchors on new entries */}
       <FlatList
-        ref={flatListRef}
         data={entries}
         keyExtractor={(item) => item.id}
         renderItem={({ item, index }) => (
           <LogEntry entry={item} index={index} />
         )}
-        ListHeaderComponent={<ListHeader entries={entries} />}
+        inverted
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-        onContentSizeChange={() => {
-          if (entries.length > 0) {
-            flatListRef.current?.scrollToEnd({ animated: true });
-          }
-        }}
       />
-      <AdvanceCycleFAB onPress={handleAdvance} />
+
+      <AdvanceCycleFAB onPress={advanceTurn} />
     </View>
   );
 }
@@ -139,14 +124,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  listContent: {
+
+  // Static header above the inverted FlatList
+  headerSection: {
     paddingTop: BANNER_HEIGHT,
     paddingHorizontal: 16,
-    paddingBottom: 160,
-  },
-  listHeader: {
-    marginTop: 8,
-    marginBottom: 16,
+    paddingBottom: 8,
   },
 
   // Crew block
@@ -155,6 +138,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(0,243,255,0.2)',
     marginBottom: 12,
+    marginTop: 8,
   },
   crewGrid: {
     flexDirection: 'row',
@@ -249,7 +233,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: `${colors.primary}4D`,
     paddingBottom: 8,
-    marginBottom: 16,
   },
   archiveTitleRow: {
     flexDirection: 'row',
@@ -262,7 +245,6 @@ const styles = StyleSheet.create({
     color: colors.primary,
     letterSpacing: 0.5,
     textTransform: 'uppercase',
-    // Neon text glow approximation via shadow
     textShadowColor: 'rgba(0,243,255,0.6)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 8,
@@ -285,5 +267,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: `${colors.primary}66`,
     letterSpacing: 0.8,
+  },
+
+  // Inverted FlatList content
+  listContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 8,    // visual top — gap between header and newest entry
+    paddingTop: 160,     // visual bottom — clearance above BottomNav + FAB
   },
 });
