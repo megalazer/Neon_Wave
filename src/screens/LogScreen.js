@@ -14,24 +14,29 @@ import { colors } from '../theme/colors';
 import { labelCaps, headlineMd } from '../theme/fonts';
 
 const BANNER_HEIGHT = 90;
-const EMPTY_SLOTS = ['SLOT_A', 'SLOT_B', 'SLOT_C', 'SLOT_D'];
 
-function CrewSlot({ slotId }) {
+function CrewSlot({ member }) {
+  const hpPct = member ? `${Math.round((member.hp.current / member.hp.max) * 100)}%` : '0%';
+  const mpPct = member ? `${Math.round((member.mp.current / member.mp.max) * 100)}%` : '0%';
+  const avatarColor = member ? (member.classColor || colors.primary) : `${colors.primary}40`;
+
   return (
     <View style={styles.crewSlot}>
-      <View style={styles.crewAvatar}>
-        <MaterialIcons name="person" size={16} color={`${colors.primary}40`} />
+      <View style={[styles.crewAvatar, member && styles.crewAvatarFilled]}>
+        <MaterialIcons name="person" size={16} color={avatarColor} />
       </View>
       <View style={styles.crewInfo}>
-        <Text style={styles.crewName}>EMPTY_SLOT</Text>
+        <Text style={[styles.crewName, member && styles.crewNameFilled]}>
+          {member ? member.name.toUpperCase() : 'EMPTY_SLOT'}
+        </Text>
         <View style={styles.barRow}>
           <View style={styles.barBg}>
-            <View style={[styles.barFill, styles.barHp, { width: '0%' }]} />
+            <View style={[styles.barFill, styles.barHp, { width: hpPct }]} />
           </View>
         </View>
         <View style={styles.barRow}>
           <View style={styles.barBg}>
-            <View style={[styles.barFill, styles.barMp, { width: '0%' }]} />
+            <View style={[styles.barFill, styles.barMp, { width: mpPct }]} />
           </View>
         </View>
       </View>
@@ -40,16 +45,21 @@ function CrewSlot({ slotId }) {
 }
 
 function ListHeader({ entries }) {
+  const members = useStore((s) => s.crew.members);
+  const credits = useStore((s) => s.character.credits);
   const now = new Date();
   const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+
+  // Always show 4 display slots (2×2 grid); first 3 can hold crew members
+  const displaySlots = [members[0] || null, members[1] || null, members[2] || null, null];
 
   return (
     <View style={styles.listHeader}>
       {/* Crew block */}
       <View style={styles.crewBlock}>
         <View style={styles.crewGrid}>
-          {EMPTY_SLOTS.map((id) => (
-            <CrewSlot key={id} slotId={id} />
+          {displaySlots.map((member, i) => (
+            <CrewSlot key={i} member={member} />
           ))}
         </View>
       </View>
@@ -58,7 +68,7 @@ function ListHeader({ entries }) {
       <View style={styles.statusBar}>
         <View style={styles.statusItem}>
           <MaterialIcons name="payments" size={14} color={colors.primary} />
-          <Text style={[styles.statusText, { color: colors.primary }]}>CR: 1,000</Text>
+          <Text style={[styles.statusText, { color: colors.primary }]}>CR: {credits.toLocaleString()}</Text>
         </View>
         <View style={styles.statusItem}>
           <MaterialIcons name="grade" size={14} color={colors.secondary} />
@@ -170,6 +180,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,243,255,0.05)',
     flexShrink: 0,
   },
+  crewAvatarFilled: {
+    borderColor: 'rgba(0,243,255,0.8)',
+    backgroundColor: 'rgba(0,243,255,0.1)',
+  },
   crewInfo: {
     flex: 1,
   },
@@ -180,6 +194,9 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
     textTransform: 'uppercase',
     marginBottom: 4,
+  },
+  crewNameFilled: {
+    color: colors.primary,
   },
   barRow: {
     marginBottom: 2,
