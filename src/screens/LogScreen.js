@@ -15,8 +15,9 @@ import { colors } from '../theme/colors';
 const BANNER_HEIGHT = 90;
 
 function CrewSlot({ member }) {
-  const hpPct = member ? `${Math.round((member.hp.current / member.hp.max) * 100)}%` : '0%';
-  const mpPct = member ? `${Math.round((member.mp.current / member.mp.max) * 100)}%` : '0%';
+  const hpPct = member ? `${Math.round((member.vitals.current / member.vitals.max) * 100)}%` : '0%';
+  const mpPct = member ? `${Math.round((member.neural.current / member.neural.max) * 100)}%` : '0%';
+  const humPct = member ? `${Math.round((member.humanity.current / member.humanity.max) * 100)}%` : '0%';
   const avatarColor = member ? (member.classColor || colors.primary) : `${colors.primary}40`;
 
   return (
@@ -38,6 +39,11 @@ function CrewSlot({ member }) {
             <View style={[styles.barFill, styles.barMp, { width: mpPct }]} />
           </View>
         </View>
+        <View style={styles.barRow}>
+          <View style={styles.barBg}>
+            <View style={[styles.barFill, styles.barHum, { width: humPct }]} />
+          </View>
+        </View>
       </View>
     </View>
   );
@@ -49,7 +55,7 @@ function LogHeaderSection({ entriesEmpty }) {
   const credits = useStore((s) => s.character.credits);
   const now = new Date();
   const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-  const displaySlots = [members[0] || null, members[1] || null, members[2] || null, null];
+  const displaySlots = [members[0] || null, members[1] || null, members[2] || null, members[3] || null];
 
   return (
     <View style={styles.headerSection}>
@@ -208,6 +214,9 @@ const styles = StyleSheet.create({
   },
   barMp: {
     backgroundColor: colors.primary,
+  },
+  barHum: {
+    backgroundColor: colors.secondaryContainer,
   },
 
   // Status bar

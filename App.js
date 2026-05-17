@@ -33,12 +33,12 @@ function fmtCredits(n) {
   return String(n);
 }
 
-function ActiveScreen({ activeTab }) {
+function ActiveScreen({ activeTab, onNavigate }) {
   switch (activeTab) {
     case 'neural': return <LogScreen />;
     case 'haven': return <HavenScreen />;
     case 'cyber': return <CyberScreen />;
-    case 'jobs': return <JobsScreen />;
+    case 'jobs': return <JobsScreen onNavigate={onNavigate} />;
     case 'lifestyle': return <LifestyleScreen />;
     default: return <LogScreen />;
   }
@@ -48,7 +48,7 @@ export default function App() {
   const [fontsLoaded, fontError] = useFonts(fontMap);
   const [activeTab, setActiveTab] = useState('neural');
   const credits = useStore((s) => s.character.credits);
-  const renown = useStore((s) => s.character.renown);
+  const renown = useStore((s) => s.character.renownLabel);
   const initializeOperatives = useStore((s) => s.initializeOperatives);
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function App() {
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
 
       <View style={styles.flex}>
-        <ActiveScreen activeTab={activeTab} />
+        <ActiveScreen activeTab={activeTab} onNavigate={handleTabPress} />
       </View>
 
       <TopBanner
