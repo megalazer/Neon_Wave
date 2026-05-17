@@ -19,12 +19,23 @@ import CyberScreen from './src/screens/CyberScreen';
 import JobsScreen from './src/screens/JobsScreen';
 import LifestyleScreen from './src/screens/LifestyleScreen';
 
+import PathScreen from './src/screens/init/PathScreen';
+import IdentityScreen from './src/screens/init/IdentityScreen';
+import FinalizeScreen from './src/screens/init/FinalizeScreen';
+
 const SCREEN_SUBTITLES = {
   neural: 'NEURAL_LOG',
   haven: 'HAVEN',
   cyber: 'CYBERWARE',
   jobs: 'CONTRACTS',
   lifestyle: 'LIFESTYLE',
+};
+
+const INIT_DRAFT_DEFAULT = {
+  path: null,
+  gender: null,
+  name: '',
+  starterCyberware: 'starter_neural_link',
 };
 
 function fmtCredits(n) {
@@ -35,21 +46,28 @@ function fmtCredits(n) {
 
 function ActiveScreen({ activeTab, onNavigate }) {
   switch (activeTab) {
-    case 'neural': return <LogScreen />;
-    case 'haven': return <HavenScreen />;
-    case 'cyber': return <CyberScreen />;
-    case 'jobs': return <JobsScreen onNavigate={onNavigate} />;
+    case 'neural':    return <LogScreen />;
+    case 'haven':     return <HavenScreen />;
+    case 'cyber':     return <CyberScreen />;
+    case 'jobs':      return <JobsScreen onNavigate={onNavigate} />;
     case 'lifestyle': return <LifestyleScreen />;
-    default: return <LogScreen />;
+    default:          return <LogScreen />;
   }
 }
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts(fontMap);
   const [activeTab, setActiveTab] = useState('neural');
-  const credits = useStore((s) => s.character.credits);
-  const renown = useStore((s) => s.character.renownLabel);
+  const [initStep, setInitStep] = useState(1);
+  const [initDraft, setInitDraft] = useState(INIT_DRAFT_DEFAULT);
+
+  const characterName    = useStore((s) => s.character.name);
+  const credits          = useStore((s) => s.character.credits);
+  const renown           = useStore((s) => s.character.renownLabel);
   const initializeOperatives = useStore((s) => s.initializeOperatives);
+  const initCharacter    = useStore((s) => s.initCharacter);
+
+  const inInitFlow = characterName === null;
 
   useEffect(() => {
     initializeOperatives();
@@ -59,6 +77,18 @@ export default function App() {
     setActiveTab(tabId);
   }, []);
 
+  // Draft field setters passed to each init screen
+  const setPath      = useCallback((v) => setInitDraft((d) => ({ ...d, path: v })), []);
+  const setGender    = useCallback((v) => setInitDraft((d) => ({ ...d, gender: v })), []);
+  const setName      = useCallback((v) => setInitDraft((d) => ({ ...d, name: v })), []);
+
+  // Called by FinalizeScreen with the fully assembled draft
+  const handleInitComplete = useCallback((finalDraft) => {
+    initCharacter(finalDraft);
+    // character.name is now set → inInitFlow becomes false → game renders
+    setActiveTab('neural');
+  }, [initCharacter]);
+
   if (!fontsLoaded && !fontError) {
     return (
       <View style={styles.loading}>
@@ -67,6 +97,43 @@ export default function App() {
     );
   }
 
+  // ── Init flow (pre-game, no nav) ────────────────────────────────────────────
+  if (inInitFlow) {
+    return (
+      <CRTBackground>
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+
+        {initStep === 1 && (
+          <PathScreen
+            draft={initDraft}
+            onSetPath={setPath}
+            onContinue={() => setInitStep(2)}
+          />
+        )}
+        {initStep === 2 && (
+          <IdentityScreen
+            draft={initDraft}
+            onSetGender={setGender}
+            onSetName={setName}
+            onBack={() => setInitStep(1)}
+            onContinue={() => setInitStep(3)}
+          />
+        )}
+        {initStep === 3 && (
+          <FinalizeScreen
+            draft={initDraft}
+            onBack={() => setInitStep(2)}
+            onComplete={handleInitComplete}
+          />
+        )}
+
+        <NoiseTexture />
+        <ScanlineOverlay />
+      </CRTBackground>
+    );
+  }
+
+  // ── Main game ───────────────────────────────────────────────────────────────
   const subtitle = SCREEN_SUBTITLES[activeTab] || '';
 
   return (
@@ -89,11 +156,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  flex: {
-    flex: 1,
-  },
-  loading: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
+  flex: { flex: 1 },
+  loading: { flex: 1, backgroundColor: colors.background },
 });

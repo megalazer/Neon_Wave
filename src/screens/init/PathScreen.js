@@ -1,0 +1,270 @@
+import React from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import { ORIGINS } from '../../data/origins';
+import { colors } from '../../theme/colors';
+import InitHeader from '../../components/init/InitHeader';
+import InitFooter from '../../components/init/InitFooter';
+
+const HEADER_H = 90;
+
+export default function PathScreen({ draft, onSetPath, onContinue }) {
+  const selected = draft.path;
+  const promptText = selected
+    ? `> PATH_LOCKED: ${selected.toUpperCase()}. PROCEED_TO_IDENTITY?`
+    : '> AWAITING_PATH_SELECTION...';
+
+  return (
+    <View style={styles.root}>
+      <InitHeader step={1} stepLabel="PATH" />
+
+      <Text style={styles.decalL} pointerEvents="none">NEURAL_VOID</Text>
+      <Text style={styles.decalR} pointerEvents="none">OVERWRITE_CMD</Text>
+
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        {ORIGINS.map((origin) => {
+          const active = selected === origin.id;
+          return (
+            <TouchableOpacity
+              key={origin.id}
+              style={[
+                styles.card,
+                { borderColor: active ? origin.color : `${origin.color}33` },
+                active && {
+                  shadowColor: origin.color,
+                  shadowOffset: { width: 0, height: 0 },
+                  shadowOpacity: 0.5,
+                  shadowRadius: 14,
+                  elevation: 8,
+                },
+              ]}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                onSetPath(origin.id);
+              }}
+              activeOpacity={0.85}
+            >
+              {/* Image placeholder area */}
+              <View style={[styles.imgArea, { backgroundColor: `${origin.color}0D` }]}>
+                <MaterialIcons name={origin.icon} size={52} color={`${origin.color}55`} />
+                <View
+                  style={[
+                    styles.badge,
+                    {
+                      borderColor: origin.color,
+                      backgroundColor: active ? origin.color : 'transparent',
+                    },
+                  ]}
+                >
+                  <Text style={[styles.badgeText, { color: active ? origin.onColor : origin.color }]}>
+                    {origin.badge}
+                  </Text>
+                </View>
+                {/* Decor corners */}
+                <View style={[styles.cTL, { borderColor: `${origin.color}66` }]} />
+                <View style={[styles.cBR, { borderColor: `${origin.color}66` }]} />
+              </View>
+
+              {/* Card content */}
+              <View style={styles.cardBody}>
+                <Text style={[styles.cardTitle, { color: origin.color }]}>
+                  PROTOCOL: {origin.label}
+                </Text>
+                <Text style={styles.cardDesc}>{origin.desc}</Text>
+                <Text style={[styles.cardBonus, { color: `${origin.color}99` }]}>
+                  {origin.bonusLine}
+                </Text>
+                <View
+                  style={[
+                    styles.selectRow,
+                    {
+                      borderColor: active ? origin.color : `${origin.color}44`,
+                      backgroundColor: active ? `${origin.color}1A` : 'transparent',
+                    },
+                  ]}
+                >
+                  {active && <MaterialIcons name="check_circle" size={12} color={origin.color} />}
+                  <Text style={[styles.selectText, { color: origin.color }]}>
+                    {active ? 'PATH_SELECTED' : 'EXECUTE_CHOICE'}
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+
+        {/* Terminal prompt */}
+        <View style={styles.prompt}>
+          <Text style={[styles.promptText, { color: selected ? colors.primary : `${colors.primary}55` }]}>
+            {promptText}
+          </Text>
+        </View>
+
+        {/* Continue */}
+        <TouchableOpacity
+          style={[styles.continueBtn, !selected && styles.continueBtnOff]}
+          onPress={() => {
+            if (!selected) return;
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            onContinue();
+          }}
+          activeOpacity={selected ? 0.75 : 1}
+        >
+          <Text style={[styles.continueTxt, !selected && styles.continueTxtOff]}>
+            {selected ? 'CONTINUE →' : 'SELECT_PATH_FIRST'}
+          </Text>
+        </TouchableOpacity>
+
+        <InitFooter />
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: colors.background },
+  scroll: { flex: 1 },
+  content: {
+    paddingTop: HEADER_H + 16,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    gap: 12,
+  },
+  decalL: {
+    position: 'absolute',
+    left: -48,
+    top: '38%',
+    transform: [{ rotate: '-90deg' }],
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 30,
+    color: colors.primary,
+    opacity: 0.04,
+    letterSpacing: 8,
+    zIndex: 0,
+  },
+  decalR: {
+    position: 'absolute',
+    right: -72,
+    top: '28%',
+    transform: [{ rotate: '90deg' }],
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 26,
+    color: colors.secondaryContainer,
+    opacity: 0.04,
+    letterSpacing: 6,
+    zIndex: 0,
+  },
+  card: {
+    backgroundColor: colors.surfaceContainer,
+    borderWidth: 1,
+  },
+  imgArea: {
+    height: 80,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badge: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  badgeText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  cTL: {
+    position: 'absolute',
+    top: 6,
+    left: 6,
+    width: 14,
+    height: 14,
+    borderLeftWidth: 1,
+    borderTopWidth: 1,
+  },
+  cBR: {
+    position: 'absolute',
+    bottom: 6,
+    right: 6,
+    width: 14,
+    height: 14,
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+  },
+  cardBody: { padding: 12, gap: 8 },
+  cardTitle: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 16,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  cardDesc: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 12,
+    color: colors.onSurfaceVariant,
+    letterSpacing: 0.3,
+    lineHeight: 18,
+  },
+  cardBonus: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 10,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  selectRow: {
+    borderWidth: 1,
+    paddingVertical: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: 2,
+  },
+  selectText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 10,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  prompt: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: `${colors.primary}26`,
+    backgroundColor: `${colors.primary}06`,
+    marginTop: 4,
+  },
+  promptText: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 11,
+    letterSpacing: 0.5,
+  },
+  continueBtn: {
+    backgroundColor: colors.primary,
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  continueBtnOff: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: `${colors.outline}55`,
+  },
+  continueTxt: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 13,
+    letterSpacing: 2,
+    color: colors.onPrimary,
+    textTransform: 'uppercase',
+  },
+  continueTxtOff: { color: `${colors.outline}55` },
+});

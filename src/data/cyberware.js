@@ -1,4 +1,4 @@
-export const CYBERWARE_SLOTS = ['neural', 'optic', 'os', 'arms', 'internal', 'chip'];
+export const CYBERWARE_SLOTS = ['neural', 'optic', 'os', 'arms', 'internal', 'chip', 'subdermal'];
 
 export const CYBERWARE_ITEMS = [
   {
@@ -88,5 +88,38 @@ export const CYBERWARE_ITEMS = [
     tags: ['BLEED: ACTIVE'],
     description: '+BODY +REF, retractable mono-edge blades',
     cost: 15000,
+  },
+  { id: 'starter_neural_link', name: 'Neural_Link_Mk1', slot: 'neural', icon: 'psychology', humanityCost: 4, bonuses: { ref: 1 }, tags: ['STARTER'], cost: 0 },
+  { id: 'starter_optic_basic', name: 'Kiroshi_Optic_v1', slot: 'optic', icon: 'visibility', humanityCost: 3, bonuses: { per: 1 }, tags: ['STARTER'], cost: 0 },
+  { id: 'starter_subdermal', name: 'Subdermal_Plate_Mk1', slot: 'subdermal', icon: 'shield', humanityCost: 5, bonuses: { grit: 1 }, tags: ['STARTER'], cost: 0 },
+];
+
+export const STARTER_CYBERWARE = [
+  {
+    id: 'starter_neural_link',
+    name: 'Neural_Link_Mk1',
+    icon: 'psychology',
+    slot: 'neural',
+    humanityCost: 4,
+    description: '+REF +1, basic interface for net-running',
+    flavor: 'Standard issue. Reliable, unflashy, gets the job done.',
+  },
+  {
+    id: 'starter_optic_basic',
+    name: 'Kiroshi_Optic_v1',
+    icon: 'visibility',
+    slot: 'optic',
+    humanityCost: 3,
+    description: '+PER +1, low-light enhancement',
+    flavor: "Eyes that work when the lights don't.",
+  },
+  {
+    id: 'starter_subdermal',
+    name: 'Subdermal_Plate_Mk1',
+    icon: 'shield',
+    slot: 'subdermal',
+    humanityCost: 5,
+    description: '+GRIT +1, light dermal armor weave',
+    flavor: "Won't stop a round, but it'll slow one down.",
   },
 ];
