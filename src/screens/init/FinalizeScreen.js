@@ -20,8 +20,6 @@ const HEADER_H = 90;
 
 const STAT_KEYS = ['chrome', 'edge', 'ghost', 'face', 'grit', 'wire'];
 
-const GENDER_ICON = { female: 'female', male: 'male', non_binary: 'transgender' };
-
 // --- SyslogCard ---
 function SyslogCard({ draft }) {
   return (
@@ -37,9 +35,9 @@ function SyslogCard({ draft }) {
       </View>
 
       {[
-        { label: 'SELECTED_PATH',     value: (draft.path || 'NONE').toUpperCase(),                    color: colors.primary },
-        { label: 'NEURAL_PROFILE',    value: (draft.gender || 'NONE').toUpperCase().replace('_', '-'), color: colors.secondary },
-        { label: 'LATENCY_PROTOCOL',  value: '0.0024ms (DIRECT)',                                     color: colors.outline },
+        { label: 'SELECTED_PATH',     value: (draft.path || 'NONE').toUpperCase(), color: colors.primary },
+        { label: 'OPERATOR_HANDLE',   value: draft.name || 'UNKNOWN',              color: colors.secondary },
+        { label: 'LATENCY_PROTOCOL',  value: '0.0024ms (DIRECT)',                  color: colors.outline },
       ].map((row) => (
         <View key={row.label} style={styles.syslogRow}>
           <View style={styles.syslogRowAccent} />
@@ -125,7 +123,6 @@ function PortraitFrame({ draft, onPress, glitchX, glitchOpacity }) {
     onPress();
   }, [onPress]);
 
-  const genderIcon = GENDER_ICON[draft.gender] || 'person';
   const handleName = draft.name || 'UNKNOWN';
 
   return (
@@ -228,6 +225,7 @@ export default function FinalizeScreen({ draft, onBack, onComplete }) {
     draft.starterCyberware || 'starter_neural_link',
   );
   const committed = useRef(false);
+  const genderIcon = 'person';
 
   const glitchX = useSharedValue(0);
   const glitchOpacity = useSharedValue(1);

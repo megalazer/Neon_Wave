@@ -79,7 +79,6 @@ export default function App() {
 
   // Draft field setters passed to each init screen
   const setPath      = useCallback((v) => setInitDraft((d) => ({ ...d, path: v })), []);
-  const setGender    = useCallback((v) => setInitDraft((d) => ({ ...d, gender: v })), []);
   const setName      = useCallback((v) => setInitDraft((d) => ({ ...d, name: v })), []);
 
   // Called by FinalizeScreen with the fully assembled draft
@@ -113,7 +112,6 @@ export default function App() {
         {initStep === 2 && (
           <IdentityScreen
             draft={initDraft}
-            onSetGender={setGender}
             onSetName={setName}
             onBack={() => setInitStep(1)}
             onContinue={() => setInitStep(3)}

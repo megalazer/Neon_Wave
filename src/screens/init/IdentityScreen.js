@@ -18,14 +18,8 @@ import InitFooter from '../../components/init/InitFooter';
 
 const HEADER_H = 90;
 
-const GENDERS = [
-  { id: 'female',     label: 'FEMALE_OVERLAY',     type: 'TYPE_F', icon: 'female' },
-  { id: 'male',       label: 'MALE_OVERLAY',        type: 'TYPE_A', icon: 'male' },
-  { id: 'non_binary', label: 'NON_BINARY_OVERLAY',  type: 'TYPE_X', icon: 'transgender' },
-];
-
-export default function IdentityScreen({ draft, onSetGender, onSetName, onBack, onContinue }) {
-  const canContinue = draft.gender !== null && draft.name.trim().length > 0;
+export default function IdentityScreen({ draft, onSetName, onBack, onContinue }) {
+  const canContinue = draft.name.trim().length > 0;
 
   const promptText = draft.name.trim()
     ? `> HANDLE_REGISTERED: ${draft.name}`
@@ -53,51 +47,10 @@ export default function IdentityScreen({ draft, onSetGender, onSetName, onBack, 
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Gender section */}
-        <View style={styles.section}>
-          <View style={styles.sectionBar}>
-            <Text style={styles.sectionLabel}>[NEURAL_PROFILE]</Text>
-          </View>
-          {GENDERS.map((g) => {
-            const active = draft.gender === g.id;
-            return (
-              <TouchableOpacity
-                key={g.id}
-                style={[
-                  styles.genderCard,
-                  active && styles.genderCardActive,
-                  !active && { opacity: 0.6 },
-                ]}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  onSetGender(g.id);
-                }}
-                activeOpacity={0.8}
-              >
-                <View style={styles.genderLeft}>
-                  <MaterialIcons
-                    name={g.icon}
-                    size={18}
-                    color={active ? colors.primary : colors.outline}
-                  />
-                  <Text style={[styles.genderLabel, active && styles.genderLabelActive]}>
-                    {'> '}{g.label}
-                  </Text>
-                </View>
-                <Text style={[styles.genderType, active && { color: colors.primary, opacity: 1 }]}>
-                  {active ? 'ACTIVE_SELECTION' : g.type}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
         {/* Handle section */}
         <View style={styles.section}>
           <View style={styles.sectionBar}>
-            <Text style={[styles.sectionLabel, { color: colors.secondaryContainer }]}>
-              [OPERATOR_HANDLE]
-            </Text>
+            <Text style={styles.sectionLabel}>[OPERATOR_HANDLE]</Text>
           </View>
           <TextInput
             style={styles.nameInput}
@@ -190,52 +143,16 @@ const styles = StyleSheet.create({
   section: { gap: 8 },
   sectionBar: {
     borderBottomWidth: 1,
-    borderBottomColor: `${colors.primary}26`,
+    borderBottomColor: `${colors.secondary}33`,
     paddingBottom: 8,
     marginBottom: 4,
   },
   sectionLabel: {
     fontFamily: 'KodeMono_700Bold',
     fontSize: 10,
-    color: colors.primary,
+    color: colors.secondaryContainer,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
-  },
-  genderCard: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: `${colors.outline}40`,
-  },
-  genderCardActive: {
-    borderWidth: 2,
-    borderColor: colors.primary,
-    backgroundColor: `${colors.primary}0D`,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  genderLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  genderLabel: {
-    fontFamily: 'KodeMono_700Bold',
-    fontSize: 11,
-    color: colors.outline,
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-  },
-  genderLabelActive: { color: colors.primary },
-  genderType: {
-    fontFamily: 'KodeMono_400Regular',
-    fontSize: 10,
-    color: colors.outline,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    opacity: 0.55,
   },
   nameInput: {
     backgroundColor: colors.surfaceContainerLowest,
