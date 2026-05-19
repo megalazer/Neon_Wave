@@ -1,32 +1,47 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { MaterialIcons } from '@expo/vector-icons';
 import { colors, glows } from '../theme/colors';
 import { labelCaps } from '../theme/fonts';
+import { useStore } from '../store/index';
 
 export default function TopBanner({ subtitle = '', telemetry = {} }) {
   const { credits = '1,000', renown = 'GHOST', time = '00:00:00' } = telemetry;
+
+  const devEnabled   = useStore((s) => s.dev.enabled);
+  const recordTap    = useStore((s) => s.recordBannerTap);
+  const openDevPanel = useStore((s) => s.openDevPanel);
+
+  const displaySubtitle = devEnabled ? 'DEV_PROTOCOL_ENGAGED' : subtitle;
+  const subtitleColor   = devEnabled ? colors.error : colors.outline;
 
   return (
     <View style={styles.wrapper} pointerEvents="box-none">
       <BlurView intensity={60} tint="dark" style={StyleSheet.absoluteFill} />
       <View style={styles.inner}>
-        {/* Left: terminal icon box + title */}
+        {/* Left: terminal icon box + tappable title */}
         <View style={styles.left}>
           <View style={styles.iconBox}>
             <MaterialIcons name="terminal" size={18} color={colors.primary} />
           </View>
-          <View style={styles.titleGroup}>
+          <Pressable onPress={recordTap} style={styles.titleGroup}>
             <Text style={styles.title}>NEURAL_CHRONICLE_OS</Text>
-            {subtitle ? (
-              <Text style={styles.subtitle}>// {subtitle}</Text>
+            {(displaySubtitle) ? (
+              <Text style={[styles.subtitle, { color: subtitleColor }]}>
+                // {displaySubtitle}
+              </Text>
             ) : null}
-          </View>
+          </Pressable>
         </View>
 
-        {/* Right: telemetry */}
+        {/* Right: DEV chip (when enabled) + telemetry */}
         <View style={styles.right}>
+          {devEnabled && (
+            <Pressable onPress={openDevPanel} style={styles.devChip}>
+              <Text style={styles.devChipText}>[DEV]</Text>
+            </Pressable>
+          )}
           <Text style={styles.telemetry}>CR: {credits}</Text>
           <Text style={[styles.telemetry, { color: colors.outline, marginTop: 1 }]}>
             {renown !== null ? `RN: ${renown}` : `T: ${time}`}
@@ -55,7 +70,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 10,
-    paddingTop: 44, // safe area top
+    paddingTop: 44,
   },
   left: {
     flexDirection: 'row',
@@ -84,7 +99,6 @@ const styles = StyleSheet.create({
   subtitle: {
     fontFamily: 'KodeMono_400Regular',
     fontSize: 10,
-    color: colors.outline,
     letterSpacing: 0.8,
     textTransform: 'uppercase',
     marginTop: 1,
@@ -92,6 +106,20 @@ const styles = StyleSheet.create({
   right: {
     alignItems: 'flex-end',
     marginLeft: 8,
+    gap: 2,
+  },
+  devChip: {
+    borderWidth: 1,
+    borderColor: colors.error,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    marginBottom: 2,
+  },
+  devChipText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 9,
+    color: colors.error,
+    letterSpacing: 1.5,
   },
   telemetry: {
     fontFamily: 'KodeMono_700Bold',

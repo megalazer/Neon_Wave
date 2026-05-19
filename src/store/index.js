@@ -6,6 +6,8 @@ import { createWorldSlice } from './slices/worldSlice';
 import { createLogSlice } from './slices/logSlice';
 import { createEventSlice } from './slices/eventSlice';
 import { createLegacySlice } from './slices/legacySlice';
+import { createExchangeSlice } from './slices/exchangeSlice';
+import { createDevSlice } from './slices/devSlice';
 
 export const useStore = create(
   immer((...args) => ({
@@ -15,5 +17,7 @@ export const useStore = create(
     ...createLogSlice(...args),
     ...createEventSlice(...args),
     ...createLegacySlice(...args),
+    ...createExchangeSlice(...args),
+    ...createDevSlice(...args),
   })),
 );

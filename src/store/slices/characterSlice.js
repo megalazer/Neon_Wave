@@ -14,7 +14,24 @@ export const createCharacterSlice = (set) => ({
     exp: 0,
     stats: { chrome: 10, edge: 10, ghost: 10, face: 10, grit: 10, wire: 10 },
     cyberwareInventory: [],
+    realEstate: [],
+    vehicles: [],
+    luxuryItems: [],
   },
+
+  purchaseAsset: (assetType, assetId, cost, assetName) =>
+    set((state) => {
+      if (state.character.credits < cost) return;
+      state.character.credits -= cost;
+      state.character[assetType].push(assetId);
+      state.log.entries.push({
+        id: `asset_${Date.now()}`,
+        turn: state.character.turnNumber,
+        text: `ACQUISITION: Acquired ${assetName}. -${cost.toLocaleString()} CR.`,
+        timestamp: new Date().toISOString(),
+        type: 'acquisition',
+      });
+    }),
 
   incrementTurn: () =>
     set((state) => {

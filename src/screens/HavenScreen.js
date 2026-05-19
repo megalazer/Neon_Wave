@@ -74,7 +74,7 @@ function OperativeCard({ operative, canAfford, rosterFull, onRecruit }) {
     ? '[ROSTER_FULL]'
     : canAfford
     ? 'RECRUIT'
-    : '[INSUFFICIENT_FUNDS]';
+    : '[NO_FUNDS]';
 
   return (
     <View style={styles.card}>

@@ -22,6 +22,7 @@ import LifestyleScreen from './src/screens/LifestyleScreen';
 import PathScreen from './src/screens/init/PathScreen';
 import IdentityScreen from './src/screens/init/IdentityScreen';
 import FinalizeScreen from './src/screens/init/FinalizeScreen';
+import DevPanel from './src/screens/DevPanel';
 
 const SCREEN_SUBTITLES = {
   neural: 'NEURAL_LOG',
@@ -66,11 +67,13 @@ export default function App() {
   const renown           = useStore((s) => s.character.renownLabel);
   const initializeOperatives = useStore((s) => s.initializeOperatives);
   const initCharacter    = useStore((s) => s.initCharacter);
+  const initDevMode      = useStore((s) => s.initDevMode);
 
   const inInitFlow = characterName === null;
 
   useEffect(() => {
     initializeOperatives();
+    initDevMode();
   }, []);
 
   const handleTabPress = useCallback((tabId) => {
@@ -149,6 +152,7 @@ export default function App() {
       <BottomNav activeTab={activeTab} onTabPress={handleTabPress} />
       <NoiseTexture />
       <ScanlineOverlay />
+      <DevPanel />
     </CRTBackground>
   );
 }

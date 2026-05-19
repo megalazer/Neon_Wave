@@ -88,8 +88,33 @@ function WarningCard() {
   );
 }
 
-// --- PortraitFrame + InitBtn ---
-function PortraitFrame({ draft, onPress, glitchX, glitchOpacity }) {
+// --- PortraitFrame ---
+function PortraitFrame({ draft }) {
+  const handleName = draft.name || 'UNKNOWN';
+
+  return (
+    <View style={styles.portrait}>
+      <View style={[styles.bracket, styles.bTL, { borderColor: colors.primary }]} />
+      <View style={[styles.bracket, styles.bTR, { borderColor: colors.secondary }]} />
+      <View style={[styles.bracket, styles.bBL, { borderColor: colors.primary }]} />
+      <View style={[styles.bracket, styles.bBR, { borderColor: colors.secondary }]} />
+
+      <View style={styles.portraitCenter}>
+        <MaterialIcons name="person" size={72} color={`${colors.primary}70`} />
+        <Text style={styles.avatarHandle}>{handleName}</Text>
+        <Text style={styles.avatarLabel}>NEURAL_AVATAR_NOT_RENDERED</Text>
+      </View>
+
+      <View style={styles.hud}>
+        <Text style={[styles.hudLine, { color: colors.primary }]}>SCAN_COORD: 34.90.11</Text>
+        <Text style={[styles.hudLine, { color: colors.secondary }]}>ID_SIG: 0x8842_FINAL</Text>
+      </View>
+    </View>
+  );
+}
+
+// --- InitButton (fixed bottom) ---
+function InitButton({ onPress }) {
   const pulseOpacity = useSharedValue(0.3);
   const scanY = useSharedValue(-50);
   const scanAlpha = useSharedValue(0);
@@ -123,47 +148,23 @@ function PortraitFrame({ draft, onPress, glitchX, glitchOpacity }) {
     onPress();
   }, [onPress]);
 
-  const handleName = draft.name || 'UNKNOWN';
-
   return (
-    <View style={styles.portrait}>
-      {/* Border corners */}
-      <View style={[styles.bracket, styles.bTL, { borderColor: colors.primary }]} />
-      <View style={[styles.bracket, styles.bTR, { borderColor: colors.secondary }]} />
-      <View style={[styles.bracket, styles.bBL, { borderColor: colors.primary }]} />
-      <View style={[styles.bracket, styles.bBR, { borderColor: colors.secondary }]} />
-
-      {/* Centre icon */}
-      <View style={styles.portraitCenter}>
-        <MaterialIcons name={genderIcon} size={72} color={`${colors.primary}70`} />
-        <Text style={styles.avatarHandle}>{handleName}</Text>
-        <Text style={styles.avatarLabel}>NEURAL_AVATAR_NOT_RENDERED</Text>
-      </View>
-
-      {/* HUD overlay top-right */}
-      <View style={styles.hud}>
-        <Text style={[styles.hudLine, { color: colors.primary }]}>SCAN_COORD: 34.90.11</Text>
-        <Text style={[styles.hudLine, { color: colors.secondary }]}>ID_SIG: 0x8842_FINAL</Text>
-      </View>
-
-      {/* INITIALIZE_NEURAL button */}
-      <Animated.View style={[styles.initBtnWrapper, btnScaleStyle]}>
-        <TouchableOpacity style={styles.initBtn} onPress={handlePress} activeOpacity={0.9}>
-          <Animated.View style={[styles.initBtnTopLine, pulseStyle]} />
-          <View style={styles.initBtnScanWrap}>
-            <Animated.View style={[styles.initBtnScanStrip, scanStyle]} />
-          </View>
-          <View style={styles.initBtnRow}>
-            <MaterialIcons name="bolt" size={24} color={colors.primary} />
-            <Text style={styles.initBtnText}>INITIALIZE_NEURAL</Text>
-          </View>
-          <View style={styles.initBtnFooter}>
-            <Text style={styles.initBtnFooterText}>SECURE_LINK: ESTABLISHED</Text>
-            <Text style={styles.initBtnFooterText}>ENCRYPTION: 1024-BIT_AES_QUAL</Text>
-          </View>
-        </TouchableOpacity>
-      </Animated.View>
-    </View>
+    <Animated.View style={[styles.initBtnWrapper, btnScaleStyle]}>
+      <TouchableOpacity style={styles.initBtn} onPress={handlePress} activeOpacity={0.9}>
+        <Animated.View style={[styles.initBtnTopLine, pulseStyle]} />
+        <View style={styles.initBtnScanWrap}>
+          <Animated.View style={[styles.initBtnScanStrip, scanStyle]} />
+        </View>
+        <View style={styles.initBtnRow}>
+          <MaterialIcons name="bolt" size={24} color={colors.primary} />
+          <Text style={styles.initBtnText}>INITIALIZE_NEURAL</Text>
+        </View>
+        <View style={styles.initBtnFooter}>
+          <Text style={styles.initBtnFooterText}>SECURE_LINK: ESTABLISHED</Text>
+          <Text style={styles.initBtnFooterText}>ENCRYPTION: 1024-BIT_AES_QUAL</Text>
+        </View>
+      </TouchableOpacity>
+    </Animated.View>
   );
 }
 
@@ -225,7 +226,6 @@ export default function FinalizeScreen({ draft, onBack, onComplete }) {
     draft.starterCyberware || 'starter_neural_link',
   );
   const committed = useRef(false);
-  const genderIcon = 'person';
 
   const glitchX = useSharedValue(0);
   const glitchOpacity = useSharedValue(1);
@@ -271,10 +271,11 @@ export default function FinalizeScreen({ draft, onBack, onComplete }) {
           style={styles.scroll}
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
           <SyslogCard draft={draft} />
           <WarningCard />
-          <PortraitFrame draft={draft} onPress={handleInitialize} />
+          <PortraitFrame draft={draft} />
           <StatsGrid path={draft.path} />
 
           {/* Loadout selection */}
@@ -304,6 +305,8 @@ export default function FinalizeScreen({ draft, onBack, onComplete }) {
           <InitFooter />
         </ScrollView>
       </Animated.View>
+
+      <InitButton onPress={handleInitialize} />
     </View>
   );
 }
@@ -314,7 +317,7 @@ const styles = StyleSheet.create({
   content: {
     paddingTop: HEADER_H + 16,
     paddingHorizontal: 16,
-    paddingBottom: 16,
+    paddingBottom: 100,
     gap: 12,
   },
   decalL: {
@@ -418,12 +421,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceContainerLow,
     borderWidth: 2,
     borderColor: colors.secondaryContainer,
-    minHeight: 220,
-    position: 'relative',
+    minHeight: 160,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBottom: 72,
-    paddingTop: 16,
+    paddingVertical: 16,
   },
   bracket: { position: 'absolute', width: 20, height: 20 },
   bTL: { top: 6, left: 6, borderTopWidth: 2, borderLeftWidth: 2 },
@@ -449,7 +450,11 @@ const styles = StyleSheet.create({
     fontFamily: 'KodeMono_700Bold', fontSize: 8, letterSpacing: 0.8,
   },
   initBtnWrapper: {
-    position: 'absolute', bottom: 0, left: 0, right: 0,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
   },
   initBtn: {
     backgroundColor: colors.background,
