@@ -11,13 +11,14 @@ const CYAN = colors.primary;
 const RED  = colors.error;
 
 export default function BattleOutcomeOverlay({ outcome, stats, onExit }) {
-  if (!outcome) return null;
-
+  // Hooks must come before any early return
   const isVictory = outcome === 'victory';
   const accent = isVictory ? CYAN : RED;
 
   const glitchX = useSharedValue(0);
+
   useEffect(() => {
+    if (!outcome) return;
     glitchX.value = withRepeat(
       withSequence(
         withTiming(0, { duration: 1800 }),
@@ -28,11 +29,13 @@ export default function BattleOutcomeOverlay({ outcome, stats, onExit }) {
       ),
       -1,
     );
-  }, []);
+  }, [outcome]);
 
   const glitchStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: glitchX.value }],
   }));
+
+  if (!outcome) return null;
 
   const title = isVictory ? '>>> MISSION_COMPLETE <<<' : '>>> SQUAD_FLATLINED <<<';
 
@@ -43,20 +46,17 @@ export default function BattleOutcomeOverlay({ outcome, stats, onExit }) {
 
       <View style={styles.center}>
         <View style={[styles.panel, { borderColor: accent, shadowColor: accent }]}>
-          {/* Title with glitch */}
           <Animated.Text style={[styles.title, { color: accent }, glitchStyle]}>
             {title}
           </Animated.Text>
 
-          {/* Stats */}
           <View style={styles.stats}>
             <StatRow label="ROUNDS_COMPLETED" value={stats?.round ?? 0} accent={accent} />
             <StatRow label="DAMAGE_DEALT" value={stats?.damageDealt ?? 0} accent={accent} />
-            <StatRow label="HITS_LANDED" value={stats?.cyberSpent ?? 0} accent={accent} />
+            <StatRow label="HITS_LANDED" value={stats?.attacksLanded ?? 0} accent={accent} />
             <StatRow label="SURVIVORS" value={`${stats?.survivors ?? 0} / ${stats?.total ?? 0}`} accent={accent} />
           </View>
 
-          {/* Exit button */}
           <TouchableOpacity style={[styles.exitBtn, { borderColor: accent }]} onPress={onExit} activeOpacity={0.8}>
             <Text style={[styles.exitBtnText, { color: accent }]}>[EXIT_BATTLE]</Text>
           </TouchableOpacity>

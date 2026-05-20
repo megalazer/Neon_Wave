@@ -88,7 +88,7 @@ export default function PathScreen({ draft, onSetPath, onContinue }) {
                     },
                   ]}
                 >
-                  {active && <MaterialIcons name="check_circle" size={12} color={origin.color} />}
+                  {active && <MaterialIcons name="check-circle" size={12} color={origin.color} />}
                   <Text style={[styles.selectText, { color: origin.color }]}>
                     {active ? 'PATH_SELECTED' : 'EXECUTE_CHOICE'}
                   </Text>

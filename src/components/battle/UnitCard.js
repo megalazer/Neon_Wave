@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Animated, {
-  useSharedValue, useAnimatedStyle, withTiming, Easing,
+  useSharedValue, useAnimatedStyle, withTiming, withRepeat, withSequence, Easing,
 } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
@@ -15,6 +15,9 @@ export default function UnitCard({
   onPress,
   previewDamage = 0,
   onMeasure,
+  isSelected = false,
+  isPulsing = false,
+  pulseColor = CYAN,
 }) {
   const isFriendly = variant === 'friendly';
   const isDead     = unit.hp.current === 0;
@@ -25,6 +28,8 @@ export default function UnitCard({
   const barWidthSV = useSharedValue(0);
   const [barPxWidth, setBarPxWidth] = useState(0);
 
+  const pulseOp = useSharedValue(0);
+
   const cardRef = useRef(null);
 
   useEffect(() => {
@@ -34,9 +39,26 @@ export default function UnitCard({
     });
   }, [hpPct]);
 
-  // Uses shared values exclusively — no string percentages
+  useEffect(() => {
+    if (isPulsing) {
+      pulseOp.value = withRepeat(
+        withSequence(
+          withTiming(0.75, { duration: 550 }),
+          withTiming(0.15, { duration: 550 }),
+        ),
+        -1,
+      );
+    } else {
+      pulseOp.value = withTiming(0, { duration: 180 });
+    }
+  }, [isPulsing]);
+
   const barStyle = useAnimatedStyle(() => ({
     width: hpAnim.value * barWidthSV.value,
+  }));
+
+  const pulseStyle = useAnimatedStyle(() => ({
+    opacity: pulseOp.value,
   }));
 
   const handleBarLayout = useCallback((e) => {
@@ -52,11 +74,13 @@ export default function UnitCard({
     });
   }, [onMeasure]);
 
-  // Preview chunk: shows incoming damage at the right edge of the current HP fill
   const previewPx = (barPxWidth > 0 && unit.hp.max > 0 && !isDead)
     ? (Math.min(previewDamage, unit.hp.current) / unit.hp.max) * barPxWidth
     : 0;
   const previewLeft = Math.max(0, hpPct * barPxWidth - previewPx);
+
+  // Selected friendly: brighter accent border
+  const selectedBorderColor = isSelected ? accent : 'transparent';
 
   const portrait = (
     <View style={[styles.portrait, { borderColor: isDead ? `${accent}44` : accent }]}>
@@ -104,24 +128,33 @@ export default function UnitCard({
         {!isFriendly && portrait}
       </View>
 
-      {/* HP bar */}
-      <View style={styles.hpBg} onLayout={handleBarLayout}>
-        {/* Animated fill */}
+      {/* HP bar — alignSelf: stretch fixes zero-width bug on hostile cards */}
+      <View style={[styles.hpBg, { alignSelf: 'stretch' }]} onLayout={handleBarLayout}>
         <Animated.View style={[
           styles.hpFill,
           { backgroundColor: isDead ? colors.errorContainer : accent, shadowColor: accent },
           barStyle,
         ]} />
 
-        {/* Damage preview chunk — regular View, positioned with plain JS */}
         {previewPx > 0 && (
           <View style={[styles.previewChunk, { width: previewPx, left: previewLeft }]} />
         )}
       </View>
+
+      {/* Pulse glow overlay — pointer-events none */}
+      <Animated.View
+        style={[StyleSheet.absoluteFill, styles.pulseOverlay, { borderColor: pulseColor }, pulseStyle]}
+        pointerEvents="none"
+      />
+
+      {/* Selected outline — always visible at full opacity when selected */}
+      {isSelected && (
+        <View style={[StyleSheet.absoluteFill, styles.selectedOutline, { borderColor: selectedBorderColor }]} pointerEvents="none" />
+      )}
     </View>
   );
 
-  if (!isFriendly && onPress && !isDead) {
+  if (onPress && !isDead) {
     return (
       <TouchableOpacity onPress={onPress} activeOpacity={0.75}>
         {inner}
@@ -143,6 +176,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0,
     borderTopColor: 'transparent',
     borderBottomColor: 'transparent',
+    overflow: 'hidden',
   },
   cardFriendly: {
     paddingLeft: 6,
@@ -217,5 +251,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 5,
     elevation: 3,
+  },
+  pulseOverlay: {
+    borderWidth: 2,
+  },
+  selectedOutline: {
+    borderWidth: 2,
   },
 });

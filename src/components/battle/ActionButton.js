@@ -8,28 +8,27 @@ const RED   = colors.error;
 const GREEN = '#00E676';
 
 function getConfig(combat) {
-  const { phase, rerollsRemaining, dice, playerAssignments } = combat;
-  const aliveDice    = dice.filter((d) => d.alive);
-  const allAssigned  = aliveDice.length > 0 && aliveDice.every((d) => d.assigned !== null);
-  const hasAny       = playerAssignments.length > 0;
+  const { phase, dice, cyberPool } = combat;
+  const assigned = dice.filter((d) => d.alive && d.spent).length;
 
   switch (phase) {
     case 'roll':
-      return { label: '[ ROLL_DICE ]', enabled: true, color: CYAN };
+      return { label: '[ — ]', enabled: false, color: `${CYAN}28` };
 
-    case 'targeting':
-      if (!allAssigned && rerollsRemaining > 0) {
-        return {
-          label: `[ REROLL ] (${rerollsRemaining} / 2)`,
-          enabled: true,
-          color: MAG,
-        };
+    case 'targeting': {
+      if (assigned === 0) {
+        return { label: '[ ASSIGN_TARGETS ]', enabled: false, color: `${CYAN}44` };
+      }
+      if (cyberPool < assigned) {
+        const need = assigned - cyberPool;
+        return { label: `[ NEED ${need} MORE CYBER ]`, enabled: false, color: RED };
       }
       return {
-        label: '[ LOCK_IN_ATTACKS ]',
-        enabled: hasAny,
-        color: hasAny ? CYAN : `${CYAN}55`,
+        label: `[ LOCK_IN_ATTACKS (${assigned}) // -${assigned} CY ]`,
+        enabled: true,
+        color: CYAN,
       };
+    }
 
     case 'executing':
       return { label: '[ ...EXECUTING ]', enabled: false, color: MAG };
@@ -44,7 +43,7 @@ function getConfig(combat) {
       return { label: '[ EXIT_BATTLE ]', enabled: true, color: RED };
 
     default:
-      return { label: '[ ... ]', enabled: false, color: CYAN };
+      return { label: '[ ... ]', enabled: false, color: `${CYAN}44` };
   }
 }
 
@@ -58,13 +57,12 @@ export default function ActionButton({ combat, onPress }) {
       disabled={!enabled}
       activeOpacity={0.75}
     >
-      {/* Corner accent ticks */}
       <View style={[styles.tick, styles.tl, { borderColor: color }]} />
       <View style={[styles.tick, styles.tr, { borderColor: color }]} />
       <View style={[styles.tick, styles.bl, { borderColor: color }]} />
       <View style={[styles.tick, styles.br, { borderColor: color }]} />
 
-      <Text style={[styles.label, { color: enabled ? color : `${color}66` }]}>
+      <Text style={[styles.label, { color: enabled ? color : `${color}55` }]} numberOfLines={1} adjustsFontSizeToFit>
         {label}
       </Text>
     </TouchableOpacity>
@@ -73,18 +71,19 @@ export default function ActionButton({ combat, onPress }) {
 
 const styles = StyleSheet.create({
   btn: {
-    height: 72,
+    height: 80,
     marginHorizontal: 12,
-    marginVertical: 10,
+    marginVertical: 4,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.surfaceContainerLowest,
+    paddingHorizontal: 16,
   },
   label: {
     fontFamily: 'KodeMono_700Bold',
-    fontSize: 13,
-    letterSpacing: 2.5,
+    fontSize: 12,
+    letterSpacing: 2,
     textTransform: 'uppercase',
   },
   tick: {
@@ -92,8 +91,8 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
   },
-  tl: { top: -1, left: -1,   borderTopWidth: 2, borderLeftWidth: 2 },
-  tr: { top: -1, right: -1,  borderTopWidth: 2, borderRightWidth: 2 },
-  bl: { bottom: -1, left: -1,  borderBottomWidth: 2, borderLeftWidth: 2 },
-  br: { bottom: -1, right: -1, borderBottomWidth: 2, borderRightWidth: 2 },
+  tl: { top: -1, left: -1,    borderTopWidth: 2, borderLeftWidth: 2 },
+  tr: { top: -1, right: -1,   borderTopWidth: 2, borderRightWidth: 2 },
+  bl: { bottom: -1, left: -1,   borderBottomWidth: 2, borderLeftWidth: 2 },
+  br: { bottom: -1, right: -1,  borderBottomWidth: 2, borderRightWidth: 2 },
 });

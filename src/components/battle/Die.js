@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue, useAnimatedStyle,
   withRepeat, withSequence, withTiming, withDelay,
@@ -16,16 +16,14 @@ export default function Die({
   lockDelay = 600,
   onLocked,
   ownerName,
-  isSelected = false,
-  assigned = null,
+  spent = false,
   alive = true,
-  onPress,
   onMeasure,
 }) {
   const [display, setDisplay] = useState(value);
   const intervalRef = useRef(null);
-  const lockedRef  = useRef(false);
-  const viewRef    = useRef(null);
+  const lockedRef   = useRef(false);
+  const viewRef     = useRef(null);
 
   const shakeX = useSharedValue(0);
   useEffect(() => {
@@ -59,13 +57,6 @@ export default function Die({
         onLocked?.();
       } else if (!lockedRef.current && alive) {
         setDisplay(Math.floor(Math.random() * 10) + 1);
-      } else if (!lockedRef.current && !alive) {
-        // Dead die: still needs to call onLocked after lockDelay but doesn't cycle
-        if (elapsed >= lockDelay) {
-          lockedRef.current = true;
-          clearInterval(intervalRef.current);
-          onLocked?.();
-        }
       }
     }, 80);
 
@@ -86,30 +77,23 @@ export default function Die({
     transform: [{ translateX: -shakeX.value }],
   }));
 
-  const isDead   = !alive;
-  const isEmpty  = display === 0;
-  const label    = isEmpty ? '--' : String(display).padStart(2, '0');
+  const isDead  = !alive;
+  const isEmpty = display === 0;
+  const label   = isEmpty ? '--' : String(display).padStart(2, '0');
 
-  const borderColor  = isSelected ? CYAN : isDead ? `${CYAN}22` : `${CYAN}66`;
-  const borderWidth  = isSelected ? 2.5 : 1.5;
-  const shadowOp     = isSelected ? 1 : isDead ? 0 : 0.5;
-  const bgColor      = isSelected ? `${CYAN}22` : `${CYAN}0D`;
+  // spent = assigned and locked in; dim the die
+  const borderColor = spent ? `${CYAN}33` : isDead ? `${CYAN}22` : `${CYAN}66`;
+  const borderWidth = 1.5;
+  const shadowOp    = spent || isDead ? 0 : 0.5;
+  const bgColor     = spent ? `${CYAN}06` : `${CYAN}0D`;
 
   return (
-    <TouchableOpacity
+    <View
       ref={viewRef}
-      onPress={alive && !isRolling ? onPress : undefined}
       onLayout={handleLayout}
-      disabled={!alive || isRolling}
-      activeOpacity={0.75}
-      style={[styles.outer, isDead && styles.outerDead]}
+      style={[styles.outer, (isDead || spent) && styles.outerDim]}
     >
-      <View style={[styles.diamond, {
-        borderColor,
-        borderWidth,
-        shadowOpacity: shadowOp,
-        backgroundColor: bgColor,
-      }]}>
+      <View style={[styles.diamond, { borderColor, borderWidth, shadowOpacity: shadowOp, backgroundColor: bgColor }]}>
         <View style={styles.numberWrap}>
           <Animated.Text style={[styles.numGhost, { color: MAG, left: 2 }, magLayerStyle]}>
             {label}
@@ -117,22 +101,21 @@ export default function Die({
           <Animated.Text style={[styles.numGhost, { color: CYAN, left: -2 }, cyanLayerStyle]}>
             {label}
           </Animated.Text>
-          <Text style={[styles.num, (isEmpty || isDead) && styles.numDim]}>{label}</Text>
+          <Text style={[styles.num, (isEmpty || isDead || spent) && styles.numDim]}>{label}</Text>
         </View>
       </View>
 
-      {/* Assigned indicator: small dot on corner of diamond */}
-      {assigned && !isDead && (
-        <View style={styles.assignedDot} />
+      {/* Spent indicator: small dot on corner */}
+      {spent && !isDead && (
+        <View style={styles.spentDot} />
       )}
 
-      {/* Owner name below die */}
       {ownerName ? (
-        <Text style={[styles.ownerLabel, isDead && styles.ownerLabelDead]} numberOfLines={1}>
+        <Text style={[styles.ownerLabel, (isDead || spent) && styles.ownerLabelDim]} numberOfLines={1}>
           {ownerName.toUpperCase()}
         </Text>
       ) : null}
-    </TouchableOpacity>
+    </View>
   );
 }
 
@@ -142,14 +125,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
-  outerDead: {
-    opacity: 0.3,
+  outerDim: {
+    opacity: 0.35,
   },
   diamond: {
     width: DSIZE * 0.72,
     height: DSIZE * 0.72,
-    borderWidth: 1.5,
-    borderColor: `${CYAN}66`,
     alignItems: 'center',
     justifyContent: 'center',
     transform: [{ rotate: '45deg' }],
@@ -158,7 +139,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 8,
     elevation: 6,
-    backgroundColor: `${CYAN}0D`,
   },
   numberWrap: {
     transform: [{ rotate: '-45deg' }],
@@ -183,7 +163,7 @@ const styles = StyleSheet.create({
   numDim: {
     color: `${CYAN}55`,
   },
-  assignedDot: {
+  spentDot: {
     position: 'absolute',
     top: 0,
     right: 4,
@@ -205,7 +185,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     textAlign: 'center',
   },
-  ownerLabelDead: {
+  ownerLabelDim: {
     color: `${CYAN}33`,
   },
 });

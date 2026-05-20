@@ -34,7 +34,7 @@ export default function InitHeader({ step, stepLabel }) {
       <View style={styles.row}>
         <View style={styles.rowLeft}>
           <MaterialIcons
-            name="settings_input_component"
+            name="settings-input-component"
             size={16}
             color={colors.primary}
           />

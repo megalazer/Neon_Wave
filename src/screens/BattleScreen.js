@@ -10,43 +10,55 @@ import Die from '../components/battle/Die';
 import UnitCard from '../components/battle/UnitCard';
 import PhaseBanner from '../components/battle/PhaseBanner';
 import ActionButton from '../components/battle/ActionButton';
+import CompactRollControls from '../components/battle/CompactRollControls';
+import RoundInfo from '../components/battle/RoundInfo';
+import CyberPool from '../components/battle/CyberPool';
+import CyberDock from '../components/battle/CyberDock';
 import TargetingOverlay from '../components/battle/TargetingOverlay';
 import BattleOutcomeOverlay from '../components/battle/BattleOutcomeOverlay';
+import { CYBER_ABILITIES } from '../data/cyberAbilities';
 
 const CYAN = colors.primary;
 const MAG  = colors.secondaryContainer;
 const RED  = colors.error;
 
-// Each die locks in sequence; index 3 is always last
+const ACCENT_COLORS = {
+  primary:   CYAN,
+  secondary: MAG,
+  error:     RED,
+  tertiary:  '#00E676',
+};
+
 const LOCK_DELAYS = [600, 800, 1000, 1200];
 
 const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// ── Dice Hub ─────────────────────────────────────────────────────────────────
-function DiceHub({ dice, friendly, rolling, selectedDieIndex, onDiePress, onLastDieLocked, onDieMeasure }) {
+// ── Dice Hub ──────────────────────────────────────────────────────────────────
+function DiceHub({ dice, friendly, rolling, phase, onLastDieLocked }) {
+  const hubLabel = phase === 'targeting'
+    ? 'NEURAL_DICE // TARGETING_ACTIVE'
+    : 'NEURAL_DICE // STAND_BY';
+
   return (
     <View style={hub.wrap}>
       <View style={[hub.tick, hub.tl]} /><View style={[hub.tick, hub.tr]} />
       <View style={[hub.tick, hub.bl]} /><View style={[hub.tick, hub.br]} />
 
-      <Text style={hub.label}>NEURAL_DICE // ACT_READY</Text>
+      <Text style={hub.label}>{hubLabel}</Text>
 
       <View style={hub.row}>
         {dice.map((die, i) => {
           const owner = friendly.find((u) => u.id === die.ownerId);
           return (
             <Die
-              key={i}
+              key={die.ownerId}
               value={die.value}
               isRolling={rolling}
-              lockDelay={LOCK_DELAYS[i]}
+              lockDelay={LOCK_DELAYS[i] ?? 1200}
               onLocked={i === dice.length - 1 ? onLastDieLocked : undefined}
               ownerName={owner?.name ?? ''}
-              isSelected={selectedDieIndex === i}
-              assigned={die.assigned}
+              spent={die.spent}
               alive={die.alive}
-              onPress={() => onDiePress(i)}
-              onMeasure={(coords) => onDieMeasure(i, coords)}
             />
           );
         })}
@@ -56,7 +68,17 @@ function DiceHub({ dice, friendly, rolling, selectedDieIndex, onDiePress, onLast
 }
 
 // ── Tactical Field ────────────────────────────────────────────────────────────
-function TacticalField({ friendly, hostile, previewByEnemy, onEnemyPress, onFriendlyMeasure, onHostileMeasure }) {
+function TacticalField({
+  friendly, hostile,
+  selectedFriendlyId, phase,
+  pendingAbility, abilityIsSingleTarget, abilityAccent,
+  previewByEnemy,
+  onFriendlyPress, onEnemyPress,
+  onUnitMeasure,
+}) {
+  const hasSelection   = selectedFriendlyId !== null;
+  const playerTargeting = hasSelection && phase === 'targeting';
+
   return (
     <View style={tac.wrap}>
       {/* Friendly column */}
@@ -65,14 +87,23 @@ function TacticalField({ friendly, hostile, previewByEnemy, onEnemyPress, onFrie
           <View style={[tac.sideLine, { backgroundColor: CYAN }]} />
           <Text style={[tac.sideLabelText, { color: CYAN }]}>FRIENDLY_UNITS</Text>
         </View>
-        {friendly.map((u) => (
-          <UnitCard
-            key={u.id}
-            unit={u}
-            variant="friendly"
-            onMeasure={(coords) => onFriendlyMeasure(u.id, coords)}
-          />
-        ))}
+        {friendly.map((u) => {
+          const isSelected = selectedFriendlyId === u.id;
+          const isDead = u.hp.current === 0;
+          const canPress = phase === 'targeting' && !isDead;
+          return (
+            <UnitCard
+              key={u.id}
+              unit={u}
+              variant="friendly"
+              onPress={canPress ? () => onFriendlyPress(u.id) : undefined}
+              isSelected={isSelected}
+              isPulsing={isSelected && phase === 'targeting'}
+              pulseColor={CYAN}
+              onMeasure={(coords) => onUnitMeasure(u.id, coords)}
+            />
+          );
+        })}
       </View>
 
       {/* Hostile column */}
@@ -81,35 +112,71 @@ function TacticalField({ friendly, hostile, previewByEnemy, onEnemyPress, onFrie
           <Text style={[tac.sideLabelText, { color: RED }]}>HOSTILE_OPERATIVES</Text>
           <View style={[tac.sideLine, { backgroundColor: RED }]} />
         </View>
-        {hostile.map((u) => (
-          <UnitCard
-            key={u.id}
-            unit={u}
-            variant="hostile"
-            onPress={() => onEnemyPress(u.id)}
-            previewDamage={previewByEnemy[u.id] || 0}
-            onMeasure={(coords) => onHostileMeasure(u.id, coords)}
-          />
-        ))}
+        {hostile.map((u) => {
+          const isDead = u.hp.current === 0;
+          // Enemy is pressable for ability targeting OR dice targeting
+          const canPress = !isDead && (abilityIsSingleTarget || playerTargeting);
+          // Enemy pulses when targeted by ability or dice selection
+          const enemyPulsing = !isDead && (abilityIsSingleTarget || playerTargeting);
+          const enemyColor = abilityIsSingleTarget ? abilityAccent : RED;
+          return (
+            <UnitCard
+              key={u.id}
+              unit={u}
+              variant="hostile"
+              onPress={canPress ? () => onEnemyPress(u.id) : undefined}
+              previewDamage={previewByEnemy[u.id] || 0}
+              isPulsing={enemyPulsing}
+              pulseColor={enemyColor}
+              onMeasure={(coords) => onUnitMeasure(u.id, coords)}
+            />
+          );
+        })}
       </View>
+    </View>
+  );
+}
+
+// ── Active Buff Chips ─────────────────────────────────────────────────────────
+function BuffChips({ squadBuffs }) {
+  if (!squadBuffs.length) return null;
+  return (
+    <View style={buff.row}>
+      {squadBuffs.map((b) => (
+        <View key={b.sourceClassId} style={buff.chip}>
+          <Text style={buff.text}>
+            {b.type === 'damage_reduction'
+              ? `PHANTOM // -${Math.round(b.value * 100)}% DMG`
+              : b.type.toUpperCase()}
+          </Text>
+        </View>
+      ))}
     </View>
   );
 }
 
 // ── Main BattleScreen ─────────────────────────────────────────────────────────
 export default function BattleScreen({ onExit }) {
-  const combat = useStore((s) => s.combat);
+  const combat     = useStore((s) => s.combat);
   const exitBattle = useStore((s) => s.exitBattle);
 
-  const [diceCoords, setDiceCoords] = useState({});
-  const [unitCoords, setUnitCoords]  = useState({});
+  const [unitCoords, setUnitCoords] = useState({});
 
-  // ── Coordinate-driven targeting lines ──
+  // Derive ability targeting state
+  const pendingAbility       = combat.pendingAbility;
+  const pendingAbilityData   = pendingAbility ? CYBER_ABILITIES[pendingAbility.classId] : null;
+  const abilityIsSingleTarget = pendingAbilityData?.effect.type === 'single_target_damage';
+  const abilityAccent        = pendingAbilityData
+    ? (ACCENT_COLORS[pendingAbilityData.accent] ?? CYAN)
+    : CYAN;
+
+  // Lines: friendly unit → assigned hostile, and enemy retaliation
   const lines = useMemo(() => {
     const result = [];
-    for (const a of combat.playerAssignments) {
-      const src = diceCoords[a.dieIndex];
-      const dst = unitCoords[a.targetId];
+    for (const die of combat.dice) {
+      if (!die.alive || !die.spent || !die.assignedTo) continue;
+      const src = unitCoords[die.ownerId];
+      const dst = unitCoords[die.assignedTo];
       if (src && dst) result.push({ x1: src.x, y1: src.y, x2: dst.x, y2: dst.y, type: 'player' });
     }
     for (const a of combat.enemyAssignments) {
@@ -118,29 +185,32 @@ export default function BattleScreen({ onExit }) {
       if (src && dst) result.push({ x1: src.x, y1: src.y, x2: dst.x, y2: dst.y, type: 'enemy' });
     }
     return result;
-  }, [combat.playerAssignments, combat.enemyAssignments, diceCoords, unitCoords]);
+  }, [combat.dice, combat.enemyAssignments, unitCoords]);
 
-  // ── Damage previews on enemy HP bars ──
+  // Preview damage on enemy HP bars from assigned dice
   const previewByEnemy = useMemo(() => {
     const map = {};
-    for (const a of combat.playerAssignments) {
-      map[a.targetId] = (map[a.targetId] || 0) + a.damage;
+    for (const die of combat.dice) {
+      if (die.alive && die.spent && die.assignedTo) {
+        map[die.assignedTo] = (map[die.assignedTo] || 0) + die.value;
+      }
     }
     return map;
-  }, [combat.playerAssignments]);
+  }, [combat.dice]);
 
-  // ── Executing phase: sequential player hits ──
+  // ── Executing phase ──
   useEffect(() => {
     if (combat.phase !== 'executing') return;
     let cancelled = false;
 
     (async () => {
-      const { playerAssignments } = useStore.getState().combat;
+      const { dice } = useStore.getState().combat;
+      const spentDice = dice.filter((d) => d.alive && d.spent && d.assignedTo);
       await delay(200);
 
-      for (const a of playerAssignments) {
+      for (const die of spentDice) {
         if (cancelled) return;
-        useStore.getState().applyPlayerHit(a.dieIndex);
+        useStore.getState().applyPlayerHit(die.ownerId);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         await delay(380);
       }
@@ -158,7 +228,7 @@ export default function BattleScreen({ onExit }) {
     return () => { cancelled = true; };
   }, [combat.phase]);
 
-  // ── Enemy turn: sequential enemy hits ──
+  // ── Enemy turn ──
   useEffect(() => {
     if (combat.phase !== 'enemy_turn') return;
     let cancelled = false;
@@ -176,7 +246,7 @@ export default function BattleScreen({ onExit }) {
 
       if (cancelled) return;
       await delay(400);
-      if (!cancelled) useStore.getState().endEnemyTurn();
+      if (!cancelled) useStore.getState().endRound();
     })();
 
     return () => { cancelled = true; };
@@ -184,94 +254,115 @@ export default function BattleScreen({ onExit }) {
 
   // ── Handlers ──
 
-  const handleDiePress = useCallback((index) => {
+  const handleExit = useCallback(() => {
+    exitBattle();
+    onExit();
+  }, [exitBattle, onExit]);
+
+  const handleFriendlyPress = useCallback((unitId) => {
     const store = useStore.getState();
-    const { phase, selectedDieIndex, dice } = store.combat;
+    const { phase, dice } = store.combat;
     if (phase !== 'targeting') return;
-    const die = dice[index];
+
+    const die = dice.find((d) => d.ownerId === unitId);
     if (!die?.alive) return;
 
-    if (die.assigned !== null) {
-      // Tap assigned die → clear it and reselect for retargeting
-      store.clearAssignment(index);
-      store.selectDie(index);
+    if (die.spent) {
+      store.clearAttack(unitId);
     } else {
-      // Tap unselected/selected → toggle selection
-      store.selectDie(index);
+      store.selectFriendly(unitId);
     }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   }, []);
 
   const handleEnemyPress = useCallback((unitId) => {
     const store = useStore.getState();
-    const { phase, selectedDieIndex } = store.combat;
-    if (phase !== 'targeting' || selectedDieIndex === null) return;
-    store.assignDie(selectedDieIndex, unitId);
+    const { pendingAbility, phase, selectedFriendlyId } = store.combat;
+
+    // Ability targeting takes priority
+    if (pendingAbility) {
+      store.executeAbility(unitId);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      return;
+    }
+
+    // Dice targeting
+    if (phase !== 'targeting' || !selectedFriendlyId) return;
+    store.assignAttack(unitId);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  }, []);
+
+  const handleAbilityPress = useCallback((classId) => {
+    const store = useStore.getState();
+    const ability = CYBER_ABILITIES[classId];
+    if (!ability) return;
+
+    const { cyberPool, pendingAbility } = store.combat;
+
+    // Toggle off if already pending
+    if (pendingAbility?.classId === classId) {
+      store.clearAbility();
+      return;
+    }
+
+    if (cyberPool < ability.cyberCost) return;
+
+    store.selectAbility(classId);
+
+    // Auto-execute non-single-target abilities immediately
+    if (ability.effect.type !== 'single_target_damage') {
+      store.executeAbility(null);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    } else {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+  }, []);
+
+  const handleCancelAbility = useCallback(() => {
+    useStore.getState().clearAbility();
+  }, []);
+
+  const handleRoll = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    useStore.getState().rollDice();
+  }, []);
+
+  const handleReroll = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    useStore.getState().rerollDice();
   }, []);
 
   const handleActionPress = useCallback(() => {
     const store = useStore.getState();
-    const { phase, rerollsRemaining, dice, playerAssignments } = store.combat;
-    const aliveDice   = dice.filter((d) => d.alive);
-    const allAssigned = aliveDice.length > 0 && aliveDice.every((d) => d.assigned !== null);
-
-    if (phase === 'roll') {
+    const { phase } = store.combat;
+    if (phase === 'targeting') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      store.rollDice();
-    } else if (phase === 'targeting') {
-      if (!allAssigned && rerollsRemaining > 0) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        store.rerollDice();
-      } else if (playerAssignments.length > 0) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        store.lockInAttacks();
-      }
+      store.lockInAttacks();
     } else if (phase === 'victory' || phase === 'defeat') {
-      handleExit();
+      exitBattle();
+      onExit();
     }
-  }, []);
+  }, [exitBattle, onExit]);
 
   const handleLastDieLocked = useCallback(() => {
     useStore.getState().finishRolling();
   }, []);
 
-  const handleExit = useCallback(() => {
-    exitBattle();
-    onExit();
-  }, [exitBattle, onExit]);
-
-  const handleDieMeasure = useCallback((index, coords) => {
-    setDiceCoords((prev) => {
-      if (prev[index]?.x === coords.x && prev[index]?.y === coords.y) return prev;
-      return { ...prev, [index]: coords };
-    });
-  }, []);
-
-  const handleFriendlyMeasure = useCallback((unitId, coords) => {
+  const handleUnitMeasure = useCallback((unitId, coords) => {
     setUnitCoords((prev) => {
       if (prev[unitId]?.x === coords.x && prev[unitId]?.y === coords.y) return prev;
       return { ...prev, [unitId]: coords };
     });
   }, []);
 
-  const handleHostileMeasure = useCallback((unitId, coords) => {
-    setUnitCoords((prev) => {
-      if (prev[unitId]?.x === coords.x && prev[unitId]?.y === coords.y) return prev;
-      return { ...prev, [unitId]: coords };
-    });
-  }, []);
-
-  const { friendly, hostile, dice, phase, rerollsRemaining, selectedDieIndex, rolling, round, outcome, damageDealt, attacksLanded } = combat;
+  const {
+    friendly, hostile, dice, phase, rerollsRemaining,
+    selectedFriendlyId, rolling, round, cyberPool, squadBuffs,
+    outcome, damageDealt, attacksLanded,
+  } = combat;
 
   const survivors = friendly.filter((u) => u.hp.current > 0).length;
-  const stats = {
-    round,
-    damageDealt,
-    cyberSpent: attacksLanded,
-    survivors,
-    total: friendly.length,
-  };
+  const stats = { round, damageDealt, attacksLanded, survivors, total: friendly.length };
 
   return (
     <View style={styles.screen}>
@@ -282,35 +373,64 @@ export default function BattleScreen({ onExit }) {
         round={round}
         friendly={friendly}
         rerollsRemaining={rerollsRemaining}
+        pendingAbility={pendingAbility}
+        onCancelAbility={handleCancelAbility}
       />
 
       <DiceHub
         dice={dice}
         friendly={friendly}
         rolling={rolling}
-        selectedDieIndex={selectedDieIndex}
-        onDiePress={handleDiePress}
+        phase={phase}
         onLastDieLocked={handleLastDieLocked}
-        onDieMeasure={handleDieMeasure}
       />
 
       <TacticalField
         friendly={friendly}
         hostile={hostile}
+        selectedFriendlyId={selectedFriendlyId}
+        phase={phase}
+        pendingAbility={pendingAbility}
+        abilityIsSingleTarget={abilityIsSingleTarget}
+        abilityAccent={abilityAccent}
         previewByEnemy={previewByEnemy}
+        onFriendlyPress={handleFriendlyPress}
         onEnemyPress={handleEnemyPress}
-        onFriendlyMeasure={handleFriendlyMeasure}
-        onHostileMeasure={handleHostileMeasure}
+        onUnitMeasure={handleUnitMeasure}
       />
 
+      {/* Active buff chips */}
+      <BuffChips squadBuffs={squadBuffs} />
+
+      {/* Cyber ability dock */}
+      <CyberDock
+        friendly={friendly}
+        cyberPool={cyberPool}
+        pendingAbility={pendingAbility}
+        phase={phase}
+        onAbilityPress={handleAbilityPress}
+      />
+
+      {/* Roll controls row */}
+      <CompactRollControls
+        combat={combat}
+        onRoll={handleRoll}
+        onReroll={handleReroll}
+      />
+
+      {/* Cyber Pool bar */}
+      <CyberPool current={cyberPool} />
+
+      {/* Main action button */}
       <ActionButton combat={combat} onPress={handleActionPress} />
+
+      {/* Round info strip */}
+      <RoundInfo round={round} friendly={friendly} />
 
       <NoiseTexture />
       <ScanlineOverlay />
 
-      {/* Coordinate-driven targeting lines — over everything, no pointer events */}
       <TargetingOverlay lines={lines} phase={phase} />
-
       <BattleOutcomeOverlay outcome={outcome} stats={stats} onExit={handleExit} />
     </View>
   );
@@ -395,6 +515,30 @@ const tac = StyleSheet.create({
   sideLabelText: {
     fontFamily: 'KodeMono_700Bold',
     fontSize: 8,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+});
+
+const buff = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  chip: {
+    borderWidth: 1,
+    borderColor: `${MAG}66`,
+    backgroundColor: `${MAG}12`,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  text: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 7,
+    color: MAG,
     letterSpacing: 1.2,
     textTransform: 'uppercase',
   },

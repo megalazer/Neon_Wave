@@ -285,7 +285,7 @@ export default function HavenScreen() {
     >
       {/* Available Operatives */}
       <View style={styles.section}>
-        <SectionHeader icon="group_add" label="[AVAILABLE_OPERATIVES]" color={colors.primary} />
+        <SectionHeader icon="group-add" label="[AVAILABLE_OPERATIVES]" color={colors.primary} />
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -312,7 +312,7 @@ export default function HavenScreen() {
       {/* Recharge Bar */}
       <View style={styles.section}>
         <SectionHeader
-          icon="local_bar"
+          icon="local-bar"
           label="[RECHARGE_BAR: Drinks & Stimulants]"
           color={colors.secondaryContainer}
         />
@@ -334,7 +334,7 @@ export default function HavenScreen() {
 
       {/* Party Roster */}
       <View style={styles.section}>
-        <SectionHeader icon="view_list" label="[PARTY_ROSTER]" color={colors.primary} />
+        <SectionHeader icon="view-list" label="[PARTY_ROSTER]" color={colors.primary} />
         {members.map((member, i) => (
           <RosterRow key={member.id} member={member} index={i} onDismiss={handleDismissPress} />
         ))}

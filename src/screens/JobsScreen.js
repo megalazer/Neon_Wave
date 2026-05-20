@@ -230,7 +230,7 @@ function ContractCard({ contract, renown, onAccept }) {
         <View style={styles.objectivesList}>
           {contract.objectives.map((obj, i) => (
             <View key={i} style={styles.objectiveRow}>
-              <MaterialIcons name="chevron_right" size={12} color={`${accentColor}99`} />
+              <MaterialIcons name="chevron-right" size={12} color={`${accentColor}99`} />
               <Text style={[styles.objectiveText, { color: `${accentColor}CC` }]}>{obj}</Text>
             </View>
           ))}

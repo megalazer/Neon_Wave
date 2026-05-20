@@ -117,7 +117,7 @@ function AssetCard({ asset, type, accent, accentOn, isOwned, credits, onPurchase
     ? (type === 're' ? 'INITIATE_PURCHASE_PROTOCOL' : 'DEPLOY_FUNDS_TRANSFER')
     : '[NO_FUNDS]';
 
-  const btnIcon = isOwned ? 'play_arrow' : type === 're' ? 'lock_open' : asset.icon;
+  const btnIcon = isOwned ? 'play-arrow' : type === 're' ? 'lock-open' : asset.icon;
   const btnAccent = isOwned || canAfford ? accent : colors.error;
 
   return (

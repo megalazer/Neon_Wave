@@ -1,8 +1,8 @@
 export const TEST_FRIENDLY_UNITS = [
-  { id: 'unit_cipher',  name: 'Cipher',  level: 24, hp: { current: 85,  max: 100 } },
-  { id: 'unit_ronin',   name: 'Ronin_X', level: 30, hp: { current: 100, max: 100 } },
-  { id: 'unit_vex',     name: 'Vex',     level: 22, hp: { current: 62,  max: 100 } },
-  { id: 'unit_lyra',    name: 'Lyra',    level: 28, hp: { current: 45,  max: 100 } },
+  { id: 'unit_cipher',  name: 'Cipher',  class: 'netrunner',     level: 24, hp: { current: 85,  max: 100 } },
+  { id: 'unit_ronin',   name: 'Ronin_X', class: 'street_samurai', level: 30, hp: { current: 100, max: 100 } },
+  { id: 'unit_vex',     name: 'Vex',     class: 'fixer',         level: 22, hp: { current: 62,  max: 100 } },
+  { id: 'unit_lyra',    name: 'Lyra',    class: 'chrome_doc',    level: 28, hp: { current: 45,  max: 100 } },
 ];
 
 export const TEST_HOSTILE_UNITS = [
