@@ -130,6 +130,11 @@ export const createDevSlice = (set, get) => ({
       });
     }),
 
+  devSetName: (name) =>
+    set((state) => {
+      state.character.name = String(name).trim() || state.character.name;
+    }),
+
   devSoftReset: () =>
     set((state) => {
       state.character.name = null;

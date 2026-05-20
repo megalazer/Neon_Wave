@@ -23,6 +23,7 @@ import PathScreen from './src/screens/init/PathScreen';
 import IdentityScreen from './src/screens/init/IdentityScreen';
 import FinalizeScreen from './src/screens/init/FinalizeScreen';
 import DevPanel from './src/screens/DevPanel';
+import BattleScreen from './src/screens/BattleScreen';
 
 const SCREEN_SUBTITLES = {
   neural: 'NEURAL_LOG',
@@ -59,6 +60,7 @@ function ActiveScreen({ activeTab, onNavigate }) {
 export default function App() {
   const [fontsLoaded, fontError] = useFonts(fontMap);
   const [activeTab, setActiveTab] = useState('neural');
+  const [battleActive, setBattleActive] = useState(false);
   const [initStep, setInitStep] = useState(1);
   const [initDraft, setInitDraft] = useState(INIT_DRAFT_DEFAULT);
 
@@ -77,7 +79,16 @@ export default function App() {
   }, []);
 
   const handleTabPress = useCallback((tabId) => {
+    if (tabId === 'battle') {
+      setBattleActive(true);
+      return;
+    }
     setActiveTab(tabId);
+  }, []);
+
+  const handleExitBattle = useCallback(() => {
+    setBattleActive(false);
+    setActiveTab('jobs');
   }, []);
 
   // Draft field setters passed to each init screen
@@ -130,6 +141,16 @@ export default function App() {
 
         <NoiseTexture />
         <ScanlineOverlay />
+      </CRTBackground>
+    );
+  }
+
+  // ── Battle takeover ─────────────────────────────────────────────────────────
+  if (battleActive) {
+    return (
+      <CRTBackground>
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+        <BattleScreen onExit={handleExitBattle} />
       </CRTBackground>
     );
   }

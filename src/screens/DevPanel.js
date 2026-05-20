@@ -122,14 +122,15 @@ function TurnSection() {
 
 // ── Character section ────────────────────────────────────────────────────────
 function CharacterSection() {
-  const character = useStore((s) => s.character);
-  const store     = useStore.getState;
+  const character    = useStore((s) => s.character);
+  const devSetName   = useStore((s) => s.devSetName);
+  const devInjectLog = useStore((s) => s.devInjectLog);
   const [nameVal, setNameVal] = useState('');
 
   const setName = () => {
     if (!nameVal.trim()) return;
-    useStore.getState().devInjectLog(`[DEV] Character name changed to "${nameVal.trim()}".`);
-    useStore.setState((s) => { s.character.name = nameVal.trim(); });
+    devSetName(nameVal.trim());
+    devInjectLog(`[DEV] Character name set to "${nameVal.trim()}".`);
     setNameVal('');
   };
 

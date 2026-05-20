@@ -65,4 +65,18 @@ export const ACTIVITIES = [
     renownRequired: 0,
     risk: 'moderate',
   },
+  {
+    id: 'act_test_battle',
+    moduleNumber: 'DEV',
+    name: 'TEST_BATTLE',
+    icon: 'shield',
+    accent: 'error',
+    description: 'Developer test: launch the tactical battle prototype with mock units.',
+    payout: 0,
+    exp: 0,
+    buttonLabel: 'ENGAGE_PROTOTYPE',
+    renownRequired: 0,
+    risk: null,
+    isTestBattle: true,
+  },
 ];

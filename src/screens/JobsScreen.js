@@ -49,6 +49,17 @@ function getAccent(accent) {
         btnTextFilled: colors.background,
         btnFill: colors.secondary,
       };
+    case 'error':
+      return {
+        leftBorder: colors.error,
+        moduleText: colors.error,
+        nameColor: colors.error,
+        iconColor: colors.error,
+        btnBorder: colors.error,
+        btnTextRest: colors.error,
+        btnTextFilled: colors.background,
+        btnFill: colors.error,
+      };
     case 'outline':
     default:
       return {
@@ -389,14 +400,21 @@ export default function JobsScreen({ onNavigate }) {
   const renown = useStore((s) => s.character.renown);
   const executeActivity = useStore((s) => s.executeActivity);
   const acceptContract = useStore((s) => s.acceptContract);
+  const startTestBattle = useStore((s) => s.startTestBattle);
 
   const handleExecute = useCallback(
     (activityId) => {
+      const activity = ACTIVITIES.find((a) => a.id === activityId);
+      if (activity?.isTestBattle) {
+        startTestBattle();
+        onNavigate('battle');
+        return;
+      }
       executeActivity(activityId);
       advanceTurn();
       onNavigate('neural');
     },
-    [executeActivity, onNavigate],
+    [executeActivity, startTestBattle, onNavigate],
   );
 
   const handleAccept = useCallback(
