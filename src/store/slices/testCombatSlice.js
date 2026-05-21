@@ -1,5 +1,6 @@
 import { TEST_FRIENDLY_UNITS, TEST_HOSTILE_UNITS, TEST_BATTLE_CONFIG } from '../../data/testBattle';
 import { CYBER_ABILITIES } from '../../data/cyberAbilities';
+import { applyXPToCharacter, distributeCombatXP } from '../../data/leveling';
 
 function cloneUnits(units) {
   return units.map((u) => ({ ...u, hp: { ...u.hp } }));
@@ -19,6 +20,10 @@ function buildDice(friendly) {
   }));
 }
 
+function uid() {
+  return `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+}
+
 export const createTestCombatSlice = (set, get) => ({
   combat: {
     active: false,
@@ -31,9 +36,10 @@ export const createTestCombatSlice = (set, get) => ({
     selectedFriendlyId: null,
     cyberPool: TEST_BATTLE_CONFIG.startingCyberPool,
     maxCyberPool: TEST_BATTLE_CONFIG.maxCyberPool,
-    pendingAbility: null,       // { classId } while player is picking a target
-    abilityHistory: [],         // [ { round, classId, targetId, timestamp } ]
-    squadBuffs: [],             // [ { type, value, duration, sourceClassId } ]
+    pendingAbility: null,
+    pendingAttacks: [],   // queued attacks for both dice and abilities
+    abilityHistory: [],
+    squadBuffs: [],
     enemyAssignments: [],
     round: 1,
     outcome: null,
@@ -55,6 +61,7 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.cyberPool = TEST_BATTLE_CONFIG.startingCyberPool;
       state.combat.maxCyberPool = TEST_BATTLE_CONFIG.maxCyberPool;
       state.combat.pendingAbility = null;
+      state.combat.pendingAttacks = [];
       state.combat.abilityHistory = [];
       state.combat.squadBuffs = [];
       state.combat.enemyAssignments = [];
@@ -110,9 +117,21 @@ export const createTestCombatSlice = (set, get) => ({
       if (!selectedFriendlyId) return;
       const die = state.combat.dice.find((d) => d.ownerId === selectedFriendlyId);
       if (!die?.alive || die.spent) return;
+
       die.spent = true;
       die.assignedTo = enemyId;
       state.combat.selectedFriendlyId = null;
+
+      // Queue dice attack — dice are FREE (cyberCost: 0)
+      state.combat.pendingAttacks.push({
+        id: `dice_${selectedFriendlyId}_${uid()}`,
+        source: 'dice',
+        sourceId: selectedFriendlyId,
+        targetIds: [enemyId],
+        damage: die.value,
+        effectType: 'damage',
+        cyberCost: 0,
+      });
     }),
 
   clearAttack: (friendlyId) =>
@@ -125,30 +144,9 @@ export const createTestCombatSlice = (set, get) => ({
       if (state.combat.selectedFriendlyId === friendlyId) {
         state.combat.selectedFriendlyId = null;
       }
-    }),
-
-  lockInAttacks: () =>
-    set((state) => {
-      if (state.combat.phase !== 'targeting') return;
-      const assigned = state.combat.dice.filter((d) => d.alive && d.spent);
-      if (assigned.length === 0) return;
-      if (state.combat.cyberPool < assigned.length) return;
-      state.combat.phase = 'executing';
-      state.combat.selectedFriendlyId = null;
-      state.combat.pendingAbility = null;
-    }),
-
-  applyPlayerHit: (friendlyId) =>
-    set((state) => {
-      const die = state.combat.dice.find((d) => d.ownerId === friendlyId);
-      if (!die?.assignedTo) return;
-      const target = state.combat.hostile.find((u) => u.id === die.assignedTo);
-      if (!target) return;
-      const hit = Math.min(die.value, target.hp.current);
-      target.hp.current -= hit;
-      state.combat.damageDealt += hit;
-      if (hit > 0) state.combat.attacksLanded += 1;
-      state.combat.cyberPool = Math.max(0, state.combat.cyberPool - 1);
+      state.combat.pendingAttacks = state.combat.pendingAttacks.filter(
+        (a) => !(a.source === 'dice' && a.sourceId === friendlyId),
+      );
     }),
 
   // ── Cyber Ability Actions ────────────────────────────────────────────────
@@ -157,16 +155,22 @@ export const createTestCombatSlice = (set, get) => ({
     set((state) => {
       const ability = CYBER_ABILITIES[classId];
       if (!ability) return;
-      if (state.combat.cyberPool < ability.cyberCost) return;
       const activeTurn = state.combat.phase === 'roll' || state.combat.phase === 'targeting';
       if (!activeTurn) return;
-      // Toggle off if already selected
+
+      // Available cyber = total pool minus already queued ability costs
+      const reservedCyber = state.combat.pendingAttacks
+        .filter((a) => a.source === 'ability')
+        .reduce((s, a) => s + a.cyberCost, 0);
+      if (state.combat.cyberPool - reservedCyber < ability.cyberCost) return;
+
+      // Toggle off if already pending
       if (state.combat.pendingAbility?.classId === classId) {
         state.combat.pendingAbility = null;
         return;
       }
       state.combat.pendingAbility = { classId };
-      state.combat.selectedFriendlyId = null; // clear die selection while ability pending
+      state.combat.selectedFriendlyId = null;
     }),
 
   clearAbility: () =>
@@ -174,66 +178,140 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.pendingAbility = null;
     }),
 
-  executeAbility: (targetId) =>
+  // Queue the pending ability (replaces old executeAbility / immediate fire)
+  queueAbility: (targetId) =>
     set((state) => {
       if (!state.combat.pendingAbility) return;
       const { classId } = state.combat.pendingAbility;
       const ability = CYBER_ABILITIES[classId];
       if (!ability) return;
-      if (state.combat.cyberPool < ability.cyberCost) return;
 
-      state.combat.cyberPool -= ability.cyberCost;
+      const reservedCyber = state.combat.pendingAttacks
+        .filter((a) => a.source === 'ability')
+        .reduce((s, a) => s + a.cyberCost, 0);
+      if (state.combat.cyberPool - reservedCyber < ability.cyberCost) return;
 
       const { type } = ability.effect;
+      let targetIds = [];
+      let effectType = 'damage';
+
       if (type === 'single_target_damage') {
         if (!targetId) return;
-        const target = state.combat.hostile.find((e) => e.id === targetId);
-        if (target && target.hp.current > 0) {
-          const dmg = Math.min(ability.effect.damage, target.hp.current);
-          target.hp.current -= dmg;
-          state.combat.damageDealt += dmg;
-        }
+        targetIds = [targetId];
+        effectType = 'damage';
       } else if (type === 'aoe_damage') {
-        state.combat.hostile
-          .filter((e) => e.hp.current > 0)
-          .forEach((e) => {
-            const dmg = Math.min(ability.effect.damage, e.hp.current);
-            e.hp.current -= dmg;
-            state.combat.damageDealt += dmg;
-          });
+        targetIds = state.combat.hostile.filter((e) => e.hp.current > 0).map((e) => e.id);
+        effectType = 'damage';
       } else if (type === 'squad_heal') {
-        state.combat.friendly
-          .filter((u) => u.hp.current > 0)
-          .forEach((u) => {
-            u.hp.current = Math.min(u.hp.max, u.hp.current + ability.effect.amount);
-          });
+        targetIds = state.combat.friendly.filter((u) => u.hp.current > 0).map((u) => u.id);
+        effectType = 'heal';
       } else if (type === 'squad_buff') {
-        // Refresh rather than stack
-        state.combat.squadBuffs = state.combat.squadBuffs.filter(
-          (b) => b.sourceClassId !== classId,
-        );
-        state.combat.squadBuffs.push({
-          type: ability.effect.buffType,
-          value: ability.effect.value,
-          duration: ability.effect.duration,
-          sourceClassId: classId,
-        });
+        targetIds = [];
+        effectType = 'buff';
       }
 
-      state.combat.abilityHistory.push({
-        round: state.combat.round,
-        classId,
-        targetId: targetId ?? null,
-        timestamp: Date.now(),
+      state.combat.pendingAttacks.push({
+        id: `ability_${classId}_${uid()}`,
+        source: 'ability',
+        sourceId: classId,
+        targetIds,
+        damage: ability.effect.damage ?? 0,
+        healAmount: ability.effect.amount ?? 0,
+        buffType: ability.effect.buffType ?? null,
+        buffValue: ability.effect.value ?? 0,
+        buffDuration: ability.effect.duration ?? 0,
+        effectType,
+        cyberCost: ability.cyberCost,
       });
 
       state.combat.pendingAbility = null;
+    }),
 
-      // Abilities can win the battle outright
+  cancelQueuedAbility: (classId) =>
+    set((state) => {
+      state.combat.pendingAttacks = state.combat.pendingAttacks.filter(
+        (a) => !(a.source === 'ability' && a.sourceId === classId),
+      );
+    }),
+
+  // Commit everything: deduct all ability cyber, transition to executing
+  confirmAllAttacks: () =>
+    set((state) => {
+      const activeTurn = state.combat.phase === 'roll' || state.combat.phase === 'targeting';
+      if (!activeTurn) return;
+      if (state.combat.pendingAttacks.length === 0) return;
+
+      const totalCyber = state.combat.pendingAttacks.reduce((s, a) => s + a.cyberCost, 0);
+      if (state.combat.cyberPool < totalCyber) return;
+
+      state.combat.cyberPool -= totalCyber;
+      state.combat.phase = 'executing';
+      state.combat.selectedFriendlyId = null;
+      state.combat.pendingAbility = null;
+    }),
+
+  // Apply one entry from the queue by id
+  applyPendingAttack: (attackId) =>
+    set((state) => {
+      const attack = state.combat.pendingAttacks.find((a) => a.id === attackId);
+      if (!attack) return;
+
+      if (attack.source === 'dice') {
+        const targetId = attack.targetIds[0];
+        const target = state.combat.hostile.find((u) => u.id === targetId);
+        if (target && target.hp.current > 0) {
+          const hit = Math.min(attack.damage, target.hp.current);
+          target.hp.current -= hit;
+          state.combat.damageDealt += hit;
+          if (hit > 0) state.combat.attacksLanded += 1;
+        }
+      } else if (attack.source === 'ability') {
+        if (attack.effectType === 'damage') {
+          for (const targetId of attack.targetIds) {
+            const target = state.combat.hostile.find((u) => u.id === targetId);
+            if (target && target.hp.current > 0) {
+              const dmg = Math.min(attack.damage, target.hp.current);
+              target.hp.current -= dmg;
+              state.combat.damageDealt += dmg;
+            }
+          }
+        } else if (attack.effectType === 'heal') {
+          for (const targetId of attack.targetIds) {
+            const target = state.combat.friendly.find((u) => u.id === targetId);
+            if (target && target.hp.current > 0) {
+              target.hp.current = Math.min(target.hp.max, target.hp.current + attack.healAmount);
+            }
+          }
+        } else if (attack.effectType === 'buff') {
+          state.combat.squadBuffs = state.combat.squadBuffs.filter(
+            (b) => b.sourceClassId !== attack.sourceId,
+          );
+          state.combat.squadBuffs.push({
+            type: attack.buffType,
+            value: attack.buffValue,
+            duration: attack.buffDuration,
+            sourceClassId: attack.sourceId,
+          });
+        }
+
+        state.combat.abilityHistory.push({
+          round: state.combat.round,
+          classId: attack.sourceId,
+          targetIds: attack.targetIds,
+          timestamp: Date.now(),
+        });
+      }
+
+      // Victory check after every applied attack
       if (state.combat.hostile.every((u) => u.hp.current === 0)) {
         state.combat.outcome = 'victory';
         state.combat.phase = 'victory';
       }
+    }),
+
+  clearPendingQueue: () =>
+    set((state) => {
+      state.combat.pendingAttacks = [];
     }),
 
   // ── Enemy Turn ───────────────────────────────────────────────────────────
@@ -261,7 +339,6 @@ export const createTestCombatSlice = (set, get) => ({
       const target = state.combat.friendly.find((u) => u.id === a.targetId);
       if (!target) return;
 
-      // Apply damage_reduction buff if active
       const reductionBuff = state.combat.squadBuffs.find((b) => b.type === 'damage_reduction');
       const multiplier = reductionBuff ? 1 - reductionBuff.value : 1;
       const finalDamage = Math.max(1, Math.round(a.damage * multiplier));
@@ -289,7 +366,7 @@ export const createTestCombatSlice = (set, get) => ({
         return;
       }
 
-      // Tick squad buffs — decrement duration, remove expired
+      // Tick squad buffs
       state.combat.squadBuffs = state.combat.squadBuffs
         .map((b) => ({ ...b, duration: b.duration - 1 }))
         .filter((b) => b.duration > 0);
@@ -301,6 +378,7 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.rolling = false;
       state.combat.selectedFriendlyId = null;
       state.combat.pendingAbility = null;
+      state.combat.pendingAttacks = [];
       state.combat.enemyAssignments = [];
       state.combat.dice = state.combat.friendly.map((u) => ({
         value: 0,
@@ -313,10 +391,20 @@ export const createTestCombatSlice = (set, get) => ({
 
   exitBattle: () =>
     set((state) => {
+      // Award XP before resetting outcome
+      if (state.combat.outcome === 'victory') {
+        const totalXP  = 100;
+        const playerXP = Math.floor(totalXP / 2);
+        const crewXP   = totalXP - playerXP;
+        applyXPToCharacter(state, playerXP);
+        distributeCombatXP(state, crewXP);
+      }
+
       state.combat.active = false;
       state.combat.outcome = null;
       state.combat.phase = 'roll';
       state.combat.rolling = false;
       state.combat.pendingAbility = null;
+      state.combat.pendingAttacks = [];
     }),
 });

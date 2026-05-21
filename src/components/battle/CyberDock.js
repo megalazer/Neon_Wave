@@ -4,17 +4,25 @@ import { colors } from '../../theme/colors';
 import { CYBER_ABILITIES, CLASS_PRIORITY } from '../../data/cyberAbilities';
 import AbilityButton from './AbilityButton';
 
-const CYAN     = colors.primary;
-const SLOTS    = 3;
+const CYAN  = colors.primary;
+const SLOTS = 3;
 
-export default function CyberDock({ friendly, cyberPool, pendingAbility, phase, onAbilityPress }) {
+export default function CyberDock({
+  friendly, cyberPool, pendingAbility, pendingAttacks, phase,
+  onAbilityPress, onCancelAbility,
+}) {
   const presentClasses = new Set(friendly.map((u) => u.class).filter(Boolean));
 
-  // Fill 3 slots from priority order — show whether present or locked
+  const reservedCyber = pendingAttacks
+    .filter((a) => a.source === 'ability')
+    .reduce((s, a) => s + a.cyberCost, 0);
+  const availableCyber = cyberPool - reservedCyber;
+
   const slots = CLASS_PRIORITY.slice(0, SLOTS).map((classId) => ({
     classId,
     ability: CYBER_ABILITIES[classId],
     available: presentClasses.has(classId),
+    isQueued: pendingAttacks.some((a) => a.source === 'ability' && a.sourceId === classId),
   }));
 
   return (
@@ -22,15 +30,17 @@ export default function CyberDock({ friendly, cyberPool, pendingAbility, phase, 
       <Text style={styles.header}>CYBER_DOCK // GROUP_ABILITIES</Text>
 
       <View style={styles.row}>
-        {slots.map(({ classId, ability, available }) => (
+        {slots.map(({ classId, ability, available, isQueued }) => (
           <AbilityButton
             key={classId}
             ability={ability}
             available={available}
-            cyberPool={cyberPool}
+            availableCyber={availableCyber}
+            isQueued={isQueued}
             isPending={pendingAbility?.classId === classId}
             phase={phase}
             onPress={() => onAbilityPress(classId)}
+            onCancel={() => onCancelAbility(classId)}
           />
         ))}
       </View>

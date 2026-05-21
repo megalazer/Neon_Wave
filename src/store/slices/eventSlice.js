@@ -1,5 +1,6 @@
 import { ACTIVITIES } from '../../data/activities';
 import { CONTRACTS } from '../../data/contracts';
+import { applyXPToCharacter, distributeCombatXP } from '../../data/leveling';
 
 const SUCCESS_RATES = { low: 0.9, moderate: 0.7, high: 0.5 };
 
@@ -13,7 +14,12 @@ function rollOutcome(set, item, idPrefix) {
 
     if (success) {
       state.character.credits += item.payout;
-      state.character.exp += item.exp;
+
+      // Award player XP then split half to crew
+      applyXPToCharacter(state, item.exp);
+      const crewXP = Math.floor(item.exp / 2);
+      if (crewXP > 0) distributeCombatXP(state, crewXP);
+
       state.log.entries.push({
         id: `${idPrefix}_${item.id}_${Date.now()}`,
         turn: state.character.turnNumber,

@@ -22,15 +22,17 @@ function resolveAccent(accent) {
   return ACCENT_COLORS[accent] ?? CYAN;
 }
 
-export default function AbilityButton({ ability, available, cyberPool, isPending, phase, onPress }) {
-  const canAct = phase === 'roll' || phase === 'targeting';
-  const canAfford = cyberPool >= ability.cyberCost;
-  const isActive = available && canAct;
+export default function AbilityButton({
+  ability, available, availableCyber, isQueued, isPending, phase, onPress, onCancel,
+}) {
+  const canAct    = phase === 'roll' || phase === 'targeting';
+  const canAfford = availableCyber >= ability.cyberCost;
+  const enabled   = available && canAct && (isQueued || isPending || canAfford);
 
   const pulseOp = useSharedValue(0);
 
   useEffect(() => {
-    if (isPending) {
+    if (isPending || isQueued) {
       pulseOp.value = withRepeat(
         withSequence(
           withTiming(1, { duration: 450 }),
@@ -41,24 +43,28 @@ export default function AbilityButton({ ability, available, cyberPool, isPending
     } else {
       pulseOp.value = withTiming(0, { duration: 160 });
     }
-  }, [isPending]);
+  }, [isPending, isQueued]);
 
   const ringStyle = useAnimatedStyle(() => ({
     opacity: pulseOp.value,
   }));
 
   const accent = resolveAccent(ability.accent);
+  const ringColor = isQueued ? GREEN : accent;
 
   let status;
-  if (!available)   status = 'LOCKED';
-  else if (!canAct) status = '—';
-  else if (!canAfford) status = `NEED ${ability.cyberCost - cyberPool} CY`;
+  if (!available)      status = 'LOCKED';
+  else if (!canAct)    status = '—';
+  else if (isQueued)   status = '[ QUEUED ]';
   else if (isPending)  status = 'TARGETING...';
+  else if (!canAfford) status = `NEED ${ability.cyberCost - availableCyber} CY`;
   else                 status = 'READY';
 
-  const enabled = isActive && canAfford;
+  const statusColor = isQueued
+    ? GREEN
+    : (status === 'TARGETING...' ? accent : status === 'READY' ? `${accent}99` : `${CYAN}28`);
 
-  const dimmed = !enabled || (isPending === false && false); // not pending, but enabled
+  const handlePress = isQueued ? onCancel : onPress;
 
   return (
     <TouchableOpacity
@@ -66,15 +72,15 @@ export default function AbilityButton({ ability, available, cyberPool, isPending
         styles.btn,
         { borderColor: enabled ? accent : `${accent}28` },
         isPending && styles.btnPending,
+        isQueued && styles.btnQueued,
         !enabled && styles.btnDisabled,
       ]}
-      onPress={enabled ? onPress : undefined}
+      onPress={enabled ? handlePress : undefined}
       disabled={!enabled}
       activeOpacity={0.75}
     >
-      {/* Pulsing ring overlay */}
       <Animated.View
-        style={[StyleSheet.absoluteFill, styles.ring, { borderColor: accent }, ringStyle]}
+        style={[StyleSheet.absoluteFill, styles.ring, { borderColor: ringColor }, ringStyle]}
         pointerEvents="none"
       />
 
@@ -92,10 +98,7 @@ export default function AbilityButton({ ability, available, cyberPool, isPending
         {`COST: ${ability.cyberCost} CY`}
       </Text>
 
-      <Text style={[
-        styles.status,
-        { color: status === 'READY' ? `${accent}99` : status === 'LOCKED' ? `${CYAN}28` : RED },
-      ]}>
+      <Text style={[styles.status, { color: statusColor }]}>
         {status}
       </Text>
     </TouchableOpacity>
@@ -114,7 +117,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   btnPending: {
-    backgroundColor: `${colors.primary}08`,
+    backgroundColor: `${CYAN}08`,
+  },
+  btnQueued: {
+    backgroundColor: `${GREEN}08`,
   },
   btnDisabled: {
     opacity: 0.45,

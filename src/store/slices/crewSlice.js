@@ -2,6 +2,7 @@ import { current } from 'immer';
 import { OPERATIVES } from '../../data/operatives';
 import { RECHARGE_ITEMS } from '../../data/rechargeItems';
 import { CYBERWARE_ITEMS } from '../../data/cyberware';
+import { applyXPToCrewMember, distributeCombatXP as _distribute } from '../../data/leveling';
 
 export const createCrewSlice = (set) => ({
   crew: {
@@ -39,6 +40,18 @@ export const createCrewSlice = (set) => ({
       });
     }),
 
+  addCrewXP: (memberId, amount) =>
+    set((state) => {
+      const member = state.crew.members.find((m) => m.id === memberId);
+      if (!member) return;
+      applyXPToCrewMember(state, member, amount);
+    }),
+
+  distributeCombatXP: (totalXP) =>
+    set((state) => {
+      _distribute(state, totalXP);
+    }),
+
   equipCyberware: (memberId, cyberwareId) =>
     set((state) => {
       const item = CYBERWARE_ITEMS.find((c) => c.id === cyberwareId);
@@ -51,7 +64,6 @@ export const createCrewSlice = (set) => ({
       const member = state.crew.members[memberIdx];
       if (member.humanity.current < item.humanityCost) return;
 
-      // Auto-unequip same-slot conflict
       const conflictId = member.equippedCyberware.find((id) => {
         const existing = CYBERWARE_ITEMS.find((c) => c.id === id);
         return existing?.slot === item.slot;

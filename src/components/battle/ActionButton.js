@@ -8,30 +8,26 @@ const RED   = colors.error;
 const GREEN = '#00E676';
 
 function getConfig(combat) {
-  const { phase, dice, cyberPool } = combat;
-  const assigned = dice.filter((d) => d.alive && d.spent).length;
+  const { phase, pendingAttacks } = combat;
+  const totalAttacks   = pendingAttacks?.length ?? 0;
+  const totalCyberCost = pendingAttacks?.reduce((s, a) => s + (a.cyberCost ?? 0), 0) ?? 0;
 
   switch (phase) {
     case 'roll':
-      return { label: '[ — ]', enabled: false, color: `${CYAN}28` };
-
     case 'targeting': {
-      if (assigned === 0) {
-        return { label: '[ ASSIGN_TARGETS ]', enabled: false, color: `${CYAN}44` };
+      if (totalAttacks === 0) {
+        return { label: '[ NO_ATTACKS_QUEUED ]', enabled: false, color: `${CYAN}33` };
       }
-      if (cyberPool < assigned) {
-        const need = assigned - cyberPool;
-        return { label: `[ NEED ${need} MORE CYBER ]`, enabled: false, color: RED };
-      }
+      const costStr = totalCyberCost > 0 ? ` // -${totalCyberCost} CY` : '';
       return {
-        label: `[ LOCK_IN_ATTACKS (${assigned}) // -${assigned} CY ]`,
+        label: `[ CONFIRM_ALL (${totalAttacks})${costStr} ]`,
         enabled: true,
         color: CYAN,
       };
     }
 
     case 'executing':
-      return { label: '[ ...EXECUTING ]', enabled: false, color: MAG };
+      return { label: '[ ...EXECUTING_ATTACKS ]', enabled: false, color: MAG };
 
     case 'enemy_turn':
       return { label: '[ ENEMY_TURN ]', enabled: false, color: RED };
@@ -43,7 +39,7 @@ function getConfig(combat) {
       return { label: '[ EXIT_BATTLE ]', enabled: true, color: RED };
 
     default:
-      return { label: '[ ... ]', enabled: false, color: `${CYAN}44` };
+      return { label: '[ ... ]', enabled: false, color: `${CYAN}33` };
   }
 }
 
@@ -52,7 +48,7 @@ export default function ActionButton({ combat, onPress }) {
 
   return (
     <TouchableOpacity
-      style={[styles.btn, { borderColor: enabled ? color : `${color}55` }]}
+      style={[styles.btn, { borderColor: enabled ? color : `${color}44` }]}
       onPress={enabled ? onPress : undefined}
       disabled={!enabled}
       activeOpacity={0.75}
@@ -62,7 +58,12 @@ export default function ActionButton({ combat, onPress }) {
       <View style={[styles.tick, styles.bl, { borderColor: color }]} />
       <View style={[styles.tick, styles.br, { borderColor: color }]} />
 
-      <Text style={[styles.label, { color: enabled ? color : `${color}55` }]} numberOfLines={1} adjustsFontSizeToFit>
+      <Text
+        style={[styles.label, { color: enabled ? color : `${color}55` }]}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.7}
+      >
         {label}
       </Text>
     </TouchableOpacity>

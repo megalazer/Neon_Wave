@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
 
 const CYAN = colors.primary;
@@ -19,8 +20,9 @@ export default function CompactRollControls({ combat, onRoll, onReroll }) {
         disabled={!canRoll}
         activeOpacity={0.75}
       >
+        <MaterialIcons name="casino" size={22} color={canRoll ? CYAN : `${CYAN}28`} />
         <Text style={[styles.label, { color: canRoll ? CYAN : `${CYAN}28` }]}>
-          {phase === 'roll' && rolling ? '[  ROLLING...  ]' : '[  ROLL_DICE  ]'}
+          {phase === 'roll' && rolling ? 'ROLLING...' : 'ROLL_DICE'}
         </Text>
       </TouchableOpacity>
 
@@ -30,8 +32,9 @@ export default function CompactRollControls({ combat, onRoll, onReroll }) {
         disabled={!canReroll}
         activeOpacity={0.75}
       >
+        <MaterialIcons name="refresh" size={22} color={canReroll ? MAG : `${MAG}28`} />
         <Text style={[styles.label, { color: canReroll ? MAG : `${MAG}28` }]}>
-          {`[  REROLL (${rerollsRemaining}/2)  ]`}
+          {`REROLL (${rerollsRemaining}/2)`}
         </Text>
       </TouchableOpacity>
     </View>
@@ -49,18 +52,30 @@ const styles = StyleSheet.create({
   },
   btn: {
     flex: 1,
-    height: 44,
-    borderWidth: 1,
+    height: 68,
+    borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
   },
   btnRoll: {
-    borderColor: `${CYAN}88`,
-    backgroundColor: `${CYAN}0D`,
+    borderColor: CYAN,
+    backgroundColor: `${CYAN}12`,
+    shadowColor: CYAN,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.55,
+    shadowRadius: 10,
+    elevation: 5,
   },
   btnReroll: {
-    borderColor: `${MAG}88`,
-    backgroundColor: `${MAG}0D`,
+    borderColor: MAG,
+    backgroundColor: `${MAG}12`,
+    shadowColor: MAG,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.55,
+    shadowRadius: 10,
+    elevation: 5,
   },
   btnDim: {
     borderColor: `${CYAN}18`,
@@ -68,7 +83,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: 'KodeMono_700Bold',
-    fontSize: 10,
+    fontSize: 11,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
   },

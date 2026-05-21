@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback, useState } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Animated, {
   useSharedValue, useAnimatedStyle, withTiming, withRepeat, withSequence, Easing,
@@ -20,21 +20,24 @@ export default function UnitCard({
   pulseColor = CYAN,
 }) {
   const isFriendly = variant === 'friendly';
-  const isDead     = unit.hp.current === 0;
-  const accent     = isFriendly ? CYAN : RED;
 
-  const hpPct      = unit.hp.max > 0 ? unit.hp.current / unit.hp.max : 0;
-  const hpAnim     = useSharedValue(hpPct);
-  const barWidthSV = useSharedValue(0);
-  const [barPxWidth, setBarPxWidth] = useState(0);
+  // Safe-fallback access: hostile units arrive from Immer drafts;
+  // current can hit 0 but max must never be 0 or we get NaN width.
+  const hpCurrent = unit?.hp?.current ?? 0;
+  const hpMax     = unit?.hp?.max     ?? 1;
+  const isDead    = hpCurrent <= 0;
+  const accent    = isFriendly ? CYAN : RED;
+  const hpPct     = Math.max(0, Math.min(1, hpCurrent / hpMax));
 
+  // Initialise to the actual percentage so the bar is correct before onLayout ever fires.
+  const hpAnim  = useSharedValue(hpPct);
   const pulseOp = useSharedValue(0);
 
   const cardRef = useRef(null);
 
   useEffect(() => {
-    hpAnim.value = withTiming(Math.max(0, Math.min(1, hpPct)), {
-      duration: 400,
+    hpAnim.value = withTiming(hpPct, {
+      duration: 350,
       easing: Easing.out(Easing.quad),
     });
   }, [hpPct]);
@@ -43,29 +46,25 @@ export default function UnitCard({
     if (isPulsing) {
       pulseOp.value = withRepeat(
         withSequence(
-          withTiming(0.75, { duration: 550 }),
-          withTiming(0.15, { duration: 550 }),
+          withTiming(0.8, { duration: 500 }),
+          withTiming(0.1, { duration: 500 }),
         ),
         -1,
       );
     } else {
-      pulseOp.value = withTiming(0, { duration: 180 });
+      pulseOp.value = withTiming(0, { duration: 160 });
     }
   }, [isPulsing]);
 
-  const barStyle = useAnimatedStyle(() => ({
-    width: hpAnim.value * barWidthSV.value,
-  }));
+  // Percentage-based width — no barWidthSV, no onLayout dependency, never collapses.
+  const barStyle = useAnimatedStyle(() => {
+    const pct = Math.max(0, Math.min(100, hpAnim.value * 100));
+    return { width: `${pct}%` };
+  });
 
   const pulseStyle = useAnimatedStyle(() => ({
     opacity: pulseOp.value,
   }));
-
-  const handleBarLayout = useCallback((e) => {
-    const w = e.nativeEvent.layout.width;
-    barWidthSV.value = w;
-    setBarPxWidth(w);
-  }, []);
 
   const handleCardLayout = useCallback(() => {
     if (!cardRef.current || !onMeasure) return;
@@ -74,13 +73,11 @@ export default function UnitCard({
     });
   }, [onMeasure]);
 
-  const previewPx = (barPxWidth > 0 && unit.hp.max > 0 && !isDead)
-    ? (Math.min(previewDamage, unit.hp.current) / unit.hp.max) * barPxWidth
+  // Preview chunk — percentage positioning so it tracks the fill correctly.
+  const previewPct = (hpMax > 0 && !isDead)
+    ? (Math.min(previewDamage, hpCurrent) / hpMax) * 100
     : 0;
-  const previewLeft = Math.max(0, hpPct * barPxWidth - previewPx);
-
-  // Selected friendly: brighter accent border
-  const selectedBorderColor = isSelected ? accent : 'transparent';
+  const previewLeftPct = Math.max(0, hpPct * 100 - previewPct);
 
   const portrait = (
     <View style={[styles.portrait, { borderColor: isDead ? `${accent}44` : accent }]}>
@@ -111,7 +108,7 @@ export default function UnitCard({
 
         <View style={[styles.nameGroup, !isFriendly && styles.nameGroupRight]}>
           <Text style={[styles.name, { color: isDead ? `${RED}AA` : accent }]} numberOfLines={1}>
-            {unit.name.toUpperCase()}
+            {unit.name?.toUpperCase() ?? '???'}
           </Text>
           {unit.level !== undefined && (
             <Text style={[styles.sub, { color: isDead ? `${accent}44` : `${accent}88` }]}>
@@ -128,35 +125,45 @@ export default function UnitCard({
         {!isFriendly && portrait}
       </View>
 
-      {/* HP bar — alignSelf: stretch fixes zero-width bug on hostile cards */}
-      <View style={[styles.hpBg, { alignSelf: 'stretch' }]} onLayout={handleBarLayout}>
+      {/* HP bar — always renders, always stretches full card width */}
+      <View style={styles.hpBg}>
         <Animated.View style={[
           styles.hpFill,
           { backgroundColor: isDead ? colors.errorContainer : accent, shadowColor: accent },
           barStyle,
         ]} />
 
-        {previewPx > 0 && (
-          <View style={[styles.previewChunk, { width: previewPx, left: previewLeft }]} />
+        {previewPct > 0 && (
+          <View style={[
+            styles.previewChunk,
+            { left: `${previewLeftPct}%`, width: `${previewPct}%` },
+          ]} />
         )}
       </View>
 
-      {/* Pulse glow overlay — pointer-events none */}
+      {/* Pulse glow border overlay */}
       <Animated.View
         style={[StyleSheet.absoluteFill, styles.pulseOverlay, { borderColor: pulseColor }, pulseStyle]}
         pointerEvents="none"
       />
 
-      {/* Selected outline — always visible at full opacity when selected */}
+      {/* Selected outline */}
       {isSelected && (
-        <View style={[StyleSheet.absoluteFill, styles.selectedOutline, { borderColor: selectedBorderColor }]} pointerEvents="none" />
+        <View
+          style={[StyleSheet.absoluteFill, styles.selectedOutline, { borderColor: accent }]}
+          pointerEvents="none"
+        />
       )}
     </View>
   );
 
   if (onPress && !isDead) {
     return (
-      <TouchableOpacity onPress={onPress} activeOpacity={0.75}>
+      <TouchableOpacity
+        onPress={onPress}
+        activeOpacity={0.75}
+        style={styles.touchWrapper}
+      >
         {inner}
       </TouchableOpacity>
     );
@@ -166,6 +173,10 @@ export default function UnitCard({
 }
 
 const styles = StyleSheet.create({
+  // Wrapper applied to TouchableOpacity so hostile column width is honoured
+  touchWrapper: {
+    alignSelf: 'stretch',
+  },
   card: {
     paddingVertical: 6,
     paddingHorizontal: 8,
@@ -185,7 +196,9 @@ const styles = StyleSheet.create({
   cardHostile: {
     paddingRight: 6,
     borderLeftWidth: 0,
+    // Right-align name/portrait content, but card itself stretches to column width
     alignItems: 'flex-end',
+    alignSelf: 'stretch',
   },
   cardDead: {
     opacity: 0.4,
@@ -227,6 +240,8 @@ const styles = StyleSheet.create({
   },
   hpBg: {
     height: 5,
+    // Stretch overrides alignItems: 'flex-end' on cardHostile so bar fills full width
+    alignSelf: 'stretch',
     backgroundColor: colors.surfaceContainerHigh,
     overflow: 'hidden',
   },

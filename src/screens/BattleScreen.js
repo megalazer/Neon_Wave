@@ -76,7 +76,7 @@ function TacticalField({
   onFriendlyPress, onEnemyPress,
   onUnitMeasure,
 }) {
-  const hasSelection   = selectedFriendlyId !== null;
+  const hasSelection    = selectedFriendlyId !== null;
   const playerTargeting = hasSelection && phase === 'targeting';
 
   return (
@@ -114,9 +114,7 @@ function TacticalField({
         </View>
         {hostile.map((u) => {
           const isDead = u.hp.current === 0;
-          // Enemy is pressable for ability targeting OR dice targeting
           const canPress = !isDead && (abilityIsSingleTarget || playerTargeting);
-          // Enemy pulses when targeted by ability or dice selection
           const enemyPulsing = !isDead && (abilityIsSingleTarget || playerTargeting);
           const enemyColor = abilityIsSingleTarget ? abilityAccent : RED;
           return (
@@ -162,15 +160,13 @@ export default function BattleScreen({ onExit }) {
 
   const [unitCoords, setUnitCoords] = useState({});
 
-  // Derive ability targeting state
-  const pendingAbility       = combat.pendingAbility;
-  const pendingAbilityData   = pendingAbility ? CYBER_ABILITIES[pendingAbility.classId] : null;
+  const pendingAbility        = combat.pendingAbility;
+  const pendingAbilityData    = pendingAbility ? CYBER_ABILITIES[pendingAbility.classId] : null;
   const abilityIsSingleTarget = pendingAbilityData?.effect.type === 'single_target_damage';
-  const abilityAccent        = pendingAbilityData
+  const abilityAccent         = pendingAbilityData
     ? (ACCENT_COLORS[pendingAbilityData.accent] ?? CYAN)
     : CYAN;
 
-  // Lines: friendly unit → assigned hostile, and enemy retaliation
   const lines = useMemo(() => {
     const result = [];
     for (const die of combat.dice) {
@@ -187,7 +183,6 @@ export default function BattleScreen({ onExit }) {
     return result;
   }, [combat.dice, combat.enemyAssignments, unitCoords]);
 
-  // Preview damage on enemy HP bars from assigned dice
   const previewByEnemy = useMemo(() => {
     const map = {};
     for (const die of combat.dice) {
@@ -198,25 +193,29 @@ export default function BattleScreen({ onExit }) {
     return map;
   }, [combat.dice]);
 
-  // ── Executing phase ──
+  // ── Executing phase: drain pendingAttacks queue ──
   useEffect(() => {
     if (combat.phase !== 'executing') return;
     let cancelled = false;
 
     (async () => {
-      const { dice } = useStore.getState().combat;
-      const spentDice = dice.filter((d) => d.alive && d.spent && d.assignedTo);
+      const attacks = [...useStore.getState().combat.pendingAttacks];
       await delay(200);
 
-      for (const die of spentDice) {
+      for (const attack of attacks) {
         if (cancelled) return;
-        useStore.getState().applyPlayerHit(die.ownerId);
+        useStore.getState().applyPendingAttack(attack.id);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         await delay(380);
+        if (useStore.getState().combat.phase === 'victory') return;
       }
 
       if (cancelled) return;
+      useStore.getState().clearPendingQueue();
+
       const latest = useStore.getState().combat;
+      if (latest.phase === 'victory') return;
+
       if (latest.hostile.every((u) => u.hp.current === 0)) {
         useStore.getState().checkAndSetOutcome();
       } else {
@@ -279,14 +278,12 @@ export default function BattleScreen({ onExit }) {
     const store = useStore.getState();
     const { pendingAbility, phase, selectedFriendlyId } = store.combat;
 
-    // Ability targeting takes priority
     if (pendingAbility) {
-      store.executeAbility(unitId);
+      store.queueAbility(unitId);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
       return;
     }
 
-    // Dice targeting
     if (phase !== 'targeting' || !selectedFriendlyId) return;
     store.assignAttack(unitId);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -297,29 +294,37 @@ export default function BattleScreen({ onExit }) {
     const ability = CYBER_ABILITIES[classId];
     if (!ability) return;
 
-    const { cyberPool, pendingAbility } = store.combat;
+    const { pendingAttacks, pendingAbility } = store.combat;
 
-    // Toggle off if already pending
+    // Cancel if already queued
+    const isQueued = pendingAttacks.some((a) => a.source === 'ability' && a.sourceId === classId);
+    if (isQueued) {
+      store.cancelQueuedAbility(classId);
+      return;
+    }
+
+    // Toggle off if same ability is pending targeting
     if (pendingAbility?.classId === classId) {
       store.clearAbility();
       return;
     }
 
-    if (cyberPool < ability.cyberCost) return;
-
     store.selectAbility(classId);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-    // Auto-execute non-single-target abilities immediately
+    // Auto-queue non-single-target abilities without needing a target tap
     if (ability.effect.type !== 'single_target_damage') {
-      store.executeAbility(null);
+      store.queueAbility(null);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    } else {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
   }, []);
 
   const handleCancelAbility = useCallback(() => {
     useStore.getState().clearAbility();
+  }, []);
+
+  const handleCancelQueuedAbility = useCallback((classId) => {
+    useStore.getState().cancelQueuedAbility(classId);
   }, []);
 
   const handleRoll = useCallback(() => {
@@ -335,9 +340,9 @@ export default function BattleScreen({ onExit }) {
   const handleActionPress = useCallback(() => {
     const store = useStore.getState();
     const { phase } = store.combat;
-    if (phase === 'targeting') {
+    if (phase === 'roll' || phase === 'targeting') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      store.lockInAttacks();
+      store.confirmAllAttacks();
     } else if (phase === 'victory' || phase === 'defeat') {
       exitBattle();
       onExit();
@@ -358,7 +363,7 @@ export default function BattleScreen({ onExit }) {
   const {
     friendly, hostile, dice, phase, rerollsRemaining,
     selectedFriendlyId, rolling, round, cyberPool, squadBuffs,
-    outcome, damageDealt, attacksLanded,
+    pendingAttacks, outcome, damageDealt, attacksLanded,
   } = combat;
 
   const survivors = friendly.filter((u) => u.hp.current > 0).length;
@@ -399,23 +404,24 @@ export default function BattleScreen({ onExit }) {
         onUnitMeasure={handleUnitMeasure}
       />
 
-      {/* Active buff chips */}
       <BuffChips squadBuffs={squadBuffs} />
+
+      {/* Roll controls — above cyber dock */}
+      <CompactRollControls
+        combat={combat}
+        onRoll={handleRoll}
+        onReroll={handleReroll}
+      />
 
       {/* Cyber ability dock */}
       <CyberDock
         friendly={friendly}
         cyberPool={cyberPool}
         pendingAbility={pendingAbility}
+        pendingAttacks={pendingAttacks}
         phase={phase}
         onAbilityPress={handleAbilityPress}
-      />
-
-      {/* Roll controls row */}
-      <CompactRollControls
-        combat={combat}
-        onRoll={handleRoll}
-        onReroll={handleReroll}
+        onCancelAbility={handleCancelQueuedAbility}
       />
 
       {/* Cyber Pool bar */}

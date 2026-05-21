@@ -12,6 +12,7 @@ import { colors } from '../theme/colors';
 import { useStore } from '../store/index';
 import { COINS } from '../data/coins';
 import { devAdvanceTurns } from '../engine/turnPipeline';
+import { XP_THRESHOLDS, MAX_LEVEL, getLevelProgress } from '../data/leveling';
 
 const ERR = colors.error;
 
@@ -229,6 +230,98 @@ function ExchangeSection() {
   );
 }
 
+// ── Leveling section ─────────────────────────────────────────────────────────
+const SET_LEVELS = [1, 3, 5, 8, 10];
+
+function LevelingSection() {
+  const character        = useStore((s) => s.character);
+  const members          = useStore((s) => s.crew.members);
+  const devAddCharacterXP      = useStore((s) => s.devAddCharacterXP);
+  const devSetCharacterLevel   = useStore((s) => s.devSetCharacterLevel);
+  const devAddCrewXP           = useStore((s) => s.devAddCrewXP);
+  const devSetCrewMemberLevel  = useStore((s) => s.devSetCrewMemberLevel);
+  const devLevelAllCrew        = useStore((s) => s.devLevelAllCrew);
+  const devSetTeamLevel        = useStore((s) => s.devSetTeamLevel);
+  const devResetLeveling       = useStore((s) => s.devResetLeveling);
+  const devTriggerLevelUpBanner = useStore((s) => s.devTriggerLevelUpBanner);
+  const devForceCombatXP       = useStore((s) => s.devForceCombatXP);
+
+  const progress = getLevelProgress(character.exp);
+  const progressStr = progress.maxed
+    ? 'MAXED'
+    : `${progress.current}/${progress.needed} XP (${Math.round(progress.percent)}%)`;
+
+  return (
+    <DevSection title="LEVELING_OVERRIDE">
+      {/* Player */}
+      <Text style={sec.current}>
+        {`PLAYER: LVL_${character.level} // ${character.exp} XP TOTAL`}
+      </Text>
+      <Text style={sec.current}>{`PROGRESS: ${progressStr}`}</Text>
+
+      <View style={sec.row}>
+        <DevBtn label="+50 XP"   onPress={() => devAddCharacterXP(50)} />
+        <DevBtn label="+200 XP"  onPress={() => devAddCharacterXP(200)} />
+        <DevBtn label="+1000 XP" onPress={() => devAddCharacterXP(1000)} />
+      </View>
+
+      <Text style={[sec.current, { marginTop: 4 }]}>SET_LVL:</Text>
+      <View style={sec.row}>
+        {SET_LEVELS.map((lvl) => (
+          <DevBtn
+            key={lvl}
+            label={lvl === MAX_LEVEL ? `${lvl} MAX` : String(lvl)}
+            onPress={() => devSetCharacterLevel(lvl)}
+          />
+        ))}
+      </View>
+
+      {/* Crew */}
+      {members.length > 0 && (
+        <>
+          <Text style={[sec.current, { marginTop: 6 }]}>CREW XP:</Text>
+          {members.map((m) => (
+            <View key={m.id} style={lev.memberRow}>
+              <Text style={lev.memberName} numberOfLines={1}>
+                {`${m.name} LVL_${m.level || 1}`}
+              </Text>
+              <View style={lev.memberBtns}>
+                <DevBtn label="+50"  onPress={() => devAddCrewXP(m.id, 50)} />
+                <DevBtn label="+200" onPress={() => devAddCrewXP(m.id, 200)} />
+                <DevBtn label="LVL10" onPress={() => devSetCrewMemberLevel(m.id, MAX_LEVEL)} />
+              </View>
+            </View>
+          ))}
+
+          <View style={[sec.row, { marginTop: 4 }]}>
+            <DevBtn label="[ALL_LVL_5]"  onPress={() => devLevelAllCrew(5)} />
+            <DevBtn label="[ALL_LVL_10]" onPress={() => devLevelAllCrew(MAX_LEVEL)} />
+          </View>
+        </>
+      )}
+
+      {/* Team Level */}
+      <Text style={[sec.current, { marginTop: 6 }]}>SET_TEAM_LVL:</Text>
+      <View style={sec.row}>
+        {SET_LEVELS.map((lvl) => (
+          <DevBtn
+            key={`team_${lvl}`}
+            label={String(lvl)}
+            onPress={() => devSetTeamLevel(lvl)}
+          />
+        ))}
+      </View>
+
+      {/* Test triggers */}
+      <View style={[sec.row, { marginTop: 6 }]}>
+        <DevBtn label="[TRIGGER_BANNER]"  onPress={devTriggerLevelUpBanner} />
+        <DevBtn label="[FORCE_200_XP]"    onPress={devForceCombatXP} />
+      </View>
+      <DevBtn label="[RESET_LEVELING]" onPress={devResetLeveling} danger />
+    </DevSection>
+  );
+}
+
 // ── Inventory section (stub) ─────────────────────────────────────────────────
 function InventorySection() {
   return (
@@ -350,6 +443,7 @@ export default function DevPanel() {
             <CreditsSection />
             <TurnSection />
             <CharacterSection />
+            <LevelingSection />
             <CrewSection />
             <FactionSection />
             <ExchangeSection />
@@ -524,6 +618,22 @@ const fac = StyleSheet.create({
     color: ERR,
     width: 28,
     textAlign: 'right',
+  },
+});
+
+const lev = StyleSheet.create({
+  memberRow: {
+    gap: 3,
+  },
+  memberName: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 9,
+    color: `${ERR}99`,
+    letterSpacing: 0.8,
+  },
+  memberBtns: {
+    flexDirection: 'row',
+    gap: 6,
   },
 });
 
