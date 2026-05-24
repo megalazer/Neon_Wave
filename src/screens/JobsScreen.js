@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -18,7 +18,8 @@ import * as Haptics from 'expo-haptics';
 import { useStore } from '../store/index';
 import { advanceTurn } from '../engine/turnPipeline';
 import { ACTIVITIES } from '../data/activities';
-import { CONTRACTS } from '../data/contracts';
+import { getContract } from '../data/contracts/index';
+import { getFixer } from '../data/fixers';
 import { colors } from '../theme/colors';
 
 const BANNER_HEIGHT = 90;
@@ -161,14 +162,29 @@ function SegmentedTabs({ active, onChange }) {
   );
 }
 
-// --- ContractCard ---
-function ContractCard({ contract, renown, onAccept }) {
-  const glitch = useSharedValue(0);
-  const pressed = useSharedValue(0);
-  const locked = contract.locked || renown < contract.renownRequired;
+const FIXER_ACCENT_COLORS = {
+  primary:   colors.primary,
+  secondary: colors.secondary,
+  tertiary:  colors.tertiaryFixed,
+  error:     colors.error,
+  outline:   colors.outline,
+};
 
-  const RISK_COLORS = { low: colors.tertiaryFixedDim, moderate: colors.primary, high: colors.error };
-  const accentColor = contract.risk ? (RISK_COLORS[contract.risk] || colors.primary) : colors.outline;
+const TIER_LABELS = { LOW: 'LOW_TIER', MID: 'MID_TIER', HIGH: 'HIGH_TIER' };
+
+// --- ContractCard ---
+function ContractCard({ feedItem, playerLevel, credits, onAccept }) {
+  const contract    = getContract(feedItem.id);
+  const fixer       = contract ? getFixer(contract.fixerId) : null;
+  const accentColor = fixer ? (FIXER_ACCENT_COLORS[fixer.accent] ?? colors.primary) : colors.outline;
+  const glitch      = useSharedValue(0);
+  const pressed     = useSharedValue(0);
+
+  if (!contract) return null;
+
+  const locked     = playerLevel < contract.teamLevelRequired;
+  const cantAfford = contract.deposit > 0 && credits < contract.deposit;
+  const disabled   = locked || cantAfford;
 
   const btnFillStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(pressed.value, [0, 1], ['transparent', accentColor]),
@@ -178,10 +194,10 @@ function ContractCard({ contract, renown, onAccept }) {
   }));
 
   const handlePressIn = useCallback(() => {
-    if (locked) return;
+    if (disabled) return;
     pressed.value = withTiming(1, { duration: 120, easing: Easing.in(Easing.linear) });
     glitch.value = withTiming(1, { duration: 80, easing: Easing.out(Easing.linear) });
-  }, [locked]);
+  }, [disabled]);
 
   const handlePressOut = useCallback(() => {
     pressed.value = withTiming(0, { duration: 200, easing: Easing.out(Easing.linear) });
@@ -189,80 +205,79 @@ function ContractCard({ contract, renown, onAccept }) {
   }, []);
 
   const handlePress = useCallback(() => {
-    if (locked) return;
+    if (disabled) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     onAccept(contract.id);
-  }, [locked, contract.id, onAccept]);
+  }, [disabled, contract.id, onAccept]);
 
   return (
-    <View style={[styles.contractCard, { borderLeftColor: accentColor, opacity: locked ? 0.45 : 1 }]}>
-      {/* Header */}
+    <View style={[styles.contractCard, { borderLeftColor: accentColor, opacity: disabled ? 0.45 : 1 }]}>
+      {/* Header: fixer tag + tier + expiry */}
       <View style={styles.activityHeader}>
         <View style={styles.contractHeaderLeft}>
           <Text style={[styles.activityModule, { color: accentColor }]}>
             [{contract.moduleNumber}]
           </Text>
           <View style={[styles.tierBadge, { borderColor: `${accentColor}66` }]}>
-            <Text style={[styles.tierText, { color: accentColor }]}>{contract.tier}</Text>
+            <Text style={[styles.tierText, { color: accentColor }]}>
+              {TIER_LABELS[contract.tier] ?? contract.tier}
+            </Text>
           </View>
         </View>
-        <MaterialIcons name={contract.icon} size={18} color={accentColor} />
+        <View style={styles.expiryRow}>
+          <MaterialIcons name="schedule" size={11} color={`${accentColor}88`} />
+          <Text style={[styles.expiryText, { color: `${accentColor}88` }]}>
+            {feedItem.expiresIn}T
+          </Text>
+        </View>
       </View>
 
+      {/* Fixer line */}
+      <Text style={[styles.fixerLine, { color: accentColor }]}>
+        VIA: <Text style={{ fontFamily: 'KodeMono_700Bold' }}>{fixer?.handle ?? '???'}</Text>
+      </Text>
+
       <GlitchTitle text={contract.name} color={accentColor} glitch={glitch} />
-
-      {/* Client / District meta */}
-      {!locked && (
-        <View style={styles.contractMeta}>
-          <Text style={styles.contractMetaText}>
-            CLIENT: <Text style={{ color: colors.primary }}>{contract.client}</Text>
-          </Text>
-          <Text style={styles.contractMetaText}>
-            ZONE: <Text style={{ color: colors.primary }}>{contract.district}</Text>
-          </Text>
-        </View>
-      )}
-
       <Text style={styles.activityDesc}>{contract.description}</Text>
 
-      {/* Objectives */}
-      {!locked && contract.objectives.length > 0 && (
-        <View style={styles.objectivesList}>
-          {contract.objectives.map((obj, i) => (
-            <View key={i} style={styles.objectiveRow}>
-              <MaterialIcons name="chevron-right" size={12} color={`${accentColor}99`} />
-              <Text style={[styles.objectiveText, { color: `${accentColor}CC` }]}>{obj}</Text>
-            </View>
-          ))}
+      {/* Stage count */}
+      <View style={styles.contractMeta}>
+        <Text style={styles.contractMetaText}>
+          STAGES: <Text style={{ color: accentColor }}>{contract.stages.length}</Text>
+        </Text>
+        {contract.deposit > 0 && (
+          <Text style={styles.contractMetaText}>
+            DEPOSIT: <Text style={{ color: cantAfford ? colors.error : accentColor }}>
+              {contract.deposit.toLocaleString()} CR
+            </Text>
+          </Text>
+        )}
+      </View>
+
+      <RewardsRow payout={contract.payout} exp={contract.exp} accentColor={accentColor} />
+
+      {locked ? (
+        <View style={[styles.activityBtn, { borderColor: colors.outline }]}>
+          <MaterialIcons name="lock" size={12} color={colors.outline} />
+          <Text style={[styles.activityBtnText, { color: colors.outline, marginLeft: 4 }]}>
+            REQUIRES_TL{contract.teamLevelRequired}
+          </Text>
         </View>
-      )}
-
-      {!locked && contract.payout > 0 && (
-        <RewardsRow payout={contract.payout} exp={contract.exp} accentColor={accentColor} />
-      )}
-
-      {!locked && (
-        <TouchableOpacity
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
-          onPress={handlePress}
-          activeOpacity={1}
-        >
+      ) : cantAfford ? (
+        <View style={[styles.activityBtn, { borderColor: colors.error }]}>
+          <MaterialIcons name="money-off" size={12} color={colors.error} />
+          <Text style={[styles.activityBtnText, { color: colors.error, marginLeft: 4 }]}>
+            INSUFFICIENT_CREDITS
+          </Text>
+        </View>
+      ) : (
+        <TouchableOpacity onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handlePress} activeOpacity={1}>
           <Animated.View style={[styles.activityBtn, { borderColor: accentColor }, btnFillStyle]}>
             <Animated.Text style={[styles.activityBtnText, btnTextStyle]}>
               ACCEPT_CONTRACT
             </Animated.Text>
           </Animated.View>
         </TouchableOpacity>
-      )}
-
-      {locked && (
-        <View style={[styles.activityBtn, { borderColor: colors.outline }]}>
-          <MaterialIcons name="lock" size={12} color={colors.outline} />
-          <Text style={[styles.activityBtnText, { color: colors.outline, marginLeft: 4 }]}>
-            LOCKED
-          </Text>
-        </View>
       )}
     </View>
   );
@@ -393,14 +408,37 @@ function ActivityCard({ activity, renown, onExecute }) {
   );
 }
 
+// --- FeedEmpty ---
+function FeedEmpty() {
+  return (
+    <View style={styles.feedEmpty}>
+      <MaterialIcons name="hourglass-empty" size={28} color={`${colors.primary}44`} />
+      <Text style={styles.feedEmptyText}>NO_CONTRACTS_AVAILABLE</Text>
+      <Text style={styles.feedEmptySubtext}>Advance turns to refresh the feed.</Text>
+    </View>
+  );
+}
+
 // --- JobsScreen ---
 export default function JobsScreen({ onNavigate }) {
   const [activeTab, setActiveTab] = useState('activities');
-  const members = useStore((s) => s.crew.members);
-  const renown = useStore((s) => s.character.renown);
-  const executeActivity = useStore((s) => s.executeActivity);
-  const acceptContract = useStore((s) => s.acceptContract);
-  const startTestBattle = useStore((s) => s.startTestBattle);
+  const members       = useStore((s) => s.crew.members);
+  const renown        = useStore((s) => s.character.renown);
+  const playerLevel   = useStore((s) => s.character.level ?? 1);
+  const credits       = useStore((s) => s.character.credits);
+  const feedItems     = useStore((s) => s.contract.feedItems);
+  const contractPhase = useStore((s) => s.contract.phase);
+  const executeActivity    = useStore((s) => s.executeActivity);
+  const acceptContract     = useStore((s) => s.acceptContract);
+  const refreshContractFeed = useStore((s) => s.refreshContractFeed);
+  const startTestBattle    = useStore((s) => s.startTestBattle);
+
+  // Seed the feed on first render if empty
+  useEffect(() => {
+    if (feedItems.length === 0 && contractPhase === 'feed') {
+      refreshContractFeed();
+    }
+  }, []);
 
   const handleExecute = useCallback(
     (activityId) => {
@@ -420,7 +458,6 @@ export default function JobsScreen({ onNavigate }) {
   const handleAccept = useCallback(
     (contractId) => {
       acceptContract(contractId);
-      advanceTurn();
       onNavigate('neural');
     },
     [acceptContract, onNavigate],
@@ -439,14 +476,19 @@ export default function JobsScreen({ onNavigate }) {
 
         {activeTab === 'contracts' && (
           <View style={styles.activitiesList}>
-            {CONTRACTS.map((contract) => (
-              <ContractCard
-                key={contract.id}
-                contract={contract}
-                renown={renown}
-                onAccept={handleAccept}
-              />
-            ))}
+            {feedItems.length === 0 ? (
+              <FeedEmpty />
+            ) : (
+              feedItems.map((item) => (
+                <ContractCard
+                  key={item.id}
+                  feedItem={item}
+                  playerLevel={playerLevel}
+                  credits={credits}
+                  onAccept={handleAccept}
+                />
+              ))
+            )}
           </View>
         )}
 
@@ -646,6 +688,22 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     textTransform: 'uppercase',
   },
+  expiryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+  },
+  expiryText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 9,
+    letterSpacing: 1,
+  },
+  fixerLine: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 9,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
   contractMeta: {
     flexDirection: 'row',
     gap: 16,
@@ -671,6 +729,27 @@ const styles = StyleSheet.create({
     fontSize: 10,
     letterSpacing: 0.5,
     textTransform: 'uppercase',
+  },
+
+  // Feed empty state
+  feedEmpty: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+    gap: 10,
+  },
+  feedEmptyText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 11,
+    color: `${colors.primary}66`,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  feedEmptySubtext: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 10,
+    color: colors.outline,
+    letterSpacing: 0.5,
   },
 
   // Activities list

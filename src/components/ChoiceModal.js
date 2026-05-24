@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View, Text, Modal, TouchableOpacity, StyleSheet, ScrollView,
 } from 'react-native';
@@ -10,6 +10,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useStore } from '../store/index';
 import { ALL_CHOICE_EVENTS } from '../data/events/index';
+import { getContract } from '../data/contracts/index';
+import { getFixer } from '../data/fixers';
+import ConfirmModal from './ConfirmModal';
 import { colors } from '../theme/colors';
 
 const ACCENT_MAP = {
@@ -31,6 +34,7 @@ function StatBadge({ stat, threshold, playerStats }) {
   const statVal = playerStats?.[stat] ?? 10;
   const label = stat.toUpperCase();
   const difficulty =
+    threshold >= 15 ? 'EXTREME' :
     threshold >= 14 ? 'HIGH' :
     threshold >= 12 ? 'MOD' : 'LOW';
   return (
@@ -41,17 +45,18 @@ function StatBadge({ stat, threshold, playerStats }) {
 }
 
 // ── ChoiceButton ──────────────────────────────────────────────────────────────
-function ChoiceButton({ choice, playerStats, onPress }) {
-  const hasStat = !!choice.statCheck;
+function ChoiceButton({ choice, playerStats, onPress, accentColor }) {
+  const hasStat  = choice.statCheck;
+  const color    = accentColor ?? CYAN;
   return (
     <TouchableOpacity
-      style={cBtn.container}
+      style={[cBtn.container, { borderColor: `${color}66`, backgroundColor: `${color}06` }]}
       onPress={onPress}
       activeOpacity={0.7}
     >
       <View style={cBtn.row}>
-        <MaterialIcons name="chevron-right" size={14} color={CYAN} />
-        <Text style={cBtn.label}>{choice.label}</Text>
+        <MaterialIcons name="chevron-right" size={14} color={color} />
+        <Text style={[cBtn.label, { color }]}>{choice.label}</Text>
       </View>
       {hasStat && (
         <StatBadge
@@ -64,7 +69,7 @@ function ChoiceButton({ choice, playerStats, onPress }) {
   );
 }
 
-// ── OutcomeView ───────────────────────────────────────────────────────────────
+// ── OutcomeView (event resolution) ───────────────────────────────────────────
 function OutcomeView({ outcome }) {
   const accentColor = ACCENT_MAP[outcome.accent] ?? colors.outline;
   const icon = outcome.accent === 'tertiary' ? 'check-circle' :
@@ -84,33 +89,119 @@ function OutcomeView({ outcome }) {
   );
 }
 
+// ── ContractResolutionView (contract final outcome) ───────────────────────────
+function ContractResolutionView({ resolution, contract, onDismiss }) {
+  const isSuccess  = resolution.outcome === 'success';
+  const isAbort    = resolution.outcome === 'aborted';
+  const accentColor = isSuccess ? colors.tertiaryFixed :
+                      isAbort   ? colors.outline : colors.error;
+  const icon        = isSuccess ? 'check-circle' :
+                      isAbort   ? 'block' : 'cancel';
+  const label       = isSuccess ? 'CONTRACT_COMPLETE' :
+                      isAbort   ? 'CONTRACT_ABORTED' : 'CONTRACT_FAILED';
+
+  return (
+    <View style={res.container}>
+      <View style={[res.banner, { backgroundColor: `${accentColor}14`, borderBottomColor: `${accentColor}33` }]}>
+        <MaterialIcons name={icon} size={18} color={accentColor} />
+        <Text style={[res.bannerLabel, { color: accentColor }]}>{label}</Text>
+      </View>
+
+      <ScrollView style={res.scroll} contentContainerStyle={res.scrollContent}>
+        <Text style={res.narration}>{resolution.narration}</Text>
+
+        {resolution.creditsEarned > 0 && (
+          <View style={[res.rewardRow, { borderColor: `${accentColor}33` }]}>
+            <MaterialIcons name="payments" size={14} color={accentColor} />
+            <Text style={[res.rewardText, { color: accentColor }]}>
+              +{resolution.creditsEarned.toLocaleString()} CR
+            </Text>
+            {resolution.expEarned > 0 && (
+              <>
+                <Text style={res.rewardSep}>·</Text>
+                <MaterialIcons name="star" size={14} color={accentColor} />
+                <Text style={[res.rewardText, { color: accentColor }]}>
+                  +{resolution.expEarned} EXP
+                </Text>
+              </>
+            )}
+          </View>
+        )}
+      </ScrollView>
+
+      <TouchableOpacity style={[res.dismissBtn, { borderColor: accentColor }]} onPress={onDismiss} activeOpacity={0.7}>
+        <Text style={[res.dismissLabel, { color: accentColor }]}>[DISMISS]</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
 // ── ChoiceModal ───────────────────────────────────────────────────────────────
 export default function ChoiceModal() {
+  // Event mode selectors
   const activeChoiceEventId  = useStore((s) => s.event.activeChoiceEventId);
   const pendingChoiceOutcome = useStore((s) => s.event.pendingChoiceOutcome);
   const resolveChoiceEvent   = useStore((s) => s.resolveChoiceEvent);
   const dismissChoiceOutcome = useStore((s) => s.dismissChoiceOutcome);
-  const playerStats          = useStore((s) => s.character.stats);
 
+  // Contract mode selectors
+  const contractPhase      = useStore((s) => s.contract.phase);
+  const activeContractId   = useStore((s) => s.contract.activeContractId);
+  const activeStageIndex   = useStore((s) => s.contract.activeStageIndex);
+  const contractResolution = useStore((s) => s.contract.resolution);
+  const resolveStageChoice = useStore((s) => s.resolveStageChoice);
+  const abortContract      = useStore((s) => s.abortContract);
+  const dismissResolution  = useStore((s) => s.dismissResolution);
+
+  const playerStats = useStore((s) => s.character.stats);
+
+  const [showAbortConfirm, setShowAbortConfirm] = useState(false);
   const dismissTimer = useRef(null);
 
-  const visible = activeChoiceEventId !== null || pendingChoiceOutcome !== null;
-  const event   = activeChoiceEventId ? getChoiceEvent(activeChoiceEventId) : null;
+  // Derived data
+  const isContractActive   = contractPhase === 'active';
+  const isContractResolving = contractPhase === 'resolving';
+  const isContractMode     = isContractActive || isContractResolving;
 
-  // Auto-dismiss the outcome view after 1.5 s
+  const activeContract = isContractMode && activeContractId
+    ? getContract(activeContractId) : null;
+  const currentStage   = activeContract?.stages[activeStageIndex] ?? null;
+  const fixer          = activeContract ? getFixer(activeContract.fixerId) : null;
+  const fixerColor     = ACCENT_MAP[fixer?.accent] ?? CYAN;
+
+  const event   = activeChoiceEventId ? getChoiceEvent(activeChoiceEventId) : null;
+  const visible = isContractMode || activeChoiceEventId !== null || pendingChoiceOutcome !== null;
+
+  const stageCount = activeContract?.stages.length ?? 0;
+
+  // Auto-dismiss event outcome after 1.5 s
   useEffect(() => {
     if (pendingChoiceOutcome) {
-      dismissTimer.current = setTimeout(() => {
-        dismissChoiceOutcome();
-      }, 1500);
+      dismissTimer.current = setTimeout(() => dismissChoiceOutcome(), 1500);
     }
     return () => clearTimeout(dismissTimer.current);
   }, [pendingChoiceOutcome, dismissChoiceOutcome]);
 
-  const handleChoice = useCallback((choiceId) => {
+  const handleEventChoice = useCallback((choiceId) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     resolveChoiceEvent(choiceId);
   }, [resolveChoiceEvent]);
+
+  const handleContractChoice = useCallback((choiceId) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    resolveStageChoice(choiceId);
+  }, [resolveStageChoice]);
+
+  const handleAbortConfirmed = useCallback(() => {
+    setShowAbortConfirm(false);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    abortContract();
+  }, [abortContract]);
+
+  const handleDismissResolution = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    dismissResolution();
+  }, [dismissResolution]);
 
   // Glitch animation on the transmission header
   const glitchX = useSharedValue(0);
@@ -132,43 +223,139 @@ export default function ChoiceModal() {
 
   if (!visible) return null;
 
+  // ── Contract: resolution screen ──
+  if (isContractResolving && contractResolution && activeContract) {
+    return (
+      <>
+        <Modal visible transparent animationType="slide" statusBarTranslucent>
+          <View style={scr.overlay}>
+            <View style={[scr.sheet, { borderTopColor: fixerColor }]}>
+              <View style={scr.header}>
+                <Animated.Text style={[scr.transmitLabel, { color: fixerColor }, glitchStyle]}>
+                  {'>>> CONTRACT_DEBRIEF <<<'}
+                </Animated.Text>
+                <Text style={scr.title}>{activeContract.name}</Text>
+              </View>
+              <ContractResolutionView
+                resolution={contractResolution}
+                contract={activeContract}
+                onDismiss={handleDismissResolution}
+              />
+            </View>
+          </View>
+        </Modal>
+        <ConfirmModal
+          visible={showAbortConfirm}
+          variant="destructive"
+          title="ABORT CONTRACT"
+          body={`Abandon ${activeContract?.name ?? 'current contract'}? No payout for incomplete work.`}
+          warning="This cannot be undone."
+          confirmLabel="[ABORT]"
+          cancelLabel="[CONTINUE]"
+          onConfirm={handleAbortConfirmed}
+          onCancel={() => setShowAbortConfirm(false)}
+        />
+      </>
+    );
+  }
+
+  // ── Contract: active stage ──
+  if (isContractActive && currentStage) {
+    return (
+      <>
+        <Modal visible transparent animationType="slide" statusBarTranslucent>
+          <View style={scr.overlay}>
+            <View style={[scr.sheet, { borderTopColor: fixerColor }]}>
+              {/* Header: fixer + contract name + stage indicator + abort button */}
+              <View style={scr.header}>
+                <View style={scr.contractHeaderRow}>
+                  <Animated.Text style={[scr.transmitLabel, { color: fixerColor }, glitchStyle]}>
+                    {fixer ? `>>> ${fixer.handle} <<<` : '>>> CONTRACT <<<'}
+                  </Animated.Text>
+                  <TouchableOpacity
+                    style={scr.abortBtn}
+                    onPress={() => setShowAbortConfirm(true)}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <MaterialIcons name="close" size={18} color={colors.error} />
+                  </TouchableOpacity>
+                </View>
+                <View style={scr.contractTitleRow}>
+                  <Text style={scr.title}>{activeContract.name}</Text>
+                  <View style={[scr.stagePill, { borderColor: `${fixerColor}66` }]}>
+                    <Text style={[scr.stagePillText, { color: fixerColor }]}>
+                      {activeStageIndex + 1}/{stageCount}
+                    </Text>
+                  </View>
+                </View>
+                <Text style={[scr.stageLabel, { color: `${fixerColor}88` }]}>
+                  {currentStage.label} — {currentStage.title}
+                </Text>
+              </View>
+
+              <View style={scr.body}>
+                <ScrollView style={scr.promptScroll} contentContainerStyle={scr.promptContent}>
+                  <Text style={scr.prompt}>{currentStage.prompt}</Text>
+                </ScrollView>
+                <View style={scr.divider} />
+                <View style={scr.choices}>
+                  {currentStage.choices.map((choice) => (
+                    <ChoiceButton
+                      key={choice.id}
+                      choice={choice}
+                      playerStats={playerStats}
+                      accentColor={fixerColor}
+                      onPress={() => handleContractChoice(choice.id)}
+                    />
+                  ))}
+                </View>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        <ConfirmModal
+          visible={showAbortConfirm}
+          variant="destructive"
+          title="ABORT CONTRACT"
+          body={`Abandon ${activeContract.name}? No payout for incomplete work.`}
+          warning="This cannot be undone."
+          confirmLabel="[ABORT]"
+          cancelLabel="[CONTINUE]"
+          onConfirm={handleAbortConfirmed}
+          onCancel={() => setShowAbortConfirm(false)}
+        />
+      </>
+    );
+  }
+
+  // ── Event mode ──
   return (
     <Modal visible={visible} transparent animationType="slide" statusBarTranslucent>
       <View style={scr.overlay}>
         <View style={scr.sheet}>
-          {/* Transmission header */}
           <View style={scr.header}>
             <Animated.Text style={[scr.transmitLabel, glitchStyle]}>
               {'>>> INCOMING_TRANSMISSION <<<'}
             </Animated.Text>
-            {event && (
-              <Text style={scr.title}>{event.title}</Text>
-            )}
+            {event && <Text style={scr.title}>{event.title}</Text>}
           </View>
 
           {pendingChoiceOutcome ? (
             <OutcomeView outcome={pendingChoiceOutcome} />
           ) : event ? (
             <View style={scr.body}>
-              {/* Prompt */}
-              <ScrollView
-                style={scr.promptScroll}
-                contentContainerStyle={scr.promptContent}
-              >
+              <ScrollView style={scr.promptScroll} contentContainerStyle={scr.promptContent}>
                 <Text style={scr.prompt}>{event.prompt}</Text>
               </ScrollView>
-
-              {/* Divider */}
               <View style={scr.divider} />
-
-              {/* Choices */}
               <View style={scr.choices}>
                 {event.choices.map((choice) => (
                   <ChoiceButton
                     key={choice.id}
                     choice={choice}
                     playerStats={playerStats}
-                    onPress={() => handleChoice(choice.id)}
+                    onPress={() => handleEventChoice(choice.id)}
                   />
                 ))}
               </View>
@@ -207,6 +394,35 @@ const scr = StyleSheet.create({
     paddingBottom: 10,
     gap: 4,
   },
+  contractHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  contractTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  abortBtn: {
+    padding: 2,
+  },
+  stagePill: {
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  stagePillText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 10,
+    letterSpacing: 1.2,
+  },
+  stageLabel: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 9,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
   transmitLabel: {
     fontFamily: 'KodeMono_700Bold',
     fontSize: 9,
@@ -240,7 +456,6 @@ const scr = StyleSheet.create({
   divider: {
     height: 1,
     backgroundColor: `${colors.outline}33`,
-    marginHorizontal: 0,
   },
   choices: {
     paddingHorizontal: 14,
@@ -252,10 +467,8 @@ const scr = StyleSheet.create({
 const cBtn = StyleSheet.create({
   container: {
     borderWidth: 1,
-    borderColor: `${CYAN}66`,
     padding: 12,
     gap: 5,
-    backgroundColor: `${CYAN}06`,
   },
   row: {
     flexDirection: 'row',
@@ -265,7 +478,6 @@ const cBtn = StyleSheet.create({
   label: {
     fontFamily: 'KodeMono_700Bold',
     fontSize: 12,
-    color: CYAN,
     letterSpacing: 1,
     textTransform: 'uppercase',
     flex: 1,
@@ -315,5 +527,70 @@ const out = StyleSheet.create({
     color: colors.onSurface,
     letterSpacing: 0.4,
     lineHeight: 22,
+  },
+});
+
+const res = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  banner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+  },
+  bannerLabel: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 12,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 16,
+    gap: 14,
+  },
+  narration: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 13,
+    color: colors.onSurface,
+    letterSpacing: 0.4,
+    lineHeight: 22,
+  },
+  rewardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingTop: 12,
+    borderTopWidth: 1,
+  },
+  rewardText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 13,
+    letterSpacing: 1,
+  },
+  rewardSep: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 13,
+    color: colors.outline,
+  },
+  dismissBtn: {
+    borderTopWidth: 1,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginHorizontal: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+  },
+  dismissLabel: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 12,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
   },
 });

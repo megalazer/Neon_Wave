@@ -1,5 +1,4 @@
 import { ACTIVITIES } from '../../data/activities';
-import { CONTRACTS } from '../../data/contracts';
 import { applyXPToCharacter, distributeCombatXP } from '../../data/leveling';
 import { ALL_FLAVOR_EVENTS, ALL_CHOICE_EVENTS } from '../../data/events/index';
 import { EVENT_COOLDOWN, FLAVOR_MIN_GAP, FLAVOR_MAX_GAP, FLAVOR_CHANCE } from '../../data/eventPacing';
@@ -121,11 +120,6 @@ export const createEventSlice = (set) => ({
   executeActivity: (activityId) => {
     const activity = ACTIVITIES.find((a) => a.id === activityId);
     rollOutcome(set, activity, 'act');
-  },
-
-  acceptContract: (contractId) => {
-    const contract = CONTRACTS.find((c) => c.id === contractId);
-    rollOutcome(set, contract, 'con');
   },
 
   // ── Random event selection — called once per turn from turnPipeline ────────

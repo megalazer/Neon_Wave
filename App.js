@@ -69,9 +69,11 @@ export default function App() {
   const characterName    = useStore((s) => s.character.name);
   const credits          = useStore((s) => s.character.credits);
   const renown           = useStore((s) => s.character.renownLabel);
+  const contractPhase    = useStore((s) => s.contract.phase);
   const initializeOperatives = useStore((s) => s.initializeOperatives);
   const initCharacter    = useStore((s) => s.initCharacter);
   const initDevMode      = useStore((s) => s.initDevMode);
+  const startTestBattle  = useStore((s) => s.startTestBattle);
 
   const inInitFlow = characterName === null;
 
@@ -79,6 +81,14 @@ export default function App() {
     initializeOperatives();
     initDevMode();
   }, []);
+
+  // When a contract stage triggers combat, start the battle and navigate there
+  useEffect(() => {
+    if (contractPhase === 'combat') {
+      startTestBattle();
+      setBattleActive(true);
+    }
+  }, [contractPhase]);
 
   const handleTabPress = useCallback((tabId) => {
     if (tabId === 'battle') {

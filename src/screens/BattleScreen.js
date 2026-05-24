@@ -254,7 +254,14 @@ export default function BattleScreen({ onExit }) {
   // ── Handlers ──
 
   const handleExit = useCallback(() => {
+    // Read combat outcome BEFORE exitBattle clears it
+    const state = useStore.getState();
+    const combatOutcome = state.combat.outcome;
+    const hasPendingContract = state.contract.pendingCombatResult !== null;
     exitBattle();
+    if (hasPendingContract) {
+      useStore.getState().handleCombatResolution(combatOutcome);
+    }
     onExit();
   }, [exitBattle, onExit]);
 

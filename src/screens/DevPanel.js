@@ -14,7 +14,7 @@ import { COINS } from '../data/coins';
 import { devAdvanceTurns } from '../engine/turnPipeline';
 import { XP_THRESHOLDS, MAX_LEVEL, getLevelProgress } from '../data/leveling';
 import { ALL_EVENTS } from '../data/events/index';
-import { CONTRACTS } from '../data/contracts';
+import { ALL_CONTRACTS as CONTRACTS } from '../data/contracts/index';
 
 const ERR = colors.error;
 
@@ -389,35 +389,59 @@ function RandomEventsSection() {
 function ContractOverrideSection() {
   const phase             = useStore((s) => s.contract.phase);
   const activeContractId  = useStore((s) => s.contract.activeContractId);
+  const activeStageIndex  = useStore((s) => s.contract.activeStageIndex);
+  const feedItems         = useStore((s) => s.contract.feedItems);
+  const fixerRep          = useStore((s) => s.contract.fixerRep);
   const devForceStart     = useStore((s) => s.devForceStartContract);
   const devForceRes       = useStore((s) => s.devForceContractResolution);
+  const devClear          = useStore((s) => s.devClearActiveContract);
+  const devRefreshFeed    = useStore((s) => s.devForceRefreshFeed);
 
-  const liveContracts = CONTRACTS.filter((c) => !c.locked);
+  const allContracts = CONTRACTS;
 
   return (
     <DevSection title="CONTRACT_OVERRIDE">
       <Text style={sec.current}>
-        {`PHASE: ${phase.toUpperCase()} // ACTIVE: ${activeContractId ?? 'NULL'}`}
+        {`PHASE: ${phase.toUpperCase()}`}
+      </Text>
+      <Text style={sec.current}>
+        {`ACTIVE: ${activeContractId ?? 'NULL'} // STAGE: ${activeStageIndex}`}
+      </Text>
+      <Text style={sec.current}>
+        {`FEED: ${feedItems.length} item(s)`}
       </Text>
 
-      <Text style={[sec.current, { marginTop: 2 }]}>FORCE_START:</Text>
-      <View style={sec.row}>
-        {liveContracts.map((c) => (
-          <DevBtn
-            key={c.id}
-            label={`[${c.moduleNumber}]`}
-            onPress={() => devForceStart(c.id)}
-            dim={phase !== 'feed'}
-          />
-        ))}
+      <View style={[sec.row, { marginTop: 6 }]}>
+        <DevBtn label="[REFRESH_FEED]" onPress={devRefreshFeed} />
+        <DevBtn label="[CLEAR_ACTIVE]" onPress={devClear} danger dim={phase === 'feed'} />
       </View>
 
-      <Text style={[sec.current, { marginTop: 2 }]}>FORCE_RESOLUTION:</Text>
+      <Text style={[sec.current, { marginTop: 6 }]}>FORCE_START (by tier):</Text>
+      <View style={sec.row}>
+        {['LOW', 'MID', 'HIGH'].map((tier) => {
+          const c = allContracts.find((x) => x.tier === tier);
+          if (!c) return null;
+          return (
+            <DevBtn
+              key={tier}
+              label={`[${tier}]`}
+              onPress={() => devForceStart(c.id)}
+              dim={phase !== 'feed'}
+            />
+          );
+        })}
+      </View>
+
+      <Text style={[sec.current, { marginTop: 6 }]}>FORCE_RESOLUTION:</Text>
       <View style={sec.row}>
         <DevBtn label="[SUCCESS]"  onPress={() => devForceRes('success')}  dim={phase !== 'active'} />
         <DevBtn label="[FAILURE]"  onPress={() => devForceRes('failure')}  dim={phase !== 'active'} danger />
         <DevBtn label="[ABORTED]"  onPress={() => devForceRes('aborted')}  dim={phase !== 'active'} />
       </View>
+
+      <Text style={[sec.current, { marginTop: 6 }]}>
+        {`FIXER_REP: remi=${fixerRep.remi ?? 0} pyre=${fixerRep.pyre ?? 0} nyx=${fixerRep.nyx ?? 0}`}
+      </Text>
     </DevSection>
   );
 }
