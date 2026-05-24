@@ -13,6 +13,8 @@ import { useStore } from '../store/index';
 import { COINS } from '../data/coins';
 import { devAdvanceTurns } from '../engine/turnPipeline';
 import { XP_THRESHOLDS, MAX_LEVEL, getLevelProgress } from '../data/leveling';
+import { ALL_EVENTS } from '../data/events/index';
+import { CONTRACTS } from '../data/contracts';
 
 const ERR = colors.error;
 
@@ -322,6 +324,104 @@ function LevelingSection() {
   );
 }
 
+// ── Random events section ────────────────────────────────────────────────────
+function RandomEventsSection() {
+  const morale             = useStore((s) => s.character.morale);
+  const firedCount         = useStore((s) => s.event.firedEventIds.size);
+  const tsSinceChoice      = useStore((s) => s.event.turnsSinceLastChoice);
+  const tsSinceFlavor      = useStore((s) => s.event.turnsSinceLastFlavor);
+  const devForceFlavorEvent  = useStore((s) => s.devForceFlavorEvent);
+  const devForceChoiceEvent  = useStore((s) => s.devForceChoiceEvent);
+  const devForceEventById    = useStore((s) => s.devForceEventById);
+  const devResetEventHistory = useStore((s) => s.devResetEventHistory);
+  const devSetMorale         = useStore((s) => s.devSetMorale);
+  const devAddMorale         = useStore((s) => s.devAddMorale);
+
+  const [eventIdVal, setEventIdVal] = useState('');
+
+  return (
+    <DevSection title="RANDOM_EVENTS_OVERRIDE">
+      <Text style={sec.current}>
+        {`MORALE: ${morale ?? 50} // FIRED: ${firedCount}/${ALL_EVENTS.length}`}
+      </Text>
+      <Text style={sec.current}>
+        {`TURNS_SINCE_CHOICE: ${tsSinceChoice} // TURNS_SINCE_FLAVOR: ${tsSinceFlavor}`}
+      </Text>
+
+      <View style={sec.row}>
+        <DevBtn label="[FORCE_FLAVOR]"  onPress={devForceFlavorEvent} />
+        <DevBtn label="[FORCE_CHOICE]"  onPress={devForceChoiceEvent} />
+      </View>
+
+      <View style={row.wrap}>
+        <Text style={row.label}>FIRE_BY_ID</Text>
+        <View style={row.right}>
+          <TextInput
+            style={[row.input, { flex: 1 }]}
+            value={eventIdVal}
+            onChangeText={setEventIdVal}
+            placeholder="flv_rain_neon"
+            placeholderTextColor={`${ERR}44`}
+            selectionColor={ERR}
+            autoCapitalize="none"
+          />
+          <DevBtn
+            label="[FIRE]"
+            onPress={() => { devForceEventById(eventIdVal.trim()); setEventIdVal(''); }}
+          />
+        </View>
+      </View>
+
+      <DevBtn label="[RESET_EVENT_HISTORY]" onPress={devResetEventHistory} danger />
+
+      <Text style={[sec.current, { marginTop: 4 }]}>MORALE: {morale ?? 50}</Text>
+      <View style={sec.row}>
+        <DevBtn label="-10" onPress={() => devAddMorale(-10)} dim />
+        <DevBtn label="+10" onPress={() => devAddMorale(10)} />
+        <DevBtn label="SET_0"   onPress={() => devSetMorale(0)} danger />
+        <DevBtn label="SET_100" onPress={() => devSetMorale(100)} />
+      </View>
+    </DevSection>
+  );
+}
+
+// ── Contract override section ────────────────────────────────────────────────
+function ContractOverrideSection() {
+  const phase             = useStore((s) => s.contract.phase);
+  const activeContractId  = useStore((s) => s.contract.activeContractId);
+  const devForceStart     = useStore((s) => s.devForceStartContract);
+  const devForceRes       = useStore((s) => s.devForceContractResolution);
+
+  const liveContracts = CONTRACTS.filter((c) => !c.locked);
+
+  return (
+    <DevSection title="CONTRACT_OVERRIDE">
+      <Text style={sec.current}>
+        {`PHASE: ${phase.toUpperCase()} // ACTIVE: ${activeContractId ?? 'NULL'}`}
+      </Text>
+
+      <Text style={[sec.current, { marginTop: 2 }]}>FORCE_START:</Text>
+      <View style={sec.row}>
+        {liveContracts.map((c) => (
+          <DevBtn
+            key={c.id}
+            label={`[${c.moduleNumber}]`}
+            onPress={() => devForceStart(c.id)}
+            dim={phase !== 'feed'}
+          />
+        ))}
+      </View>
+
+      <Text style={[sec.current, { marginTop: 2 }]}>FORCE_RESOLUTION:</Text>
+      <View style={sec.row}>
+        <DevBtn label="[SUCCESS]"  onPress={() => devForceRes('success')}  dim={phase !== 'active'} />
+        <DevBtn label="[FAILURE]"  onPress={() => devForceRes('failure')}  dim={phase !== 'active'} danger />
+        <DevBtn label="[ABORTED]"  onPress={() => devForceRes('aborted')}  dim={phase !== 'active'} />
+      </View>
+    </DevSection>
+  );
+}
+
 // ── Inventory section (stub) ─────────────────────────────────────────────────
 function InventorySection() {
   return (
@@ -447,6 +547,8 @@ export default function DevPanel() {
             <CrewSection />
             <FactionSection />
             <ExchangeSection />
+            <RandomEventsSection />
+            <ContractOverrideSection />
             <InventorySection />
             <LogSection />
             <ResetSection />

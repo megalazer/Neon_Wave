@@ -25,6 +25,7 @@ import FinalizeScreen from './src/screens/init/FinalizeScreen';
 import DevPanel from './src/screens/DevPanel';
 import BattleScreen from './src/screens/BattleScreen';
 import LevelUpBanner from './src/components/LevelUpBanner';
+import ChoiceModal from './src/components/ChoiceModal';
 
 const SCREEN_SUBTITLES = {
   neural: 'NEURAL_LOG',
@@ -173,6 +174,7 @@ export default function App() {
         telemetry={{ credits: fmtCredits(credits), renown }}
       />
       <LevelUpBanner />
+      <ChoiceModal />
       <BottomNav activeTab={activeTab} onTabPress={handleTabPress} />
       <NoiseTexture />
       <ScanlineOverlay />

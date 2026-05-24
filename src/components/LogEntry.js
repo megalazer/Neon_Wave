@@ -9,6 +9,14 @@ import Animated, {
 import { colors } from '../theme/colors';
 import { labelCaps, bodyMd } from '../theme/fonts';
 
+const ACCENT_COLORS = {
+  primary:   colors.primary,
+  secondary: colors.secondary,
+  tertiary:  colors.tertiaryFixed,
+  error:     colors.error,
+  outline:   colors.outline,
+};
+
 // Entry unfolds from zero height then siblings slide down via LinearTransition
 const unfoldFromTop = () => {
   'worklet';
@@ -28,12 +36,13 @@ const unfoldFromTop = () => {
 
 export default function LogEntry({ entry, index }) {
   const entryNum = String(index + 1).padStart(3, '0');
+  const accentColor = ACCENT_COLORS[entry.accent] ?? colors.primary;
 
   return (
     <Animated.View
       entering={unfoldFromTop}
       layout={LinearTransition.duration(350)}
-      style={styles.container}
+      style={[styles.container, { borderLeftColor: accentColor }]}
     >
       <View style={styles.header}>
         <Text style={styles.label}>ENTRY_{entryNum}</Text>
