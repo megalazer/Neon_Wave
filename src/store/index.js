@@ -1,5 +1,8 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import { enableMapSet } from 'immer';
+
+enableMapSet();
 import { createCharacterSlice } from './slices/characterSlice';
 import { createCrewSlice } from './slices/crewSlice';
 import { createWorldSlice } from './slices/worldSlice';
@@ -8,6 +11,8 @@ import { createEventSlice } from './slices/eventSlice';
 import { createLegacySlice } from './slices/legacySlice';
 import { createExchangeSlice } from './slices/exchangeSlice';
 import { createDevSlice } from './slices/devSlice';
+import { createTestCombatSlice } from './slices/testCombatSlice';
+import { createContractSlice } from './slices/contractSlice';
 
 export const useStore = create(
   immer((...args) => ({
@@ -19,5 +24,7 @@ export const useStore = create(
     ...createLegacySlice(...args),
     ...createExchangeSlice(...args),
     ...createDevSlice(...args),
+    ...createTestCombatSlice(...args),
+    ...createContractSlice(...args),
   })),
 );

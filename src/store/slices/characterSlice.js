@@ -1,4 +1,5 @@
 import { ORIGIN_MODIFIERS, OPENING_NARRATION } from '../../data/origins';
+import { applyXPToCharacter } from '../../data/leveling';
 
 export const createCharacterSlice = (set) => ({
   character: {
@@ -12,12 +13,22 @@ export const createCharacterSlice = (set) => ({
     renownLabel: 'GHOST',
     renown: 0,
     exp: 0,
+    level: 1,
     stats: { chrome: 10, edge: 10, ghost: 10, face: 10, grit: 10, wire: 10 },
+    morale: 50,
+    vitals:   { current: 100, max: 100 },
+    neural:   { current: 100, max: 100 },
+    humanity: { current: 80,  max: 80  },
     cyberwareInventory: [],
     realEstate: [],
     vehicles: [],
     luxuryItems: [],
   },
+
+  addCharacterXP: (amount) =>
+    set((state) => {
+      applyXPToCharacter(state, amount);
+    }),
 
   purchaseAsset: (assetType, assetId, cost, assetName) =>
     set((state) => {
@@ -38,8 +49,6 @@ export const createCharacterSlice = (set) => ({
       state.character.turnNumber += 1;
     }),
 
-  // Finalises character creation and seeds the initial log + crew state.
-  // draft: { path, gender, name, starterCyberware }
   initCharacter: (draft) =>
     set((state) => {
       const mods = ORIGIN_MODIFIERS[draft.path] || {};
@@ -49,6 +58,8 @@ export const createCharacterSlice = (set) => ({
       state.character.path   = draft.path;
 
       state.character.credits = mods.credits ?? 400;
+      state.character.exp     = 0;
+      state.character.level   = 1;
 
       state.character.stats = {
         chrome: 10 + (mods.chrome || 0),

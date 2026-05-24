@@ -23,6 +23,9 @@ import PathScreen from './src/screens/init/PathScreen';
 import IdentityScreen from './src/screens/init/IdentityScreen';
 import FinalizeScreen from './src/screens/init/FinalizeScreen';
 import DevPanel from './src/screens/DevPanel';
+import BattleScreen from './src/screens/BattleScreen';
+import LevelUpBanner from './src/components/LevelUpBanner';
+import ChoiceModal from './src/components/ChoiceModal';
 
 const SCREEN_SUBTITLES = {
   neural: 'NEURAL_LOG',
@@ -59,15 +62,18 @@ function ActiveScreen({ activeTab, onNavigate }) {
 export default function App() {
   const [fontsLoaded, fontError] = useFonts(fontMap);
   const [activeTab, setActiveTab] = useState('neural');
+  const [battleActive, setBattleActive] = useState(false);
   const [initStep, setInitStep] = useState(1);
   const [initDraft, setInitDraft] = useState(INIT_DRAFT_DEFAULT);
 
   const characterName    = useStore((s) => s.character.name);
   const credits          = useStore((s) => s.character.credits);
   const renown           = useStore((s) => s.character.renownLabel);
+  const contractPhase    = useStore((s) => s.contract.phase);
   const initializeOperatives = useStore((s) => s.initializeOperatives);
   const initCharacter    = useStore((s) => s.initCharacter);
   const initDevMode      = useStore((s) => s.initDevMode);
+  const startTestBattle  = useStore((s) => s.startTestBattle);
 
   const inInitFlow = characterName === null;
 
@@ -76,8 +82,25 @@ export default function App() {
     initDevMode();
   }, []);
 
+  // When a contract stage triggers combat, start the battle and navigate there
+  useEffect(() => {
+    if (contractPhase === 'combat') {
+      startTestBattle();
+      setBattleActive(true);
+    }
+  }, [contractPhase]);
+
   const handleTabPress = useCallback((tabId) => {
+    if (tabId === 'battle') {
+      setBattleActive(true);
+      return;
+    }
     setActiveTab(tabId);
+  }, []);
+
+  const handleExitBattle = useCallback(() => {
+    setBattleActive(false);
+    setActiveTab('jobs');
   }, []);
 
   // Draft field setters passed to each init screen
@@ -134,6 +157,17 @@ export default function App() {
     );
   }
 
+  // ── Battle takeover ─────────────────────────────────────────────────────────
+  if (battleActive) {
+    return (
+      <CRTBackground>
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+        <BattleScreen onExit={handleExitBattle} />
+        <LevelUpBanner />
+      </CRTBackground>
+    );
+  }
+
   // ── Main game ───────────────────────────────────────────────────────────────
   const subtitle = SCREEN_SUBTITLES[activeTab] || '';
 
@@ -149,6 +183,8 @@ export default function App() {
         subtitle={subtitle}
         telemetry={{ credits: fmtCredits(credits), renown }}
       />
+      <LevelUpBanner />
+      <ChoiceModal />
       <BottomNav activeTab={activeTab} onTabPress={handleTabPress} />
       <NoiseTexture />
       <ScanlineOverlay />

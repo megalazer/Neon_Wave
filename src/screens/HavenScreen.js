@@ -19,6 +19,7 @@ import * as Haptics from 'expo-haptics';
 import { useStore } from '../store/index';
 import { colors } from '../theme/colors';
 import { RECHARGE_ITEMS } from '../data/rechargeItems';
+import { calculateTeamLevel } from '../data/leveling';
 
 const BANNER_HEIGHT = 90;
 const NAV_HEIGHT = 72;
@@ -220,6 +221,23 @@ function RechargeItemCard({ item, selectedMember, credits, onBuy }) {
   );
 }
 
+function TeamLevelStrip({ playerLevel, members }) {
+  const teamLevel = calculateTeamLevel(playerLevel, members);
+  const aliveCrew = members.filter((m) => (m.vitals?.current ?? 1) > 0);
+  const total = 1 + aliveCrew.length;
+  return (
+    <View style={team.strip}>
+      <View style={team.left}>
+        <Text style={team.label}>TEAM_LEVEL</Text>
+        <Text style={team.level}>{String(teamLevel).padStart(2, '0')}</Text>
+      </View>
+      <Text style={team.sub}>
+        {`AVG // PLAYER + ${aliveCrew.length} ALIVE CREW (${total} TOTAL)`}
+      </Text>
+    </View>
+  );
+}
+
 function EmptySlot({ onPress }) {
   return (
     <TouchableOpacity style={styles.emptySlot} onPress={onPress} activeOpacity={0.7}>
@@ -234,8 +252,9 @@ export default function HavenScreen() {
   const [confirmDismiss, setConfirmDismiss] = useState(null);
   const [selectedRecipient, setSelectedRecipient] = useState(null);
   const availableOperatives = useStore((s) => s.crew.availableOperatives);
-  const members = useStore((s) => s.crew.members);
-  const credits = useStore((s) => s.character.credits);
+  const members      = useStore((s) => s.crew.members);
+  const credits      = useStore((s) => s.character.credits);
+  const playerLevel  = useStore((s) => s.character.level);
   const recruitOperative = useStore((s) => s.recruitOperative);
   const dismissMember = useStore((s) => s.dismissMember);
   const purchaseRecharge = useStore((s) => s.purchaseRecharge);
@@ -283,9 +302,12 @@ export default function HavenScreen() {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
+      {/* Team Level */}
+      <TeamLevelStrip playerLevel={playerLevel} members={members} />
+
       {/* Available Operatives */}
       <View style={styles.section}>
-        <SectionHeader icon="group_add" label="[AVAILABLE_OPERATIVES]" color={colors.primary} />
+        <SectionHeader icon="group-add" label="[AVAILABLE_OPERATIVES]" color={colors.primary} />
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -312,7 +334,7 @@ export default function HavenScreen() {
       {/* Recharge Bar */}
       <View style={styles.section}>
         <SectionHeader
-          icon="local_bar"
+          icon="local-bar"
           label="[RECHARGE_BAR: Drinks & Stimulants]"
           color={colors.secondaryContainer}
         />
@@ -334,7 +356,7 @@ export default function HavenScreen() {
 
       {/* Party Roster */}
       <View style={styles.section}>
-        <SectionHeader icon="view_list" label="[PARTY_ROSTER]" color={colors.primary} />
+        <SectionHeader icon="view-list" label="[PARTY_ROSTER]" color={colors.primary} />
         {members.map((member, i) => (
           <RosterRow key={member.id} member={member} index={i} onDismiss={handleDismissPress} />
         ))}
@@ -708,6 +730,9 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 
+  // Team level strip spacer (rendered inside ScrollView)
+  teamStripPlaceholder: {}, // unused, see team StyleSheet below
+
   // Empty roster slot
   emptySlot: {
     borderWidth: 1,
@@ -726,5 +751,55 @@ const styles = StyleSheet.create({
     color: colors.outlineVariant,
     letterSpacing: 1.2,
     textTransform: 'uppercase',
+  },
+});
+
+const team = StyleSheet.create({
+  strip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: `${colors.primary}44`,
+    backgroundColor: `${colors.primary}08`,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginBottom: 20,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  left: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 10,
+  },
+  label: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 9,
+    color: `${colors.primary}99`,
+    letterSpacing: 1.8,
+    textTransform: 'uppercase',
+  },
+  level: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 22,
+    color: colors.primary,
+    letterSpacing: 2,
+    textShadowColor: `${colors.primary}66`,
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
+  },
+  sub: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 8,
+    color: `${colors.primary}55`,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    textAlign: 'right',
+    flex: 1,
+    paddingLeft: 12,
   },
 });

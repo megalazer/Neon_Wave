@@ -81,7 +81,7 @@ export const VEHICLES = [
     serial: 'CT-3X-RED',
     description: 'Fast, sleek, and dangerous.',
     cost: 85000,
-    icon: 'two_wheeler',
+    icon: 'two-wheeler',
     type: 'motorcycle',
     attributes: [
       { label: 'Handling', value: 90 },
@@ -95,7 +95,7 @@ export const VEHICLES = [
     serial: 'COLO-7',
     description: 'Armored cargo hauler. Runs anything, anywhere.',
     cost: 210000,
-    icon: 'local_shipping',
+    icon: 'local-shipping',
     type: 'truck',
     attributes: [
       { label: 'Armor', value: 95 },
@@ -109,7 +109,7 @@ export const VEHICLES = [
     serial: 'CAL-MK2',
     description: 'Street-legal track machine. Custom build.',
     cost: 450000,
-    icon: 'directions_car',
+    icon: 'directions-car',
     type: 'sports',
     attributes: [
       { label: 'Speed', value: 97 },

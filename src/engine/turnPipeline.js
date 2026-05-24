@@ -1,12 +1,10 @@
 import { useStore } from '../store/index';
 import { PLACEHOLDER_LINES } from '../data/placeholderNarration';
 
-// Picks a random line from the placeholder narration array
 function pickNarration() {
   return PLACEHOLDER_LINES[Math.floor(Math.random() * PLACEHOLDER_LINES.length)];
 }
 
-// Generates a unique entry ID
 function makeId() {
   return `entry_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 }
@@ -18,6 +16,8 @@ export function devAdvanceTurns(count) {
     store.incrementTurn();
     store.tickTurn();
     store.tickPrices();
+    store.tickFeed();
+    _tryFireRandomEvent(useStore.getState());
   }
   const turnNumber = useStore.getState().character.turnNumber;
   store.addEntry({
@@ -29,24 +29,54 @@ export function devAdvanceTurns(count) {
   });
 }
 
-// Core turn loop for MVP — no LLM, no stat checks, no death check yet.
-// Each call: increments turn counters, picks narration, pushes to log.
 export function advanceTurn() {
   const store = useStore.getState();
 
   store.incrementTurn();
   store.tickTurn();
   store.tickPrices();
+  store.tickFeed();
 
-  const turnNumber = useStore.getState().character.turnNumber;
+  const state = useStore.getState();
 
-  const entry = {
-    id: makeId(),
-    turn: turnNumber,
-    text: pickNarration(),
-    timestamp: new Date().toISOString(),
-    type: 'narration',
-  };
+  // Random events are mutually exclusive with combat, active contracts, and pending choice modals.
+  const eventBlocked =
+    state.combat.active ||
+    state.contract.activeContractId !== null ||
+    state.event.activeChoiceEventId !== null ||
+    state.event.pendingChoiceOutcome !== null;
 
-  store.addEntry(entry);
+  if (!eventBlocked) {
+    store.selectAndFireRandomEvent();
+  }
+
+  // If no event fired (or was blocked), push a placeholder narration line.
+  const afterState = useStore.getState();
+  const eventFired =
+    afterState.event.activeChoiceEventId !== null ||
+    afterState.event.pendingChoiceOutcome !== null ||
+    // A flavor event pushes to log directly — detect by comparing entry count
+    afterState.log.entries.length > state.log.entries.length;
+
+  if (!eventFired) {
+    const turnNumber = afterState.character.turnNumber;
+    store.addEntry({
+      id: makeId(),
+      turn: turnNumber,
+      text: pickNarration(),
+      timestamp: new Date().toISOString(),
+      type: 'narration',
+    });
+  }
+}
+
+// Internal helper shared by devAdvanceTurns — fires events without adding a fallback narration.
+function _tryFireRandomEvent(state) {
+  if (
+    state.combat.active ||
+    state.contract.activeContractId !== null ||
+    state.event.activeChoiceEventId !== null ||
+    state.event.pendingChoiceOutcome !== null
+  ) return;
+  useStore.getState().selectAndFireRandomEvent();
 }

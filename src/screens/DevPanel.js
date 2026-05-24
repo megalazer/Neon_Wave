@@ -12,6 +12,9 @@ import { colors } from '../theme/colors';
 import { useStore } from '../store/index';
 import { COINS } from '../data/coins';
 import { devAdvanceTurns } from '../engine/turnPipeline';
+import { XP_THRESHOLDS, MAX_LEVEL, getLevelProgress } from '../data/leveling';
+import { ALL_EVENTS } from '../data/events/index';
+import { ALL_CONTRACTS as CONTRACTS } from '../data/contracts/index';
 
 const ERR = colors.error;
 
@@ -122,14 +125,15 @@ function TurnSection() {
 
 // ── Character section ────────────────────────────────────────────────────────
 function CharacterSection() {
-  const character = useStore((s) => s.character);
-  const store     = useStore.getState;
+  const character    = useStore((s) => s.character);
+  const devSetName   = useStore((s) => s.devSetName);
+  const devInjectLog = useStore((s) => s.devInjectLog);
   const [nameVal, setNameVal] = useState('');
 
   const setName = () => {
     if (!nameVal.trim()) return;
-    useStore.getState().devInjectLog(`[DEV] Character name changed to "${nameVal.trim()}".`);
-    useStore.setState((s) => { s.character.name = nameVal.trim(); });
+    devSetName(nameVal.trim());
+    devInjectLog(`[DEV] Character name set to "${nameVal.trim()}".`);
     setNameVal('');
   };
 
@@ -224,6 +228,220 @@ function ExchangeSection() {
           </View>
         );
       })}
+    </DevSection>
+  );
+}
+
+// ── Leveling section ─────────────────────────────────────────────────────────
+const SET_LEVELS = [1, 3, 5, 8, 10];
+
+function LevelingSection() {
+  const character        = useStore((s) => s.character);
+  const members          = useStore((s) => s.crew.members);
+  const devAddCharacterXP      = useStore((s) => s.devAddCharacterXP);
+  const devSetCharacterLevel   = useStore((s) => s.devSetCharacterLevel);
+  const devAddCrewXP           = useStore((s) => s.devAddCrewXP);
+  const devSetCrewMemberLevel  = useStore((s) => s.devSetCrewMemberLevel);
+  const devLevelAllCrew        = useStore((s) => s.devLevelAllCrew);
+  const devSetTeamLevel        = useStore((s) => s.devSetTeamLevel);
+  const devResetLeveling       = useStore((s) => s.devResetLeveling);
+  const devTriggerLevelUpBanner = useStore((s) => s.devTriggerLevelUpBanner);
+  const devForceCombatXP       = useStore((s) => s.devForceCombatXP);
+
+  const progress = getLevelProgress(character.exp);
+  const progressStr = progress.maxed
+    ? 'MAXED'
+    : `${progress.current}/${progress.needed} XP (${Math.round(progress.percent)}%)`;
+
+  return (
+    <DevSection title="LEVELING_OVERRIDE">
+      {/* Player */}
+      <Text style={sec.current}>
+        {`PLAYER: LVL_${character.level} // ${character.exp} XP TOTAL`}
+      </Text>
+      <Text style={sec.current}>{`PROGRESS: ${progressStr}`}</Text>
+
+      <View style={sec.row}>
+        <DevBtn label="+50 XP"   onPress={() => devAddCharacterXP(50)} />
+        <DevBtn label="+200 XP"  onPress={() => devAddCharacterXP(200)} />
+        <DevBtn label="+1000 XP" onPress={() => devAddCharacterXP(1000)} />
+      </View>
+
+      <Text style={[sec.current, { marginTop: 4 }]}>SET_LVL:</Text>
+      <View style={sec.row}>
+        {SET_LEVELS.map((lvl) => (
+          <DevBtn
+            key={lvl}
+            label={lvl === MAX_LEVEL ? `${lvl} MAX` : String(lvl)}
+            onPress={() => devSetCharacterLevel(lvl)}
+          />
+        ))}
+      </View>
+
+      {/* Crew */}
+      {members.length > 0 && (
+        <>
+          <Text style={[sec.current, { marginTop: 6 }]}>CREW XP:</Text>
+          {members.map((m) => (
+            <View key={m.id} style={lev.memberRow}>
+              <Text style={lev.memberName} numberOfLines={1}>
+                {`${m.name} LVL_${m.level || 1}`}
+              </Text>
+              <View style={lev.memberBtns}>
+                <DevBtn label="+50"  onPress={() => devAddCrewXP(m.id, 50)} />
+                <DevBtn label="+200" onPress={() => devAddCrewXP(m.id, 200)} />
+                <DevBtn label="LVL10" onPress={() => devSetCrewMemberLevel(m.id, MAX_LEVEL)} />
+              </View>
+            </View>
+          ))}
+
+          <View style={[sec.row, { marginTop: 4 }]}>
+            <DevBtn label="[ALL_LVL_5]"  onPress={() => devLevelAllCrew(5)} />
+            <DevBtn label="[ALL_LVL_10]" onPress={() => devLevelAllCrew(MAX_LEVEL)} />
+          </View>
+        </>
+      )}
+
+      {/* Team Level */}
+      <Text style={[sec.current, { marginTop: 6 }]}>SET_TEAM_LVL:</Text>
+      <View style={sec.row}>
+        {SET_LEVELS.map((lvl) => (
+          <DevBtn
+            key={`team_${lvl}`}
+            label={String(lvl)}
+            onPress={() => devSetTeamLevel(lvl)}
+          />
+        ))}
+      </View>
+
+      {/* Test triggers */}
+      <View style={[sec.row, { marginTop: 6 }]}>
+        <DevBtn label="[TRIGGER_BANNER]"  onPress={devTriggerLevelUpBanner} />
+        <DevBtn label="[FORCE_200_XP]"    onPress={devForceCombatXP} />
+      </View>
+      <DevBtn label="[RESET_LEVELING]" onPress={devResetLeveling} danger />
+    </DevSection>
+  );
+}
+
+// ── Random events section ────────────────────────────────────────────────────
+function RandomEventsSection() {
+  const morale             = useStore((s) => s.character.morale);
+  const firedCount         = useStore((s) => s.event.firedEventIds.size);
+  const tsSinceChoice      = useStore((s) => s.event.turnsSinceLastChoice);
+  const tsSinceFlavor      = useStore((s) => s.event.turnsSinceLastFlavor);
+  const devForceFlavorEvent  = useStore((s) => s.devForceFlavorEvent);
+  const devForceChoiceEvent  = useStore((s) => s.devForceChoiceEvent);
+  const devForceEventById    = useStore((s) => s.devForceEventById);
+  const devResetEventHistory = useStore((s) => s.devResetEventHistory);
+  const devSetMorale         = useStore((s) => s.devSetMorale);
+  const devAddMorale         = useStore((s) => s.devAddMorale);
+
+  const [eventIdVal, setEventIdVal] = useState('');
+
+  return (
+    <DevSection title="RANDOM_EVENTS_OVERRIDE">
+      <Text style={sec.current}>
+        {`MORALE: ${morale ?? 50} // FIRED: ${firedCount}/${ALL_EVENTS.length}`}
+      </Text>
+      <Text style={sec.current}>
+        {`TURNS_SINCE_CHOICE: ${tsSinceChoice} // TURNS_SINCE_FLAVOR: ${tsSinceFlavor}`}
+      </Text>
+
+      <View style={sec.row}>
+        <DevBtn label="[FORCE_FLAVOR]"  onPress={devForceFlavorEvent} />
+        <DevBtn label="[FORCE_CHOICE]"  onPress={devForceChoiceEvent} />
+      </View>
+
+      <View style={row.wrap}>
+        <Text style={row.label}>FIRE_BY_ID</Text>
+        <View style={row.right}>
+          <TextInput
+            style={[row.input, { flex: 1 }]}
+            value={eventIdVal}
+            onChangeText={setEventIdVal}
+            placeholder="flv_rain_neon"
+            placeholderTextColor={`${ERR}44`}
+            selectionColor={ERR}
+            autoCapitalize="none"
+          />
+          <DevBtn
+            label="[FIRE]"
+            onPress={() => { devForceEventById(eventIdVal.trim()); setEventIdVal(''); }}
+          />
+        </View>
+      </View>
+
+      <DevBtn label="[RESET_EVENT_HISTORY]" onPress={devResetEventHistory} danger />
+
+      <Text style={[sec.current, { marginTop: 4 }]}>MORALE: {morale ?? 50}</Text>
+      <View style={sec.row}>
+        <DevBtn label="-10" onPress={() => devAddMorale(-10)} dim />
+        <DevBtn label="+10" onPress={() => devAddMorale(10)} />
+        <DevBtn label="SET_0"   onPress={() => devSetMorale(0)} danger />
+        <DevBtn label="SET_100" onPress={() => devSetMorale(100)} />
+      </View>
+    </DevSection>
+  );
+}
+
+// ── Contract override section ────────────────────────────────────────────────
+function ContractOverrideSection() {
+  const phase             = useStore((s) => s.contract.phase);
+  const activeContractId  = useStore((s) => s.contract.activeContractId);
+  const activeStageIndex  = useStore((s) => s.contract.activeStageIndex);
+  const feedItems         = useStore((s) => s.contract.feedItems);
+  const fixerRep          = useStore((s) => s.contract.fixerRep);
+  const devForceStart     = useStore((s) => s.devForceStartContract);
+  const devForceRes       = useStore((s) => s.devForceContractResolution);
+  const devClear          = useStore((s) => s.devClearActiveContract);
+  const devRefreshFeed    = useStore((s) => s.devForceRefreshFeed);
+
+  const allContracts = CONTRACTS;
+
+  return (
+    <DevSection title="CONTRACT_OVERRIDE">
+      <Text style={sec.current}>
+        {`PHASE: ${phase.toUpperCase()}`}
+      </Text>
+      <Text style={sec.current}>
+        {`ACTIVE: ${activeContractId ?? 'NULL'} // STAGE: ${activeStageIndex}`}
+      </Text>
+      <Text style={sec.current}>
+        {`FEED: ${feedItems.length} item(s)`}
+      </Text>
+
+      <View style={[sec.row, { marginTop: 6 }]}>
+        <DevBtn label="[REFRESH_FEED]" onPress={devRefreshFeed} />
+        <DevBtn label="[CLEAR_ACTIVE]" onPress={devClear} danger dim={phase === 'feed'} />
+      </View>
+
+      <Text style={[sec.current, { marginTop: 6 }]}>FORCE_START (by tier):</Text>
+      <View style={sec.row}>
+        {['LOW', 'MID', 'HIGH'].map((tier) => {
+          const c = allContracts.find((x) => x.tier === tier);
+          if (!c) return null;
+          return (
+            <DevBtn
+              key={tier}
+              label={`[${tier}]`}
+              onPress={() => devForceStart(c.id)}
+              dim={phase !== 'feed'}
+            />
+          );
+        })}
+      </View>
+
+      <Text style={[sec.current, { marginTop: 6 }]}>FORCE_RESOLUTION:</Text>
+      <View style={sec.row}>
+        <DevBtn label="[SUCCESS]"  onPress={() => devForceRes('success')}  dim={phase !== 'active'} />
+        <DevBtn label="[FAILURE]"  onPress={() => devForceRes('failure')}  dim={phase !== 'active'} danger />
+        <DevBtn label="[ABORTED]"  onPress={() => devForceRes('aborted')}  dim={phase !== 'active'} />
+      </View>
+
+      <Text style={[sec.current, { marginTop: 6 }]}>
+        {`FIXER_REP: remi=${fixerRep.remi ?? 0} pyre=${fixerRep.pyre ?? 0} nyx=${fixerRep.nyx ?? 0}`}
+      </Text>
     </DevSection>
   );
 }
@@ -349,9 +567,12 @@ export default function DevPanel() {
             <CreditsSection />
             <TurnSection />
             <CharacterSection />
+            <LevelingSection />
             <CrewSection />
             <FactionSection />
             <ExchangeSection />
+            <RandomEventsSection />
+            <ContractOverrideSection />
             <InventorySection />
             <LogSection />
             <ResetSection />
@@ -523,6 +744,22 @@ const fac = StyleSheet.create({
     color: ERR,
     width: 28,
     textAlign: 'right',
+  },
+});
+
+const lev = StyleSheet.create({
+  memberRow: {
+    gap: 3,
+  },
+  memberName: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 9,
+    color: `${ERR}99`,
+    letterSpacing: 0.8,
+  },
+  memberBtns: {
+    flexDirection: 'row',
+    gap: 6,
   },
 });
 

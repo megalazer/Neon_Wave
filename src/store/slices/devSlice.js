@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { XP_THRESHOLDS, MAX_LEVEL, getLevelFromXP, applyXPToCharacter, applyXPToCrewMember } from '../../data/leveling';
 
 const TAP_TARGET = 7;
 const TAP_WINDOW = 3000;
@@ -130,11 +131,93 @@ export const createDevSlice = (set, get) => ({
       });
     }),
 
+  devSetName: (name) =>
+    set((state) => {
+      state.character.name = String(name).trim() || state.character.name;
+    }),
+
+  // ── Leveling overrides ──────────────────────────────────────────────────────
+
+  devAddCharacterXP: (amount) =>
+    set((state) => {
+      applyXPToCharacter(state, Math.max(0, Number(amount) || 0));
+    }),
+
+  devSetCharacterLevel: (level) =>
+    set((state) => {
+      const lvl = Math.max(1, Math.min(MAX_LEVEL, Number(level) || 1));
+      state.character.exp   = XP_THRESHOLDS[lvl - 1];
+      state.character.level = lvl;
+    }),
+
+  devAddCrewXP: (memberId, amount) =>
+    set((state) => {
+      const member = state.crew.members.find((m) => m.id === memberId);
+      if (!member) return;
+      applyXPToCrewMember(state, member, Math.max(0, Number(amount) || 0));
+    }),
+
+  devSetCrewMemberLevel: (memberId, level) =>
+    set((state) => {
+      const member = state.crew.members.find((m) => m.id === memberId);
+      if (!member) return;
+      const lvl = Math.max(1, Math.min(MAX_LEVEL, Number(level) || 1));
+      member.exp   = XP_THRESHOLDS[lvl - 1];
+      member.level = lvl;
+    }),
+
+  devLevelAllCrew: (level) =>
+    set((state) => {
+      const lvl = Math.max(1, Math.min(MAX_LEVEL, Number(level) || 1));
+      state.crew.members.forEach((m) => {
+        m.exp   = XP_THRESHOLDS[lvl - 1];
+        m.level = lvl;
+      });
+    }),
+
+  devSetTeamLevel: (level) =>
+    set((state) => {
+      const lvl = Math.max(1, Math.min(MAX_LEVEL, Number(level) || 1));
+      state.character.exp   = XP_THRESHOLDS[lvl - 1];
+      state.character.level = lvl;
+      state.crew.members.forEach((m) => {
+        m.exp   = XP_THRESHOLDS[lvl - 1];
+        m.level = lvl;
+      });
+    }),
+
+  devResetLeveling: () =>
+    set((state) => {
+      state.character.exp   = 0;
+      state.character.level = 1;
+      state.crew.members.forEach((m) => {
+        m.exp   = 0;
+        m.level = 1;
+      });
+    }),
+
+  devTriggerLevelUpBanner: () =>
+    set((state) => {
+      state.world.pendingLevelUp = {
+        target:     'player',
+        memberName: state.character.name || 'OPERATIVE',
+        from:       state.character.level,
+        to:         Math.min(MAX_LEVEL, (state.character.level || 1) + 1),
+      };
+    }),
+
+  devForceCombatXP: () =>
+    set((state) => {
+      applyXPToCharacter(state, 200);
+    }),
+
   devSoftReset: () =>
     set((state) => {
       state.character.name = null;
       state.character.credits = 0;
       state.character.turnNumber = 0;
+      state.character.exp = 0;
+      state.character.level = 1;
       state.log.entries = [];
       state.dev.panelOpen = false;
     }),
@@ -145,11 +228,14 @@ export const createDevSlice = (set, get) => ({
       state.character.credits = 0;
       state.character.turnNumber = 0;
       state.character.path = null;
+      state.character.exp = 0;
+      state.character.level = 1;
       state.character.realEstate = [];
       state.character.vehicles = [];
       state.character.luxuryItems = [];
       state.crew.members = [];
       state.world.factionPower = {};
+      state.world.pendingLevelUp = null;
       state.world.turnNumber = 0;
       state.log.entries = [];
       state.dev.panelOpen = false;
