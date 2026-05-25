@@ -11,7 +11,6 @@ import Animated, {
   useSharedValue,
   withTiming,
   useAnimatedStyle,
-  interpolateColor,
   Easing,
 } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -20,10 +19,10 @@ import { useStore } from '../store/index';
 import { colors } from '../theme/colors';
 import { RECHARGE_ITEMS } from '../data/rechargeItems';
 import { calculateTeamLevel } from '../data/leveling';
+import RecruitCard from '../components/recruit/RecruitCard';
 
 const BANNER_HEIGHT = 90;
 const NAV_HEIGHT = 72;
-const CARD_WIDTH = 280;
 const MAX_CREW = 4;
 
 function SectionHeader({ icon, label, color }) {
@@ -31,70 +30,6 @@ function SectionHeader({ icon, label, color }) {
     <View style={styles.sectionHeader}>
       <MaterialIcons name={icon} size={16} color={color} />
       <Text style={[styles.sectionLabel, { color }]}>{label}</Text>
-    </View>
-  );
-}
-
-function PortraitPlaceholder({ classColor }) {
-  return (
-    <View style={[styles.portrait, { borderColor: colors.secondaryContainer }]}>
-      <MaterialIcons name="person" size={52} color={classColor} style={{ opacity: 0.75 }} />
-    </View>
-  );
-}
-
-function RecruitButton({ label, onPress, disabled }) {
-  const pressed = useSharedValue(0);
-
-  const containerAnim = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(pressed.value, [0, 1], ['rgba(0,0,0,0)', colors.primary]),
-  }));
-  const labelAnim = useAnimatedStyle(() => ({
-    color: interpolateColor(pressed.value, [0, 1], [colors.primary, colors.onPrimaryContainer]),
-  }));
-
-  return (
-    <Animated.View style={[styles.recruitBtn, disabled && styles.recruitBtnDisabled, containerAnim]}>
-      <TouchableOpacity
-        onPressIn={() => { if (!disabled) pressed.value = withTiming(1, { duration: 75 }); }}
-        onPressOut={() => { pressed.value = withTiming(0, { duration: 75 }); }}
-        onPress={onPress}
-        disabled={disabled}
-        activeOpacity={1}
-        style={styles.recruitBtnInner}
-      >
-        <Animated.Text style={[styles.recruitBtnText, labelAnim]}>{label}</Animated.Text>
-      </TouchableOpacity>
-    </Animated.View>
-  );
-}
-
-function OperativeCard({ operative, canAfford, rosterFull, onRecruit }) {
-  const disabled = !canAfford || rosterFull;
-  const buttonLabel = rosterFull
-    ? '[ROSTER_FULL]'
-    : canAfford
-    ? 'RECRUIT'
-    : '[NO_FUNDS]';
-
-  return (
-    <View style={styles.card}>
-      <View style={styles.idBadge}>
-        <Text style={styles.idBadgeText}>{operative.displayId}</Text>
-      </View>
-      <PortraitPlaceholder classColor={operative.classColor} />
-      <View>
-        <Text style={styles.opName}>{operative.name}</Text>
-        <Text style={styles.opClass}>Class: {operative.class}</Text>
-      </View>
-      <View style={styles.cardFooter}>
-        <Text style={styles.opCost}>{operative.cost.toLocaleString()} CR</Text>
-        <RecruitButton
-          label={buttonLabel}
-          onPress={() => onRecruit(operative.id)}
-          disabled={disabled}
-        />
-      </View>
     </View>
   );
 }
@@ -238,6 +173,48 @@ function TeamLevelStrip({ playerLevel, members }) {
   );
 }
 
+const TIER_COLORS = {
+  COMMON:    colors.outline,
+  RARE:      colors.secondaryContainer,
+  LEGENDARY: '#ffb400',
+};
+
+function getPoolTierLabel(contractsCompleted) {
+  if (contractsCompleted >= 15) return 'LEGENDARY';
+  if (contractsCompleted >= 5)  return 'RARE';
+  return 'COMMON';
+}
+
+function getNextTierThreshold(contractsCompleted) {
+  if (contractsCompleted >= 15) return null;
+  if (contractsCompleted >= 5)  return 15;
+  return 5;
+}
+
+function PoolTierStrip({ contractsCompleted, turnsSinceLastSpawn }) {
+  const tierLabel = getPoolTierLabel(contractsCompleted);
+  const nextAt = getNextTierThreshold(contractsCompleted);
+  const minGap = 6;
+  const turnsUntilReady = Math.max(0, minGap - turnsSinceLastSpawn);
+  return (
+    <View style={[pool.strip, { borderColor: `${TIER_COLORS[tierLabel]}44` }]}>
+      <View style={pool.left}>
+        <Text style={pool.label}>POOL_TIER</Text>
+        <Text style={[pool.tier, { color: TIER_COLORS[tierLabel] }]}>{tierLabel}</Text>
+      </View>
+      <View style={pool.right}>
+        <Text style={pool.stat}>{`CONTRACTS: ${contractsCompleted}`}</Text>
+        {nextAt !== null && (
+          <Text style={pool.stat}>{`NEXT_TIER: ${nextAt - contractsCompleted} MORE`}</Text>
+        )}
+        <Text style={[pool.stat, turnsUntilReady === 0 && { color: colors.tertiaryContainer }]}>
+          {turnsUntilReady === 0 ? 'SPAWN_READY' : `SPAWN_IN: ~${turnsUntilReady}`}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
 function EmptySlot({ onPress }) {
   return (
     <TouchableOpacity style={styles.emptySlot} onPress={onPress} activeOpacity={0.7}>
@@ -251,13 +228,18 @@ export default function HavenScreen() {
   const scrollRef = useRef(null);
   const [confirmDismiss, setConfirmDismiss] = useState(null);
   const [selectedRecipient, setSelectedRecipient] = useState(null);
-  const availableOperatives = useStore((s) => s.crew.availableOperatives);
-  const members      = useStore((s) => s.crew.members);
-  const credits      = useStore((s) => s.character.credits);
-  const playerLevel  = useStore((s) => s.character.level);
-  const recruitOperative = useStore((s) => s.recruitOperative);
-  const dismissMember = useStore((s) => s.dismissMember);
-  const purchaseRecharge = useStore((s) => s.purchaseRecharge);
+
+  const availableOperatives  = useStore((s) => s.crew.availableOperatives);
+  const members              = useStore((s) => s.crew.members);
+  const credits              = useStore((s) => s.character.credits);
+  const playerLevel          = useStore((s) => s.character.level);
+  const currentTurn          = useStore((s) => s.character.turnNumber);
+  const turnsSinceLastSpawn  = useStore((s) => s.crew.turnsSinceLastSpawn);
+  const completedContracts   = useStore((s) => s.contract.completedContracts);
+  const recruitOperative     = useStore((s) => s.recruitOperative);
+  const dismissMember        = useStore((s) => s.dismissMember);
+  const dismissFromAvailable = useStore((s) => s.dismissFromAvailable);
+  const purchaseRecharge     = useStore((s) => s.purchaseRecharge);
 
   useEffect(() => {
     if (!selectedRecipient && members.length > 0) {
@@ -302,8 +284,13 @@ export default function HavenScreen() {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      {/* Team Level */}
       <TeamLevelStrip playerLevel={playerLevel} members={members} />
+
+      {/* Pool Tier */}
+      <PoolTierStrip
+        contractsCompleted={completedContracts.length}
+        turnsSinceLastSpawn={turnsSinceLastSpawn}
+      />
 
       {/* Available Operatives */}
       <View style={styles.section}>
@@ -315,12 +302,14 @@ export default function HavenScreen() {
           nestedScrollEnabled
         >
           {availableOperatives.map((op) => (
-            <OperativeCard
+            <RecruitCard
               key={op.id}
-              operative={op}
-              canAfford={credits >= op.cost}
+              recruit={op}
+              credits={credits}
               rosterFull={rosterFull}
+              currentTurn={currentTurn}
               onRecruit={handleRecruit}
+              onDismiss={op.quality !== undefined ? dismissFromAvailable : null}
             />
           ))}
           {availableOperatives.length === 0 && (
@@ -406,108 +395,10 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
-
-  // Horizontal scroll for operative cards
   opScrollContent: {
     gap: 16,
     paddingBottom: 8,
     paddingRight: 4,
-  },
-
-  // Operative card
-  card: {
-    width: CARD_WIDTH,
-    backgroundColor: 'rgba(28,27,29,0.9)',
-    borderWidth: 1,
-    borderColor: colors.primary,
-    padding: 16,
-    gap: 12,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  idBadge: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    backgroundColor: colors.primary,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    zIndex: 1,
-  },
-  idBadgeText: {
-    fontFamily: 'KodeMono_700Bold',
-    fontSize: 10,
-    color: colors.onPrimaryContainer,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-  },
-  portrait: {
-    height: 128,
-    backgroundColor: colors.surfaceContainerHigh,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: colors.secondaryContainer,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  opName: {
-    fontFamily: 'KodeMono_600SemiBold',
-    fontSize: 20,
-    color: colors.primary,
-    textShadowColor: 'rgba(0,243,255,0.4)',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 6,
-  },
-  opClass: {
-    fontFamily: 'KodeMono_700Bold',
-    fontSize: 10,
-    color: colors.onSurfaceVariant,
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    marginTop: 2,
-  },
-  cardFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderTopWidth: 1,
-    borderTopColor: colors.surfaceContainerHigh,
-    paddingTop: 8,
-  },
-  opCost: {
-    fontFamily: 'KodeMono_700Bold',
-    fontSize: 12,
-    color: colors.tertiaryContainer,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-  },
-  recruitBtn: {
-    borderWidth: 1,
-    borderColor: colors.primary,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  recruitBtnDisabled: {
-    opacity: 0.4,
-  },
-  recruitBtnInner: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-  },
-  recruitBtnText: {
-    fontFamily: 'KodeMono_700Bold',
-    fontSize: 10,
-    letterSpacing: 1,
-    textTransform: 'uppercase',
   },
   noOpsPlaceholder: {
     width: 240,
@@ -522,8 +413,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
-
-  // Recipient selector
   recipientRow: {
     flexDirection: 'row',
     gap: 8,
@@ -572,8 +461,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
-
-  // Recharge item cards
   rechargeCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -584,9 +471,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 8,
   },
-  rechargeCardDim: {
-    opacity: 0.55,
-  },
+  rechargeCardDim: { opacity: 0.55 },
   rechargeIconBox: {
     width: 44,
     height: 44,
@@ -596,10 +481,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexShrink: 0,
   },
-  rechargeInfo: {
-    flex: 1,
-    gap: 3,
-  },
+  rechargeInfo: { flex: 1, gap: 3 },
   rechargeName: {
     fontFamily: 'KodeMono_700Bold',
     fontSize: 11,
@@ -613,11 +495,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
     textTransform: 'uppercase',
   },
-  rechargeRight: {
-    alignItems: 'flex-end',
-    gap: 6,
-    flexShrink: 0,
-  },
+  rechargeRight: { alignItems: 'flex-end', gap: 6, flexShrink: 0 },
   rechargeCost: {
     fontFamily: 'KodeMono_700Bold',
     fontSize: 10,
@@ -630,9 +508,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
   },
-  rechargeBtnDisabled: {
-    borderColor: colors.outlineVariant,
-  },
+  rechargeBtnDisabled: { borderColor: colors.outlineVariant },
   rechargeBtnText: {
     fontFamily: 'KodeMono_700Bold',
     fontSize: 9,
@@ -640,11 +516,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
-  rechargeBtnTextDim: {
-    color: colors.outline,
-  },
-
-  // Roster row
+  rechargeBtnTextDim: { color: colors.outline },
   rosterRow: {
     backgroundColor: 'rgba(28,27,29,0.9)',
     borderWidth: 1,
@@ -681,17 +553,9 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 6,
   },
-  rosterBars: {
-    flex: 1,
-    gap: 4,
-  },
-  barGroup: {
-    gap: 2,
-  },
-  barLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
+  rosterBars: { flex: 1, gap: 4 },
+  barGroup: { gap: 2 },
+  barLabels: { flexDirection: 'row', justifyContent: 'space-between' },
   barLabelVit: {
     fontFamily: 'KodeMono_700Bold',
     fontSize: 9,
@@ -711,9 +575,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceContainerHighest,
     overflow: 'hidden',
   },
-  statBarFill: {
-    height: 6,
-  },
+  statBarFill: { height: 6 },
   dismissBtn: {
     borderWidth: 1,
     borderColor: colors.error,
@@ -729,11 +591,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
-
-  // Team level strip spacer (rendered inside ScrollView)
-  teamStripPlaceholder: {}, // unused, see team StyleSheet below
-
-  // Empty roster slot
   emptySlot: {
     borderWidth: 1,
     borderStyle: 'dashed',
@@ -764,7 +621,7 @@ const team = StyleSheet.create({
     backgroundColor: `${colors.primary}08`,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    marginBottom: 20,
+    marginBottom: 12,
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.2,
@@ -801,5 +658,45 @@ const team = StyleSheet.create({
     textAlign: 'right',
     flex: 1,
     paddingLeft: 12,
+  },
+});
+
+const pool = StyleSheet.create({
+  strip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    backgroundColor: 'rgba(28,27,29,0.6)',
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginBottom: 20,
+  },
+  left: {
+    gap: 2,
+  },
+  label: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    color: colors.onSurfaceVariant,
+    letterSpacing: 1.8,
+    textTransform: 'uppercase',
+  },
+  tier: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 16,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+  },
+  right: {
+    alignItems: 'flex-end',
+    gap: 2,
+  },
+  stat: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 8,
+    color: colors.onSurfaceVariant,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
   },
 });

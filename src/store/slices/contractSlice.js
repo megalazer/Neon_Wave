@@ -380,4 +380,10 @@ export const createContractSlice = (set) => ({
     set((state) => {
       state.contract.fixerRep[fixerId] = Math.max(0, Number(value) || 0);
     }),
+
+  devSetContractsCompleted: (n) =>
+    set((state) => {
+      const count = Math.max(0, Math.floor(Number(n) || 0));
+      state.contract.completedContracts = Array.from({ length: count }, (_, i) => `dev_contract_${i}`);
+    }),
 });

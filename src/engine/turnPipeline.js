@@ -17,6 +17,8 @@ export function devAdvanceTurns(count) {
     store.tickTurn();
     store.tickPrices();
     store.tickFeed();
+    store.trySpawnRecruit();
+    store.tickAvailableOperatives();
     _tryFireRandomEvent(useStore.getState());
   }
   const turnNumber = useStore.getState().character.turnNumber;
@@ -36,6 +38,8 @@ export function advanceTurn() {
   store.tickTurn();
   store.tickPrices();
   store.tickFeed();
+  store.trySpawnRecruit();
+  store.tickAvailableOperatives();
 
   const state = useStore.getState();
 

@@ -1,6 +1,7 @@
 import { TEST_FRIENDLY_UNITS, TEST_HOSTILE_UNITS, TEST_BATTLE_CONFIG } from '../../data/testBattle';
 import { CYBER_ABILITIES } from '../../data/cyberAbilities';
 import { applyXPToCharacter, distributeCombatXP } from '../../data/leveling';
+import { FRIENDLY_LINE_COLORS } from '../../data/combatColors';
 
 function cloneUnits(units) {
   return units.map((u) => ({ ...u, hp: { ...u.hp } }));
@@ -41,6 +42,13 @@ export const createTestCombatSlice = (set, get) => ({
     abilityHistory: [],
     squadBuffs: [],
     enemyAssignments: [],
+    // Frozen preview snapshot: { [unitId]: { totalDamage, hpAtCommit, maxHp } }
+    // Populated at confirm/enemy-assign time; HP bars read this during execution so
+    // preview chunks don't recalculate as HP mutates under them.
+    executingPreviews: {},
+    // Active tracer lines: { [friendlyId]: { targetId, color, justFiredAt } }
+    // Set on die assignment, cleared on confirm or clear. TargetingOverlay reads this.
+    targetLines: {},
     round: 1,
     outcome: null,
     damageDealt: 0,
@@ -65,6 +73,8 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.abilityHistory = [];
       state.combat.squadBuffs = [];
       state.combat.enemyAssignments = [];
+      state.combat.executingPreviews = {};
+      state.combat.targetLines = {};
       state.combat.round = 1;
       state.combat.outcome = null;
       state.combat.damageDealt = 0;
@@ -122,6 +132,14 @@ export const createTestCombatSlice = (set, get) => ({
       die.assignedTo = enemyId;
       state.combat.selectedFriendlyId = null;
 
+      // Fire tracer line from this friendly to the target
+      const friendlyIndex = state.combat.friendly.findIndex((u) => u.id === selectedFriendlyId);
+      state.combat.targetLines[selectedFriendlyId] = {
+        targetId: enemyId,
+        color: FRIENDLY_LINE_COLORS[friendlyIndex] ?? FRIENDLY_LINE_COLORS[0],
+        justFiredAt: Date.now(),
+      };
+
       // Queue dice attack — dice are FREE (cyberCost: 0)
       state.combat.pendingAttacks.push({
         id: `dice_${selectedFriendlyId}_${uid()}`,
@@ -147,6 +165,7 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.pendingAttacks = state.combat.pendingAttacks.filter(
         (a) => !(a.source === 'dice' && a.sourceId === friendlyId),
       );
+      delete state.combat.targetLines[friendlyId];
     }),
 
   // ── Cyber Ability Actions ────────────────────────────────────────────────
@@ -234,7 +253,7 @@ export const createTestCombatSlice = (set, get) => ({
       );
     }),
 
-  // Commit everything: deduct all ability cyber, transition to executing
+  // Commit everything: snapshot preview positions, deduct cyber, transition to executing
   confirmAllAttacks: () =>
     set((state) => {
       const activeTurn = state.combat.phase === 'roll' || state.combat.phase === 'targeting';
@@ -244,6 +263,25 @@ export const createTestCombatSlice = (set, get) => ({
       const totalCyber = state.combat.pendingAttacks.reduce((s, a) => s + a.cyberCost, 0);
       if (state.combat.cyberPool < totalCyber) return;
 
+      // Snapshot preview positions before any HP mutates. HP bars read this frozen
+      // data during the executing phase so preview chunks don't jump as HP changes.
+      const previews = {};
+      for (const attack of state.combat.pendingAttacks) {
+        if (attack.effectType !== 'damage') continue;
+        for (const targetId of attack.targetIds) {
+          const target =
+            state.combat.hostile.find((u) => u.id === targetId) ||
+            state.combat.friendly.find((u) => u.id === targetId);
+          if (!target) continue;
+          if (!previews[targetId]) {
+            previews[targetId] = { totalDamage: 0, hpAtCommit: target.hp.current, maxHp: target.hp.max };
+          }
+          previews[targetId].totalDamage += attack.damage;
+        }
+      }
+
+      state.combat.executingPreviews = previews;
+      state.combat.targetLines = {};
       state.combat.cyberPool -= totalCyber;
       state.combat.phase = 'executing';
       state.combat.selectedFriendlyId = null;
@@ -312,6 +350,7 @@ export const createTestCombatSlice = (set, get) => ({
   clearPendingQueue: () =>
     set((state) => {
       state.combat.pendingAttacks = [];
+      state.combat.executingPreviews = {};
     }),
 
   // ── Enemy Turn ───────────────────────────────────────────────────────────
@@ -330,6 +369,19 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.enemyAssignments = assignments;
       state.combat.phase = 'enemy_turn';
       state.combat.pendingAbility = null;
+
+      // Snapshot friendly preview positions before enemy hits start landing.
+      // Mirrors the player-attack snapshot so friendly bars stay anchored too.
+      const previews = {};
+      for (const a of assignments) {
+        const target = liveFriendly.find((u) => u.id === a.targetId);
+        if (!target) continue;
+        if (!previews[a.targetId]) {
+          previews[a.targetId] = { totalDamage: 0, hpAtCommit: target.hp.current, maxHp: target.hp.max };
+        }
+        previews[a.targetId].totalDamage += a.damage;
+      }
+      state.combat.executingPreviews = previews;
     }),
 
   applyEnemyHit: (enemyId) =>
@@ -380,6 +432,8 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.pendingAbility = null;
       state.combat.pendingAttacks = [];
       state.combat.enemyAssignments = [];
+      state.combat.executingPreviews = {};
+      state.combat.targetLines = {};
       state.combat.dice = state.combat.friendly.map((u) => ({
         value: 0,
         ownerId: u.id,
@@ -406,5 +460,7 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.rolling = false;
       state.combat.pendingAbility = null;
       state.combat.pendingAttacks = [];
+      state.combat.executingPreviews = {};
+      state.combat.targetLines = {};
     }),
 });

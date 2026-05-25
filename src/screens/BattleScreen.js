@@ -72,7 +72,7 @@ function TacticalField({
   friendly, hostile,
   selectedFriendlyId, phase,
   pendingAbility, abilityIsSingleTarget, abilityAccent,
-  previewByEnemy,
+  previewByEnemy, previewByFriendly,
   onFriendlyPress, onEnemyPress,
   onUnitMeasure,
 }) {
@@ -97,6 +97,7 @@ function TacticalField({
               unit={u}
               variant="friendly"
               onPress={canPress ? () => onFriendlyPress(u.id) : undefined}
+              previewDamage={previewByFriendly[u.id] || 0}
               isSelected={isSelected}
               isPulsing={isSelected && phase === 'targeting'}
               pulseColor={CYAN}
@@ -167,23 +168,11 @@ export default function BattleScreen({ onExit }) {
     ? (ACCENT_COLORS[pendingAbilityData.accent] ?? CYAN)
     : CYAN;
 
-  const lines = useMemo(() => {
-    const result = [];
-    for (const die of combat.dice) {
-      if (!die.alive || !die.spent || !die.assignedTo) continue;
-      const src = unitCoords[die.ownerId];
-      const dst = unitCoords[die.assignedTo];
-      if (src && dst) result.push({ x1: src.x, y1: src.y, x2: dst.x, y2: dst.y, type: 'player' });
-    }
-    for (const a of combat.enemyAssignments) {
-      const src = unitCoords[a.enemyId];
-      const dst = unitCoords[a.targetId];
-      if (src && dst) result.push({ x1: src.x, y1: src.y, x2: dst.x, y2: dst.y, type: 'enemy' });
-    }
-    return result;
-  }, [combat.dice, combat.enemyAssignments, unitCoords]);
-
+  // Only compute live dice-based preview during targeting. Once execution starts
+  // UnitCard reads the frozen snapshot directly; zeroing this out prevents the
+  // prop from conflicting with snapshot data or triggering stale preview renders.
   const previewByEnemy = useMemo(() => {
+    if (combat.phase !== 'targeting') return {};
     const map = {};
     for (const die of combat.dice) {
       if (die.alive && die.spent && die.assignedTo) {
@@ -191,7 +180,16 @@ export default function BattleScreen({ onExit }) {
       }
     }
     return map;
-  }, [combat.dice]);
+  }, [combat.dice, combat.phase]);
+
+  const previewByFriendly = useMemo(() => {
+    if (combat.phase !== 'enemy_turn') return {};
+    const map = {};
+    for (const a of combat.enemyAssignments) {
+      map[a.targetId] = (map[a.targetId] || 0) + a.damage;
+    }
+    return map;
+  }, [combat.enemyAssignments, combat.phase]);
 
   // ── Executing phase: drain pendingAttacks queue ──
   useEffect(() => {
@@ -200,13 +198,12 @@ export default function BattleScreen({ onExit }) {
 
     (async () => {
       const attacks = [...useStore.getState().combat.pendingAttacks];
-      await delay(200);
 
       for (const attack of attacks) {
         if (cancelled) return;
         useStore.getState().applyPendingAttack(attack.id);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        await delay(380);
+        await delay(80);
         if (useStore.getState().combat.phase === 'victory') return;
       }
 
@@ -219,7 +216,6 @@ export default function BattleScreen({ onExit }) {
       if (latest.hostile.every((u) => u.hp.current === 0)) {
         useStore.getState().checkAndSetOutcome();
       } else {
-        await delay(280);
         if (!cancelled) useStore.getState().beginEnemyTurn();
       }
     })();
@@ -234,17 +230,15 @@ export default function BattleScreen({ onExit }) {
 
     (async () => {
       const { enemyAssignments } = useStore.getState().combat;
-      await delay(350);
+      await delay(50);
 
       for (const a of enemyAssignments) {
         if (cancelled) return;
         useStore.getState().applyEnemyHit(a.enemyId);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        await delay(460);
+        await delay(120);
       }
 
-      if (cancelled) return;
-      await delay(400);
       if (!cancelled) useStore.getState().endRound();
     })();
 
@@ -406,6 +400,7 @@ export default function BattleScreen({ onExit }) {
         abilityIsSingleTarget={abilityIsSingleTarget}
         abilityAccent={abilityAccent}
         previewByEnemy={previewByEnemy}
+        previewByFriendly={previewByFriendly}
         onFriendlyPress={handleFriendlyPress}
         onEnemyPress={handleEnemyPress}
         onUnitMeasure={handleUnitMeasure}
@@ -443,7 +438,7 @@ export default function BattleScreen({ onExit }) {
       <NoiseTexture />
       <ScanlineOverlay />
 
-      <TargetingOverlay lines={lines} phase={phase} />
+      <TargetingOverlay unitCoords={unitCoords} />
       <BattleOutcomeOverlay outcome={outcome} stats={stats} onExit={handleExit} />
     </View>
   );

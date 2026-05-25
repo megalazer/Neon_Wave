@@ -3,11 +3,14 @@ import { OPERATIVES } from '../../data/operatives';
 import { RECHARGE_ITEMS } from '../../data/rechargeItems';
 import { CYBERWARE_ITEMS } from '../../data/cyberware';
 import { applyXPToCrewMember, distributeCombatXP as _distribute } from '../../data/leveling';
+import { generateRecruit } from '../../engine/recruitGenerator';
 
 export const createCrewSlice = (set) => ({
   crew: {
     members: [],
     availableOperatives: [],
+    turnsSinceLastSpawn: 0,
+    spawnEnabled: true,
   },
 
   initializeOperatives: () =>
@@ -38,6 +41,72 @@ export const createCrewSlice = (set) => ({
         timestamp: new Date().toISOString(),
         type: 'acquisition',
       });
+    }),
+
+  // Try to spawn a generated recruit each turn — gates itself on minGap and probability.
+  trySpawnRecruit: () =>
+    set((state) => {
+      state.crew.turnsSinceLastSpawn += 1;
+      if (!state.crew.spawnEnabled) return;
+      const tss = state.crew.turnsSinceLastSpawn;
+      if (tss < 6) return;
+      const generatedCount = state.crew.availableOperatives.filter((r) => r.quality !== undefined).length;
+      if (generatedCount >= 5) return;
+      const beyondGap = tss - 6;
+      const chance = Math.min(0.7, 0.2 + beyondGap * 0.1);
+      if (Math.random() >= chance) return;
+      const contractsCompleted = state.contract.completedContracts.length;
+      const currentTurn = state.character.turnNumber;
+      const recruit = generateRecruit(contractsCompleted, currentTurn);
+      state.crew.availableOperatives.push(recruit);
+      state.crew.turnsSinceLastSpawn = 0;
+      const accentMap = { common: 'outline', rare: 'secondary', legendary: 'tertiary' };
+      state.log.entries.push({
+        id: `spawn_${recruit.id}_${Date.now()}`,
+        turn: currentTurn,
+        text: recruit.arrivalNarration,
+        timestamp: new Date().toISOString(),
+        type: 'ambient',
+        accent: accentMap[recruit.quality] || 'outline',
+      });
+    }),
+
+  // Expire generated recruits whose timer has run out.
+  tickAvailableOperatives: () =>
+    set((state) => {
+      const currentTurn = state.character.turnNumber;
+      for (let i = state.crew.availableOperatives.length - 1; i >= 0; i--) {
+        const r = state.crew.availableOperatives[i];
+        if (r.expiresAtTurn !== undefined && r.expiresAtTurn <= currentTurn) {
+          state.crew.availableOperatives.splice(i, 1);
+        }
+      }
+    }),
+
+  // Force-spawn a recruit of a specific quality, bypassing probability.
+  forceSpawnRecruit: (quality) =>
+    set((state) => {
+      const contractsCompleted = state.contract.completedContracts.length;
+      const currentTurn = state.character.turnNumber;
+      const recruit = generateRecruit(contractsCompleted, currentTurn, quality);
+      state.crew.availableOperatives.push(recruit);
+      state.crew.turnsSinceLastSpawn = 0;
+      state.log.entries.push({
+        id: `spawn_force_${recruit.id}_${Date.now()}`,
+        turn: currentTurn,
+        text: `[DEV] Force-spawned ${quality.toUpperCase()} recruit: ${recruit.name} (${recruit.handle}).`,
+        timestamp: new Date().toISOString(),
+        type: 'system',
+      });
+    }),
+
+  // Dismiss a generated recruit from the available pool without recruiting.
+  dismissFromAvailable: (recruitId) =>
+    set((state) => {
+      const idx = state.crew.availableOperatives.findIndex(
+        (r) => r.id === recruitId && r.quality !== undefined,
+      );
+      if (idx !== -1) state.crew.availableOperatives.splice(idx, 1);
     }),
 
   addCrewXP: (memberId, amount) =>
@@ -143,7 +212,10 @@ export const createCrewSlice = (set) => ({
       if (idx === -1) return;
       const member = current(state.crew.members[idx]);
       state.crew.members.splice(idx, 1);
-      state.crew.availableOperatives.push(member);
+      // Only hardcoded operatives return to the available pool on dismiss.
+      if (!member.quality) {
+        state.crew.availableOperatives.push(member);
+      }
       state.log.entries.push({
         id: `dismiss_${memberId}_${Date.now()}`,
         turn: state.character.turnNumber,
@@ -151,5 +223,21 @@ export const createCrewSlice = (set) => ({
         timestamp: new Date().toISOString(),
         type: 'narration',
       });
+    }),
+
+  // ── Dev overrides ──────────────────────────────────────────────────────────
+
+  devToggleSpawn: () =>
+    set((state) => {
+      state.crew.spawnEnabled = !state.crew.spawnEnabled;
+    }),
+
+  devClearGeneratedPool: () =>
+    set((state) => {
+      for (let i = state.crew.availableOperatives.length - 1; i >= 0; i--) {
+        if (state.crew.availableOperatives[i].quality !== undefined) {
+          state.crew.availableOperatives.splice(i, 1);
+        }
+      }
     }),
 });

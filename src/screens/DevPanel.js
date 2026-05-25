@@ -15,6 +15,7 @@ import { devAdvanceTurns } from '../engine/turnPipeline';
 import { XP_THRESHOLDS, MAX_LEVEL, getLevelProgress } from '../data/leveling';
 import { ALL_EVENTS } from '../data/events/index';
 import { ALL_CONTRACTS as CONTRACTS } from '../data/contracts/index';
+import { rollQuality, getSpawnWeights } from '../data/recruitQuality';
 
 const ERR = colors.error;
 
@@ -446,6 +447,72 @@ function ContractOverrideSection() {
   );
 }
 
+// ── Recruit override section ─────────────────────────────────────────────────
+function runSpawnTest(contractsCompleted, n) {
+  const results = { common: 0, rare: 0, legendary: 0 };
+  for (let i = 0; i < n; i++) results[rollQuality(contractsCompleted)]++;
+  return results;
+}
+
+function RecruitOverrideSection() {
+  const spawnEnabled        = useStore((s) => s.crew.spawnEnabled);
+  const turnsSinceLastSpawn = useStore((s) => s.crew.turnsSinceLastSpawn);
+  const availableOperatives = useStore((s) => s.crew.availableOperatives);
+  const completedContracts  = useStore((s) => s.contract.completedContracts);
+  const forceSpawnRecruit   = useStore((s) => s.forceSpawnRecruit);
+  const devToggleSpawn      = useStore((s) => s.devToggleSpawn);
+  const devClearPool        = useStore((s) => s.devClearGeneratedPool);
+  const devSetContracts     = useStore((s) => s.devSetContractsCompleted);
+
+  const [testResults, setTestResults] = useState(null);
+  const contractCount = completedContracts.length;
+  const generatedCount = availableOperatives.filter((r) => r.quality !== undefined).length;
+  const weights = getSpawnWeights(contractCount);
+
+  return (
+    <DevSection title="RECRUIT_OVERRIDE">
+      <Text style={sec.current}>
+        {`SPAWN: ${spawnEnabled ? 'ON' : 'OFF'} // TSS: ${turnsSinceLastSpawn} // POOL: ${generatedCount}`}
+      </Text>
+      <Text style={sec.current}>
+        {`CONTRACTS: ${contractCount} // WEIGHTS: C${weights.common}% R${weights.rare}% L${weights.legendary}%`}
+      </Text>
+
+      <Text style={[sec.current, { marginTop: 4 }]}>FORCE_SPAWN:</Text>
+      <View style={sec.row}>
+        <DevBtn label="[COMMON]"    onPress={() => forceSpawnRecruit('common')} />
+        <DevBtn label="[RARE]"      onPress={() => forceSpawnRecruit('rare')} />
+        <DevBtn label="[LEGENDARY]" onPress={() => forceSpawnRecruit('legendary')} />
+      </View>
+
+      <Text style={[sec.current, { marginTop: 4 }]}>SET_CONTRACTS_DONE:</Text>
+      <View style={sec.row}>
+        {[0, 5, 10, 20].map((n) => (
+          <DevBtn key={n} label={String(n)} onPress={() => devSetContracts(n)} />
+        ))}
+      </View>
+
+      <View style={[sec.row, { marginTop: 4 }]}>
+        <DevBtn
+          label={spawnEnabled ? '[DISABLE_SPAWN]' : '[ENABLE_SPAWN]'}
+          onPress={devToggleSpawn}
+        />
+        <DevBtn label="[CLEAR_POOL]" onPress={devClearPool} danger />
+      </View>
+
+      <DevBtn
+        label="[RUN_SPAWN_TEST_100]"
+        onPress={() => setTestResults(runSpawnTest(contractCount, 100))}
+      />
+      {testResults && (
+        <Text style={sec.current}>
+          {`RESULT // C:${testResults.common} R:${testResults.rare} L:${testResults.legendary}`}
+        </Text>
+      )}
+    </DevSection>
+  );
+}
+
 // ── Inventory section (stub) ─────────────────────────────────────────────────
 function InventorySection() {
   return (
@@ -573,6 +640,7 @@ export default function DevPanel() {
             <ExchangeSection />
             <RandomEventsSection />
             <ContractOverrideSection />
+            <RecruitOverrideSection />
             <InventorySection />
             <LogSection />
             <ResetSection />
