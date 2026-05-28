@@ -424,7 +424,7 @@ export default function JobsScreen({ onNavigate }) {
   const [activeTab, setActiveTab] = useState('activities');
   const members       = useStore((s) => s.crew.members);
   const renown        = useStore((s) => s.character.renown);
-  const playerLevel   = useStore((s) => s.character.level ?? 1);
+  const playerLevel   = useStore((s) => s.crew.members.find((m) => m.isPlayer)?.level ?? 1);
   const credits       = useStore((s) => s.character.credits);
   const feedItems     = useStore((s) => s.contract.feedItems);
   const contractPhase = useStore((s) => s.contract.phase);

@@ -4,6 +4,8 @@ export const createWorldSlice = (set) => ({
     factionPower: {},
     turnNumber: 0,
     pendingLevelUp: null, // { target, memberName, from, to } — drives LevelUpBanner
+    gameOver: false,
+    gameOverReason: null,
   },
 
   tickTurn: () =>
@@ -19,5 +21,11 @@ export const createWorldSlice = (set) => ({
   clearLevelUpBanner: () =>
     set((state) => {
       state.world.pendingLevelUp = null;
+    }),
+
+  triggerGameOver: (reason) =>
+    set((state) => {
+      state.world.gameOver = true;
+      state.world.gameOverReason = reason ?? 'FLATLINE';
     }),
 });

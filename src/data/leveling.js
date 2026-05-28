@@ -38,11 +38,10 @@ export function getLevelProgress(xp) {
   };
 }
 
-export function calculateTeamLevel(playerLevel, crewMembers) {
-  const aliveCrew = crewMembers.filter((m) => m.vitals?.current > 0 || m.alive !== false);
-  const allLevels = [playerLevel, ...aliveCrew.map((m) => m.level || 1)];
-  const sum = allLevels.reduce((s, l) => s + l, 0);
-  return Math.floor(sum / allLevels.length);
+export function calculateTeamLevel(members) {
+  const alive = members.filter((m) => (m.vitals?.current ?? 1) > 0);
+  if (alive.length === 0) return 1;
+  return Math.floor(alive.reduce((s, m) => s + (m.level || 1), 0) / alive.length);
 }
 
 // ── Draft-mutating helpers (call inside Zustand immer set()) ─────────────────
@@ -119,16 +118,11 @@ export function applyXPToCrewMember(state, member, amount) {
   }
 }
 
-// Splits totalXP among alive crew members; remainder goes to player
+// Splits totalXP equally among alive crew members (player is a crew member too).
 export function distributeCombatXP(state, totalXP) {
   if (totalXP <= 0) return;
   const alive = state.crew.members.filter((m) => (m.vitals?.current ?? 1) > 0);
-  if (alive.length === 0) {
-    applyXPToCharacter(state, totalXP);
-    return;
-  }
-  const xpPer    = Math.floor(totalXP / alive.length);
-  const remainder = totalXP - xpPer * alive.length;
-  alive.forEach((m) => applyXPToCrewMember(state, m, xpPer));
-  if (remainder > 0) applyXPToCharacter(state, remainder);
+  if (alive.length === 0) return;
+  const xpPer = Math.floor(totalXP / alive.length);
+  if (xpPer > 0) alive.forEach((m) => applyXPToCrewMember(state, m, xpPer));
 }

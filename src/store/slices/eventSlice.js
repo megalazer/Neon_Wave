@@ -1,5 +1,5 @@
 import { ACTIVITIES } from '../../data/activities';
-import { applyXPToCharacter, distributeCombatXP } from '../../data/leveling';
+import { applyXPToCrewMember, distributeCombatXP } from '../../data/leveling';
 import { ALL_FLAVOR_EVENTS, ALL_CHOICE_EVENTS } from '../../data/events/index';
 import { EVENT_COOLDOWN, FLAVOR_MIN_GAP, FLAVOR_MAX_GAP, FLAVOR_CHANCE } from '../../data/eventPacing';
 
@@ -15,7 +15,8 @@ function rollOutcome(set, item, idPrefix) {
 
     if (success) {
       state.character.credits += item.payout;
-      applyXPToCharacter(state, item.exp);
+      const player = state.crew.members.find((m) => m.isPlayer);
+      if (player) applyXPToCrewMember(state, player, item.exp);
       const crewXP = Math.floor(item.exp / 2);
       if (crewXP > 0) distributeCombatXP(state, crewXP);
       state.log.entries.push({
@@ -192,7 +193,8 @@ export const createEventSlice = (set) => ({
       let passed = true;
 
       if (choice.statCheck) {
-        const statVal = state.character.stats[choice.statCheck.stat] || 10;
+        const player  = state.crew.members.find((m) => m.isPlayer);
+        const statVal = player?.stats?.[choice.statCheck.stat] ?? 10;
         const roll = statVal + Math.floor(Math.random() * 6);
         passed = roll >= choice.statCheck.threshold;
         const branch = passed ? choice.pass : choice.fail;

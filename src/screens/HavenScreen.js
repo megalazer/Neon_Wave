@@ -58,10 +58,13 @@ function AnimatedStatBar({ current, max, fillColor }) {
 function RosterRow({ member, index, onDismiss }) {
   const indexLabel = String(index + 1).padStart(3, '0') + ' |';
   return (
-    <View style={styles.rosterRow}>
+    <View style={[styles.rosterRow, member.isPlayer && styles.rosterRowPlayer]}>
       <View style={styles.rosterLeft}>
         <Text style={styles.rosterIndex}>{indexLabel}</Text>
-        <Text style={styles.rosterName}>{member.name}</Text>
+        <View>
+          <Text style={styles.rosterName}>{member.name}</Text>
+          {member.isPlayer && <Text style={styles.rosterPlayerTag}>[OPERATOR]</Text>}
+        </View>
       </View>
       <View style={styles.rosterBars}>
         <View style={styles.barGroup}>
@@ -79,13 +82,15 @@ function RosterRow({ member, index, onDismiss }) {
           <AnimatedStatBar current={member.neural.current} max={member.neural.max} fillColor={colors.primary} />
         </View>
       </View>
-      <TouchableOpacity
-        style={styles.dismissBtn}
-        onPress={() => onDismiss(member)}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.dismissBtnText}>DISMISS</Text>
-      </TouchableOpacity>
+      {!member.isPlayer && (
+        <TouchableOpacity
+          style={styles.dismissBtn}
+          onPress={() => onDismiss(member)}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.dismissBtnText}>DISMISS</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -156,10 +161,9 @@ function RechargeItemCard({ item, selectedMember, credits, onBuy }) {
   );
 }
 
-function TeamLevelStrip({ playerLevel, members }) {
-  const teamLevel = calculateTeamLevel(playerLevel, members);
-  const aliveCrew = members.filter((m) => (m.vitals?.current ?? 1) > 0);
-  const total = 1 + aliveCrew.length;
+function TeamLevelStrip({ members }) {
+  const teamLevel = calculateTeamLevel(members);
+  const aliveCount = members.filter((m) => (m.vitals?.current ?? 1) > 0).length;
   return (
     <View style={team.strip}>
       <View style={team.left}>
@@ -167,7 +171,7 @@ function TeamLevelStrip({ playerLevel, members }) {
         <Text style={team.level}>{String(teamLevel).padStart(2, '0')}</Text>
       </View>
       <Text style={team.sub}>
-        {`AVG // PLAYER + ${aliveCrew.length} ALIVE CREW (${total} TOTAL)`}
+        {`AVG // ${aliveCount} ALIVE (${members.length} TOTAL)`}
       </Text>
     </View>
   );
@@ -232,7 +236,6 @@ export default function HavenScreen() {
   const availableOperatives  = useStore((s) => s.crew.availableOperatives);
   const members              = useStore((s) => s.crew.members);
   const credits              = useStore((s) => s.character.credits);
-  const playerLevel          = useStore((s) => s.character.level);
   const currentTurn          = useStore((s) => s.character.turnNumber);
   const turnsSinceLastSpawn  = useStore((s) => s.crew.turnsSinceLastSpawn);
   const completedContracts   = useStore((s) => s.contract.completedContracts);
@@ -284,7 +287,7 @@ export default function HavenScreen() {
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      <TeamLevelStrip playerLevel={playerLevel} members={members} />
+      <TeamLevelStrip members={members} />
 
       {/* Pool Tier */}
       <PoolTierStrip
@@ -517,6 +520,17 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   rechargeBtnTextDim: { color: colors.outline },
+  rosterRowPlayer: {
+    borderColor: colors.secondary,
+    shadowColor: colors.secondary,
+  },
+  rosterPlayerTag: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    color: colors.secondary,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
   rosterRow: {
     backgroundColor: 'rgba(28,27,29,0.9)',
     borderWidth: 1,

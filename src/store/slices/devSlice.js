@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { XP_THRESHOLDS, MAX_LEVEL, getLevelFromXP, applyXPToCharacter, applyXPToCrewMember } from '../../data/leveling';
+import { XP_THRESHOLDS, MAX_LEVEL, applyXPToCrewMember } from '../../data/leveling';
 
 const TAP_TARGET = 7;
 const TAP_WINDOW = 3000;
@@ -140,14 +140,18 @@ export const createDevSlice = (set, get) => ({
 
   devAddCharacterXP: (amount) =>
     set((state) => {
-      applyXPToCharacter(state, Math.max(0, Number(amount) || 0));
+      const player = state.crew.members.find((m) => m.isPlayer);
+      if (!player) return;
+      applyXPToCrewMember(state, player, Math.max(0, Number(amount) || 0));
     }),
 
   devSetCharacterLevel: (level) =>
     set((state) => {
+      const player = state.crew.members.find((m) => m.isPlayer);
+      if (!player) return;
       const lvl = Math.max(1, Math.min(MAX_LEVEL, Number(level) || 1));
-      state.character.exp   = XP_THRESHOLDS[lvl - 1];
-      state.character.level = lvl;
+      player.exp   = XP_THRESHOLDS[lvl - 1];
+      player.level = lvl;
     }),
 
   devAddCrewXP: (memberId, amount) =>
@@ -178,8 +182,6 @@ export const createDevSlice = (set, get) => ({
   devSetTeamLevel: (level) =>
     set((state) => {
       const lvl = Math.max(1, Math.min(MAX_LEVEL, Number(level) || 1));
-      state.character.exp   = XP_THRESHOLDS[lvl - 1];
-      state.character.level = lvl;
       state.crew.members.forEach((m) => {
         m.exp   = XP_THRESHOLDS[lvl - 1];
         m.level = lvl;
@@ -188,8 +190,6 @@ export const createDevSlice = (set, get) => ({
 
   devResetLeveling: () =>
     set((state) => {
-      state.character.exp   = 0;
-      state.character.level = 1;
       state.crew.members.forEach((m) => {
         m.exp   = 0;
         m.level = 1;
@@ -198,17 +198,21 @@ export const createDevSlice = (set, get) => ({
 
   devTriggerLevelUpBanner: () =>
     set((state) => {
+      const player = state.crew.members.find((m) => m.isPlayer);
+      if (!player) return;
       state.world.pendingLevelUp = {
         target:     'player',
-        memberName: state.character.name || 'OPERATIVE',
-        from:       state.character.level,
-        to:         Math.min(MAX_LEVEL, (state.character.level || 1) + 1),
+        memberName: player.name || 'OPERATIVE',
+        from:       player.level || 1,
+        to:         Math.min(MAX_LEVEL, (player.level || 1) + 1),
       };
     }),
 
   devForceCombatXP: () =>
     set((state) => {
-      applyXPToCharacter(state, 200);
+      const player = state.crew.members.find((m) => m.isPlayer);
+      if (!player) return;
+      applyXPToCrewMember(state, player, 200);
     }),
 
   devSoftReset: () =>
@@ -216,8 +220,9 @@ export const createDevSlice = (set, get) => ({
       state.character.name = null;
       state.character.credits = 0;
       state.character.turnNumber = 0;
-      state.character.exp = 0;
-      state.character.level = 1;
+      state.crew.members = [];
+      state.world.gameOver = false;
+      state.world.gameOverReason = null;
       state.log.entries = [];
       state.dev.panelOpen = false;
     }),
@@ -228,8 +233,6 @@ export const createDevSlice = (set, get) => ({
       state.character.credits = 0;
       state.character.turnNumber = 0;
       state.character.path = null;
-      state.character.exp = 0;
-      state.character.level = 1;
       state.character.realEstate = [];
       state.character.vehicles = [];
       state.character.luxuryItems = [];
@@ -237,7 +240,28 @@ export const createDevSlice = (set, get) => ({
       state.world.factionPower = {};
       state.world.pendingLevelUp = null;
       state.world.turnNumber = 0;
+      state.world.gameOver = false;
+      state.world.gameOverReason = null;
       state.log.entries = [];
       state.dev.panelOpen = false;
+    }),
+
+  devKillPlayer: () =>
+    set((state) => {
+      const player = state.crew.members.find((m) => m.isPlayer);
+      if (!player) return;
+      player.vitals.current = 0;
+      state.world.gameOver = true;
+      state.world.gameOverReason = 'FLATLINE';
+    }),
+
+  devHealPlayer: () =>
+    set((state) => {
+      const player = state.crew.members.find((m) => m.isPlayer);
+      if (!player) return;
+      player.vitals.current = player.vitals.max;
+      player.neural.current = player.neural.max;
+      state.world.gameOver = false;
+      state.world.gameOverReason = null;
     }),
 });

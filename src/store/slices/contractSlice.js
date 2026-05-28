@@ -1,12 +1,12 @@
 import { ALL_CONTRACTS, getContract } from '../../data/contracts/index';
-import { applyXPToCharacter } from '../../data/leveling';
+import { applyXPToCrewMember } from '../../data/leveling';
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 function _pickFeedContracts(state) {
   const completed  = new Set(state.contract.completedContracts);
   const inFeed     = new Set(state.contract.feedItems.map((i) => i.id));
-  const playerLevel = state.character.level ?? 1;
+  const playerLevel = state.crew.members.find((m) => m.isPlayer)?.level ?? 1;
 
   const pool = ALL_CONTRACTS.filter(
     (c) => !completed.has(c.id) && !inFeed.has(c.id) && playerLevel >= c.teamLevelRequired,
@@ -131,7 +131,7 @@ export const createContractSlice = (set) => ({
       const contract = getContract(contractId);
       if (!contract) return;
 
-      const playerLevel = state.character.level ?? 1;
+      const playerLevel = state.crew.members.find((m) => m.isPlayer)?.level ?? 1;
       if (playerLevel < contract.teamLevelRequired) return;
 
       if (contract.deposit > 0) {
@@ -168,7 +168,8 @@ export const createContractSlice = (set) => ({
       let passed = true;
 
       if (choice.statCheck) {
-        const statVal = state.character.stats[choice.statCheck.stat] || 10;
+        const player  = state.crew.members.find((m) => m.isPlayer);
+        const statVal = player?.stats?.[choice.statCheck.stat] ?? 10;
         const roll    = statVal + Math.floor(Math.random() * 6);
         passed        = roll >= choice.statCheck.threshold;
         branchData    = passed ? choice.pass : choice.fail;
@@ -298,7 +299,8 @@ export const createContractSlice = (set) => ({
         state.character.credits += resolution.creditsEarned;
       }
       if (resolution.expEarned > 0) {
-        applyXPToCharacter(state, resolution.expEarned);
+        const player = state.crew.members.find((m) => m.isPlayer);
+        if (player) applyXPToCrewMember(state, player, resolution.expEarned);
       }
 
       if (resolution.outcome === 'success') {

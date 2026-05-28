@@ -1,34 +1,22 @@
-import { ORIGIN_MODIFIERS, OPENING_NARRATION } from '../../data/origins';
-import { applyXPToCharacter } from '../../data/leveling';
+import { ORIGIN_MODIFIERS, OPENING_NARRATION, deriveStats } from '../../data/origins';
+import { CYBERWARE_ITEMS } from '../../data/cyberware';
 
 export const createCharacterSlice = (set) => ({
   character: {
     name: null,
     gender: null,
     path: null,
-    class: 'NETRUNNER',
     credits: 0,
     district: 'SECTOR_7',
     turnNumber: 0,
     renownLabel: 'GHOST',
     renown: 0,
-    exp: 0,
-    level: 1,
-    stats: { chrome: 10, edge: 10, ghost: 10, face: 10, grit: 10, wire: 10 },
     morale: 50,
-    vitals:   { current: 100, max: 100 },
-    neural:   { current: 100, max: 100 },
-    humanity: { current: 80,  max: 80  },
     cyberwareInventory: [],
     realEstate: [],
     vehicles: [],
     luxuryItems: [],
   },
-
-  addCharacterXP: (amount) =>
-    set((state) => {
-      applyXPToCharacter(state, amount);
-    }),
 
   purchaseAsset: (assetType, assetId, cost, assetName) =>
     set((state) => {
@@ -53,26 +41,33 @@ export const createCharacterSlice = (set) => ({
     set((state) => {
       const mods = ORIGIN_MODIFIERS[draft.path] || {};
 
-      state.character.name   = draft.name;
-      state.character.gender = draft.gender;
-      state.character.path   = draft.path;
-
+      state.character.name    = draft.name;
+      state.character.gender  = draft.gender;
+      state.character.path    = draft.path;
       state.character.credits = mods.credits ?? 400;
-      state.character.exp     = 0;
-      state.character.level   = 1;
+      state.character.cyberwareInventory = [];
 
-      state.character.stats = {
-        chrome: 10 + (mods.chrome || 0),
-        edge:   10 + (mods.edge   || 0),
-        ghost:  10 + (mods.ghost  || 0),
-        face:   10 + (mods.face   || 0),
-        grit:   10 + (mods.grit   || 0),
-        wire:   10 + (mods.wire   || 0),
-      };
+      // Build player as crew member[0]; starter cyberware is equipped, not in inventory.
+      const starterItem = CYBERWARE_ITEMS.find((c) => c.id === draft.starterCyberware);
+      const humanityLoss = starterItem?.humanityCost ?? 4;
+      const classMap = { corpo: 'FIXER', street_kid: 'STREET_SAMURAI', nomad: 'GHOST' };
 
-      state.character.cyberwareInventory = [draft.starterCyberware];
-
-      state.crew.members = [];
+      state.crew.members = [
+        {
+          id: 'player',
+          name: draft.name,
+          isPlayer: true,
+          class: classMap[draft.path] || 'STREET_SAMURAI',
+          level: 1,
+          exp: 0,
+          vitals:   { current: 100, max: 100 },
+          neural:   { current: 100, max: 100 },
+          humanity: { current: 80 - humanityLoss, max: 80 },
+          stats: { ...deriveStats(draft.path) },
+          equippedCyberware: [draft.starterCyberware],
+          maxCyberwareSlots: 3,
+        },
+      ];
 
       state.log.entries = [
         {

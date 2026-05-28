@@ -1,6 +1,6 @@
-import { TEST_FRIENDLY_UNITS, TEST_HOSTILE_UNITS, TEST_BATTLE_CONFIG } from '../../data/testBattle';
+import { TEST_HOSTILE_UNITS, TEST_BATTLE_CONFIG } from '../../data/testBattle';
 import { CYBER_ABILITIES } from '../../data/cyberAbilities';
-import { applyXPToCharacter, distributeCombatXP } from '../../data/leveling';
+import { distributeCombatXP } from '../../data/leveling';
 import { FRIENDLY_LINE_COLORS } from '../../data/combatColors';
 
 function cloneUnits(units) {
@@ -57,7 +57,10 @@ export const createTestCombatSlice = (set, get) => ({
 
   startTestBattle: () =>
     set((state) => {
-      const friendly = cloneUnits(TEST_FRIENDLY_UNITS);
+      // Build friendly from actual crew members, mapping vitals → hp for combat.
+      const friendly = state.crew.members
+        .filter((m) => (m.vitals?.current ?? 1) > 0)
+        .map((m) => ({ ...m, hp: { current: m.vitals.current, max: m.vitals.max } }));
       state.combat.active = true;
       state.combat.phase = 'roll';
       state.combat.friendly = friendly;
@@ -399,6 +402,12 @@ export const createTestCombatSlice = (set, get) => ({
       if (target.hp.current === 0) {
         const die = state.combat.dice.find((d) => d.ownerId === a.targetId);
         if (die) die.alive = false;
+        if (target.isPlayer) {
+          state.world.gameOver = true;
+          state.world.gameOverReason = 'FLATLINE';
+          state.combat.outcome = 'defeat';
+          state.combat.phase = 'defeat';
+        }
       }
     }),
 
@@ -445,13 +454,13 @@ export const createTestCombatSlice = (set, get) => ({
 
   exitBattle: () =>
     set((state) => {
-      // Award XP before resetting outcome
       if (state.combat.outcome === 'victory') {
-        const totalXP  = 100;
-        const playerXP = Math.floor(totalXP / 2);
-        const crewXP   = totalXP - playerXP;
-        applyXPToCharacter(state, playerXP);
-        distributeCombatXP(state, crewXP);
+        distributeCombatXP(state, 100);
+        // Sync combat HP back to crew vitals so damage persists.
+        for (const fighter of state.combat.friendly) {
+          const member = state.crew.members.find((m) => m.id === fighter.id);
+          if (member) member.vitals.current = fighter.hp.current;
+        }
       }
 
       state.combat.active = false;

@@ -24,6 +24,7 @@ import IdentityScreen from './src/screens/init/IdentityScreen';
 import FinalizeScreen from './src/screens/init/FinalizeScreen';
 import DevPanel from './src/screens/DevPanel';
 import BattleScreen from './src/screens/BattleScreen';
+import GameOverScreen from './src/screens/GameOverScreen';
 import LevelUpBanner from './src/components/LevelUpBanner';
 import ChoiceModal from './src/components/ChoiceModal';
 
@@ -66,16 +67,17 @@ export default function App() {
   const [initStep, setInitStep] = useState(1);
   const [initDraft, setInitDraft] = useState(INIT_DRAFT_DEFAULT);
 
-  const characterName    = useStore((s) => s.character.name);
   const credits          = useStore((s) => s.character.credits);
   const renown           = useStore((s) => s.character.renownLabel);
   const contractPhase    = useStore((s) => s.contract.phase);
+  const playerInCrew     = useStore((s) => s.crew.members.some((m) => m.isPlayer));
+  const gameOver         = useStore((s) => s.world.gameOver);
   const initializeOperatives = useStore((s) => s.initializeOperatives);
   const initCharacter    = useStore((s) => s.initCharacter);
   const initDevMode      = useStore((s) => s.initDevMode);
   const startTestBattle  = useStore((s) => s.startTestBattle);
 
-  const inInitFlow = characterName === null;
+  const inInitFlow = !playerInCrew;
 
   useEffect(() => {
     initializeOperatives();
@@ -110,7 +112,6 @@ export default function App() {
   // Called by FinalizeScreen with the fully assembled draft
   const handleInitComplete = useCallback((finalDraft) => {
     initCharacter(finalDraft);
-    // character.name is now set → inInitFlow becomes false → game renders
     setActiveTab('neural');
   }, [initCharacter]);
 
@@ -119,6 +120,18 @@ export default function App() {
       <View style={styles.loading}>
         <StatusBar barStyle="light-content" backgroundColor={colors.background} />
       </View>
+    );
+  }
+
+  // ── Game Over ───────────────────────────────────────────────────────────────
+  if (gameOver) {
+    return (
+      <CRTBackground>
+        <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+        <GameOverScreen />
+        <NoiseTexture />
+        <ScanlineOverlay />
+      </CRTBackground>
     );
   }
 

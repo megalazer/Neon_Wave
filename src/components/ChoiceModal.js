@@ -153,7 +153,7 @@ export default function ChoiceModal() {
   const abortContract      = useStore((s) => s.abortContract);
   const dismissResolution  = useStore((s) => s.dismissResolution);
 
-  const playerStats = useStore((s) => s.character.stats);
+  const playerStats = useStore((s) => s.crew.members.find((m) => m.isPlayer)?.stats ?? {});
 
   const [showAbortConfirm, setShowAbortConfirm] = useState(false);
   const dismissTimer = useRef(null);

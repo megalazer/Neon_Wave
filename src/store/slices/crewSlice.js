@@ -211,6 +211,7 @@ export const createCrewSlice = (set) => ({
       const idx = state.crew.members.findIndex((m) => m.id === memberId);
       if (idx === -1) return;
       const member = current(state.crew.members[idx]);
+      if (member.isPlayer) return;
       state.crew.members.splice(idx, 1);
       // Only hardcoded operatives return to the available pool on dismiss.
       if (!member.quality) {

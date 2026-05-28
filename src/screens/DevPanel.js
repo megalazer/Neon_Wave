@@ -127,9 +127,12 @@ function TurnSection() {
 // ── Character section ────────────────────────────────────────────────────────
 function CharacterSection() {
   const character    = useStore((s) => s.character);
+  const members      = useStore((s) => s.crew.members);
   const devSetName   = useStore((s) => s.devSetName);
   const devInjectLog = useStore((s) => s.devInjectLog);
   const [nameVal, setNameVal] = useState('');
+
+  const player = members.find((m) => m.isPlayer);
 
   const setName = () => {
     if (!nameVal.trim()) return;
@@ -143,9 +146,11 @@ function CharacterSection() {
       <Text style={sec.current}>
         NAME: {character.name || 'NULL'} // PATH: {character.path || 'NULL'}
       </Text>
-      <Text style={sec.current}>
-        CHROME:{character.stats.chrome} EDGE:{character.stats.edge} GHOST:{character.stats.ghost}
-      </Text>
+      {player && (
+        <Text style={sec.current}>
+          {`CHROME:${player.stats.chrome} EDGE:${player.stats.edge} GHOST:${player.stats.ghost}`}
+        </Text>
+      )}
       <InputRow
         label="SET_NAME"
         placeholder="V"
@@ -159,13 +164,19 @@ function CharacterSection() {
 
 // ── Crew section ─────────────────────────────────────────────────────────────
 function CrewSection() {
-  const members       = useStore((s) => s.crew.members);
+  const members           = useStore((s) => s.crew.members);
   const devFillCrewVitals = useStore((s) => s.devFillCrewVitals);
+  const devKillPlayer     = useStore((s) => s.devKillPlayer);
+  const devHealPlayer     = useStore((s) => s.devHealPlayer);
 
   return (
     <DevSection title="CREW_OVERRIDE">
       <Text style={sec.current}>MEMBERS: {members.length}</Text>
       <DevBtn label="[FILL_ALL_VITALS]" onPress={devFillCrewVitals} />
+      <View style={sec.row}>
+        <DevBtn label="[KILL_PLAYER]" onPress={devKillPlayer} danger />
+        <DevBtn label="[HEAL_PLAYER]" onPress={devHealPlayer} />
+      </View>
     </DevSection>
   );
 }
@@ -237,8 +248,7 @@ function ExchangeSection() {
 const SET_LEVELS = [1, 3, 5, 8, 10];
 
 function LevelingSection() {
-  const character        = useStore((s) => s.character);
-  const members          = useStore((s) => s.crew.members);
+  const members                = useStore((s) => s.crew.members);
   const devAddCharacterXP      = useStore((s) => s.devAddCharacterXP);
   const devSetCharacterLevel   = useStore((s) => s.devSetCharacterLevel);
   const devAddCrewXP           = useStore((s) => s.devAddCrewXP);
@@ -249,16 +259,19 @@ function LevelingSection() {
   const devTriggerLevelUpBanner = useStore((s) => s.devTriggerLevelUpBanner);
   const devForceCombatXP       = useStore((s) => s.devForceCombatXP);
 
-  const progress = getLevelProgress(character.exp);
-  const progressStr = progress.maxed
+  const player = members.find((m) => m.isPlayer);
+  const progress = player ? getLevelProgress(player.exp || 0) : null;
+  const progressStr = !progress
+    ? 'NO_PLAYER'
+    : progress.maxed
     ? 'MAXED'
     : `${progress.current}/${progress.needed} XP (${Math.round(progress.percent)}%)`;
 
   return (
     <DevSection title="LEVELING_OVERRIDE">
-      {/* Player */}
+      {/* Player (crew member 0) */}
       <Text style={sec.current}>
-        {`PLAYER: LVL_${character.level} // ${character.exp} XP TOTAL`}
+        {`PLAYER: LVL_${player?.level ?? '?'} // ${player?.exp ?? '?'} XP TOTAL`}
       </Text>
       <Text style={sec.current}>{`PROGRESS: ${progressStr}`}</Text>
 
@@ -268,7 +281,7 @@ function LevelingSection() {
         <DevBtn label="+1000 XP" onPress={() => devAddCharacterXP(1000)} />
       </View>
 
-      <Text style={[sec.current, { marginTop: 4 }]}>SET_LVL:</Text>
+      <Text style={[sec.current, { marginTop: 4 }]}>SET_PLAYER_LVL:</Text>
       <View style={sec.row}>
         {SET_LEVELS.map((lvl) => (
           <DevBtn
@@ -279,11 +292,11 @@ function LevelingSection() {
         ))}
       </View>
 
-      {/* Crew */}
-      {members.length > 0 && (
+      {/* Non-player crew */}
+      {members.filter((m) => !m.isPlayer).length > 0 && (
         <>
           <Text style={[sec.current, { marginTop: 6 }]}>CREW XP:</Text>
-          {members.map((m) => (
+          {members.filter((m) => !m.isPlayer).map((m) => (
             <View key={m.id} style={lev.memberRow}>
               <Text style={lev.memberName} numberOfLines={1}>
                 {`${m.name} LVL_${m.level || 1}`}
