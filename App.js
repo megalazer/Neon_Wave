@@ -76,6 +76,7 @@ export default function App() {
   const initCharacter    = useStore((s) => s.initCharacter);
   const initDevMode      = useStore((s) => s.initDevMode);
   const startTestBattle  = useStore((s) => s.startTestBattle);
+  const devSoftReset     = useStore((s) => s.devSoftReset);
 
   const inInitFlow = !playerInCrew;
 
@@ -109,6 +110,13 @@ export default function App() {
   const setPath      = useCallback((v) => setInitDraft((d) => ({ ...d, path: v })), []);
   const setName      = useCallback((v) => setInitDraft((d) => ({ ...d, name: v })), []);
 
+  // Restart from death or settings — wipes Zustand state AND local init draft/step.
+  const handleRestart = useCallback(() => {
+    devSoftReset();
+    setInitStep(1);
+    setInitDraft(INIT_DRAFT_DEFAULT);
+  }, [devSoftReset]);
+
   // Called by FinalizeScreen with the fully assembled draft
   const handleInitComplete = useCallback((finalDraft) => {
     initCharacter(finalDraft);
@@ -128,7 +136,7 @@ export default function App() {
     return (
       <CRTBackground>
         <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-        <GameOverScreen />
+        <GameOverScreen onRestart={handleRestart} />
         <NoiseTexture />
         <ScanlineOverlay />
       </CRTBackground>

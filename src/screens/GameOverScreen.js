@@ -8,11 +8,10 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useStore } from '../store/index';
 import { colors } from '../theme/colors';
 
-export default function GameOverScreen() {
+export default function GameOverScreen({ onRestart }) {
   const gameOverReason = useStore((s) => s.world.gameOverReason);
   const character      = useStore((s) => s.character);
   const members        = useStore((s) => s.crew.members);
-  const devSoftReset   = useStore((s) => s.devSoftReset);
 
   const player = members.find((m) => m.isPlayer);
 
@@ -96,8 +95,8 @@ export default function GameOverScreen() {
           {'NEURAL SIGNAL LOST.\nIDENTITY CONSTRUCT UNRECOVERABLE.\nFORMATTING MEMORY BLOCK...'}
         </Text>
 
-        <TouchableOpacity style={styles.restartBtn} onPress={devSoftReset} activeOpacity={0.8}>
-          <Text style={styles.restartBtnText}>[ REINITIALIZE_NEURAL_OS ]</Text>
+        <TouchableOpacity style={styles.restartBtn} onPress={onRestart} activeOpacity={0.8}>
+          <Text style={styles.restartBtnText}>[ INITIATE_NEW_RUN ]</Text>
         </TouchableOpacity>
       </View>
     </View>
