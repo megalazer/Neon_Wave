@@ -44,20 +44,45 @@ function StatBadge({ stat, threshold, playerStats }) {
   );
 }
 
+// ── CreditBadge ───────────────────────────────────────────────────────────────
+function CreditBadge({ required, canAfford, accentColor }) {
+  const color = canAfford ? `${accentColor}88` : `${colors.error}AA`;
+  const label = canAfford
+    ? `[${required.toLocaleString()} CR REQUIRED]`
+    : `[${required.toLocaleString()} CR REQUIRED — INSUFFICIENT]`;
+  return (
+    <View style={badge.wrap}>
+      <Text style={[badge.text, { color }]}>{label}</Text>
+    </View>
+  );
+}
+
 // ── ChoiceButton ──────────────────────────────────────────────────────────────
-function ChoiceButton({ choice, playerStats, onPress, accentColor }) {
-  const hasStat  = choice.statCheck;
-  const color    = accentColor ?? CYAN;
+function ChoiceButton({ choice, playerStats, playerCredits, onPress, accentColor }) {
+  const hasStat     = !!choice.statCheck;
+  const credReq     = choice.requires?.credits;
+  const cantAfford  = credReq !== undefined && (playerCredits ?? Infinity) < credReq;
+  const isDisabled  = cantAfford;
+  const color       = accentColor ?? CYAN;
+  const labelColor  = isDisabled ? `${color}44` : color;
+
   return (
     <TouchableOpacity
-      style={[cBtn.container, { borderColor: `${color}66`, backgroundColor: `${color}06` }]}
-      onPress={onPress}
-      activeOpacity={0.7}
+      style={[
+        cBtn.container,
+        { borderColor: `${color}66`, backgroundColor: `${color}06` },
+        isDisabled && cBtn.disabled,
+      ]}
+      onPress={isDisabled ? undefined : onPress}
+      activeOpacity={isDisabled ? 1 : 0.7}
     >
       <View style={cBtn.row}>
-        <MaterialIcons name="chevron-right" size={14} color={color} />
-        <Text style={[cBtn.label, { color }]}>{choice.label}</Text>
+        <MaterialIcons name="chevron-right" size={14} color={labelColor} />
+        <Text style={[cBtn.label, { color: labelColor }]}>{choice.label}</Text>
       </View>
+      {credReq !== undefined && (
+        <CreditBadge required={credReq} canAfford={!cantAfford} accentColor={color} />
+      )}
       {hasStat && (
         <StatBadge
           stat={choice.statCheck.stat}
@@ -127,6 +152,11 @@ function ContractResolutionView({ resolution, contract, onDismiss }) {
             )}
           </View>
         )}
+        {resolution.modifierApplied !== null && resolution.modifierApplied !== undefined && (
+          <Text style={[res.modifierLine, { color: `${accentColor}77` }]}>
+            {`BASE ${resolution.baseCredits?.toLocaleString()} CR × ${(1 + resolution.modifierApplied).toFixed(2)} EXECUTION_BONUS`}
+          </Text>
+        )}
       </ScrollView>
 
       <TouchableOpacity style={[res.dismissBtn, { borderColor: accentColor }]} onPress={onDismiss} activeOpacity={0.7}>
@@ -153,7 +183,8 @@ export default function ChoiceModal() {
   const abortContract      = useStore((s) => s.abortContract);
   const dismissResolution  = useStore((s) => s.dismissResolution);
 
-  const playerStats = useStore((s) => s.crew.members.find((m) => m.isPlayer)?.stats ?? {});
+  const playerStats   = useStore((s) => s.crew.members.find((m) => m.isPlayer)?.stats ?? {});
+  const playerCredits = useStore((s) => s.character.credits);
 
   const [showAbortConfirm, setShowAbortConfirm] = useState(false);
   const dismissTimer = useRef(null);
@@ -304,6 +335,7 @@ export default function ChoiceModal() {
                       key={choice.id}
                       choice={choice}
                       playerStats={playerStats}
+                      playerCredits={playerCredits}
                       accentColor={fixerColor}
                       onPress={() => handleContractChoice(choice.id)}
                     />
@@ -470,6 +502,9 @@ const cBtn = StyleSheet.create({
     padding: 12,
     gap: 5,
   },
+  disabled: {
+    opacity: 0.45,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -578,6 +613,12 @@ const res = StyleSheet.create({
     fontFamily: 'KodeMono_400Regular',
     fontSize: 13,
     color: colors.outline,
+  },
+  modifierLine: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 9,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
   },
   dismissBtn: {
     borderTopWidth: 1,

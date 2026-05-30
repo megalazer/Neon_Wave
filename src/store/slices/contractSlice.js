@@ -31,15 +31,37 @@ function _pickFeedContracts(state) {
   return picks.map((c) => ({ id: c.id, expiresIn: 10 }));
 }
 
+function _applyOutcomeEffects(state, effects) {
+  if (!effects) return;
+  if (effects.credits !== undefined) {
+    state.character.credits = Math.max(0, state.character.credits + effects.credits);
+  }
+  if (effects.rewardModifier !== undefined) {
+    state.contract.activeContractModifiers += effects.rewardModifier;
+  }
+  if (effects.fixerRep !== undefined) {
+    const contract = getContract(state.contract.activeContractId);
+    if (contract?.fixerId) {
+      state.contract.fixerRep[contract.fixerId] =
+        (state.contract.fixerRep[contract.fixerId] ?? 0) + effects.fixerRep;
+    }
+  }
+  if (effects.addFlags) {
+    for (const flag of effects.addFlags) state.world.flags.add(flag);
+  }
+}
+
 function _setResolution(state, contract, outcome) {
+  const modifier  = state.contract.activeContractModifiers ?? 0;
+  const basePayout =
+    outcome === 'success' ? contract.payout :
+    outcome === 'failure' ? Math.floor(contract.payout / 4) : 0;
+  const creditsEarned =
+    outcome === 'success' ? Math.round(basePayout * (1 + modifier)) : basePayout;
+
   state.contract.resolution = {
     outcome,
-    creditsEarned:
-      outcome === 'success'
-        ? contract.payout
-        : outcome === 'failure'
-        ? Math.floor(contract.payout / 4)
-        : 0,
+    creditsEarned,
     expEarned: outcome === 'success' ? contract.exp : 0,
     narration:
       outcome === 'success'
@@ -47,6 +69,8 @@ function _setResolution(state, contract, outcome) {
         : outcome === 'failure'
         ? contract.failureNarration
         : contract.abortNarration || 'Contract terminated.',
+    modifierApplied: outcome === 'success' && modifier !== 0 ? modifier : null,
+    baseCredits:     outcome === 'success' && modifier !== 0 ? basePayout : null,
   };
   state.contract.phase = 'resolving';
 }
@@ -76,8 +100,11 @@ export const createContractSlice = (set) => ({
     stageResults: [],     // [{ stageId, stageLabel, choiceId, choiceLabel, passed, narration }]
     resolution: null,     // { outcome, creditsEarned, expEarned, narration }
 
+    // Reward modifier accumulated across stages; applied as multiplier at resolution
+    activeContractModifiers: 0,
+
     // Combat bridge
-    pendingCombatResult: null, // { stageId, stageLabel, choiceId, choiceLabel, stageIndex, onVictory, onDefeat, setupText }
+    pendingCombatResult: null, // { stageId, stageLabel, choiceId, choiceLabel, stageIndex, onVictory, onDefeat, setupText, encounterId }
 
     // History
     completedContracts: [],
@@ -145,6 +172,7 @@ export const createContractSlice = (set) => ({
       state.contract.activeStageIndex = 0;
       state.contract.stageResults = [];
       state.contract.resolution = null;
+      state.contract.activeContractModifiers = 0;
     }),
 
   // ── Stage resolution ───────────────────────────────────────────────────────
@@ -162,6 +190,9 @@ export const createContractSlice = (set) => ({
 
       const choice = stage.choices.find((c) => c.id === choiceId);
       if (!choice) return;
+
+      // Credit gate — silently block unaffordable choices
+      if (choice.requires?.credits && state.character.credits < choice.requires.credits) return;
 
       // Resolve the choice outcome
       let branchData;
@@ -181,18 +212,21 @@ export const createContractSlice = (set) => ({
 
       if (branch === 'triggersBattle') {
         state.contract.pendingCombatResult = {
-          stageId:     stage.id,
-          stageLabel:  stage.label,
+          stageId:      stage.id,
+          stageLabel:   stage.label,
           choiceId,
-          choiceLabel: choice.label,
-          stageIndex:  activeStageIndex,
-          onVictory:   onVictory || { branch: 'advance', text: 'Battle won. Pressing forward.' },
-          onDefeat:    onDefeat  || { branch: 'fail',    text: 'Overwhelmed. Contract failed.' },
-          setupText:   text,
+          choiceLabel:  choice.label,
+          stageIndex:   activeStageIndex,
+          onVictory:    onVictory || { branch: 'advance', text: 'Battle won. Pressing forward.' },
+          onDefeat:     onDefeat  || { branch: 'fail',    text: 'Overwhelmed. Contract failed.' },
+          setupText:    text,
+          encounterId:  branchData.encounterId || null,
         };
         state.contract.phase = 'combat';
         return;
       }
+
+      _applyOutcomeEffects(state, branchData.effects);
 
       state.contract.stageResults.push({
         stageId:     stage.id,
@@ -234,6 +268,8 @@ export const createContractSlice = (set) => ({
 
       const victorData = combatOutcome === 'victory' ? pending.onVictory : pending.onDefeat;
       const { branch, text } = victorData;
+
+      _applyOutcomeEffects(state, victorData.effects);
 
       state.contract.stageResults.push({
         stageId:     pending.stageId,
@@ -335,6 +371,7 @@ export const createContractSlice = (set) => ({
       state.contract.activeStageIndex = 0;
       state.contract.stageResults = [];
       state.contract.resolution = null;
+      state.contract.activeContractModifiers = 0;
     }),
 
   // ── Dev overrides ──────────────────────────────────────────────────────────
@@ -358,6 +395,7 @@ export const createContractSlice = (set) => ({
       state.contract.stageResults = [];
       state.contract.resolution = null;
       state.contract.pendingCombatResult = null;
+      state.contract.activeContractModifiers = 0;
     }),
 
   devForceContractResolution: (outcome) =>
@@ -376,6 +414,7 @@ export const createContractSlice = (set) => ({
       state.contract.stageResults = [];
       state.contract.resolution = null;
       state.contract.pendingCombatResult = null;
+      state.contract.activeContractModifiers = 0;
     }),
 
   devSetFixerRep: (fixerId, value) =>

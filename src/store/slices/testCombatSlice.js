@@ -1,4 +1,6 @@
 import { TEST_HOSTILE_UNITS, TEST_BATTLE_CONFIG } from '../../data/testBattle';
+import { ENCOUNTERS } from '../../data/encounters';
+import { ENEMIES } from '../../data/enemies';
 import { CYBER_ABILITIES } from '../../data/cyberAbilities';
 import { distributeCombatXP } from '../../data/leveling';
 import { FRIENDLY_LINE_COLORS } from '../../data/combatColors';
@@ -61,10 +63,21 @@ export const createTestCombatSlice = (set, get) => ({
       const friendly = state.crew.members
         .filter((m) => (m.vitals?.current ?? 1) > 0)
         .map((m) => ({ ...m, hp: { current: m.vitals.current, max: m.vitals.max } }));
+
+      // Build hostile from encounter if a combat contract is pending; else use test data.
+      const encounterId = state.contract.pendingCombatResult?.encounterId;
+      const encounter   = encounterId ? ENCOUNTERS[encounterId] : null;
+      const hostile = encounter
+        ? encounter.enemies.map((eid) => {
+            const template = ENEMIES[eid];
+            return { ...template, hp: { ...template.hp } };
+          })
+        : cloneUnits(TEST_HOSTILE_UNITS);
+
       state.combat.active = true;
       state.combat.phase = 'roll';
       state.combat.friendly = friendly;
-      state.combat.hostile = cloneUnits(TEST_HOSTILE_UNITS);
+      state.combat.hostile = hostile;
       state.combat.dice = buildDice(friendly);
       state.combat.rerollsRemaining = 2;
       state.combat.rolling = false;

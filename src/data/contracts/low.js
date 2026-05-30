@@ -468,4 +468,171 @@ export const LOW_CONTRACTS = [
     failureNarration: 'Collection failed. Pyre covers a fraction of the agreed rate. Grudgingly.',
     abortNarration: 'You walked away from the mark. Pyre doesn\'t work with quitters.',
   },
+
+  {
+    id: 'ct_underlevel_rescue',
+    tier: 'LOW',
+    teamLevelRequired: 1,
+    fixerId: 'remi',
+    moduleNumber: 'C-L05',
+    name: 'UNDERLEVEL_RESCUE',
+    description: 'A family in Kabuki is paying to get their daughter back from Red Chrome. Remi says quick and quiet. You say: define quick.',
+    payout: 1800,
+    deposit: 0,
+    exp: 120,
+    stages: [
+      {
+        id: 'ur_contact',
+        stageNumber: 1,
+        label: 'STAGE_01',
+        title: 'THE TIP',
+        prompt: 'Remi\'s contact is a woman named Hana — runs a noodle stall two blocks from the Red Chrome perimeter. She has partial building schematics and knows the crew rotation. Pay 200 for them, or work with what Remi streamed you.',
+        choices: [
+          {
+            id: 'ur_buy_schematic',
+            label: 'Buy Hana\'s schematics (200 CR)',
+            requires: { credits: 200 },
+            outcome: {
+              text: 'Hana slides a grimy printout across the counter. Three men on the lower floors, rotating every two hours. You\'re going in with a real layout.',
+              branch: 'advance',
+              effects: { credits: -200, rewardModifier: 0.2 },
+            },
+          },
+          {
+            id: 'ur_work_blind',
+            label: 'Work Remi\'s partial data',
+            statCheck: { stat: 'wire', threshold: 11 },
+            pass: {
+              text: 'You stitch Remi\'s fragments into something usable. Gaps, but enough to map the approach.',
+              branch: 'advance',
+              effects: { rewardModifier: 0.1 },
+            },
+            fail: {
+              text: 'Remi\'s data is too thin. Partial floor plan, no rotation intel. You\'ll be navigating blind past the first corridor.',
+              branch: 'advance',
+            },
+          },
+        ],
+      },
+      {
+        id: 'ur_entry',
+        stageNumber: 2,
+        label: 'STAGE_02',
+        title: 'QUIET ENTRY',
+        prompt: 'The girl — Daya — is on the third floor of a repurposed commercial block. Two ways up: ghost the service stairwell, or pay the ground-floor watch to look the other way. He\'s asking 300.',
+        choices: [
+          {
+            id: 'ur_bribe_watch',
+            label: 'Pay the watch (300 CR)',
+            requires: { credits: 300 },
+            outcome: {
+              text: 'The guard pockets the eddies without eye contact. You\'re through and moving before he finishes counting.',
+              branch: 'advance',
+              effects: { credits: -300, rewardModifier: 0.15 },
+            },
+          },
+          {
+            id: 'ur_ghost_stair',
+            label: 'Ghost through the stairwell',
+            statCheck: { stat: 'ghost', threshold: 12 },
+            pass: {
+              text: 'Silent movement. Third floor without a single alert triggered. Clean approach.',
+              branch: 'advance',
+              effects: { rewardModifier: 0.15 },
+            },
+            fail: {
+              text: 'A loose grate. One of them hears something. You press flat and wait — two full minutes that feel like twenty. They don\'t investigate.',
+              branch: 'advance',
+            },
+          },
+        ],
+      },
+      {
+        id: 'ur_enforcer',
+        stageNumber: 3,
+        label: 'STAGE_03',
+        title: 'ONE OBSTACLE',
+        prompt: 'Daya is behind a locked room at the end of the hall. Between you and her: one Red Chrome enforcer — augmented, bored, half-turned away. You could slip past him. Or you could end the conversation permanently.',
+        choices: [
+          {
+            id: 'ur_slip_past',
+            label: 'Slip past the enforcer',
+            statCheck: { stat: 'ghost', threshold: 13 },
+            pass: {
+              text: 'You move like smoke. He never turns around. Daya\'s door is ahead.',
+              branch: 'advance',
+              effects: { rewardModifier: 0.1 },
+            },
+            fail: {
+              text: 'He spins. Recognition lights his eyes. There\'s no talking out of this.',
+              branch: 'triggersBattle',
+              encounterId: 'enc_gang_enforcer_solo',
+              onVictory: {
+                branch: 'advance',
+                text: 'Down. Daya\'s door opens before the echo clears.',
+              },
+              onDefeat: {
+                branch: 'fail',
+                text: 'The enforcer drops you on the floor. You wake up in the alley. Daya is still up there.',
+              },
+            },
+          },
+          {
+            id: 'ur_take_enforcer',
+            label: 'Take the enforcer down',
+            outcome: {
+              text: 'No hesitation. You move first. The hallway decides the rest.',
+              branch: 'triggersBattle',
+              encounterId: 'enc_gang_enforcer_solo',
+              onVictory: {
+                branch: 'advance',
+                text: 'Clean. You step over him and knock twice on Daya\'s door.',
+                effects: { rewardModifier: 0.1 },
+              },
+              onDefeat: {
+                branch: 'fail',
+                text: 'He was better than he looked. You pull back empty-handed.',
+              },
+            },
+          },
+        ],
+      },
+      {
+        id: 'ur_handoff',
+        stageNumber: 4,
+        label: 'STAGE_04',
+        title: 'CLEAN EXIT',
+        prompt: 'Daya is with you. Rattled but mobile. Red Chrome will sweep this block within the hour. Remi wants a clean delivery to her designated drop — professional, traceable, commission intact. Or you return Daya to the family direct. Cuts Remi\'s take. She\'ll hear about it.',
+        choices: [
+          {
+            id: 'ur_remi_drop',
+            label: 'Deliver to Remi\'s drop point',
+            outcome: {
+              text: 'Professional. Remi confirms receipt in real time. Transfer follows. She notes the clean execution in the ledger.',
+              branch: 'complete',
+              effects: { rewardModifier: 0.1 },
+            },
+          },
+          {
+            id: 'ur_direct_return',
+            label: 'Return directly to the family',
+            statCheck: { stat: 'face', threshold: 11 },
+            pass: {
+              text: 'The family is waiting two blocks over. What the girl says when she sees her mother you won\'t repeat. Remi sends a terse message an hour later: "Noted." The difference in the cut hits your account anyway.',
+              branch: 'complete',
+              effects: { rewardModifier: 0.25, fixerRep: -1 },
+            },
+            fail: {
+              text: 'The family panics when you show up unannounced. Ten minutes of chaos before they trust you. Daya is home. Remi is not impressed with the approach.',
+              branch: 'complete',
+              effects: { rewardModifier: -0.1 },
+            },
+          },
+        ],
+      },
+    ],
+    successNarration: 'Daya delivered. Family pays. Remi transfers her commission. Job is in the ledger: clean.',
+    failureNarration: 'Extraction failed. Remi pays a fraction — she covered the logistics cost and nothing more.',
+    abortNarration: 'You pulled out mid-run. Daya stays where she is. Remi marks the abort and says nothing, which is worse.',
+  },
 ];
