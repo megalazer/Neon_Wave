@@ -17,6 +17,7 @@ export function devAdvanceTurns(count) {
     store.tickTurn();
     store.tickPrices();
     store.tickFeed();
+    store.tickVendor();
     store.trySpawnRecruit();
     store.tickAvailableOperatives();
     _tryFireRandomEvent(useStore.getState());
@@ -38,6 +39,7 @@ export function advanceTurn() {
   store.tickTurn();
   store.tickPrices();
   store.tickFeed();
+  store.tickVendor();
   store.trySpawnRecruit();
   store.tickAvailableOperatives();
 

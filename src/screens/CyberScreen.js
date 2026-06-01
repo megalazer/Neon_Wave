@@ -1,10 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
+  View, Text, ScrollView, TouchableOpacity, StyleSheet,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -12,14 +8,17 @@ import * as Haptics from 'expo-haptics';
 import { useStore } from '../store/index';
 import { colors } from '../theme/colors';
 import { CYBERWARE_ITEMS } from '../data/cyberware';
+import EquipPreviewModal from '../components/cyber/EquipPreviewModal';
+import StatsTab from '../components/cyber/StatsTab';
+import VendorTab from '../components/cyber/VendorTab';
 
-const BANNER_HEIGHT = 90;
-const NAV_HEIGHT = 72;
-const HUD_BOTTOM = NAV_HEIGHT + 8;
-const CARD_WIDTH = 192;
-const MAX_OPERATIVES = 12;
+const BANNER_HEIGHT  = 90;
+const NAV_HEIGHT     = 72;
+const HUD_BOTTOM     = NAV_HEIGHT + 8;
+const CARD_WIDTH     = 192;
+const MAX_OPERATIVES = 4;
 
-// ─── Utilities ──────────────────────────────────────────────────────────────
+// ── Utilities ────────────────────────────────────────────────────────────────
 
 function getEquipState(item, member) {
   if (!member) return { label: '[NO_TARGET]', disabled: true };
@@ -41,19 +40,19 @@ function formatStats(item) {
 }
 
 function getPsychosisRisk(ratio) {
-  if (ratio >= 0.8) return { text: 'STABLE', color: colors.primary };
-  if (ratio >= 0.5) return { text: 'LOW', color: colors.error };
+  if (ratio >= 0.8) return { text: 'STABLE',   color: colors.primary };
+  if (ratio >= 0.5) return { text: 'LOW',       color: colors.error };
   if (ratio >= 0.25) return { text: 'MODERATE', color: colors.error };
-  if (ratio >= 0.1) return { text: 'HIGH', color: colors.error };
-  return { text: 'CRITICAL', color: colors.error };
+  if (ratio >= 0.1) return { text: 'HIGH',      color: colors.error };
+  return                    { text: 'CRITICAL',  color: colors.error };
 }
 
-// ─── PersonnelCard ──────────────────────────────────────────────────────────
+// ── PersonnelCard ────────────────────────────────────────────────────────────
 
 function PersonnelCard({ member, selected, onPress }) {
   const vitalsRatio = member.vitals.current / member.vitals.max;
-  const barColor = vitalsRatio < 0.4 ? colors.error : colors.primary;
-  const statusText = vitalsRatio > 0.8 ? 'OPTIMAL' : vitalsRatio >= 0.4 ? 'SYNC: OK' : 'CRIT_DMG';
+  const barColor    = vitalsRatio < 0.4 ? colors.error : colors.primary;
+  const statusText  = vitalsRatio > 0.8 ? 'OPTIMAL' : vitalsRatio >= 0.4 ? 'SYNC: OK' : 'CRIT_DMG';
   const statusColor = vitalsRatio < 0.4 ? colors.error : colors.primary;
 
   return (
@@ -83,9 +82,7 @@ function PersonnelCard({ member, selected, onPress }) {
       </View>
       <View style={styles.personnelBarSection}>
         <View style={styles.personnelBar}>
-          <View
-            style={[styles.personnelBarFill, { width: `${Math.round(vitalsRatio * 100)}%`, backgroundColor: barColor }]}
-          />
+          <View style={[styles.personnelBarFill, { width: `${Math.round(vitalsRatio * 100)}%`, backgroundColor: barColor }]} />
         </View>
         <View style={styles.personnelBarLabels}>
           <Text style={[styles.personnelStatText, { color: vitalsRatio < 0.4 ? colors.error : colors.onSurfaceVariant }]}>
@@ -98,15 +95,11 @@ function PersonnelCard({ member, selected, onPress }) {
   );
 }
 
-// ─── EquippedItemCard ───────────────────────────────────────────────────────
+// ── EquippedItemCard ─────────────────────────────────────────────────────────
 
 function EquippedItemCard({ item, position, onUnequip }) {
   return (
-    <TouchableOpacity
-      style={styles.equippedCard}
-      onPress={() => onUnequip(item.id)}
-      activeOpacity={0.75}
-    >
+    <TouchableOpacity style={styles.equippedCard} onPress={() => onUnequip(item.id)} activeOpacity={0.75}>
       <View style={styles.equippedIconBox}>
         <MaterialIcons name={item.icon} size={28} color={colors.secondary} />
       </View>
@@ -116,12 +109,8 @@ function EquippedItemCard({ item, position, onUnequip }) {
           <Text style={styles.equippedPos}>{String(position).padStart(3, '0')}</Text>
         </View>
         <View style={styles.chipRow}>
-          <View style={styles.chipSlot}>
-            <Text style={styles.chipSlotText}>SLOT: {item.slot.toUpperCase()}</Text>
-          </View>
-          <View style={styles.chipHum}>
-            <Text style={styles.chipHumText}>HUM: {item.humanityCost}</Text>
-          </View>
+          <View style={styles.chipSlot}><Text style={styles.chipSlotText}>SLOT: {item.slot.toUpperCase()}</Text></View>
+          <View style={styles.chipHum}><Text style={styles.chipHumText}>HUM: {item.humanityCost}</Text></View>
         </View>
         <Text style={styles.equippedStats}>{formatStats(item)}</Text>
       </View>
@@ -129,11 +118,10 @@ function EquippedItemCard({ item, position, onUnequip }) {
   );
 }
 
-// ─── InventoryItemCard ──────────────────────────────────────────────────────
+// ── InventoryItemCard ────────────────────────────────────────────────────────
 
 function InventoryItemCard({ item, selectedMember, onEquip }) {
   const { label, disabled } = getEquipState(item, selectedMember);
-
   return (
     <TouchableOpacity
       style={[styles.inventoryCard, disabled && styles.inventoryCardDim]}
@@ -156,12 +144,8 @@ function InventoryItemCard({ item, selectedMember, onEquip }) {
           </TouchableOpacity>
         </View>
         <View style={styles.chipRow}>
-          <View style={styles.chipSlot}>
-            <Text style={styles.chipSlotText}>SLOT: {item.slot.toUpperCase()}</Text>
-          </View>
-          <View style={styles.chipHum}>
-            <Text style={styles.chipHumText}>HUM: {item.humanityCost}</Text>
-          </View>
+          <View style={styles.chipSlot}><Text style={styles.chipSlotText}>SLOT: {item.slot.toUpperCase()}</Text></View>
+          <View style={styles.chipHum}><Text style={styles.chipHumText}>HUM: {item.humanityCost}</Text></View>
         </View>
         <Text style={[styles.inventoryStats, !disabled && styles.inventoryStatsActive]}>{formatStats(item)}</Text>
       </View>
@@ -169,13 +153,13 @@ function InventoryItemCard({ item, selectedMember, onEquip }) {
   );
 }
 
-// ─── HumanityHUD ───────────────────────────────────────────────────────────
+// ── HumanityHUD ──────────────────────────────────────────────────────────────
 
 function HumanityHUD({ member }) {
-  const ratio = member.humanity.current / member.humanity.max;
-  const pct = Math.round(ratio * 100);
+  const ratio    = member.humanity.current / member.humanity.max;
+  const pct      = Math.round(ratio * 100);
   const barColor = ratio >= 0.5 ? colors.primary : colors.error;
-  const risk = getPsychosisRisk(ratio);
+  const risk     = getPsychosisRisk(ratio);
 
   return (
     <View style={styles.hudWrapper}>
@@ -200,15 +184,143 @@ function HumanityHUD({ member }) {
   );
 }
 
-// ─── CyberScreen ────────────────────────────────────────────────────────────
+// ── SubTabBar ────────────────────────────────────────────────────────────────
+
+const SUB_TABS = [
+  { id: 'loadout', label: 'LOADOUT', icon: 'memory' },
+  { id: 'stats',   label: 'STATS',   icon: 'analytics' },
+  { id: 'vendor',  label: 'VENDOR',  icon: 'store' },
+];
+
+function SubTabBar({ activeSubTab, onTabChange }) {
+  return (
+    <View style={styles.segmentedRow}>
+      {SUB_TABS.map((tab, i) => (
+        <TouchableOpacity
+          key={tab.id}
+          style={[
+            styles.segmentTab,
+            activeSubTab === tab.id && styles.segmentTabActive,
+            i < SUB_TABS.length - 1 && styles.segmentTabBorder,
+          ]}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            onTabChange(tab.id);
+          }}
+          activeOpacity={0.7}
+        >
+          <MaterialIcons
+            name={tab.icon}
+            size={16}
+            color={activeSubTab === tab.id ? colors.primary : colors.outline}
+          />
+          <Text style={[styles.segmentLabel, activeSubTab === tab.id && styles.segmentLabelActive]}>
+            {tab.label}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+}
+
+// ── LoadoutContent ───────────────────────────────────────────────────────────
+
+function LoadoutContent({
+  members, selectedId, selectedMember,
+  equippedItems, inventoryItems, equippedCount, maxSlots,
+  onSelectMember, onEquip, onUnequip,
+}) {
+  return (
+    <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      {/* Active Personnel Selector */}
+      <View style={styles.section}>
+        <View style={styles.selectorHeader}>
+          <Text style={styles.selectorLabel}>Active_Personnel</Text>
+          <Text style={styles.selectorCount}>
+            {String(members.length).padStart(3, '0')}/{String(MAX_OPERATIVES).padStart(3, '0')}
+          </Text>
+        </View>
+        {members.length === 0 ? (
+          <View style={styles.emptyBox}>
+            <Text style={styles.emptyText}>[NO_CREW — RECRUIT_OPERATIVES_FIRST]</Text>
+          </View>
+        ) : (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.personnelRow}
+            nestedScrollEnabled
+          >
+            {members.map((m) => (
+              <PersonnelCard
+                key={m.id}
+                member={m}
+                selected={m.id === selectedId}
+                onPress={() => onSelectMember(m.id)}
+              />
+            ))}
+          </ScrollView>
+        )}
+      </View>
+
+      {/* Equipped Nodes */}
+      <View style={styles.section}>
+        <View style={styles.equippedHeader}>
+          <View style={styles.equippedHeaderAccent} />
+          <Text style={styles.equippedHeaderText}>Equipped_Nodes</Text>
+          <View style={styles.slotBadge}>
+            <Text style={styles.slotBadgeText}>{equippedCount}/{maxSlots}</Text>
+          </View>
+        </View>
+        {equippedItems.length > 0 ? (
+          equippedItems.map((item, i) => (
+            <EquippedItemCard key={item.id} item={item} position={i + 1} onUnequip={onUnequip} />
+          ))
+        ) : (
+          <View style={styles.emptyBox}>
+            <Text style={[styles.emptyText, { color: `${colors.secondaryContainer}99` }]}>
+              [NO_CYBERWARE_INSTALLED]
+            </Text>
+          </View>
+        )}
+      </View>
+
+      {/* Available Inventory */}
+      <View style={styles.section}>
+        <View style={styles.inventoryHeader}>
+          <View style={styles.inventoryHeaderAccent} />
+          <Text style={styles.inventoryHeaderText}>Available_Inventory</Text>
+        </View>
+        {inventoryItems.length > 0 ? (
+          inventoryItems.map((item) => (
+            <InventoryItemCard
+              key={item.id}
+              item={item}
+              selectedMember={selectedMember}
+              onEquip={onEquip}
+            />
+          ))
+        ) : (
+          <View style={styles.emptyBox}>
+            <Text style={styles.emptyText}>[INVENTORY_EMPTY]</Text>
+          </View>
+        )}
+      </View>
+    </ScrollView>
+  );
+}
+
+// ── CyberScreen ──────────────────────────────────────────────────────────────
 
 export default function CyberScreen() {
-  const members = useStore((s) => s.crew.members);
+  const members            = useStore((s) => s.crew.members);
   const cyberwareInventory = useStore((s) => s.character.cyberwareInventory);
-  const equipCyberware = useStore((s) => s.equipCyberware);
-  const unequipCyberware = useStore((s) => s.unequipCyberware);
+  const equipCyberware     = useStore((s) => s.equipCyberware);
+  const unequipCyberware   = useStore((s) => s.unequipCyberware);
 
-  const [selectedId, setSelectedId] = useState(null);
+  const [activeSubTab, setActiveSubTab] = useState('loadout');
+  const [selectedId, setSelectedId]     = useState(null);
+  const [pendingEquip, setPendingEquip] = useState(null); // { item, replacingItem } | null
 
   useEffect(() => {
     if (!selectedId && members.length > 0) {
@@ -221,20 +333,32 @@ export default function CyberScreen() {
   const selectedMember = members.find((m) => m.id === selectedId) || null;
 
   const equippedItems = selectedMember
-    ? selectedMember.equippedCyberware
-        .map((id) => CYBERWARE_ITEMS.find((c) => c.id === id))
-        .filter(Boolean)
+    ? selectedMember.equippedCyberware.map((id) => CYBERWARE_ITEMS.find((c) => c.id === id)).filter(Boolean)
     : [];
-
   const inventoryItems = cyberwareInventory
-    .map((id) => CYBERWARE_ITEMS.find((c) => c.id === id))
-    .filter(Boolean);
+    .map((id) => CYBERWARE_ITEMS.find((c) => c.id === id)).filter(Boolean);
 
   const handleEquip = useCallback((itemId) => {
     if (!selectedMember) return;
+    const item = CYBERWARE_ITEMS.find((c) => c.id === itemId);
+    if (!item) return;
+    const replacingId   = selectedMember.equippedCyberware.find((eid) => {
+      const existing = CYBERWARE_ITEMS.find((c) => c.id === eid);
+      return existing?.slot === item.slot;
+    });
+    const replacingItem = replacingId
+      ? CYBERWARE_ITEMS.find((c) => c.id === replacingId)
+      : null;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setPendingEquip({ item, replacingItem });
+  }, [selectedMember]);
+
+  const confirmEquip = useCallback(() => {
+    if (!pendingEquip || !selectedMember) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    equipCyberware(selectedMember.id, itemId);
-  }, [equipCyberware, selectedMember]);
+    equipCyberware(selectedMember.id, pendingEquip.item.id);
+    setPendingEquip(null);
+  }, [pendingEquip, selectedMember, equipCyberware]);
 
   const handleUnequip = useCallback((itemId) => {
     if (!selectedMember) return;
@@ -248,114 +372,107 @@ export default function CyberScreen() {
   }, []);
 
   const equippedCount = selectedMember ? selectedMember.equippedCyberware.length : 0;
-  const maxSlots = selectedMember ? selectedMember.maxCyberwareSlots : 8;
+  const maxSlots      = selectedMember ? selectedMember.maxCyberwareSlots : 8;
 
   return (
     <View style={styles.screen}>
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Active Personnel Selector */}
-        <View style={styles.section}>
-          <View style={styles.selectorHeader}>
-            <Text style={styles.selectorLabel}>Active_Personnel</Text>
-            <Text style={styles.selectorCount}>
-              {String(members.length).padStart(3, '0')}/{String(MAX_OPERATIVES).padStart(3, '0')}
-            </Text>
-          </View>
-          {members.length === 0 ? (
-            <View style={styles.emptyBox}>
-              <Text style={styles.emptyText}>[NO_CREW — RECRUIT_OPERATIVES_FIRST]</Text>
-            </View>
-          ) : (
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.personnelRow}
-              nestedScrollEnabled
-            >
-              {members.map((m) => (
-                <PersonnelCard
-                  key={m.id}
-                  member={m}
-                  selected={m.id === selectedId}
-                  onPress={() => handleSelectMember(m.id)}
-                />
-              ))}
-            </ScrollView>
-          )}
-        </View>
+      <View style={styles.subTabWrapper}>
+        <SubTabBar activeSubTab={activeSubTab} onTabChange={setActiveSubTab} />
+      </View>
 
-        {/* Equipped Nodes */}
-        <View style={styles.section}>
-          <View style={styles.equippedHeader}>
-            <View style={styles.equippedHeaderAccent} />
-            <Text style={styles.equippedHeaderText}>Equipped_Nodes</Text>
-            <View style={styles.slotBadge}>
-              <Text style={styles.slotBadgeText}>{equippedCount}/{maxSlots}</Text>
-            </View>
-          </View>
-          {equippedItems.length > 0 ? (
-            equippedItems.map((item, i) => (
-              <EquippedItemCard
-                key={item.id}
-                item={item}
-                position={i + 1}
-                onUnequip={handleUnequip}
-              />
-            ))
-          ) : (
-            <View style={styles.emptyBox}>
-              <Text style={[styles.emptyText, { color: `${colors.secondaryContainer}99` }]}>
-                [NO_CYBERWARE_INSTALLED]
-              </Text>
-            </View>
-          )}
-        </View>
+      <View style={styles.tabContent}>
+        {activeSubTab === 'loadout' && (
+          <LoadoutContent
+            members={members}
+            selectedId={selectedId}
+            selectedMember={selectedMember}
+            equippedItems={equippedItems}
+            inventoryItems={inventoryItems}
+            equippedCount={equippedCount}
+            maxSlots={maxSlots}
+            onSelectMember={handleSelectMember}
+            onEquip={handleEquip}
+            onUnequip={handleUnequip}
+          />
+        )}
+        {activeSubTab === 'stats' && <StatsTab />}
+        {activeSubTab === 'vendor' && <VendorTab />}
+      </View>
 
-        {/* Available Inventory */}
-        <View style={styles.section}>
-          <View style={styles.inventoryHeader}>
-            <View style={styles.inventoryHeaderAccent} />
-            <Text style={styles.inventoryHeaderText}>Available_Inventory</Text>
-          </View>
-          {inventoryItems.length > 0 ? (
-            inventoryItems.map((item) => (
-              <InventoryItemCard
-                key={item.id}
-                item={item}
-                selectedMember={selectedMember}
-                onEquip={handleEquip}
-              />
-            ))
-          ) : (
-            <View style={styles.emptyBox}>
-              <Text style={styles.emptyText}>[INVENTORY_EMPTY]</Text>
-            </View>
-          )}
-        </View>
-      </ScrollView>
+      {activeSubTab === 'loadout' && selectedMember && (
+        <HumanityHUD member={selectedMember} />
+      )}
 
-      {selectedMember && <HumanityHUD member={selectedMember} />}
+      <EquipPreviewModal
+        visible={!!pendingEquip}
+        member={selectedMember}
+        newItem={pendingEquip?.item}
+        replacingItem={pendingEquip?.replacingItem}
+        onConfirm={confirmEquip}
+        onCancel={() => setPendingEquip(null)}
+      />
     </View>
   );
 }
 
+// ── Styles ───────────────────────────────────────────────────────────────────
+
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    // cyber-grid: subtle surface bg; CSS repeat-grid not available in RN — approximated via surface color
     backgroundColor: colors.surface,
   },
-  content: {
+  subTabWrapper: {
     paddingTop: BANNER_HEIGHT + 8,
+    paddingHorizontal: 16,
+    paddingBottom: 0,
+  },
+  tabContent: {
+    flex: 1,
+  },
+  content: {
+    paddingTop: 12,
     paddingBottom: NAV_HEIGHT + 90 + 24,
     paddingHorizontal: 16,
     gap: 0,
   },
   section: {
     marginBottom: 28,
+  },
+
+  // ── Sub-tab segmented control ──────────────────────────────────────────────
+  segmentedRow: {
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderColor: `${colors.primary}4D`,
+    marginBottom: 0,
+  },
+  segmentTab: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 10,
+  },
+  segmentTabBorder: {
+    borderRightWidth: 1,
+    borderRightColor: `${colors.primary}4D`,
+  },
+  segmentTabActive: {
+    backgroundColor: `${colors.primary}1A`,
+    borderTopWidth: 2,
+    borderTopColor: colors.primary,
+  },
+  segmentLabel: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 11,
+    color: colors.outline,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  segmentLabelActive: {
+    color: colors.primary,
   },
 
   // ── Personnel Selector ─────────────────────────────────────────────────────
@@ -437,17 +554,13 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginTop: 2,
   },
-  personnelBarSection: {
-    gap: 4,
-  },
+  personnelBarSection: { gap: 4 },
   personnelBar: {
     height: 4,
     backgroundColor: colors.surfaceVariant,
     overflow: 'hidden',
   },
-  personnelBarFill: {
-    height: '100%',
-  },
+  personnelBarFill: { height: '100%' },
   personnelBarLabels: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -540,9 +653,7 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 10,
   },
-  inventoryCardDim: {
-    opacity: 0.6,
-  },
+  inventoryCardDim: { opacity: 0.6 },
   inventoryIconBox: {
     width: 48,
     height: 48,
@@ -564,9 +675,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     flexShrink: 0,
   },
-  equipBtnDisabled: {
-    borderColor: colors.outline,
-  },
+  equipBtnDisabled: { borderColor: colors.outline },
   equipBtnText: {
     fontFamily: 'KodeMono_700Bold',
     fontSize: 9,
@@ -574,9 +683,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
     textTransform: 'uppercase',
   },
-  equipBtnTextDim: {
-    color: colors.outline,
-  },
+  equipBtnTextDim: { color: colors.outline },
   inventoryName: {
     fontFamily: 'KodeMono_700Bold',
     fontSize: 13,
@@ -591,14 +698,10 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
     marginTop: 4,
   },
-  inventoryStatsActive: {
-    color: colors.primaryFixedDim,
-  },
+  inventoryStatsActive: { color: colors.primaryFixedDim },
 
   // ── Shared item card sub-elements ──────────────────────────────────────────
-  itemDetails: {
-    flex: 1,
-  },
+  itemDetails: { flex: 1 },
   itemNameRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -733,12 +836,8 @@ const styles = StyleSheet.create({
     borderColor: colors.outlineVariant,
     overflow: 'hidden',
   },
-  hudBarFill: {
-    height: '100%',
-  },
-  hudRight: {
-    alignItems: 'flex-end',
-  },
+  hudBarFill: { height: '100%' },
+  hudRight: { alignItems: 'flex-end' },
   hudRiskLabel: {
     fontFamily: 'KodeMono_700Bold',
     fontSize: 10,

@@ -526,6 +526,36 @@ function RecruitOverrideSection() {
   );
 }
 
+// ── Vendor override section ──────────────────────────────────────────────────
+function VendorSection() {
+  const rotatingStock      = useStore((s) => s.vendor.rotatingStock);
+  const refreshCountdown   = useStore((s) => s.vendor.refreshCountdown);
+  const quickhackModules   = useStore((s) => s.vendor.quickhackModules);
+  const devForceRefresh    = useStore((s) => s.devForceVendorRefresh);
+  const devAllTiers        = useStore((s) => s.devForceVendorAllTiers);
+  const devClearModules    = useStore((s) => s.devClearQuickhackModules);
+  const devSetCredits      = useStore((s) => s.devSetCredits);
+
+  return (
+    <DevSection title="VENDOR_OVERRIDE">
+      <Text style={sec.current}>
+        {`STOCK: ${rotatingStock.length} item(s) // COUNTDOWN: ${refreshCountdown} turns`}
+      </Text>
+      <Text style={sec.current}>
+        {`QUICKHACK_MODULES: ${quickhackModules.length}`}
+      </Text>
+      <View style={sec.row}>
+        <DevBtn label="[FORCE_REFRESH]" onPress={devForceRefresh} />
+        <DevBtn label="[UNLOCK_ALL_TIERS]" onPress={devAllTiers} />
+      </View>
+      <View style={sec.row}>
+        <DevBtn label="[FILL_CREDITS_1M]" onPress={() => devSetCredits(1000000)} />
+        <DevBtn label="[CLEAR_MODULES]" onPress={devClearModules} danger />
+      </View>
+    </DevSection>
+  );
+}
+
 // ── Inventory section (stub) ─────────────────────────────────────────────────
 function InventorySection() {
   return (
@@ -653,6 +683,7 @@ export default function DevPanel() {
             <ExchangeSection />
             <RandomEventsSection />
             <ContractOverrideSection />
+            <VendorSection />
             <RecruitOverrideSection />
             <InventorySection />
             <LogSection />

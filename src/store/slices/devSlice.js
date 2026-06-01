@@ -225,6 +225,10 @@ export const createDevSlice = (set, get) => ({
       state.world.gameOverReason = null;
       state.log.entries = [];
       state.dev.panelOpen = false;
+      state.vendor.rotatingStock = [];
+      state.vendor.refreshCountdown = 8;
+      state.vendor.purchasedThisRotation = [];
+      state.vendor.quickhackModules = [];
     }),
 
   devHardReset: () =>
@@ -244,6 +248,10 @@ export const createDevSlice = (set, get) => ({
       state.world.gameOverReason = null;
       state.log.entries = [];
       state.dev.panelOpen = false;
+      state.vendor.rotatingStock = [];
+      state.vendor.refreshCountdown = 8;
+      state.vendor.purchasedThisRotation = [];
+      state.vendor.quickhackModules = [];
     }),
 
   devKillPlayer: () =>
