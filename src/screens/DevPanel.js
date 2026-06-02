@@ -168,6 +168,8 @@ function CrewSection() {
   const devFillCrewVitals = useStore((s) => s.devFillCrewVitals);
   const devKillPlayer     = useStore((s) => s.devKillPlayer);
   const devHealPlayer     = useStore((s) => s.devHealPlayer);
+  const devDrainNeural    = useStore((s) => s.devDrainNeural);
+  const devRestoreNeural  = useStore((s) => s.devRestoreNeural);
 
   return (
     <DevSection title="CREW_OVERRIDE">
@@ -176,6 +178,10 @@ function CrewSection() {
       <View style={sec.row}>
         <DevBtn label="[KILL_PLAYER]" onPress={devKillPlayer} danger />
         <DevBtn label="[HEAL_PLAYER]" onPress={devHealPlayer} />
+      </View>
+      <View style={sec.row}>
+        <DevBtn label="[DRAIN_NEURAL_80%]" onPress={devDrainNeural} danger />
+        <DevBtn label="[RESTORE_NEURAL]"   onPress={devRestoreNeural} />
       </View>
     </DevSection>
   );
@@ -473,6 +479,7 @@ function RecruitOverrideSection() {
   const availableOperatives = useStore((s) => s.crew.availableOperatives);
   const completedContracts  = useStore((s) => s.contract.completedContracts);
   const forceSpawnRecruit   = useStore((s) => s.forceSpawnRecruit);
+  const devSpawnClass       = useStore((s) => s.devSpawnClass);
   const devToggleSpawn      = useStore((s) => s.devToggleSpawn);
   const devClearPool        = useStore((s) => s.devClearGeneratedPool);
   const devSetContracts     = useStore((s) => s.devSetContractsCompleted);
@@ -496,6 +503,12 @@ function RecruitOverrideSection() {
         <DevBtn label="[COMMON]"    onPress={() => forceSpawnRecruit('common')} />
         <DevBtn label="[RARE]"      onPress={() => forceSpawnRecruit('rare')} />
         <DevBtn label="[LEGENDARY]" onPress={() => forceSpawnRecruit('legendary')} />
+      </View>
+      <Text style={[sec.current, { marginTop: 4 }]}>FORCE_CLASS (COMMON):</Text>
+      <View style={sec.row}>
+        <DevBtn label="[NETRUNNER]"  onPress={() => devSpawnClass('common', 'netrunner')} />
+        <DevBtn label="[SAMURAI]"    onPress={() => devSpawnClass('common', 'street_samurai')} />
+        <DevBtn label="[GHOST]"      onPress={() => devSpawnClass('common', 'ghost')} />
       </View>
 
       <Text style={[sec.current, { marginTop: 4 }]}>SET_CONTRACTS_DONE:</Text>

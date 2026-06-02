@@ -84,6 +84,22 @@ export const createCrewSlice = (set) => ({
     }),
 
   // Force-spawn a recruit of a specific quality, bypassing probability.
+  devSpawnClass: (quality, cls) =>
+    set((state) => {
+      const contractsCompleted = state.contract.completedContracts.length;
+      const currentTurn = state.character.turnNumber;
+      const recruit = generateRecruit(contractsCompleted, currentTurn, quality, cls);
+      state.crew.availableOperatives.push(recruit);
+      state.crew.turnsSinceLastSpawn = 0;
+      state.log.entries.push({
+        id: `spawn_cls_${recruit.id}_${Date.now()}`,
+        turn: currentTurn,
+        text: `[DEV] Force-spawned ${quality.toUpperCase()} ${cls.toUpperCase()}: ${recruit.name} (${recruit.handle}).`,
+        timestamp: new Date().toISOString(),
+        type: 'system',
+      });
+    }),
+
   forceSpawnRecruit: (quality) =>
     set((state) => {
       const contractsCompleted = state.contract.completedContracts.length;

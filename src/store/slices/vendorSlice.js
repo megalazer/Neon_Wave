@@ -101,6 +101,34 @@ export const createVendorSlice = (set) => ({
       });
     }),
 
+  installQuickhackModule: (memberId, quickhackId) =>
+    set((state) => {
+      const member = state.crew.members.find((m) => m.id === memberId);
+      if (!member || member.class !== 'netrunner') return;
+
+      const hack = QUICKHACKS[quickhackId];
+      if (!hack) return;
+
+      const moduleIdx = state.vendor.quickhackModules.indexOf(quickhackId);
+      if (moduleIdx === -1) return;
+
+      const slotKey = hack.tier === 'low' ? 'slot1'
+                    : hack.tier === 'mid' ? 'slot2'
+                    : 'slot3';
+
+      if (!member.quickhacks) member.quickhacks = { slot1: null, slot2: null, slot3: null };
+      member.quickhacks[slotKey] = quickhackId;
+      state.vendor.quickhackModules.splice(moduleIdx, 1);
+
+      state.log.entries.push({
+        id: `qhmod_${quickhackId}_${Date.now()}`,
+        turn: state.character.turnNumber,
+        text: `MODULE_INSTALLED: ${hack.name} → ${member.name} [${slotKey.toUpperCase()}].`,
+        timestamp: new Date().toISOString(),
+        type: 'acquisition',
+      });
+    }),
+
   // ── Dev overrides ──────────────────────────────────────────────────────────
 
   devForceVendorRefresh: () =>

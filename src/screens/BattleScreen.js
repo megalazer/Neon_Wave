@@ -363,7 +363,7 @@ export default function BattleScreen({ onExit }) {
 
   const {
     friendly, hostile, dice, phase, rerollsRemaining,
-    selectedFriendlyId, rolling, round, cyberPool, squadBuffs,
+    selectedFriendlyId, rolling, round, cyberPool, maxCyberPool, squadBuffs,
     pendingAttacks, outcome, damageDealt, attacksLanded,
   } = combat;
 
@@ -427,7 +427,7 @@ export default function BattleScreen({ onExit }) {
       />
 
       {/* Cyber Pool bar */}
-      <CyberPool current={cyberPool} />
+      <CyberPool current={cyberPool} maxPool={maxCyberPool} />
 
       {/* Main action button */}
       <ActionButton combat={combat} onPress={handleActionPress} />

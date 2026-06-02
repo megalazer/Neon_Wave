@@ -9,6 +9,7 @@ import { useStore } from '../store/index';
 import { colors } from '../theme/colors';
 import { CYBERWARE_ITEMS } from '../data/cyberware';
 import EquipPreviewModal from '../components/cyber/EquipPreviewModal';
+import QuickhackModuleSection from '../components/cyber/QuickhackModuleSection';
 import StatsTab from '../components/cyber/StatsTab';
 import VendorTab from '../components/cyber/VendorTab';
 
@@ -306,6 +307,9 @@ function LoadoutContent({
           </View>
         )}
       </View>
+
+      {/* Quickhack Module Install — magenta-accented, Netrunner-only controls */}
+      <QuickhackModuleSection selectedMember={selectedMember} />
     </ScrollView>
   );
 }

@@ -272,4 +272,20 @@ export const createDevSlice = (set, get) => ({
       state.world.gameOver = false;
       state.world.gameOverReason = null;
     }),
+
+  devDrainNeural: () =>
+    set((state) => {
+      for (const m of state.crew.members) {
+        if ((m.vitals?.current ?? 1) > 0 && m.neural) {
+          m.neural.current = Math.max(0, Math.floor(m.neural.current * 0.2));
+        }
+      }
+    }),
+
+  devRestoreNeural: () =>
+    set((state) => {
+      for (const m of state.crew.members) {
+        if (m.neural) m.neural.current = m.neural.max;
+      }
+    }),
 });

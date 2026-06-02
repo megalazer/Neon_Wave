@@ -5,6 +5,12 @@ import { CYBER_ABILITIES } from '../../data/cyberAbilities';
 import { distributeCombatXP } from '../../data/leveling';
 import { FRIENDLY_LINE_COLORS } from '../../data/combatColors';
 
+// ── Constants ────────────────────────────────────────────────────────────────
+
+const MAX_CYBER_POOL = 10; // TUNABLE — absolute ceiling regardless of neural
+
+// ── Pure helpers ─────────────────────────────────────────────────────────────
+
 function cloneUnits(units) {
   return units.map((u) => ({ ...u, hp: { ...u.hp } }));
 }
@@ -27,6 +33,48 @@ function uid() {
   return `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 }
 
+// Derives the starting cyber pool from living party members' combined neural.
+// DIVISOR is the main tuning knob: lower → bigger pool per neural point.
+// At DIVISOR 40: a fully-rested 4-member party with ~400 total neural → pool 10.
+// At 50% neural (~200 total) → pool 5. At 20% neural (~80 total) → pool 2.
+function calculateStartingCyberPool(party) {
+  const DIVISOR = 40; // TUNABLE — scale factor from total neural to cyber pool
+  const totalNeural = party.reduce((sum, m) => sum + (m.neural?.current ?? 0), 0);
+  return Math.max(0, Math.min(MAX_CYBER_POOL, Math.floor(totalNeural / DIVISOR)));
+}
+
+// Depletes each living crew member's neural after a battle.
+// Called on both victory and defeat — escaping a fight still costs neural.
+function depleteNeuralAfterBattle(state) {
+  const spentByMember = state.combat.cyberSpentByMember ?? {};
+  const BASELINE_PER_MEMBER = 3; // TUNABLE — base neural cost of being jacked in
+  const NEURAL_PER_CYBER    = 4; // TUNABLE — 1 cyber spent ≈ N neural drained
+
+  const living = state.crew.members.filter((m) => (m.vitals?.current ?? 1) > 0);
+  if (living.length === 0) return;
+
+  let anyDrained = false;
+  for (const m of living) {
+    const attributed = (spentByMember[m.id] ?? 0) * NEURAL_PER_CYBER;
+    const drain      = BASELINE_PER_MEMBER + attributed;
+    const prev       = m.neural.current;
+    m.neural.current = Math.max(0, m.neural.current - drain);
+    if (m.neural.current < prev) anyDrained = true;
+  }
+
+  if (anyDrained) {
+    state.log.entries.push({
+      id: `neural_drain_${Date.now()}`,
+      turn: state.character.turnNumber,
+      text: 'NEURAL_DRAIN: Crew reserves depleted. Rest at Haven to recover.',
+      timestamp: new Date().toISOString(),
+      type: 'narration',
+    });
+  }
+}
+
+// ── Slice ─────────────────────────────────────────────────────────────────────
+
 export const createTestCombatSlice = (set, get) => ({
   combat: {
     active: false,
@@ -39,17 +87,13 @@ export const createTestCombatSlice = (set, get) => ({
     selectedFriendlyId: null,
     cyberPool: TEST_BATTLE_CONFIG.startingCyberPool,
     maxCyberPool: TEST_BATTLE_CONFIG.maxCyberPool,
+    cyberSpentByMember: {},  // { [memberId]: totalCyberCost } — reset each fight
     pendingAbility: null,
-    pendingAttacks: [],   // queued attacks for both dice and abilities
+    pendingAttacks: [],
     abilityHistory: [],
     squadBuffs: [],
     enemyAssignments: [],
-    // Frozen preview snapshot: { [unitId]: { totalDamage, hpAtCommit, maxHp } }
-    // Populated at confirm/enemy-assign time; HP bars read this during execution so
-    // preview chunks don't recalculate as HP mutates under them.
     executingPreviews: {},
-    // Active tracer lines: { [friendlyId]: { targetId, color, justFiredAt } }
-    // Set on die assignment, cleared on confirm or clear. TargetingOverlay reads this.
     targetLines: {},
     round: 1,
     outcome: null,
@@ -59,12 +103,10 @@ export const createTestCombatSlice = (set, get) => ({
 
   startTestBattle: () =>
     set((state) => {
-      // Build friendly from actual crew members, mapping vitals → hp for combat.
       const friendly = state.crew.members
         .filter((m) => (m.vitals?.current ?? 1) > 0)
         .map((m) => ({ ...m, hp: { current: m.vitals.current, max: m.vitals.max } }));
 
-      // Build hostile from encounter if a combat contract is pending; else use test data.
       const encounterId = state.contract.pendingCombatResult?.encounterId;
       const encounter   = encounterId ? ENCOUNTERS[encounterId] : null;
       const hostile = encounter
@@ -74,27 +116,38 @@ export const createTestCombatSlice = (set, get) => ({
           })
         : cloneUnits(TEST_HOSTILE_UNITS);
 
-      state.combat.active = true;
-      state.combat.phase = 'roll';
-      state.combat.friendly = friendly;
-      state.combat.hostile = hostile;
-      state.combat.dice = buildDice(friendly);
-      state.combat.rerollsRemaining = 2;
-      state.combat.rolling = false;
+      const startingPool = calculateStartingCyberPool(friendly);
+
+      state.combat.active             = true;
+      state.combat.phase              = 'roll';
+      state.combat.friendly           = friendly;
+      state.combat.hostile            = hostile;
+      state.combat.dice               = buildDice(friendly);
+      state.combat.rerollsRemaining   = 2;
+      state.combat.rolling            = false;
       state.combat.selectedFriendlyId = null;
-      state.combat.cyberPool = TEST_BATTLE_CONFIG.startingCyberPool;
-      state.combat.maxCyberPool = TEST_BATTLE_CONFIG.maxCyberPool;
-      state.combat.pendingAbility = null;
-      state.combat.pendingAttacks = [];
-      state.combat.abilityHistory = [];
-      state.combat.squadBuffs = [];
-      state.combat.enemyAssignments = [];
-      state.combat.executingPreviews = {};
-      state.combat.targetLines = {};
-      state.combat.round = 1;
-      state.combat.outcome = null;
-      state.combat.damageDealt = 0;
-      state.combat.attacksLanded = 0;
+      state.combat.cyberPool          = startingPool;
+      state.combat.maxCyberPool       = startingPool;
+      state.combat.cyberSpentByMember = {};
+      state.combat.pendingAbility     = null;
+      state.combat.pendingAttacks     = [];
+      state.combat.abilityHistory     = [];
+      state.combat.squadBuffs         = [];
+      state.combat.enemyAssignments   = [];
+      state.combat.executingPreviews  = {};
+      state.combat.targetLines        = {};
+      state.combat.round              = 1;
+      state.combat.outcome            = null;
+      state.combat.damageDealt        = 0;
+      state.combat.attacksLanded      = 0;
+
+      state.log.entries.push({
+        id: `neural_sync_${Date.now()}`,
+        turn: state.character.turnNumber,
+        text: `NEURAL_SYNC: Cyber capacity ${startingPool}/${MAX_CYBER_POOL} (team neural reserves).`,
+        timestamp: new Date().toISOString(),
+        type: 'ambient',
+      });
     }),
 
   rollDice: () =>
@@ -148,7 +201,6 @@ export const createTestCombatSlice = (set, get) => ({
       die.assignedTo = enemyId;
       state.combat.selectedFriendlyId = null;
 
-      // Fire tracer line from this friendly to the target
       const friendlyIndex = state.combat.friendly.findIndex((u) => u.id === selectedFriendlyId);
       state.combat.targetLines[selectedFriendlyId] = {
         targetId: enemyId,
@@ -156,7 +208,6 @@ export const createTestCombatSlice = (set, get) => ({
         justFiredAt: Date.now(),
       };
 
-      // Queue dice attack — dice are FREE (cyberCost: 0)
       state.combat.pendingAttacks.push({
         id: `dice_${selectedFriendlyId}_${uid()}`,
         source: 'dice',
@@ -193,13 +244,11 @@ export const createTestCombatSlice = (set, get) => ({
       const activeTurn = state.combat.phase === 'roll' || state.combat.phase === 'targeting';
       if (!activeTurn) return;
 
-      // Available cyber = total pool minus already queued ability costs
       const reservedCyber = state.combat.pendingAttacks
         .filter((a) => a.source === 'ability')
         .reduce((s, a) => s + a.cyberCost, 0);
       if (state.combat.cyberPool - reservedCyber < ability.cyberCost) return;
 
-      // Toggle off if already pending
       if (state.combat.pendingAbility?.classId === classId) {
         state.combat.pendingAbility = null;
         return;
@@ -213,7 +262,6 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.pendingAbility = null;
     }),
 
-  // Queue the pending ability (replaces old executeAbility / immediate fire)
   queueAbility: (targetId) =>
     set((state) => {
       if (!state.combat.pendingAbility) return;
@@ -269,7 +317,6 @@ export const createTestCombatSlice = (set, get) => ({
       );
     }),
 
-  // Commit everything: snapshot preview positions, deduct cyber, transition to executing
   confirmAllAttacks: () =>
     set((state) => {
       const activeTurn = state.combat.phase === 'roll' || state.combat.phase === 'targeting';
@@ -279,8 +326,30 @@ export const createTestCombatSlice = (set, get) => ({
       const totalCyber = state.combat.pendingAttacks.reduce((s, a) => s + a.cyberCost, 0);
       if (state.combat.cyberPool < totalCyber) return;
 
-      // Snapshot preview positions before any HP mutates. HP bars read this frozen
-      // data during the executing phase so preview chunks don't jump as HP changes.
+      // Attribute each ability's cyber cost to the responsible member.
+      // Abilities are class-keyed (sourceId = classId); find the highest-neural
+      // living member of that class — they "ran" the ability this round.
+      for (const attack of state.combat.pendingAttacks) {
+        if (attack.cyberCost <= 0) continue;
+        let attributedId = null;
+
+        if (attack.source === 'ability') {
+          const leads = state.combat.friendly
+            .filter((u) => u.class === attack.sourceId && u.hp.current > 0)
+            .sort((a, b) => (b.neural?.current ?? 0) - (a.neural?.current ?? 0));
+          if (leads.length > 0) attributedId = leads[0].id;
+        } else if (attack.source === 'quickhack') {
+          // quickhack sourceId is already the member id (highest-WIRE Netrunner)
+          attributedId = attack.sourceId;
+        }
+
+        if (attributedId) {
+          state.combat.cyberSpentByMember[attributedId] =
+            (state.combat.cyberSpentByMember[attributedId] ?? 0) + attack.cyberCost;
+        }
+      }
+
+      // Snapshot HP previews
       const previews = {};
       for (const attack of state.combat.pendingAttacks) {
         if (attack.effectType !== 'damage') continue;
@@ -304,7 +373,6 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.pendingAbility = null;
     }),
 
-  // Apply one entry from the queue by id
   applyPendingAttack: (attackId) =>
     set((state) => {
       const attack = state.combat.pendingAttacks.find((a) => a.id === attackId);
@@ -356,7 +424,6 @@ export const createTestCombatSlice = (set, get) => ({
         });
       }
 
-      // Victory check after every applied attack
       if (state.combat.hostile.every((u) => u.hp.current === 0)) {
         state.combat.outcome = 'victory';
         state.combat.phase = 'victory';
@@ -386,8 +453,6 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.phase = 'enemy_turn';
       state.combat.pendingAbility = null;
 
-      // Snapshot friendly preview positions before enemy hits start landing.
-      // Mirrors the player-attack snapshot so friendly bars stay anchored too.
       const previews = {};
       for (const a of assignments) {
         const target = liveFriendly.find((u) => u.id === a.targetId);
@@ -440,11 +505,11 @@ export const createTestCombatSlice = (set, get) => ({
         return;
       }
 
-      // Tick squad buffs
       state.combat.squadBuffs = state.combat.squadBuffs
         .map((b) => ({ ...b, duration: b.duration - 1 }))
         .filter((b) => b.duration > 0);
 
+      // Regen is capped at maxCyberPool (the neural-derived ceiling for this fight)
       state.combat.cyberPool = Math.min(state.combat.maxCyberPool, state.combat.cyberPool + 1);
       state.combat.round += 1;
       state.combat.rerollsRemaining = 2;
@@ -469,12 +534,14 @@ export const createTestCombatSlice = (set, get) => ({
     set((state) => {
       if (state.combat.outcome === 'victory') {
         distributeCombatXP(state, 100);
-        // Sync combat HP back to crew vitals so damage persists.
         for (const fighter of state.combat.friendly) {
           const member = state.crew.members.find((m) => m.id === fighter.id);
           if (member) member.vitals.current = fighter.hp.current;
         }
       }
+
+      // Drain neural on both victory and defeat — being in the fight costs reserves
+      depleteNeuralAfterBattle(state);
 
       state.combat.active = false;
       state.combat.outcome = null;

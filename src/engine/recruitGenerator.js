@@ -1,6 +1,8 @@
 import { QUALITY_CONFIG, rollQuality } from '../data/recruitQuality';
-import { RECRUIT_NAMES, RECRUIT_HANDLES, RECRUIT_CLASSES } from '../data/recruitNames';
+import { pickRandomName, pickRandomHandle, RECRUIT_CLASSES } from '../data/recruitNames';
 import { CYBERWARE_ITEMS } from '../data/cyberware';
+import { getClassProfile } from '../data/classProfiles';
+import { generateNetrunnerQuickhacks } from '../data/quickhacks';
 
 function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -10,26 +12,51 @@ function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-export function generateRecruit(contractsCompleted, currentTurn, qualityOverride) {
-  const quality = qualityOverride || rollQuality(contractsCompleted);
-  const cfg = QUALITY_CONFIG[quality];
+// Bias a single stat roll by the stat's role in the class profile.
+function rollStatForClass(stat, profile, min, max) {
+  const range = max - min;
+  if (profile.primary.includes(stat))   return randInt(min + Math.floor(range * 0.6), max);
+  if (profile.secondary.includes(stat)) return randInt(min + Math.floor(range * 0.4), max);
+  if (profile.dump.includes(stat))      return randInt(min, min + Math.floor(range * 0.4));
+  return randInt(min, max);
+}
 
+export function generateRecruit(contractsCompleted, currentTurn, qualityOverride, classOverride) {
+  const quality = qualityOverride || rollQuality(contractsCompleted);
+  const cfg     = QUALITY_CONFIG[quality];
+  const cls     = classOverride || pickRandom(RECRUIT_CLASSES);
+  const profile = getClassProfile(cls);
+
+  // Stats: quality sets the numeric range; class shapes which stats land high/low.
   const { min, max } = cfg.statRange;
   const stats = {
-    chrome: randInt(min, max),
-    edge:   randInt(min, max),
-    ghost:  randInt(min, max),
-    face:   randInt(min, max),
-    grit:   randInt(min, max),
-    wire:   randInt(min, max),
+    chrome: rollStatForClass('chrome', profile, min, max),
+    edge:   rollStatForClass('edge',   profile, min, max),
+    ghost:  rollStatForClass('ghost',  profile, min, max),
+    face:   rollStatForClass('face',   profile, min, max),
+    grit:   rollStatForClass('grit',   profile, min, max),
+    wire:   rollStatForClass('wire',   profile, min, max),
   };
 
-  const vitalsMax = randInt(cfg.vitalsRange.min, cfg.vitalsRange.max);
-  const neuralMax = randInt(cfg.neuralRange.min, cfg.neuralRange.max);
+  // Vitals/neural: quality range, then apply class modifier.
+  const vitalsMax = Math.max(1, Math.round(
+    randInt(cfg.vitalsRange.min, cfg.vitalsRange.max) * (1 + profile.vitalsMod),
+  ));
+  const neuralMax = Math.max(1, Math.round(
+    randInt(cfg.neuralRange.min, cfg.neuralRange.max) * (1 + profile.neuralMod),
+  ));
 
-  // Pick a cyberware loadout from the quality pool (each entry is an array of IDs)
-  const cwPool = cfg.startingCyberware;
-  const equippedCyberware = cwPool.length > 0 ? [...pickRandom(cwPool)] : [];
+  // Cyberware: filter each quality loadout to items in the class preference;
+  // pick from the filtered set. Fall back to unfiltered if all loadouts empty out.
+  const cwPool = cfg.startingCyberware || [];
+  let equippedCyberware = [];
+  if (cwPool.length > 0) {
+    const pref = profile.cyberwarePreference;
+    const filtered = cwPool
+      .map((loadout) => loadout.filter((id) => pref.includes(id)))
+      .filter((loadout) => loadout.length > 0);
+    equippedCyberware = [...(filtered.length > 0 ? pickRandom(filtered) : pickRandom(cwPool))];
+  }
 
   let humanityDeduction = 0;
   for (const cwId of equippedCyberware) {
@@ -42,22 +69,21 @@ export function generateRecruit(contractsCompleted, currentTurn, qualityOverride
 
   return {
     id: `rec_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-    name: pickRandom(RECRUIT_NAMES),
-    handle: pickRandom(RECRUIT_HANDLES),
-    class: pickRandom(RECRUIT_CLASSES),
+    name:   pickRandomName(quality),
+    handle: pickRandomHandle(quality),
+    class:  cls,
     quality,
     cost,
-    exp: 0,
+    exp:   0,
     level: 1,
-    vitals:  { current: vitalsMax, max: vitalsMax },
-    neural:  { current: neuralMax, max: neuralMax },
-    humanity: {
-      current: Math.max(0, humanityMax - humanityDeduction),
-      max: humanityMax,
-    },
+    alive: true,
+    vitals:   { current: vitalsMax, max: vitalsMax },
+    neural:   { current: neuralMax, max: neuralMax },
+    humanity: { current: Math.max(0, humanityMax - humanityDeduction), max: humanityMax },
     equippedCyberware,
     maxCyberwareSlots: cfg.maxCyberwareSlots,
     stats,
+    quickhacks: cls === 'netrunner' ? generateNetrunnerQuickhacks() : null,
     expiresAtTurn: currentTurn + 15,
     arrivalNarration: pickRandom(cfg.arrivalNarrations),
   };
