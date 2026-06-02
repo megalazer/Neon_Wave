@@ -43,10 +43,8 @@ const RARE_NAMES = [
 ];
 
 const LEGENDARY_NAMES = [
-  'Mantis_Zero',   'Hex_Reaper',    'Void_Sovereign', 'Neon_Spectre',  'Iron_Phantom',
-  'Chrome_Wraith', 'Signal_Null',   'The_Iceman',     'Darkwire',      'Glitch_Absolute',
-  'Razorwire',     'Null_Protocol', 'Circuit_Breaker','Ghost_Absolute', 'Deadlink',
-  'Blackout',      'Zero_Code',     'The_Anomaly',    'Voidborn',      'Chromekill',
+  'Pisarek',   'Devtato', 'Samborhini', 'Silverhand',  'WHALE',
+  'Lucy', 'David', 'Rebecca', 'Blackhand', 'Broekel','Plague_Roach','Smasher'
 ];
 
 const COMMON_HANDLES = [
@@ -64,7 +62,7 @@ const RARE_HANDLES = [
 ];
 
 const LEGENDARY_HANDLES = [
-  'ABSOLUTE_ZERO',  'GHOST_ABSOLUTE', 'NULL_SOVEREIGN', 'IRON_PROTOCOL', 'VOID_ETERNAL',
+  'IRON_PROTOCOL', 'VOID_ETERNAL',
   'CHROME_REAPER',  'SIGNAL_DEATH',   'CIRCUIT_WRAITH', 'DARK_ABSOLUTE', 'ICE_ETERNAL',
   'PHANTOM_NULL',   'WIRE_SOVEREIGN', 'EDGE_ABSOLUTE',  'NEON_VOID',     'GHOST_ETERNAL',
   'NULL_ABSOLUTE',  'DEATH_PROTOCOL', 'VOID_WRAITH',    'IRON_ABSOLUTE', 'CHROME_ETERNAL',
