@@ -12,6 +12,7 @@ export default function GameOverScreen({ onRestart }) {
   const gameOverReason = useStore((s) => s.world.gameOverReason);
   const character      = useStore((s) => s.character);
   const members        = useStore((s) => s.crew.members);
+  const selectedTitle  = useStore((s) => s.achievements.account.selectedTitle);
 
   const player = members.find((m) => m.isPlayer);
 
@@ -80,6 +81,9 @@ export default function GameOverScreen({ onRestart }) {
         <View style={styles.statsBlock}>
           {character.name && (
             <Text style={styles.statLine}>{`OPERATOR: ${character.name}`}</Text>
+          )}
+          {selectedTitle && (
+            <Text style={styles.statLine}>{`TITLE: ${selectedTitle}`}</Text>
           )}
           {player && (
             <Text style={styles.statLine}>{`LEVEL: ${player.level ?? 1}`}</Text>

@@ -87,7 +87,8 @@ export const createTestCombatSlice = (set, get) => ({
     selectedFriendlyId: null,
     cyberPool: TEST_BATTLE_CONFIG.startingCyberPool,
     maxCyberPool: TEST_BATTLE_CONFIG.maxCyberPool,
-    cyberSpentByMember: {},  // { [memberId]: totalCyberCost } — reset each fight
+    cyberSpentByMember: {},   // { [memberId]: totalCyberCost } — reset each fight
+    damageTakenThisFight: false, // true if any friendly took damage — used for flawless check
     pendingAbility: null,
     pendingAttacks: [],
     abilityHistory: [],
@@ -126,9 +127,10 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.rerollsRemaining   = 2;
       state.combat.rolling            = false;
       state.combat.selectedFriendlyId = null;
-      state.combat.cyberPool          = startingPool;
-      state.combat.maxCyberPool       = startingPool;
-      state.combat.cyberSpentByMember = {};
+      state.combat.cyberPool             = startingPool;
+      state.combat.maxCyberPool          = startingPool;
+      state.combat.cyberSpentByMember    = {};
+      state.combat.damageTakenThisFight  = false;
       state.combat.pendingAbility     = null;
       state.combat.pendingAttacks     = [];
       state.combat.abilityHistory     = [];
@@ -477,6 +479,7 @@ export const createTestCombatSlice = (set, get) => ({
       const finalDamage = Math.max(1, Math.round(a.damage * multiplier));
 
       target.hp.current = Math.max(0, target.hp.current - finalDamage);
+      if (finalDamage > 0) state.combat.damageTakenThisFight = true;
       if (target.hp.current === 0) {
         const die = state.combat.dice.find((d) => d.ownerId === a.targetId);
         if (die) die.alive = false;
@@ -530,7 +533,14 @@ export const createTestCombatSlice = (set, get) => ({
       }));
     }),
 
-  exitBattle: () =>
+  exitBattle: () => {
+    // Capture pre-set state for achievement checks
+    const pre = get().combat;
+    const outcome              = pre.outcome;
+    const friendly             = pre.friendly;
+    const hostile              = pre.hostile;
+    const damageTakenThisFight = pre.damageTakenThisFight;
+
     set((state) => {
       if (state.combat.outcome === 'victory') {
         distributeCombatXP(state, 100);
@@ -551,5 +561,28 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.pendingAttacks = [];
       state.combat.executingPreviews = {};
       state.combat.targetLines = {};
-    }),
+    });
+
+    // Achievement triggers — run after set so store is settled
+    if (outcome === 'victory') {
+      get().triggerAchievement?.('run_baptism');
+
+      if (!damageTakenThisFight) {
+        get().triggerAchievement?.('run_flawless');
+        // Lifetime flawless-win counter feeds acc_untouchable_streak (10 = +2 GHOST)
+        get().incrementLifetime?.('flawlessWins');
+      }
+
+      // Near-death: any living friendly ended at exactly 1 HP
+      if (friendly.some((u) => u.hp.current === 1)) {
+        get().triggerAchievement?.('run_near_death');
+      }
+
+      // High-tier enemy defeated
+      const highTierDown = hostile.some((u) =>
+        ['HIGH_TRT', 'EX_TRT', 'high', 'extreme', 'boss'].includes(u.threat),
+      );
+      if (highTierDown) get().triggerAchievement?.('acc_boss_down');
+    }
+  },
 });

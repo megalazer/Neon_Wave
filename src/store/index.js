@@ -14,6 +14,7 @@ import { createDevSlice } from './slices/devSlice';
 import { createTestCombatSlice } from './slices/testCombatSlice';
 import { createContractSlice } from './slices/contractSlice';
 import { createVendorSlice } from './slices/vendorSlice';
+import { createAchievementSlice } from './slices/achievementSlice';
 
 export const useStore = create(
   immer((...args) => ({
@@ -28,5 +29,6 @@ export const useStore = create(
     ...createTestCombatSlice(...args),
     ...createContractSlice(...args),
     ...createVendorSlice(...args),
+    ...createAchievementSlice(...args),
   })),
 );

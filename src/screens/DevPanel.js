@@ -16,6 +16,7 @@ import { XP_THRESHOLDS, MAX_LEVEL, getLevelProgress } from '../data/leveling';
 import { ALL_EVENTS } from '../data/events/index';
 import { ALL_CONTRACTS as CONTRACTS } from '../data/contracts/index';
 import { rollQuality, getSpawnWeights } from '../data/recruitQuality';
+import { getActiveAccountPerks } from '../data/achievements';
 
 const ERR = colors.error;
 
@@ -569,6 +570,98 @@ function VendorSection() {
   );
 }
 
+// ── Achievement override section ─────────────────────────────────────────────
+function AchievementSection() {
+  const accountUnlocked = useStore((s) => s.achievements.account.unlocked);
+  const runUnlocked     = useStore((s) => s.achievements.run.unlocked);
+  const lifetime        = useStore((s) => s.achievements.lifetime);
+  const triggerAchievement   = useStore((s) => s.triggerAchievement);
+  const resetRunAchievements = useStore((s) => s.resetRunAchievements);
+  const incrementLifetime    = useStore((s) => s.incrementLifetime);
+
+  const [idVal, setIdVal] = useState('');
+
+  const wipeAccount = () =>
+    Alert.alert('WIPE_ACCOUNT_ACH', 'Erase all account achievements + lifetime counters?', [
+      { text: 'CANCEL', style: 'cancel' },
+      {
+        text: 'CONFIRM',
+        style: 'destructive',
+        onPress: () => {
+          useStore.setState((s) => {
+            s.achievements.account.unlocked = [];
+            s.achievements.account.selectedTitle = null;
+            s.achievements.account.selectedTheme = 'theme_default';
+            s.achievements.lifetime = {
+              contractsCompleted: 0, totalCreditsEarned: 0, totalTurnsSurvived: 0,
+              maxTeamLevelReached: 0, deaths: 0, legendaryRecruits: 0, flawlessWins: 0,
+            };
+          });
+        },
+      },
+    ]);
+
+  // Perks derive from account.unlocked — clearing it resets all active perks.
+  const resetPerks = () =>
+    useStore.setState((s) => {
+      s.achievements.account.unlocked = [];
+      s.achievements.account.selectedTitle = null;
+      s.achievements.account.selectedTheme = 'theme_default';
+    });
+
+  const showPerks = () => {
+    const perks = getActiveAccountPerks(useStore.getState());
+    console.log('[PERKS]', perks.length ? perks.map((p) => p.description).join(' | ') : '(none)');
+  };
+
+  return (
+    <DevSection title="ACHIEVEMENT_OVERRIDE">
+      <Text style={sec.current}>
+        {`ACCOUNT: ${accountUnlocked.length} // RUN: ${runUnlocked.length}`}
+      </Text>
+      <Text style={sec.current}>
+        {`LT_CONTRACTS:${lifetime.contractsCompleted} CR:${lifetime.totalCreditsEarned} DEATHS:${lifetime.deaths} MAXTL:${lifetime.maxTeamLevelReached}`}
+      </Text>
+
+      <View style={row.wrap}>
+        <Text style={row.label}>UNLOCK_BY_ID</Text>
+        <View style={row.right}>
+          <TextInput
+            style={[row.input, { flex: 1 }]}
+            value={idVal}
+            onChangeText={setIdVal}
+            placeholder="acc_first_blood"
+            placeholderTextColor={`${ERR}44`}
+            selectionColor={ERR}
+            autoCapitalize="none"
+          />
+          <DevBtn label="[UNLOCK]" onPress={() => { triggerAchievement(idVal.trim()); setIdVal(''); }} />
+        </View>
+      </View>
+
+      <Text style={[sec.current, { marginTop: 4 }]}>LIFETIME_BUMP:</Text>
+      <View style={sec.row}>
+        <DevBtn label="+1 CONTRACT" onPress={() => incrementLifetime('contractsCompleted')} />
+        <DevBtn label="+50K CR"     onPress={() => incrementLifetime('totalCreditsEarned', 50000)} />
+        <DevBtn label="+1 DEATH"    onPress={() => incrementLifetime('deaths')} />
+      </View>
+
+      <View style={[sec.row, { marginTop: 4 }]}>
+        <DevBtn label="[RESET_RUN_ACH]" onPress={resetRunAchievements} danger />
+        <DevBtn label="[RESET_ACCOUNT_PERKS]" onPress={resetPerks} danger />
+      </View>
+      <View style={[sec.row, { marginTop: 4 }]}>
+        <DevBtn label="[SHOW_ACTIVE_PERKS]" onPress={showPerks} />
+        <DevBtn label="[WIPE_ACCOUNT_ACH]" onPress={wipeAccount} danger />
+      </View>
+      <DevBtn
+        label="[SHOW_STATE]"
+        onPress={() => console.log('[ACH]', JSON.stringify(useStore.getState().achievements, null, 2))}
+      />
+    </DevSection>
+  );
+}
+
 // ── Inventory section (stub) ─────────────────────────────────────────────────
 function InventorySection() {
   return (
@@ -697,6 +790,7 @@ export default function DevPanel() {
             <RandomEventsSection />
             <ContractOverrideSection />
             <VendorSection />
+            <AchievementSection />
             <RecruitOverrideSection />
             <InventorySection />
             <LogSection />

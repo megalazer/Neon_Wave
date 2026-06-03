@@ -1,5 +1,6 @@
 import { useStore } from '../store/index';
 import { PLACEHOLDER_LINES } from '../data/placeholderNarration';
+import { calculateTeamLevel } from '../data/leveling';
 
 function pickNarration() {
   return PLACEHOLDER_LINES[Math.floor(Math.random() * PLACEHOLDER_LINES.length)];
@@ -21,6 +22,10 @@ export function devAdvanceTurns(count) {
     store.trySpawnRecruit();
     store.tickAvailableOperatives();
     _tryFireRandomEvent(useStore.getState());
+    const tl = calculateTeamLevel(useStore.getState().crew.members);
+    store.incrementLifetime?.('totalTurnsSurvived');
+    store.recordMaxTeamLevel?.(tl);
+    store.checkMilestones?.();
   }
   const turnNumber = useStore.getState().character.turnNumber;
   store.addEntry({
@@ -42,6 +47,12 @@ export function advanceTurn() {
   store.tickVendor();
   store.trySpawnRecruit();
   store.tickAvailableOperatives();
+
+  // Achievement tracking — lifetime counters + milestone polling
+  const teamLevel = calculateTeamLevel(useStore.getState().crew.members);
+  store.incrementLifetime?.('totalTurnsSurvived');
+  store.recordMaxTeamLevel?.(teamLevel);
+  store.checkMilestones?.();
 
   const state = useStore.getState();
 

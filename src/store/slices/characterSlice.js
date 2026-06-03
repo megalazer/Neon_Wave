@@ -1,5 +1,54 @@
 import { ORIGIN_MODIFIERS, OPENING_NARRATION, deriveStats } from '../../data/origins';
 import { CYBERWARE_ITEMS } from '../../data/cyberware';
+import { getActiveAccountPerks } from '../../data/achievements';
+import { XP_THRESHOLDS, MAX_LEVEL } from '../../data/leveling';
+
+// Applies all active account perks to a freshly-built run. Reads unlocked account
+// achievements off the shared draft. Called exactly once per run init, after the
+// base player exists. Idempotent per run — perks are derived, never stacked.
+// Vendor + cosmetic perks are NOT applied here; they're read where relevant.
+function applyAccountPerks(state) {
+  const perks = getActiveAccountPerks(state);
+  const player = state.crew.members.find((m) => m.isPlayer);
+
+  for (const perk of perks) {
+    switch (perk.type) {
+      case 'start_credits':
+        state.character.credits += perk.value;
+        break;
+      case 'start_neural':
+        if (player) {
+          player.neural.max += perk.value;
+          player.neural.current += perk.value;
+        }
+        break;
+      case 'start_stat':
+        if (player) {
+          player.stats[perk.stat] = (player.stats[perk.stat] || 0) + perk.value;
+        }
+        break;
+      case 'start_level':
+        if (player) {
+          // Simple level bump; sync exp to the new level's floor so the XP bar
+          // stays consistent. TODO: per-level stat grants are intentionally skipped
+          // here to keep run-start deterministic (no random stat rolls / banner).
+          player.level = Math.min(MAX_LEVEL, (player.level || 1) + perk.value);
+          player.exp = XP_THRESHOLDS[player.level - 1] ?? player.exp;
+        }
+        break;
+      case 'start_cyberware':
+        state.character.cyberwareInventory.push(perk.value);
+        break;
+      // Vendor + cosmetic perks are read at their point of use, not applied here.
+      case 'unlock_vendor_cyberware':
+      case 'unlock_vendor_quickhack':
+      case 'cosmetic_hud_theme':
+      case 'cosmetic_title':
+      default:
+        break;
+    }
+  }
+}
 
 export const createCharacterSlice = (set) => ({
   character: {
@@ -78,5 +127,8 @@ export const createCharacterSlice = (set) => ({
           type: 'narration',
         },
       ];
+
+      // Apply permanent account perks fresh for this run (after base player exists).
+      applyAccountPerks(state);
     }),
 });

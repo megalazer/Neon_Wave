@@ -229,6 +229,8 @@ export const createDevSlice = (set, get) => ({
       state.vendor.refreshCountdown = 8;
       state.vendor.purchasedThisRotation = [];
       state.vendor.quickhackModules = [];
+      // Run achievements reset; account + lifetime preserved
+      if (state.achievements) state.achievements.run.unlocked = [];
     }),
 
   devHardReset: () =>
@@ -252,6 +254,14 @@ export const createDevSlice = (set, get) => ({
       state.vendor.refreshCountdown = 8;
       state.vendor.purchasedThisRotation = [];
       state.vendor.quickhackModules = [];
+      // Hard reset also wipes account achievements
+      if (state.achievements) {
+        state.achievements.run.unlocked     = [];
+        state.achievements.account.unlocked = [];
+        state.achievements.lifetime         = { contractsCompleted: 0, totalCreditsEarned: 0, totalTurnsSurvived: 0, maxTeamLevelReached: 0, deaths: 0, legendaryRecruits: 0 };
+        state.achievements.unseen           = [];
+        state.achievements.toastQueue       = [];
+      }
     }),
 
   devKillPlayer: () =>

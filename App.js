@@ -27,6 +27,7 @@ import BattleScreen from './src/screens/BattleScreen';
 import GameOverScreen from './src/screens/GameOverScreen';
 import LevelUpBanner from './src/components/LevelUpBanner';
 import ChoiceModal from './src/components/ChoiceModal';
+import AchievementToast from './src/components/AchievementToast';
 
 const SCREEN_SUBTITLES = {
   neural: 'NEURAL_LOG',
@@ -73,16 +74,19 @@ export default function App() {
   const playerInCrew     = useStore((s) => s.crew.members.some((m) => m.isPlayer));
   const gameOver         = useStore((s) => s.world.gameOver);
   const initializeOperatives = useStore((s) => s.initializeOperatives);
-  const initCharacter    = useStore((s) => s.initCharacter);
-  const initDevMode      = useStore((s) => s.initDevMode);
-  const startTestBattle  = useStore((s) => s.startTestBattle);
-  const devSoftReset     = useStore((s) => s.devSoftReset);
+  const initCharacter      = useStore((s) => s.initCharacter);
+  const initDevMode        = useStore((s) => s.initDevMode);
+  const initAchievements   = useStore((s) => s.initAchievements);
+  const recordPlayerDeath  = useStore((s) => s.recordPlayerDeath);
+  const startTestBattle    = useStore((s) => s.startTestBattle);
+  const devSoftReset       = useStore((s) => s.devSoftReset);
 
   const inInitFlow = !playerInCrew;
 
   useEffect(() => {
     initializeOperatives();
     initDevMode();
+    initAchievements();
   }, []);
 
   // When a contract stage triggers combat, start the battle and navigate there
@@ -111,11 +115,13 @@ export default function App() {
   const setName      = useCallback((v) => setInitDraft((d) => ({ ...d, name: v })), []);
 
   // Restart from death or settings — wipes Zustand state AND local init draft/step.
+  // Record the death (lifetime deaths++, acc_first_death) BEFORE wiping run state.
   const handleRestart = useCallback(() => {
+    recordPlayerDeath();
     devSoftReset();
     setInitStep(1);
     setInitDraft(INIT_DRAFT_DEFAULT);
-  }, [devSoftReset]);
+  }, [recordPlayerDeath, devSoftReset]);
 
   // Called by FinalizeScreen with the fully assembled draft
   const handleInitComplete = useCallback((finalDraft) => {
@@ -205,6 +211,7 @@ export default function App() {
         telemetry={{ credits: fmtCredits(credits), renown }}
       />
       <LevelUpBanner />
+      <AchievementToast />
       <ChoiceModal />
       <BottomNav activeTab={activeTab} onTabPress={handleTabPress} />
       <NoiseTexture />

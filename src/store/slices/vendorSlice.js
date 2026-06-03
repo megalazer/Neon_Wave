@@ -2,15 +2,28 @@ import { CYBERWARE_ITEMS } from '../../data/cyberware';
 import { QUICKHACKS } from '../../data/quickhacks';
 import { getUnlockedTiers } from '../../data/vendor';
 import { calculateTeamLevel } from '../../data/leveling';
+import { getActiveAccountPerks } from '../../data/achievements';
 
-function buildRotatingStock(teamLevel) {
-  const tiers      = getUnlockedTiers(teamLevel);
+// Reads account-perk vendor unlocks off the shared draft/state.
+function perkUnlockedVendorIds(state) {
+  const perks = getActiveAccountPerks(state);
+  return {
+    cyber: perks.filter((p) => p.type === 'unlock_vendor_cyberware').map((p) => p.value),
+    hack:  perks.filter((p) => p.type === 'unlock_vendor_quickhack').map((p) => p.value),
+  };
+}
+
+function buildRotatingStock(teamLevel, unlocked = { cyber: [], hack: [] }) {
+  const tiers = getUnlockedTiers(teamLevel);
+  // An item is eligible if its tier is team-level-unlocked OR it's perk-unlocked.
   const cyberPool  = CYBERWARE_ITEMS.filter(
-    (c) => c.vendorCategory === 'rotating' && tiers.includes(c.vendorTier),
+    (c) => c.vendorCategory === 'rotating' &&
+      (tiers.includes(c.vendorTier) || unlocked.cyber.includes(c.id)),
   );
-  // Basic-tier quickhacks are staples; only non-basic rotate
+  // Basic-tier quickhacks are staples; non-basic rotate (or are perk-unlocked).
   const hackPool   = Object.values(QUICKHACKS).filter(
-    (qh) => qh.vendorTier !== 'basic' && tiers.includes(qh.vendorTier),
+    (qh) => qh.vendorTier !== 'basic' &&
+      (tiers.includes(qh.vendorTier) || unlocked.hack.includes(qh.id)),
   );
 
   const shuffledCyber = [...cyberPool].sort(() => 0.5 - Math.random());
@@ -32,8 +45,9 @@ export const createVendorSlice = (set) => ({
 
   refreshVendorStock: (teamLevel) =>
     set((state) => {
-      state.vendor.rotatingStock       = buildRotatingStock(teamLevel ?? calculateTeamLevel(state.crew.members));
-      state.vendor.refreshCountdown    = 8;
+      const tl = teamLevel ?? calculateTeamLevel(state.crew.members);
+      state.vendor.rotatingStock         = buildRotatingStock(tl, perkUnlockedVendorIds(state));
+      state.vendor.refreshCountdown      = 8;
       state.vendor.purchasedThisRotation = [];
     }),
 
@@ -42,7 +56,7 @@ export const createVendorSlice = (set) => ({
       state.vendor.refreshCountdown -= 1;
       if (state.vendor.refreshCountdown <= 0) {
         const tl = calculateTeamLevel(state.crew.members);
-        state.vendor.rotatingStock         = buildRotatingStock(tl);
+        state.vendor.rotatingStock         = buildRotatingStock(tl, perkUnlockedVendorIds(state));
         state.vendor.refreshCountdown      = 8;
         state.vendor.purchasedThisRotation = [];
       }
@@ -134,14 +148,14 @@ export const createVendorSlice = (set) => ({
   devForceVendorRefresh: () =>
     set((state) => {
       const tl = calculateTeamLevel(state.crew.members);
-      state.vendor.rotatingStock         = buildRotatingStock(tl);
+      state.vendor.rotatingStock         = buildRotatingStock(tl, perkUnlockedVendorIds(state));
       state.vendor.refreshCountdown      = 8;
       state.vendor.purchasedThisRotation = [];
     }),
 
   devForceVendorAllTiers: () =>
     set((state) => {
-      state.vendor.rotatingStock         = buildRotatingStock(10); // TL10 unlocks all tiers
+      state.vendor.rotatingStock         = buildRotatingStock(10, perkUnlockedVendorIds(state)); // TL10 unlocks all tiers
       state.vendor.refreshCountdown      = 8;
       state.vendor.purchasedThisRotation = [];
     }),

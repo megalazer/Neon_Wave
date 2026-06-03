@@ -87,7 +87,7 @@ function _advanceOrResolve(state, contract, nextStageIndex) {
 
 // ── Slice ──────────────────────────────────────────────────────────────────────
 
-export const createContractSlice = (set) => ({
+export const createContractSlice = (set, get) => ({
   contract: {
     // Feed
     feedItems: [],        // [{ id, expiresIn }]
@@ -105,6 +105,7 @@ export const createContractSlice = (set) => ({
 
     // Combat bridge
     pendingCombatResult: null, // { stageId, stageLabel, choiceId, choiceLabel, stageIndex, onVictory, onDefeat, setupText, encounterId }
+    hadCombatThisContract: false, // true if any stage triggered a battle — used for pacifist check
 
     // History
     completedContracts: [],
@@ -173,6 +174,7 @@ export const createContractSlice = (set) => ({
       state.contract.stageResults = [];
       state.contract.resolution = null;
       state.contract.activeContractModifiers = 0;
+      state.contract.hadCombatThisContract = false;
     }),
 
   // ── Stage resolution ───────────────────────────────────────────────────────
@@ -222,6 +224,7 @@ export const createContractSlice = (set) => ({
           setupText:    text,
           encounterId:  branchData.encounterId || null,
         };
+        state.contract.hadCombatThisContract = true;
         state.contract.phase = 'combat';
         return;
       }
@@ -323,11 +326,16 @@ export const createContractSlice = (set) => ({
 
   // ── Dismiss resolution (apply rewards, return to feed) ────────────────────
 
-  dismissResolution: () =>
-    set((state) => {
-      const { resolution, activeContractId } = state.contract;
-      if (!resolution || state.contract.phase !== 'resolving') return;
+  dismissResolution: () => {
+    const preState = get();
+    const { resolution, activeContractId, hadCombatThisContract } = preState.contract;
+    if (!resolution || preState.contract.phase !== 'resolving') return;
 
+    const wasSuccess      = resolution.outcome === 'success';
+    const creditsEarned   = resolution.creditsEarned;
+    const noCombat        = !hadCombatThisContract;
+
+    set((state) => {
       const contract = getContract(activeContractId);
       if (!contract) return;
 
@@ -372,7 +380,16 @@ export const createContractSlice = (set) => ({
       state.contract.stageResults = [];
       state.contract.resolution = null;
       state.contract.activeContractModifiers = 0;
-    }),
+      state.contract.hadCombatThisContract = false;
+    });
+
+    // Achievement hooks (after set)
+    if (wasSuccess) {
+      get().incrementLifetime?.('contractsCompleted');
+      if (creditsEarned > 0) get().incrementLifetime?.('totalCreditsEarned', creditsEarned);
+      if (noCombat) get().triggerAchievement?.('run_pacifist');
+    }
+  },
 
   // ── Dev overrides ──────────────────────────────────────────────────────────
 
@@ -415,6 +432,7 @@ export const createContractSlice = (set) => ({
       state.contract.resolution = null;
       state.contract.pendingCombatResult = null;
       state.contract.activeContractModifiers = 0;
+      state.contract.hadCombatThisContract = false;
     }),
 
   devSetFixerRep: (fixerId, value) =>

@@ -5,7 +5,7 @@ import { CYBERWARE_ITEMS } from '../../data/cyberware';
 import { applyXPToCrewMember, distributeCombatXP as _distribute } from '../../data/leveling';
 import { generateRecruit } from '../../engine/recruitGenerator';
 
-export const createCrewSlice = (set) => ({
+export const createCrewSlice = (set, get) => ({
   crew: {
     members: [],
     availableOperatives: [],
@@ -25,7 +25,8 @@ export const createCrewSlice = (set) => ({
       }));
     }),
 
-  recruitOperative: (operativeId) =>
+  recruitOperative: (operativeId) => {
+    let recruitedQuality = null;
     set((state) => {
       const idx = state.crew.availableOperatives.findIndex((op) => op.id === operativeId);
       if (idx === -1 || state.crew.members.length >= 4) return;
@@ -34,6 +35,7 @@ export const createCrewSlice = (set) => ({
       state.character.credits -= op.cost;
       state.crew.members.push(op);
       state.crew.availableOperatives.splice(idx, 1);
+      recruitedQuality = op.quality;
       state.log.entries.push({
         id: `recruit_${operativeId}_${Date.now()}`,
         turn: state.character.turnNumber,
@@ -41,7 +43,12 @@ export const createCrewSlice = (set) => ({
         timestamp: new Date().toISOString(),
         type: 'acquisition',
       });
-    }),
+    });
+    if (recruitedQuality === 'legendary') {
+      get().triggerAchievement?.('acc_legendary_recruit');
+      get().incrementLifetime?.('legendaryRecruits');
+    }
+  },
 
   // Try to spawn a generated recruit each turn — gates itself on minGap and probability.
   trySpawnRecruit: () =>

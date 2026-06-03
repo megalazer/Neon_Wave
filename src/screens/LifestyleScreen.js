@@ -18,6 +18,10 @@ import * as Haptics from 'expo-haptics';
 import { useStore } from '../store/index';
 import { REAL_ESTATE, VEHICLES, MAX_REAL_ESTATE, MAX_VEHICLES } from '../data/lifestyle';
 import { COINS } from '../data/coins';
+import {
+  ACCOUNT_ACHIEVEMENTS, RUN_ACHIEVEMENTS,
+  getUnlockedTitles, getUnlockedThemes, DEFAULT_TITLE, DEFAULT_THEME,
+} from '../data/achievements';
 import { Dimensions } from 'react-native';
 import ConfirmModal from '../components/ConfirmModal';
 import MinigameStub from '../components/MinigameStub';
@@ -37,10 +41,11 @@ function fmtCR(n) {
 }
 
 // ─── SegmentedTabs ────────────────────────────────────────────────────────────
-function SegmentedTabs({ active, onSelect }) {
+function SegmentedTabs({ active, onSelect, achievementsUnread }) {
   const TABS = [
     { id: 'assets', label: 'ASSETS' },
     { id: 'exchange', label: 'EXCHANGE' },
+    { id: 'achievements', label: 'TROPHIES', dot: achievementsUnread },
   ];
   return (
     <View style={styles.segmented}>
@@ -59,6 +64,7 @@ function SegmentedTabs({ active, onSelect }) {
             <Text style={[styles.segTabText, isActive && styles.segTabTextActive]}>
               {tab.label}
             </Text>
+            {tab.dot && <View style={styles.segTabDot} />}
           </TouchableOpacity>
         );
       })}
@@ -465,6 +471,224 @@ function ExchangeTab({ credits, coins, holdings, portfolioValue, deltaPercent, o
   );
 }
 
+// ─── AchievementCard ──────────────────────────────────────────────────────────
+function AchievementCard({ def, unlocked, accent, progress }) {
+  const isHiddenLocked = def.hidden && !unlocked;
+  const name = isHiddenLocked ? '???' : def.name;
+  const desc = isHiddenLocked ? '[CLASSIFIED]' : def.description;
+
+  // Account achievements grant a permanent perk; run achievements a one-time reward.
+  const isAccountPerk = !!def.accountPerk;
+  const rewardStr = def.reward?.credits
+    ? `+${def.reward.credits.toLocaleString()} CR`
+    : def.reward?.cyberwareId
+    ? def.reward.cyberwareId.replace(/^cyb_/, '').toUpperCase()
+    : def.reward?.recruitQuality
+    ? `${def.reward.recruitQuality.toUpperCase()} RECRUIT`
+    : null;
+
+  return (
+    <View
+      style={[
+        styles.achCard,
+        unlocked
+          ? { borderColor: accent, backgroundColor: `${accent}0D` }
+          : styles.achCardLocked,
+      ]}
+    >
+      <View style={styles.achIconBox}>
+        <MaterialIcons
+          name={unlocked ? 'verified' : isHiddenLocked ? 'help-outline' : 'lock'}
+          size={22}
+          color={unlocked ? accent : colors.outline}
+        />
+      </View>
+      <View style={styles.achBody}>
+        <View style={styles.achTopRow}>
+          <Text
+            style={[styles.achName, { color: unlocked ? accent : colors.outline }]}
+            numberOfLines={1}
+          >
+            {name}
+          </Text>
+          {unlocked && (
+            <View style={[styles.achStatusChip, { borderColor: accent }]}>
+              <Text style={[styles.achStatusText, { color: accent }]}>✓ UNLOCKED</Text>
+            </View>
+          )}
+        </View>
+        <Text style={styles.achDesc} numberOfLines={2}>{desc}</Text>
+
+        {/* Account: permanent perk line. Run: one-time reward line. */}
+        {isAccountPerk && !isHiddenLocked && (
+          <Text
+            style={[
+              styles.achPerk,
+              { color: unlocked ? accent : colors.outline },
+            ]}
+            numberOfLines={2}
+          >
+            {unlocked ? '✓ ACTIVE_PERK: ' : 'PERK: '}{def.accountPerk.description}
+          </Text>
+        )}
+
+        <View style={styles.achFooter}>
+          {!isAccountPerk && rewardStr && !isHiddenLocked && (
+            <Text style={[styles.achReward, { color: unlocked ? accent : colors.outline }]}>
+              REWARD: {rewardStr}
+            </Text>
+          )}
+          {!unlocked && !isHiddenLocked && progress && (
+            <Text style={styles.achProgress}>{progress}</Text>
+          )}
+        </View>
+      </View>
+    </View>
+  );
+}
+
+// ─── CosmeticsSelector ──────────────────────────────────────────────────────
+// Title is fully wired (shown on the game-over screen). HUD themes are unlockable
+// and selectable but visually identical for now. TODO: full theming engine.
+function CosmeticsSelector({ titles, themes, selectedTitle, selectedTheme, onSelectTitle, onSelectTheme }) {
+  const activeTitle = selectedTitle ?? DEFAULT_TITLE;
+  const activeTheme = selectedTheme ?? DEFAULT_THEME;
+
+  const labelFor = (v) => v.replace(/^theme_/, '').toUpperCase();
+
+  return (
+    <View style={styles.cosmeticBlock}>
+      <View>
+        <Text style={styles.cosmeticLabel}>OPERATOR_TITLE</Text>
+        <View style={styles.cosmeticChipRow}>
+          {titles.map((t) => {
+            const isActive = t === activeTitle;
+            return (
+              <TouchableOpacity
+                key={t}
+                style={[styles.cosmeticChip, isActive && styles.cosmeticChipActive]}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  onSelectTitle(t === DEFAULT_TITLE ? null : t);
+                }}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.cosmeticChipText, isActive && styles.cosmeticChipTextActive]}>
+                  {t}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
+
+      <View>
+        <Text style={styles.cosmeticLabel}>HUD_THEME (COSMETIC // WIP)</Text>
+        <View style={styles.cosmeticChipRow}>
+          {themes.map((t) => {
+            const isActive = t === activeTheme;
+            return (
+              <TouchableOpacity
+                key={t}
+                style={[styles.cosmeticChip, isActive && styles.cosmeticChipActive]}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  onSelectTheme(t);
+                }}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.cosmeticChipText, isActive && styles.cosmeticChipTextActive]}>
+                  {labelFor(t)}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
+    </View>
+  );
+}
+
+// ─── AchievementsTab ────────────────────────────────────────────────────────
+function AchievementsTab({
+  state, accountUnlocked, runUnlocked, lifetime,
+  selectedTitle, selectedTheme, onSelectTitle, onSelectTheme,
+}) {
+  const titles = getUnlockedTitles(state);
+  const themes = getUnlockedThemes(state);
+
+  return (
+    <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      {/* Cosmetics (titles fully wired; themes stubbed) */}
+      <CosmeticsSelector
+        titles={titles}
+        themes={themes}
+        selectedTitle={selectedTitle}
+        selectedTheme={selectedTheme}
+        onSelectTitle={onSelectTitle}
+        onSelectTheme={onSelectTheme}
+      />
+
+      {/* Lifetime summary */}
+      <View style={styles.achSummaryStrip}>
+        <View style={styles.summaryLeft}>
+          {[
+            { label: 'Contracts (LT)', value: lifetime.contractsCompleted },
+            { label: 'Max Team LV',    value: lifetime.maxTeamLevelReached },
+            { label: 'Deaths',         value: lifetime.deaths },
+          ].map((item) => (
+            <View key={item.label} style={styles.summaryBlock}>
+              <Text style={styles.summaryBlockLabel}>{item.label}</Text>
+              <Text style={styles.summaryBlockValue}>{String(item.value).padStart(2, '0')}</Text>
+            </View>
+          ))}
+        </View>
+        <View style={styles.summaryRight}>
+          <Text style={styles.summaryProtocol}>LIFETIME_CR</Text>
+          <Text style={[styles.summaryBlockValue, { fontSize: 14, color: colors.tertiaryFixed }]}>
+            {fmtCR(lifetime.totalCreditsEarned)}
+          </Text>
+        </View>
+      </View>
+
+      {/* Account section */}
+      <View style={styles.section}>
+        <SectionHeader index={1} label="ACCOUNT_ACHIEVEMENTS" accent={colors.tertiaryFixed} />
+        {ACCOUNT_ACHIEVEMENTS.map((def) => {
+          const unlocked = accountUnlocked.includes(def.id);
+          return (
+            <AchievementCard
+              key={def.id}
+              def={def}
+              unlocked={unlocked}
+              accent={colors.tertiaryFixed}
+              progress={!unlocked && def.progressHint ? def.progressHint(state) : null}
+            />
+          );
+        })}
+      </View>
+
+      {/* Run section */}
+      <View style={styles.section}>
+        <SectionHeader index={2} label="RUN_ACHIEVEMENTS" accent={colors.primary} />
+        <Text style={styles.achResetNote}>RESETS_ON_FLATLINE</Text>
+        {RUN_ACHIEVEMENTS.map((def) => {
+          const unlocked = runUnlocked.includes(def.id);
+          return (
+            <AchievementCard
+              key={def.id}
+              def={def}
+              unlocked={unlocked}
+              accent={colors.primary}
+              progress={!unlocked && def.progressHint ? def.progressHint(state) : null}
+            />
+          );
+        })}
+      </View>
+    </ScrollView>
+  );
+}
+
 // ─── LifestyleScreen ──────────────────────────────────────────────────────────
 export default function LifestyleScreen() {
   const [activeSubTab, setActiveSubTab] = useState('assets');
@@ -482,6 +706,23 @@ export default function LifestyleScreen() {
   const purchaseAsset   = useStore((s) => s.purchaseAsset);
   const buyCoin         = useStore((s) => s.buyCoin);
   const sellCoin        = useStore((s) => s.sellCoin);
+
+  const accountUnlocked = useStore((s) => s.achievements.account.unlocked);
+  const runUnlocked     = useStore((s) => s.achievements.run.unlocked);
+  const lifetime        = useStore((s) => s.achievements.lifetime);
+  const unseenCount     = useStore((s) => s.achievements.unseen.length);
+  const selectedTitle   = useStore((s) => s.achievements.account.selectedTitle);
+  const selectedTheme   = useStore((s) => s.achievements.account.selectedTheme);
+  const markAchievementsSeen = useStore((s) => s.markAchievementsSeen);
+  const setSelectedTitle = useStore((s) => s.setSelectedTitle);
+  const setSelectedTheme = useStore((s) => s.setSelectedTheme);
+
+  // Clear the unread dot when the achievements tab is opened
+  useEffect(() => {
+    if (activeSubTab === 'achievements' && unseenCount > 0) {
+      markAchievementsSeen();
+    }
+  }, [activeSubTab, unseenCount, markAchievementsSeen]);
 
   const currentPortfolioValue = useMemo(
     () => COINS.reduce((sum, c) => sum + (holdings[c.id] || 0) * (coins[c.id]?.currentPrice || c.basePrice), 0),
@@ -516,7 +757,11 @@ export default function LifestyleScreen() {
   return (
     <View style={styles.root}>
       <View style={styles.tabBarWrap}>
-        <SegmentedTabs active={activeSubTab} onSelect={setActiveSubTab} />
+        <SegmentedTabs
+          active={activeSubTab}
+          onSelect={setActiveSubTab}
+          achievementsUnread={unseenCount > 0}
+        />
       </View>
 
       {activeSubTab === 'assets' ? (
@@ -527,6 +772,17 @@ export default function LifestyleScreen() {
           luxuryItems={luxuryItems}
           onPurchase={handlePurchase}
           onLaunchMinigame={setMinigameAsset}
+        />
+      ) : activeSubTab === 'achievements' ? (
+        <AchievementsTab
+          state={useStore.getState()}
+          accountUnlocked={accountUnlocked}
+          runUnlocked={runUnlocked}
+          lifetime={lifetime}
+          selectedTitle={selectedTitle}
+          selectedTheme={selectedTheme}
+          onSelectTitle={setSelectedTitle}
+          onSelectTheme={setSelectedTheme}
         />
       ) : (
         <ExchangeTab
@@ -613,6 +869,15 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   segTabTextActive: { color: colors.primary },
+  segTabDot: {
+    position: 'absolute',
+    top: 6,
+    right: 10,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: colors.tertiaryFixed,
+  },
 
   scroll: { flex: 1 },
   scrollContent: {
@@ -984,5 +1249,146 @@ const styles = StyleSheet.create({
   },
   coinBtnOff: {
     borderColor: `${colors.secondary}33`,
+  },
+
+  // Achievements
+  achSummaryStrip: {
+    borderLeftWidth: 4,
+    borderLeftColor: colors.tertiaryFixed,
+    backgroundColor: colors.surfaceContainerLow,
+    padding: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  achResetNote: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    color: `${colors.error}99`,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    marginTop: -6,
+  },
+  achCard: {
+    flexDirection: 'row',
+    gap: 12,
+    borderWidth: 1,
+    padding: 12,
+    alignItems: 'flex-start',
+  },
+  achCardLocked: {
+    borderColor: colors.outlineVariant,
+    backgroundColor: colors.surfaceContainerLowest,
+    opacity: 0.7,
+  },
+  achIconBox: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surfaceContainerHigh,
+    flexShrink: 0,
+  },
+  achBody: { flex: 1, gap: 4 },
+  achTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 8,
+  },
+  achName: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 13,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+    flex: 1,
+  },
+  achStatusChip: {
+    borderWidth: 1,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    flexShrink: 0,
+  },
+  achStatusText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    letterSpacing: 1,
+  },
+  achDesc: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 10,
+    color: colors.outline,
+    letterSpacing: 0.3,
+    lineHeight: 15,
+  },
+  achFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  achReward: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 9,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  achPerk: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 9,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+    lineHeight: 14,
+    marginTop: 2,
+  },
+  // Cosmetics selector
+  cosmeticBlock: {
+    borderLeftWidth: 4,
+    borderLeftColor: colors.tertiaryFixed,
+    backgroundColor: colors.surfaceContainerLow,
+    padding: 12,
+    gap: 10,
+  },
+  cosmeticLabel: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    color: colors.outline,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginBottom: 4,
+  },
+  cosmeticChipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  cosmeticChip: {
+    borderWidth: 1,
+    borderColor: colors.outlineVariant,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  cosmeticChipActive: {
+    borderColor: colors.tertiaryFixed,
+    backgroundColor: `${colors.tertiaryFixed}14`,
+  },
+  cosmeticChipText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 9,
+    color: colors.outline,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  cosmeticChipTextActive: {
+    color: colors.tertiaryFixed,
+  },
+  achProgress: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 9,
+    color: colors.outline,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
 });
