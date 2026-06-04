@@ -13,7 +13,7 @@ export const OPERATIVES = [
     equippedCyberware: [],
     maxCyberwareSlots: 8,
     stats: { chrome: 8, edge: 6, ghost: 16, face: 10, grit: 9, wire: 17 },
-    faction: 'undercity',
+    faction: 'fac_undertow',
     classColor: '#00f3ff',
   },
   {
@@ -30,7 +30,7 @@ export const OPERATIVES = [
     equippedCyberware: [],
     maxCyberwareSlots: 8,
     stats: { chrome: 16, edge: 14, ghost: 6, face: 8, grit: 18, wire: 7 },
-    faction: 'mercenary',
+    faction: 'fac_grammaton',
     classColor: '#fe00fe',
   },
   {
@@ -47,7 +47,7 @@ export const OPERATIVES = [
     equippedCyberware: [],
     maxCyberwareSlots: 8,
     stats: { chrome: 14, edge: 7, ghost: 10, face: 12, grit: 8, wire: 15 },
-    faction: 'medtech',
+    faction: 'fac_lexicon',
     classColor: '#36fd0f',
   },
   {
@@ -64,7 +64,7 @@ export const OPERATIVES = [
     equippedCyberware: [],
     maxCyberwareSlots: 8,
     stats: { chrome: 9, edge: 18, ghost: 20, face: 11, grit: 10, wire: 12 },
-    faction: 'voidwalkers',
+    faction: 'fac_signal',
     classColor: '#849495',
   },
   {
@@ -81,7 +81,7 @@ export const OPERATIVES = [
     equippedCyberware: [],
     maxCyberwareSlots: 8,
     stats: { chrome: 7, edge: 10, ghost: 12, face: 18, grit: 11, wire: 9 },
-    faction: 'syndicate',
+    faction: 'fac_undertow',
     classColor: '#ffabf3',
   },
 ];

@@ -1,5 +1,17 @@
 import { ALL_CONTRACTS, getContract } from '../../data/contracts/index';
 import { applyXPToCrewMember } from '../../data/leveling';
+import { applyRepToDraft } from './factionSlice';
+import { repTierFromValue, tierMeetsRequirement } from '../../data/factions';
+
+// Whether the player's rep with a contract's faction meets its minFactionRep gate.
+// minFactionRep is a tier label (e.g. 'FRIENDLY'); default '' / 'NEUTRAL' = no gate.
+export function contractRepGateMet(state, contract) {
+  const req = contract?.minFactionRep;
+  if (!req || req === 'NEUTRAL') return true;
+  if (!contract.faction) return true;
+  const rep = state.faction?.rep?.[contract.faction] ?? 0;
+  return tierMeetsRequirement(repTierFromValue(rep), req);
+}
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -161,6 +173,9 @@ export const createContractSlice = (set, get) => ({
 
       const playerLevel = state.crew.members.find((m) => m.isPlayer)?.level ?? 1;
       if (playerLevel < contract.teamLevelRequired) return;
+
+      // Faction reputation gate (e.g. requires UNDERTOW_FRIENDLY)
+      if (!contractRepGateMet(state, contract)) return;
 
       if (contract.deposit > 0) {
         if (state.character.credits < contract.deposit) return;

@@ -2,8 +2,15 @@ import { ACTIVITIES } from '../../data/activities';
 import { applyXPToCrewMember, distributeCombatXP } from '../../data/leveling';
 import { ALL_FLAVOR_EVENTS, ALL_CHOICE_EVENTS } from '../../data/events/index';
 import { EVENT_COOLDOWN, FLAVOR_MIN_GAP, FLAVOR_MAX_GAP, FLAVOR_CHANCE } from '../../data/eventPacing';
+import { applyRepToDraft } from './factionSlice';
+import { resolveLegacyFaction } from '../../data/factions';
 
 const SUCCESS_RATES = { low: 0.9, moderate: 0.7, high: 0.5 };
+
+function repFor(state, factionLabel) {
+  const fid = resolveLegacyFaction(factionLabel);
+  return state.faction?.rep?.[fid] ?? 0;
+}
 
 function rollOutcome(set, item, idPrefix) {
   set((state) => {
@@ -61,7 +68,7 @@ function applyEffects(state, effects) {
   }
   if (effects.factionDelta) {
     for (const [fid, delta] of Object.entries(effects.factionDelta)) {
-      state.world.factionPower[fid] = (state.world.factionPower[fid] ?? 0) + delta;
+      applyRepToDraft(state, fid, delta); // resolves legacy labels + applies rivalry bleed
     }
   }
 }
@@ -84,17 +91,35 @@ function isEligible(event, state) {
   if (minTurn && state.character.turnNumber < minTurn) return false;
   if (requiresCrew && state.crew.members.length === 0) return false;
   if (state.event.firedEventIds.has(event.id)) return false;
+
+  // Faction rep gates — hard filter on standing with the tagged faction.
+  const faction = t.faction || event.faction;
+  if (faction) {
+    const rep = repFor(state, faction);
+    if (t.repAtLeast != null && rep < t.repAtLeast) return false;
+    if (t.repAtMost  != null && rep > t.repAtMost)  return false;
+  }
   return true;
+}
+
+// Soft weight boost: faction-tinted events fire more often the stronger the
+// player's standing (either direction) with that faction. Untagged = neutral.
+function effectiveWeight(event, state) {
+  const base = event.weight || 1;
+  const faction = event.faction || event.triggers?.faction;
+  if (!faction) return base;
+  const mag = Math.min(1, Math.abs(repFor(state, faction)) / 100);
+  return base * (1 + mag); // up to 2x at |rep| >= 100
 }
 
 // Weighted random pick from an eligible pool.
 function pickWeighted(pool, state) {
   const eligible = pool.filter((e) => isEligible(e, state));
   if (eligible.length === 0) return null;
-  const total = eligible.reduce((s, e) => s + (e.weight || 1), 0);
+  const total = eligible.reduce((s, e) => s + effectiveWeight(e, state), 0);
   let roll = Math.random() * total;
   for (const e of eligible) {
-    roll -= (e.weight || 1);
+    roll -= effectiveWeight(e, state);
     if (roll <= 0) return e;
   }
   return eligible[eligible.length - 1];

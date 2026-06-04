@@ -76,11 +76,6 @@ export const createDevSlice = (set, get) => ({
       });
     }),
 
-  devSetFactionPower: (factionId, value) =>
-    set((state) => {
-      state.world.factionPower[factionId] = Math.max(0, Math.min(100, Math.round(Number(value) || 0)));
-    }),
-
   devSetCoinPrice: (coinId, price) =>
     set((state) => {
       const coin = state.exchange.coins[coinId];
@@ -231,6 +226,8 @@ export const createDevSlice = (set, get) => ({
       state.vendor.quickhackModules = [];
       // Run achievements reset; account + lifetime preserved
       if (state.achievements) state.achievements.run.unlocked = [];
+      // Faction rep is run-scoped — reset on flatline
+      if (state.faction) for (const fid of Object.keys(state.faction.rep)) state.faction.rep[fid] = 0;
     }),
 
   devHardReset: () =>
@@ -243,7 +240,6 @@ export const createDevSlice = (set, get) => ({
       state.character.vehicles = [];
       state.character.luxuryItems = [];
       state.crew.members = [];
-      state.world.factionPower = {};
       state.world.pendingLevelUp = null;
       state.world.turnNumber = 0;
       state.world.gameOver = false;
@@ -262,6 +258,7 @@ export const createDevSlice = (set, get) => ({
         state.achievements.unseen           = [];
         state.achievements.toastQueue       = [];
       }
+      if (state.faction) for (const fid of Object.keys(state.faction.rep)) state.faction.rep[fid] = 0;
     }),
 
   devKillPlayer: () =>

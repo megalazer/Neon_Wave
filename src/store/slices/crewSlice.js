@@ -64,7 +64,7 @@ export const createCrewSlice = (set, get) => ({
       if (Math.random() >= chance) return;
       const contractsCompleted = state.contract.completedContracts.length;
       const currentTurn = state.character.turnNumber;
-      const recruit = generateRecruit(contractsCompleted, currentTurn);
+      const recruit = generateRecruit(contractsCompleted, currentTurn, undefined, undefined, state.faction?.rep);
       state.crew.availableOperatives.push(recruit);
       state.crew.turnsSinceLastSpawn = 0;
       const accentMap = { common: 'outline', rare: 'secondary', legendary: 'tertiary' };
@@ -95,7 +95,7 @@ export const createCrewSlice = (set, get) => ({
     set((state) => {
       const contractsCompleted = state.contract.completedContracts.length;
       const currentTurn = state.character.turnNumber;
-      const recruit = generateRecruit(contractsCompleted, currentTurn, quality, cls);
+      const recruit = generateRecruit(contractsCompleted, currentTurn, quality, cls, state.faction?.rep);
       state.crew.availableOperatives.push(recruit);
       state.crew.turnsSinceLastSpawn = 0;
       state.log.entries.push({
@@ -111,7 +111,7 @@ export const createCrewSlice = (set, get) => ({
     set((state) => {
       const contractsCompleted = state.contract.completedContracts.length;
       const currentTurn = state.character.turnNumber;
-      const recruit = generateRecruit(contractsCompleted, currentTurn, quality);
+      const recruit = generateRecruit(contractsCompleted, currentTurn, quality, undefined, state.faction?.rep);
       state.crew.availableOperatives.push(recruit);
       state.crew.turnsSinceLastSpawn = 0;
       state.log.entries.push({
