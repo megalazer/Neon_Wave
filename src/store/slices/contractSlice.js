@@ -368,8 +368,20 @@ export const createContractSlice = (set, get) => ({
         }
         const fixer = contract.fixerId;
         state.contract.fixerRep[fixer] = (state.contract.fixerRep[fixer] ?? 0) + 1;
+        // Faction rep gain on success (rivalry bleed applied automatically)
+        if (contract.faction && contract.factionRepReward) {
+          applyRepToDraft(state, contract.faction, contract.factionRepReward);
+        }
       } else if (resolution.outcome === 'failure') {
         state.contract.failedContracts.push(activeContractId);
+        if (contract.faction && contract.factionRepPenalty) {
+          applyRepToDraft(state, contract.faction, -contract.factionRepPenalty);
+        }
+      } else if (resolution.outcome === 'aborted') {
+        // Abandoning a job costs standing with its faction too
+        if (contract.faction && contract.factionRepPenalty) {
+          applyRepToDraft(state, contract.faction, -contract.factionRepPenalty);
+        }
       }
 
       const logText =

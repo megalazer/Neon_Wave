@@ -387,6 +387,7 @@ export default function ChoiceModal() {
                     key={choice.id}
                     choice={choice}
                     playerStats={playerStats}
+                    playerCredits={playerCredits}
                     onPress={() => handleEventChoice(choice.id)}
                   />
                 ))}

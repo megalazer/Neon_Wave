@@ -22,6 +22,7 @@ import {
   ACCOUNT_ACHIEVEMENTS, RUN_ACHIEVEMENTS,
   getUnlockedTitles, getUnlockedThemes, DEFAULT_TITLE, DEFAULT_THEME,
 } from '../data/achievements';
+import { FACTION_LIST, FACTIONS, repTierFromValue, REP_MIN, REP_MAX } from '../data/factions';
 import { Dimensions } from 'react-native';
 import ConfirmModal from '../components/ConfirmModal';
 import MinigameStub from '../components/MinigameStub';
@@ -45,6 +46,7 @@ function SegmentedTabs({ active, onSelect, achievementsUnread }) {
   const TABS = [
     { id: 'assets', label: 'ASSETS' },
     { id: 'exchange', label: 'EXCHANGE' },
+    { id: 'factions', label: 'FACTIONS' },
     { id: 'achievements', label: 'TROPHIES', dot: achievementsUnread },
   ];
   return (
@@ -689,6 +691,73 @@ function AchievementsTab({
   );
 }
 
+// ─── FactionCard ──────────────────────────────────────────────────────────────
+function FactionCard({ faction, rep }) {
+  const tier = repTierFromValue(rep);
+  const accent = faction.accent;
+  // Map [-100, 300] onto a 0–100% bar; 0 rep sits at ~25%.
+  const pct = Math.round(((rep - REP_MIN) / (REP_MAX - REP_MIN)) * 100);
+  const rivalTags = (faction.rivals || [])
+    .map((rid) => FACTIONS[rid]?.tag)
+    .filter(Boolean);
+
+  return (
+    <View style={[styles.facCard, { borderLeftColor: accent }]}>
+      <View style={styles.facHeaderRow}>
+        <View style={styles.facTitleBlock}>
+          <Text style={[styles.facName, { color: accent }]}>{faction.name}</Text>
+          <Text style={styles.facDomain}>{faction.domain.toUpperCase()}</Text>
+        </View>
+        <View style={[styles.facTagChip, { borderColor: accent }]}>
+          <Text style={[styles.facTagText, { color: accent }]}>{faction.tag}</Text>
+        </View>
+      </View>
+
+      <View style={styles.facRepRow}>
+        <Text style={[styles.facTier, { color: accent }]}>{tier}</Text>
+        <Text style={styles.facRepValue}>{rep > 0 ? `+${rep}` : rep}</Text>
+      </View>
+      <View style={styles.facBarTrack}>
+        <View style={[styles.facBarFill, { width: `${Math.max(2, pct)}%`, backgroundColor: accent }]} />
+      </View>
+
+      <Text style={styles.facBlurb}>{faction.blurb}</Text>
+
+      {rivalTags.length > 0 && (
+        <Text style={styles.facRivals}>
+          {'RIVAL: '}<Text style={{ color: colors.error }}>{rivalTags.join(', ')}</Text>
+        </Text>
+      )}
+    </View>
+  );
+}
+
+// ─── FactionsTab ──────────────────────────────────────────────────────────────
+function FactionsTab({ rep }) {
+  return (
+    <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <View style={styles.achSummaryStrip}>
+        <View style={styles.summaryLeft}>
+          <View style={styles.summaryBlock}>
+            <Text style={styles.summaryBlockLabel}>STANDINGS</Text>
+            <Text style={styles.summaryBlockValue}>NIGHT_CITY</Text>
+          </View>
+        </View>
+        <View style={styles.summaryRight}>
+          <Text style={styles.summaryProtocol}>RESETS_ON_FLATLINE</Text>
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <SectionHeader index={1} label="FACTION_STANDINGS" accent={colors.primary} />
+        {FACTION_LIST.map((f) => (
+          <FactionCard key={f.id} faction={f} rep={rep[f.id] ?? 0} />
+        ))}
+      </View>
+    </ScrollView>
+  );
+}
+
 // ─── LifestyleScreen ──────────────────────────────────────────────────────────
 export default function LifestyleScreen() {
   const [activeSubTab, setActiveSubTab] = useState('assets');
@@ -707,6 +776,7 @@ export default function LifestyleScreen() {
   const buyCoin         = useStore((s) => s.buyCoin);
   const sellCoin        = useStore((s) => s.sellCoin);
 
+  const factionRep      = useStore((s) => s.faction.rep);
   const accountUnlocked = useStore((s) => s.achievements.account.unlocked);
   const runUnlocked     = useStore((s) => s.achievements.run.unlocked);
   const lifetime        = useStore((s) => s.achievements.lifetime);
@@ -773,6 +843,8 @@ export default function LifestyleScreen() {
           onPurchase={handlePurchase}
           onLaunchMinigame={setMinigameAsset}
         />
+      ) : activeSubTab === 'factions' ? (
+        <FactionsTab rep={factionRep} />
       ) : activeSubTab === 'achievements' ? (
         <AchievementsTab
           state={useStore.getState()}
@@ -935,6 +1007,85 @@ const styles = StyleSheet.create({
   summaryBarFill: {
     height: '100%',
     backgroundColor: colors.secondaryContainer,
+  },
+
+  // Faction standings card
+  facCard: {
+    borderWidth: 1,
+    borderColor: `${colors.outline}4D`,
+    borderLeftWidth: 3,
+    backgroundColor: colors.surfaceContainerLow,
+    padding: 12,
+    gap: 8,
+  },
+  facHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  facTitleBlock: { gap: 2, flex: 1 },
+  facName: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 14,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  facDomain: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 8,
+    color: colors.outline,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  facTagChip: {
+    borderWidth: 1,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  facTagText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  facRepRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  facTier: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 11,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  facRepValue: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 11,
+    color: colors.onSurface,
+    letterSpacing: 0.8,
+  },
+  facBarTrack: {
+    height: 5,
+    backgroundColor: colors.surfaceContainerHigh,
+    overflow: 'hidden',
+  },
+  facBarFill: {
+    height: '100%',
+  },
+  facBlurb: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 10,
+    color: colors.outline,
+    letterSpacing: 0.3,
+    lineHeight: 15,
+  },
+  facRivals: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    color: colors.outline,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
 
   // Section

@@ -17,16 +17,9 @@ import { ALL_EVENTS } from '../data/events/index';
 import { ALL_CONTRACTS as CONTRACTS } from '../data/contracts/index';
 import { rollQuality, getSpawnWeights } from '../data/recruitQuality';
 import { getActiveAccountPerks } from '../data/achievements';
+import { FACTION_LIST, repTierFromValue } from '../data/factions';
 
 const ERR = colors.error;
-
-const FACTIONS = [
-  { id: 'helix',     label: 'HELIX_CORP' },
-  { id: 'onyx',      label: 'ONYX_SYNDICATE' },
-  { id: 'novalith',  label: 'NOVALITH' },
-  { id: 'sable',     label: 'SABLE' },
-  { id: 'undercity', label: 'UNDERCITY' },
-];
 
 // ── Section wrapper ──────────────────────────────────────────────────────────
 function DevSection({ title, children }) {
@@ -189,23 +182,59 @@ function CrewSection() {
 }
 
 // ── Faction section ──────────────────────────────────────────────────────────
+const REP_STEPS = [-25, -10, 10, 25];
+
+// Fire a random event tagged with the given faction (flavor or choice), bypassing
+// pacing/rep gates via devForceEventById.
+function forceFactionEvent(factionId, devForceEventById) {
+  const pool = ALL_EVENTS.filter((e) => (e.faction || e.triggers?.faction) === factionId);
+  if (pool.length === 0) {
+    Alert.alert('NO_FACTION_EVENTS', `No events tagged ${factionId}.`);
+    return;
+  }
+  devForceEventById(pool[Math.floor(Math.random() * pool.length)].id);
+}
+
 function FactionSection() {
-  const factionPower     = useStore((s) => s.world.factionPower);
-  const devSetFactionPower = useStore((s) => s.devSetFactionPower);
+  const rep               = useStore((s) => s.faction.rep);
+  const devSetFactionRep  = useStore((s) => s.devSetFactionRep);
+  const devForceEventById = useStore((s) => s.devForceEventById);
+
+  const showAllRep = () => {
+    const lines = FACTION_LIST
+      .map((f) => `${f.tag}: ${rep[f.id] ?? 0} (${repTierFromValue(rep[f.id] ?? 0)})`)
+      .join('\n');
+    Alert.alert('FACTION_REP', lines);
+  };
 
   return (
     <DevSection title="FACTION_OVERRIDE">
-      {FACTIONS.map((f) => {
-        const power = factionPower[f.id] ?? 0;
+      {FACTION_LIST.map((f) => {
+        const value = rep[f.id] ?? 0;
         return (
-          <View key={f.id} style={fac.row}>
-            <Text style={fac.label}>{f.label}</Text>
-            <Text style={fac.val}>{power}</Text>
-            <DevBtn label="-10" onPress={() => devSetFactionPower(f.id, power - 10)} dim />
-            <DevBtn label="+10" onPress={() => devSetFactionPower(f.id, power + 10)} />
+          <View key={f.id} style={fac.block}>
+            <View style={fac.row}>
+              <Text style={[fac.label, { color: f.accent }]}>{f.tag}</Text>
+              <Text style={[fac.val, { color: f.accent }]}>{value > 0 ? `+${value}` : value}</Text>
+              <Text style={fac.tier}>{repTierFromValue(value)}</Text>
+            </View>
+            <View style={sec.row}>
+              {REP_STEPS.map((step) => (
+                <DevBtn
+                  key={step}
+                  label={step > 0 ? `+${step}` : String(step)}
+                  onPress={() => devSetFactionRep(f.id, value + step)}
+                  dim={step < 0}
+                />
+              ))}
+              <DevBtn label="[EVENT]" onPress={() => forceFactionEvent(f.id, devForceEventById)} />
+            </View>
           </View>
         );
       })}
+      <View style={sec.row}>
+        <DevBtn label="[SHOW_ALL_REP]" onPress={showAllRep} />
+      </View>
     </DevSection>
   );
 }
@@ -945,6 +974,7 @@ const row = StyleSheet.create({
 });
 
 const fac = StyleSheet.create({
+  block: { gap: 4, marginBottom: 6 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -952,16 +982,22 @@ const fac = StyleSheet.create({
   },
   label: {
     fontFamily: 'KodeMono_700Bold',
-    fontSize: 9,
-    color: `${ERR}99`,
-    letterSpacing: 0.8,
+    fontSize: 10,
+    letterSpacing: 1,
     flex: 1,
   },
   val: {
     fontFamily: 'KodeMono_700Bold',
-    fontSize: 10,
-    color: ERR,
-    width: 28,
+    fontSize: 11,
+    width: 40,
+    textAlign: 'right',
+  },
+  tier: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    color: `${ERR}99`,
+    letterSpacing: 0.8,
+    width: 64,
     textAlign: 'right',
   },
 });

@@ -213,6 +213,9 @@ export const createEventSlice = (set) => ({
       const choice = event.choices.find((c) => c.id === choiceId);
       if (!choice) return;
 
+      // Credit gate — silently block unaffordable choices (mirrors contract gating)
+      if (choice.requires?.credits && state.character.credits < choice.requires.credits) return;
+
       let outcomeText;
       let outcomeEffects;
       let passed = true;

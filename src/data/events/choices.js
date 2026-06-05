@@ -405,4 +405,277 @@ export const CHOICE_EVENTS = [
       },
     ],
   },
+
+  // ─── FACTION CHOICE EVENTS ─────────────────────────────────────────────────
+
+  {
+    id: 'chc_grammaton_shakedown',
+    type: 'choice', weight: 5,
+    triggers: { minTurn: 6 },
+    title: 'GRAMMATON_STOP',
+    prompt: 'A Grammaton officer steps into your path, palm out. "Unscheduled movement in a regulated zone. There\'s a fee for that. Or there\'s paperwork. Your choice, citizen."',
+    choices: [
+      {
+        id: 'gs_pay',
+        label: '[PAY_THE_FEE]',
+        outcome: {
+          text: 'You pay the "fee" and he stamps you cleared. Order has a price and you just met it. -250 CR. Grammaton notes a cooperative citizen.',
+          effects: { credits: -250, factionDelta: { fac_grammaton: 5 } },
+        },
+      },
+      {
+        id: 'gs_talk',
+        label: '[TALK_YOUR_WAY_OUT]',
+        statCheck: { stat: 'face', threshold: 13 },
+        pass: {
+          text: 'You quote three sub-clauses that make the stop itself irregular. He blinks, salutes, and waves you on. Rules cut both ways.',
+          effects: { factionDelta: { fac_grammaton: 3 } },
+        },
+        fail: {
+          text: '"Resisting a lawful stop." He logs your face with relish. You walk, but Grammaton\'s ledger now has a red line by your name.',
+          effects: { factionDelta: { fac_grammaton: -8 } },
+        },
+      },
+      {
+        id: 'gs_refuse',
+        label: '[REFUSE_AND_WALK]',
+        outcome: {
+          text: 'You walk past him. He doesn\'t stop you — he just records it. To Grammaton, defiance is a kind of grammar too, and they\'ve filed yours.',
+          effects: { factionDelta: { fac_grammaton: -10 }, morale: 2 },
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'chc_undertow_sidedeal',
+    type: 'choice', weight: 5,
+    triggers: { minTurn: 8 },
+    title: 'UNDERTOW_OFFER',
+    prompt: 'An Undertow fixer leans into your booth. "Got a little off-book moving job. Pays well, cuts Grammaton out of a shipment they think is theirs. You in, or you a law-abiding type now?"',
+    choices: [
+      {
+        id: 'us_accept',
+        label: '[TAKE_THE_DEAL]',
+        outcome: {
+          text: 'You run the package through a Grammaton blind spot. Undertow pays in cash and warmth. Grammaton, somewhere, comes up a crate short. +400 CR.',
+          effects: { credits: 400, factionDelta: { fac_undertow: 10 } },
+        },
+      },
+      {
+        id: 'us_decline',
+        label: '[DECLINE]',
+        outcome: {
+          text: '"Not tonight." The fixer shrugs and melts back into the crowd. No harm, no rep — just a door you didn\'t walk through.',
+          effects: {},
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'chc_static_jamjob',
+    type: 'choice', weight: 4,
+    triggers: { minTurn: 10 },
+    title: 'STATIC_CELL',
+    prompt: 'A Static runner, face hidden in scrambled pixels, slides you a jammer. "One Lexicon data-node. Kill it for an hour. They write people like code — we think the block deserves a little silence. Yes or no."',
+    choices: [
+      {
+        id: 'sj_doit',
+        label: '[JAM_THE_NODE]',
+        statCheck: { stat: 'wire', threshold: 12 },
+        pass: {
+          text: 'The node goes dark and the street exhales. Static loves you for it; the Lexicon will not. Two reps swing on one zero-sum hinge.',
+          effects: { factionDelta: { fac_static: 12 } },
+        },
+        fail: {
+          text: 'The jammer backfires and pings the node\'s defenses. You bolt. Static got nothing, and the Lexicon got your signature. Bad trade.',
+          effects: { factionDelta: { fac_lexicon: -6 } },
+        },
+      },
+      {
+        id: 'sj_refuse',
+        label: '[HAND_IT_BACK]',
+        outcome: {
+          text: 'You give the jammer back. The runner\'s pixels flicker something like disgust before they\'re gone. No noise tonight.',
+          effects: {},
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'chc_lexicon_trial',
+    type: 'choice', weight: 4,
+    triggers: { minTurn: 9 },
+    title: 'LEXICON_OFFER',
+    prompt: 'A Lexicon gene-scribe studies you over tea. "Your body has three typos. I could fix one, free, as a sample of our work. A small edit. You\'d barely feel the rewrite."',
+    choices: [
+      {
+        id: 'lt_accept',
+        label: '[LET_THEM_EDIT]',
+        outcome: {
+          text: 'A cold thread of nanites, a flicker of vertigo, and something in you reads cleaner. You feel sharper, and slightly less yourself. The Lexicon smiles. +morale, +Lexicon standing.',
+          effects: { morale: 6, factionDelta: { fac_lexicon: 8 } },
+        },
+      },
+      {
+        id: 'lt_decline',
+        label: '[KEEP_YOUR_TYPOS]',
+        outcome: {
+          text: '"I\'ll keep my mistakes, thanks." The scribe inclines their head. "Mistakes are also a language." No edit, no rep — but Static would approve.',
+          effects: { factionDelta: { fac_static: 3 } },
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'chc_found_tech',
+    type: 'choice', weight: 5,
+    triggers: { minTurn: 7 },
+    title: 'SALVAGE_FIND',
+    prompt: 'You find a sealed tech-case in a dead drop, stamped with a Referent Capital sigil. It was clearly meant for someone else. Keep it, or return it to its owners for goodwill?',
+    choices: [
+      {
+        id: 'ft_keep',
+        label: '[KEEP_IT]',
+        outcome: {
+          text: 'You crack the case and fence the contents. Good money, no questions. +650 CR. If Referent ever finds out, that\'s a future problem.',
+          effects: { credits: 650 },
+        },
+      },
+      {
+        id: 'ft_return',
+        label: '[RETURN_TO_REFERENT]',
+        outcome: {
+          text: 'You hand the case back intact. The Referent courier prices your honesty precisely and pays a finder\'s fee. +150 CR, and standing that compounds.',
+          effects: { credits: 150, factionDelta: { fac_referent: 9 } },
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'chc_signal_recruit',
+    type: 'choice', weight: 4,
+    triggers: { minTurn: 11 },
+    title: 'SIGNAL_TAP_REQUEST',
+    prompt: 'A Signal technician finds you on a private channel you didn\'t know was open. "We need eyes on an Undertow smuggling route. Tag the next courier you see in the canal district. Quiet. Clean. Ours."',
+    choices: [
+      {
+        id: 'sr_tag',
+        label: '[TAG_THE_COURIER]',
+        statCheck: { stat: 'ghost', threshold: 13 },
+        pass: {
+          text: 'You ghost a tracer onto an Undertow courier\'s case. The Signal logs it grateful. The gray economy is a little more visible tonight — and Undertow won\'t love that.',
+          effects: { factionDelta: { fac_signal: 10, fac_undertow: -5 } },
+        },
+        fail: {
+          text: 'The courier makes you. You abort before the tracer sets. The Signal gets nothing, and word of the attempt drifts down into Undertow.',
+          effects: { factionDelta: { fac_undertow: -4 } },
+        },
+      },
+      {
+        id: 'sr_decline',
+        label: '[STAY_OUT_OF_IT]',
+        outcome: {
+          text: 'You close the channel. Some pipes are better left untapped. No standing gained, no enemies made.',
+          effects: {},
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'chc_undertow_allied_favor',
+    type: 'choice', weight: 5,
+    triggers: { minTurn: 12, faction: 'fac_undertow', repAtLeast: 25 },
+    title: 'A_FAVOR_OWED',
+    prompt: 'An Undertow lieutenant calls in person — a rare honor. "You\'ve been solid. One of ours got pinched by Grammaton. Buy the arresting officer\'s silence for us. We\'ll remember it. Costs 800 to make it disappear."',
+    choices: [
+      {
+        id: 'uf_pay',
+        label: '[COVER_THE_BRIBE]',
+        requires: { credits: 800 },
+        outcome: {
+          text: 'You front the 800. The charge evaporates; the runner walks. Undertow doesn\'t forget who paid when it mattered. -800 CR, deep standing.',
+          effects: { credits: -800, factionDelta: { fac_undertow: 18 } },
+        },
+      },
+      {
+        id: 'uf_decline',
+        label: '[NOT_THIS_TIME]',
+        outcome: {
+          text: '"Tight on cash. Sorry." The lieutenant nods, slow. They understand. They also remember. A little frost creeps into the gray.',
+          effects: { factionDelta: { fac_undertow: -4 } },
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'chc_static_vs_lexicon',
+    type: 'choice', weight: 4,
+    triggers: { minTurn: 13 },
+    title: 'NOISE_OR_MEANING',
+    prompt: 'Two recruiters corner you at once — a Lexicon scribe and a Static runner, mid-argument. Each wants you to denounce the other publicly. The street is watching. Pick a side, or refuse the whole framing.',
+    choices: [
+      {
+        id: 'nl_lexicon',
+        label: '[SIDE_WITH_LEXICON]',
+        outcome: {
+          text: 'You call Static\'s creed nihilist garbage to the watching crowd. The scribe glows. The runner\'s pixels go dark and cold. Zero-sum, and you chose.',
+          effects: { factionDelta: { fac_lexicon: 12 } },
+        },
+      },
+      {
+        id: 'nl_static',
+        label: '[SIDE_WITH_STATIC]',
+        outcome: {
+          text: 'You call the Lexicon\'s edits a slow erasure of everyone. The runner barks a laugh. The scribe files you under "corrupted." The hinge swings.',
+          effects: { factionDelta: { fac_static: 12 } },
+        },
+      },
+      {
+        id: 'nl_refuse',
+        label: '[REFUSE_TO_CHOOSE]',
+        statCheck: { stat: 'face', threshold: 14 },
+        pass: {
+          text: 'You give a speech about not being anyone\'s megaphone. The crowd nods. Both recruiters leave annoyed but respecting you. No rep, no enemies.',
+          effects: { morale: 4 },
+        },
+        fail: {
+          text: 'Your non-answer satisfies no one. Both factions write you off as spineless. You leave a little smaller than you arrived.',
+          effects: { morale: -4 },
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'chc_referent_insider',
+    type: 'choice', weight: 4,
+    triggers: { minTurn: 10 },
+    title: 'REFERENT_WHISPER',
+    prompt: 'A Referent analyst slides you a folded note at the exchange. "Coin\'s going to crater at midnight. We\'re telling friends first. Act on it, or don\'t. Just remember who told you."',
+    choices: [
+      {
+        id: 'ri_act',
+        label: '[ACT_ON_THE_TIP]',
+        outcome: {
+          text: 'You move before midnight and clear a tidy margin on the crash. Referent counts you among the people who listen — which is the only people who matter to them. +500 CR.',
+          effects: { credits: 500, factionDelta: { fac_referent: 8 } },
+        },
+      },
+      {
+        id: 'ri_ignore',
+        label: '[IGNORE_IT]',
+        outcome: {
+          text: 'You let it pass. Maybe it was a setup, maybe a gift. Either way, Referent notes that you didn\'t bite. They prefer players who play.',
+          effects: { factionDelta: { fac_referent: -3 } },
+        },
+      },
+    ],
+  },
 ];

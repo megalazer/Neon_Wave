@@ -3,6 +3,7 @@ import { QUICKHACKS } from '../../data/quickhacks';
 import { getUnlockedTiers } from '../../data/vendor';
 import { calculateTeamLevel } from '../../data/leveling';
 import { getActiveAccountPerks } from '../../data/achievements';
+import { repTierFromValue, tierMeetsRequirement } from '../../data/factions';
 
 // Reads account-perk vendor unlocks off the shared draft/state.
 function perkUnlockedVendorIds(state) {
@@ -13,17 +14,28 @@ function perkUnlockedVendorIds(state) {
   };
 }
 
-function buildRotatingStock(teamLevel, unlocked = { cyber: [], hack: [] }) {
+// An item with a factionReq only enters the pool if the player's rep tier with that
+// faction meets/exceeds the requirement. Items without factionReq are unrestricted.
+function factionReqMet(item, factionRep) {
+  if (!item.factionReq) return true;
+  const { faction, tier } = item.factionReq;
+  const rep = factionRep?.[faction] ?? 0;
+  return tierMeetsRequirement(repTierFromValue(rep), tier);
+}
+
+function buildRotatingStock(teamLevel, unlocked = { cyber: [], hack: [] }, factionRep = {}) {
   const tiers = getUnlockedTiers(teamLevel);
-  // An item is eligible if its tier is team-level-unlocked OR it's perk-unlocked.
+  // Eligible if tier is team-level-unlocked OR perk-unlocked, AND any factionReq is met.
   const cyberPool  = CYBERWARE_ITEMS.filter(
     (c) => c.vendorCategory === 'rotating' &&
-      (tiers.includes(c.vendorTier) || unlocked.cyber.includes(c.id)),
+      (tiers.includes(c.vendorTier) || unlocked.cyber.includes(c.id)) &&
+      factionReqMet(c, factionRep),
   );
   // Basic-tier quickhacks are staples; non-basic rotate (or are perk-unlocked).
   const hackPool   = Object.values(QUICKHACKS).filter(
     (qh) => qh.vendorTier !== 'basic' &&
-      (tiers.includes(qh.vendorTier) || unlocked.hack.includes(qh.id)),
+      (tiers.includes(qh.vendorTier) || unlocked.hack.includes(qh.id)) &&
+      factionReqMet(qh, factionRep),
   );
 
   const shuffledCyber = [...cyberPool].sort(() => 0.5 - Math.random());
@@ -46,7 +58,7 @@ export const createVendorSlice = (set) => ({
   refreshVendorStock: (teamLevel) =>
     set((state) => {
       const tl = teamLevel ?? calculateTeamLevel(state.crew.members);
-      state.vendor.rotatingStock         = buildRotatingStock(tl, perkUnlockedVendorIds(state));
+      state.vendor.rotatingStock         = buildRotatingStock(tl, perkUnlockedVendorIds(state), state.faction?.rep);
       state.vendor.refreshCountdown      = 8;
       state.vendor.purchasedThisRotation = [];
     }),
@@ -56,7 +68,7 @@ export const createVendorSlice = (set) => ({
       state.vendor.refreshCountdown -= 1;
       if (state.vendor.refreshCountdown <= 0) {
         const tl = calculateTeamLevel(state.crew.members);
-        state.vendor.rotatingStock         = buildRotatingStock(tl, perkUnlockedVendorIds(state));
+        state.vendor.rotatingStock         = buildRotatingStock(tl, perkUnlockedVendorIds(state), state.faction?.rep);
         state.vendor.refreshCountdown      = 8;
         state.vendor.purchasedThisRotation = [];
       }
@@ -148,14 +160,17 @@ export const createVendorSlice = (set) => ({
   devForceVendorRefresh: () =>
     set((state) => {
       const tl = calculateTeamLevel(state.crew.members);
-      state.vendor.rotatingStock         = buildRotatingStock(tl, perkUnlockedVendorIds(state));
+      state.vendor.rotatingStock         = buildRotatingStock(tl, perkUnlockedVendorIds(state), state.faction?.rep);
       state.vendor.refreshCountdown      = 8;
       state.vendor.purchasedThisRotation = [];
     }),
 
   devForceVendorAllTiers: () =>
     set((state) => {
-      state.vendor.rotatingStock         = buildRotatingStock(10, perkUnlockedVendorIds(state)); // TL10 unlocks all tiers
+      // TL10 + max rep so faction-locked items also surface for testing
+      const allRep = {};
+      for (const fid of Object.keys(state.faction?.rep ?? {})) allRep[fid] = 300;
+      state.vendor.rotatingStock         = buildRotatingStock(10, perkUnlockedVendorIds(state), allRep);
       state.vendor.refreshCountdown      = 8;
       state.vendor.purchasedThisRotation = [];
     }),

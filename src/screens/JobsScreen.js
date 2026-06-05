@@ -20,6 +20,7 @@ import { advanceTurn } from '../engine/turnPipeline';
 import { ACTIVITIES } from '../data/activities';
 import { getContract } from '../data/contracts/index';
 import { getFixer } from '../data/fixers';
+import { getFaction, repTierFromValue, tierMeetsRequirement } from '../data/factions';
 import { colors } from '../theme/colors';
 
 const BANNER_HEIGHT = 90;
@@ -173,7 +174,7 @@ const FIXER_ACCENT_COLORS = {
 const TIER_LABELS = { LOW: 'LOW_TIER', MID: 'MID_TIER', HIGH: 'HIGH_TIER' };
 
 // --- ContractCard ---
-function ContractCard({ feedItem, playerLevel, credits, onAccept }) {
+function ContractCard({ feedItem, playerLevel, credits, factionRep, onAccept }) {
   const contract    = getContract(feedItem.id);
   const fixer       = contract ? getFixer(contract.fixerId) : null;
   const accentColor = fixer ? (FIXER_ACCENT_COLORS[fixer.accent] ?? colors.primary) : colors.outline;
@@ -182,9 +183,15 @@ function ContractCard({ feedItem, playerLevel, credits, onAccept }) {
 
   if (!contract) return null;
 
+  const faction = contract.faction ? getFaction(contract.faction) : null;
+  const repReq  = contract.minFactionRep;
+  const repGated = !!(faction && repReq && repReq !== 'NEUTRAL');
+  const repLocked = repGated &&
+    !tierMeetsRequirement(repTierFromValue(factionRep?.[contract.faction] ?? 0), repReq);
+
   const locked     = playerLevel < contract.teamLevelRequired;
   const cantAfford = contract.deposit > 0 && credits < contract.deposit;
-  const disabled   = locked || cantAfford;
+  const disabled   = locked || repLocked || cantAfford;
 
   const btnFillStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(pressed.value, [0, 1], ['transparent', accentColor]),
@@ -223,6 +230,13 @@ function ContractCard({ feedItem, playerLevel, credits, onAccept }) {
               {TIER_LABELS[contract.tier] ?? contract.tier}
             </Text>
           </View>
+          {faction && (
+            <View style={[styles.factionChip, { borderColor: `${faction.accent}88`, backgroundColor: `${faction.accent}14` }]}>
+              <Text style={[styles.factionChipText, { color: faction.accent }]}>
+                {faction.tag}
+              </Text>
+            </View>
+          )}
         </View>
         <View style={styles.expiryRow}>
           <MaterialIcons name="schedule" size={11} color={`${accentColor}88`} />
@@ -261,6 +275,13 @@ function ContractCard({ feedItem, playerLevel, credits, onAccept }) {
           <MaterialIcons name="lock" size={12} color={colors.outline} />
           <Text style={[styles.activityBtnText, { color: colors.outline, marginLeft: 4 }]}>
             REQUIRES_TL{contract.teamLevelRequired}
+          </Text>
+        </View>
+      ) : repLocked ? (
+        <View style={[styles.activityBtn, { borderColor: faction.accent }]}>
+          <MaterialIcons name="lock" size={12} color={faction.accent} />
+          <Text style={[styles.activityBtnText, { color: faction.accent, marginLeft: 4 }]}>
+            REQ: {faction.tag}_{repReq}
           </Text>
         </View>
       ) : cantAfford ? (
@@ -426,6 +447,7 @@ export default function JobsScreen({ onNavigate }) {
   const renown        = useStore((s) => s.character.renown);
   const playerLevel   = useStore((s) => s.crew.members.find((m) => m.isPlayer)?.level ?? 1);
   const credits       = useStore((s) => s.character.credits);
+  const factionRep    = useStore((s) => s.faction.rep);
   const feedItems     = useStore((s) => s.contract.feedItems);
   const contractPhase = useStore((s) => s.contract.phase);
   const executeActivity    = useStore((s) => s.executeActivity);
@@ -485,6 +507,7 @@ export default function JobsScreen({ onNavigate }) {
                   feedItem={item}
                   playerLevel={playerLevel}
                   credits={credits}
+                  factionRep={factionRep}
                   onAccept={handleAccept}
                 />
               ))
@@ -686,6 +709,17 @@ const styles = StyleSheet.create({
     fontFamily: 'KodeMono_700Bold',
     fontSize: 8,
     letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  factionChip: {
+    borderWidth: 1,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  factionChipText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
   expiryRow: {

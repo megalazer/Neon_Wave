@@ -59,6 +59,7 @@ export const QUICKHACKS = {
     icon: 'power-settings-new',
     description: 'Full ICE breach. Disables all enemy cyberware for two rounds.',
     moduleCost: 18000,
+    factionReq: { faction: 'fac_signal', tier: 'ALLIED' },
   },
   qh_cyberpsychosis: {
     id: 'qh_cyberpsychosis',
@@ -69,6 +70,7 @@ export const QUICKHACKS = {
     icon: 'psychology',
     description: "Induces cascade failure in target's neural implants. Turns their augments against them.",
     moduleCost: 20000,
+    factionReq: { faction: 'fac_lexicon', tier: 'ALLIED' },
   },
 };
 

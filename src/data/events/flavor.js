@@ -143,4 +143,157 @@ export const FLAVOR_EVENTS = [
     effects: {},
     accent: 'outline',
   },
+
+  // ─── Faction-tinted ambient (weight-boosted by standing) ───────────────────
+
+  {
+    id: 'flv_lexicon_genechapel',
+    type: 'flavor', weight: 5, faction: 'fac_lexicon',
+    narration: '> A LEXICON gene-chapel glows magenta on the corner. Pilgrims line up to have their flaws edited out, sentence by sentence.',
+    effects: {}, accent: 'secondary',
+  },
+  {
+    id: 'flv_lexicon_scribe',
+    type: 'flavor', weight: 4, faction: 'fac_lexicon',
+    narration: '> A LEXICON scribe reads a stranger\'s DNA off a handshake and frowns, as if the man were poorly written.',
+    effects: {}, accent: 'secondary',
+  },
+  {
+    id: 'flv_grammaton_checkpoint',
+    type: 'flavor', weight: 5, faction: 'fac_grammaton',
+    narration: '> GRAMMATON checkpoint drones sweep the block. Your creds clear. This time.',
+    effects: {}, accent: 'primary',
+  },
+  {
+    id: 'flv_grammaton_audit',
+    type: 'flavor', weight: 4, faction: 'fac_grammaton',
+    narration: '> A GRAMMATON auditor recites someone\'s violations aloud on the maglev. By the third clause, the man is already gone.',
+    effects: {}, accent: 'primary',
+  },
+  {
+    id: 'flv_signal_tower',
+    type: 'flavor', weight: 5, faction: 'fac_signal',
+    narration: '> A SIGNAL relay tower pulses green against the smog. Every packet in the district passes through it, and it remembers each one.',
+    effects: {}, accent: 'tertiary',
+  },
+  {
+    id: 'flv_signal_courier',
+    type: 'flavor', weight: 4, faction: 'fac_signal',
+    narration: '> A SIGNAL courier rides past, dataspike humming. The air around them tastes faintly of ozone and surveillance.',
+    effects: {}, accent: 'tertiary',
+  },
+  {
+    id: 'flv_referent_ticker',
+    type: 'flavor', weight: 5, faction: 'fac_referent',
+    narration: '> A REFERENT ticker scrolls gold above the plaza, pricing things that don\'t exist yet. Someone is already getting rich off the guess.',
+    effects: {}, accent: 'outline',
+  },
+  {
+    id: 'flv_referent_appraiser',
+    type: 'flavor', weight: 4, faction: 'fac_referent',
+    narration: '> A REFERENT appraiser looks at you the way one looks at a stock. You feel your value tick down a quarter point.',
+    effects: {}, accent: 'outline',
+  },
+  {
+    id: 'flv_undertow_courier',
+    type: 'flavor', weight: 5, faction: 'fac_undertow',
+    narration: '> An UNDERTOW courier nods at you in passing. Word travels in the gray.',
+    effects: {}, accent: 'secondary',
+  },
+  {
+    id: 'flv_undertow_market',
+    type: 'flavor', weight: 4, faction: 'fac_undertow',
+    narration: '> A door that wasn\'t there yesterday opens onto an UNDERTOW market. Tomorrow it will be a wall again.',
+    effects: {}, accent: 'secondary',
+  },
+  {
+    id: 'flv_static_tagbomb',
+    type: 'flavor', weight: 5, faction: 'fac_static',
+    narration: '> A STATIC tag-bomb scrawls noise across a corp billboard. The ad stutters and dies into honest gray snow.',
+    effects: {}, accent: 'error',
+  },
+  {
+    id: 'flv_static_jammer',
+    type: 'flavor', weight: 4, faction: 'fac_static',
+    narration: '> Your comms hiss for ten seconds — a STATIC cell testing a jammer two rooftops over. Then the world\'s noise rushes back in.',
+    effects: {}, accent: 'error',
+  },
+
+  // ─── Rep-reactive: ALLIED (favorable) ──────────────────────────────────────
+
+  {
+    id: 'flv_lexicon_allied',
+    type: 'flavor', weight: 6, faction: 'fac_lexicon', repAtLeast: 75,
+    narration: '> A LEXICON medtech slips you a free immuno-patch. "The body should read clean," she says. To them, you\'re good grammar now.',
+    effects: { morale: 4 }, accent: 'tertiary',
+  },
+  {
+    id: 'flv_grammaton_allied',
+    type: 'flavor', weight: 6, faction: 'fac_grammaton', repAtLeast: 75,
+    narration: '> A GRAMMATON patrol logs your face and waves you through a restricted cordon without a word. Order recognizes its own.',
+    effects: {}, accent: 'tertiary',
+  },
+  {
+    id: 'flv_signal_allied',
+    type: 'flavor', weight: 6, faction: 'fac_signal', repAtLeast: 75,
+    narration: '> Your deck pulls a clean SIGNAL backbone line — priority routing, no throttle. The pipes are open to you tonight.',
+    effects: {}, accent: 'tertiary',
+  },
+  {
+    id: 'flv_undertow_allied',
+    type: 'flavor', weight: 6, faction: 'fac_undertow', repAtLeast: 75,
+    narration: '> An UNDERTOW fixer comps your tab and your discretion. "Family drinks free." The gray keeps its own warm.',
+    effects: { morale: 5, credits: 40 }, accent: 'tertiary',
+  },
+  {
+    id: 'flv_static_allied',
+    type: 'flavor', weight: 6, faction: 'fac_static', repAtLeast: 75,
+    narration: '> A STATIC cell scrambles a corp drone that was tailing you, just because you\'re you. The noise has your back.',
+    effects: {}, accent: 'tertiary',
+  },
+  {
+    id: 'flv_referent_allied',
+    type: 'flavor', weight: 6, faction: 'fac_referent', repAtLeast: 75,
+    narration: '> A REFERENT broker forwards you a tip that prices true an hour later. Standing, it turns out, pays a dividend. +60 CR.',
+    effects: { credits: 60 }, accent: 'tertiary',
+  },
+
+  // ─── Rep-reactive: HOSTILE (menacing) ──────────────────────────────────────
+
+  {
+    id: 'flv_grammaton_hostile',
+    type: 'flavor', weight: 7, faction: 'fac_grammaton', repAtMost: -50,
+    narration: '> Two GRAMMATON enforcers clock you and slow their walk. They don\'t move in. They just want you to know they could.',
+    effects: { morale: -4 }, accent: 'error',
+  },
+  {
+    id: 'flv_lexicon_hostile',
+    type: 'flavor', weight: 7, faction: 'fac_lexicon', repAtMost: -50,
+    narration: '> A LEXICON drone tags your biometrics in red as it passes. Somewhere, a file on your body is being marked for revision.',
+    effects: { morale: -4 }, accent: 'error',
+  },
+  {
+    id: 'flv_undertow_hostile',
+    type: 'flavor', weight: 7, faction: 'fac_undertow', repAtMost: -50,
+    narration: '> Every UNDERTOW door shuts a half-second before you reach it. The gray economy has decided you don\'t exist tonight.',
+    effects: { morale: -3 }, accent: 'error',
+  },
+  {
+    id: 'flv_static_hostile',
+    type: 'flavor', weight: 7, faction: 'fac_static', repAtMost: -50,
+    narration: '> Your optics fill with STATIC snow for a full, blind minute. A message with no words: they can switch you off whenever they like.',
+    effects: { morale: -4 }, accent: 'error',
+  },
+  {
+    id: 'flv_signal_hostile',
+    type: 'flavor', weight: 7, faction: 'fac_signal', repAtMost: -50,
+    narration: '> Your comms throttle to a crawl the instant you need them. The SIGNAL owns the pipes, and tonight it\'s closed yours.',
+    effects: { morale: -3 }, accent: 'error',
+  },
+  {
+    id: 'flv_referent_hostile',
+    type: 'flavor', weight: 6, faction: 'fac_referent', repAtMost: -50,
+    narration: '> Every vendor quotes you a "risk premium" tonight. REFERENT has flagged your credit. The whole district overcharges you on principle. -50 CR.',
+    effects: { credits: -50, morale: -2 }, accent: 'error',
+  },
 ];

@@ -39,6 +39,7 @@ export const CYBERWARE_ITEMS = [
     cost: 24000,
     vendorCategory: 'rotating',
     vendorTier: 'elite',
+    factionReq: { faction: 'fac_signal', tier: 'FRIENDLY' },
   },
   {
     id: 'cyb_bio_monitor_x10',
@@ -65,6 +66,7 @@ export const CYBERWARE_ITEMS = [
     cost: 9000,
     vendorCategory: 'rotating',
     vendorTier: 'elite',
+    factionReq: { faction: 'fac_grammaton', tier: 'FRIENDLY' },
   },
   {
     id: 'cyb_skill_chip_crawl',
@@ -104,6 +106,7 @@ export const CYBERWARE_ITEMS = [
     cost: 15000,
     vendorCategory: 'rotating',
     vendorTier: 'elite',
+    factionReq: { faction: 'fac_static', tier: 'FRIENDLY' },
   },
   {
     id: 'starter_neural_link',

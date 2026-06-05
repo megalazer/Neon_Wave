@@ -4,6 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
 import { QUALITY_CONFIG } from '../../data/recruitQuality';
 import { CYBERWARE_ITEMS } from '../../data/cyberware';
+import { getFaction } from '../../data/factions';
 import AnimatedRainbowBorder from './AnimatedRainbowBorder';
 import RecruitButton from './RecruitButton';
 
@@ -45,6 +46,8 @@ export default function RecruitCard({ recruit, credits, rosterFull, currentTurn,
   const turnsLeft = isGenerated ? recruit.expiresAtTurn - currentTurn : null;
   const expiryUrgent = isGenerated && turnsLeft <= 3;
 
+  const faction = getFaction(recruit.faction);
+
   const cardContent = (
     <>
       {/* Top badge */}
@@ -74,9 +77,16 @@ export default function RecruitCard({ recruit, credits, rosterFull, currentTurn,
       <View style={styles.identity}>
         <Text style={[styles.name, { color: portraitColor }]}>{recruit.name}</Text>
         {isGenerated && <Text style={[styles.handle, { color: cfg.color }]}>{recruit.handle}</Text>}
-        <Text style={styles.cls}>
-          {classKey(recruit.class).replace('_', ' ').toUpperCase()}
-        </Text>
+        <View style={styles.clsRow}>
+          <Text style={styles.cls}>
+            {classKey(recruit.class).replace('_', ' ').toUpperCase()}
+          </Text>
+          {faction && (
+            <View style={[styles.factionChip, { borderColor: `${faction.accent}88` }]}>
+              <Text style={[styles.factionChipText, { color: faction.accent }]}>{faction.tag}</Text>
+            </View>
+          )}
+        </View>
       </View>
 
       {/* Stat pills */}
@@ -231,13 +241,29 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
+  clsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 1,
+  },
   cls: {
     fontFamily: 'KodeMono_700Bold',
     fontSize: 9,
     color: colors.onSurfaceVariant,
     letterSpacing: 1,
     textTransform: 'uppercase',
-    marginTop: 1,
+  },
+  factionChip: {
+    borderWidth: 1,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+  },
+  factionChipText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 7,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   statRow: {
     flexDirection: 'row',
