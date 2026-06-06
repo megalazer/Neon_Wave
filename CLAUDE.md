@@ -1,12 +1,12 @@
 # CLAUDE.md
 
 ## Project
-Neon Terminus — a cyberpunk emergent life sim for mobile (React Native + Expo). BitLife meets Shadowrun. The player taps "ADVANCE_CYCLE" to advance turns. Most turns produce narration that just appears. Choice popups will fire every ~6-7 turns (not in MVP yet). Flat death probability per turn. Legacy carryover between runs.
+Neon Terminus — a cyberpunk emergent life sim for mobile (React Native + Expo). BitLife meets Shadowrun. The player taps "ADVANCE_CYCLE" to advance turns. Most turns produce narration that just appears. Choice events are live (cooldown 4 turns, escalating probability up to 85%). Death only from combat defeat. Achievement carryover between runs.
 
 ## Required Reading (read before any task)
 Always read these before making structural decisions or writing code:
 
-1. `docs/ARCHITECTURE.md` — store slices, event schema, turn pipeline, legacy system, full implementation phases
+1. `docs/ARCHITECTURE.md` — store slices, event schema, turn pipeline, achievement persistence, combat system
 2. `docs/DESIGN.md` — visual design system, per-screen interaction notes, file naming
 3. `docs/designs/*.html` — Stitch exports defining the exact aesthetic. **These are the source of truth for how every screen looks.** Open the relevant HTML file before building any screen.
 
@@ -14,9 +14,9 @@ If a design decision conflicts between this file and the HTML exports, the HTML 
 
 ## Tech Stack
 - Expo SDK 55+, React Native 0.83+
-- Zustand 5 with `immer` middleware, sliced stores (6 slices per ARCHITECTURE.md)
+- Zustand 5 with `immer` middleware (enableMapSet), sliced stores (13 slices)
 - NativeWind for Tailwind-style styling
-- react-native-reanimated 3 for animations
+- react-native-reanimated 4 for animations
 - expo-linear-gradient, expo-blur, expo-font, expo-haptics
 - @expo/vector-icons (MaterialIcons replaces `material-symbols-outlined` from HTML)
 
@@ -31,21 +31,22 @@ If a design decision conflicts between this file and the HTML exports, the HTML 
 - **Bottom nav:** 5 tabs (HAVEN / CYBER / NEURAL / JOBS / LIFESTYLE). NEURAL is centered and ~1.4x larger than the others, always visually emphasized. Active tab has cyan border-top, tint background, pulsing cyan glow (2s loop, opacity 0.3→0.8→0.3).
 
 ## Architectural Rules
-- Zustand store is sliced — 6 domain slices, never one monolith. Always use `immer` middleware.
+- Zustand store is sliced — 13 domain slices, never one monolith. Always use `immer` middleware (enableMapSet).
 - Components subscribe to narrow selectors, never the full store: `useStore(s => s.log.entries)` not `useStore()`.
 - Engine functions are pure where possible — take state, return new state.
 - All game content lives in `src/data/` as JS objects. No hardcoded content in engine code.
-- Legacy slice persists separately in AsyncStorage (not implemented in MVP, but architecture should support it).
+- Achievement slice persists account data in AsyncStorage (key: neon_terminus_account_achievements). legacySlice is an unused stub — real cross-run persistence lives in achievementSlice.
 - LLM narrator is a future add-on — not in MVP. Use template/placeholder narration for now.
 
 ## Gameplay Constants
-- Flat death probability per turn: ~3% (`BASE_DEATH_CHANCE` in `src/engine/deathCheck.js`). No scaling.
-- Choice events fire every ~6-7 turns via cooldown system (not in MVP).
-- ~15% of turns are quiet (nothing happens) (not in MVP).
-- World state persists across runs; character state resets.
+- No per-turn death chance. Death only from combat flatline (player vitals reach 0) or dev panel.
+- Choice events are live: cooldown 4 turns, escalating probability min(0.85, (turnsSinceChoice-4)*0.2).
+- Flavor events fire at 40% probability between turns 3-7, forced past turn 7.
+- Crew cap: 4. MAX_LEVEL: 10. XP_THRESHOLDS: [0,100,250,450,700,1050,1500,2100,2900,4000].
+- Achievement data (account + lifetime) persists across runs via AsyncStorage. Per-run character/crew/world state resets on death.
 
 ## File Structure
-Match `docs/ARCHITECTURE.md` section 10. Don't invent alternative structures. Stub files for unbuilt features rather than reorganizing.
+Match `docs/ARCHITECTURE.md` file tree. Don't invent alternative structures. Stub files for unbuilt features rather than reorganizing.
 
 ## Code Style
 - Functional components only, no class components.
@@ -56,7 +57,7 @@ Match `docs/ARCHITECTURE.md` section 10. Don't invent alternative structures. St
 
 ## What NOT to Do
 - Don't introduce navigation libraries for the MVP — use a single `activeTab` `useState` in `App.js`.
-- Don't add features outside the current scope without asking. If `ARCHITECTURE.md` lists something for Phase 3 and we're on MVP, leave it as a stub.
+- Don't add features outside the current scope without asking. If `ARCHITECTURE.md` lists an unimplemented subsystem, leave it as a stub.
 - Don't render the Stitch HTML directly. The HTML files are visual references — build native components that match.
 - Don't write the LLM narrator layer. Use the hardcoded placeholder array for narration.
 - Don't refactor the store shape without consulting `ARCHITECTURE.md`.
