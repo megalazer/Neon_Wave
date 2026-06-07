@@ -19,7 +19,7 @@ import { useStore } from '../store/index';
 import { advanceTurn } from '../engine/turnPipeline';
 import { ACTIVITIES } from '../data/activities';
 import { getContract } from '../data/contracts/index';
-import { getFixer } from '../data/fixers';
+import { getFixer, FIXERS } from '../data/fixers';
 import { getFaction, repTierFromValue, tierMeetsRequirement } from '../data/factions';
 import { colors } from '../theme/colors';
 
@@ -440,6 +440,33 @@ function FeedEmpty() {
   );
 }
 
+
+// --- FixerRepRoster ---
+function FixerRepRoster() {
+  const fixerRep = useStore((s) => s.contract.fixerRep);
+  const fixers = FIXERS;
+
+  return (
+    <View style={styles.fixerRoster}>
+      <Text style={styles.fixerRosterLabel}>FIXER_NETWORK</Text>
+      <View style={styles.fixerRow}>
+        {fixers.map((f) => {
+          const rep = fixerRep[f.id] ?? 0;
+          return (
+            <View key={f.id} style={styles.fixerChip}>
+              <MaterialIcons name={f.icon} size={10} color={f.color} />
+              <Text style={[styles.fixerChipName, { color: f.color }]}>{f.name}</Text>
+              <Text style={[styles.fixerChipRep, { color: rep > 0 ? f.color : colors.outline }]}>
+                {rep}
+              </Text>
+            </View>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
 // --- JobsScreen ---
 export default function JobsScreen({ onNavigate }) {
   const [activeTab, setActiveTab] = useState('contracts');
@@ -493,6 +520,8 @@ export default function JobsScreen({ onNavigate }) {
         showsVerticalScrollIndicator={false}
       >
         <UnitStatusMonitor members={members} />
+
+        <FixerRepRoster />
 
         <SegmentedTabs active={activeTab} onChange={setActiveTab} />
 
@@ -842,5 +871,44 @@ const styles = StyleSheet.create({
     fontSize: 11,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
+  },
+
+  // Fixer rep roster
+  fixerRoster: {
+    marginBottom: 12,
+    gap: 6,
+  },
+  fixerRosterLabel: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 9,
+    color: `${colors.primary}66`,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginBottom: 4,
+  },
+  fixerRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  fixerChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    borderWidth: 1,
+    borderColor: `${colors.outline}33`,
+    backgroundColor: 'rgba(28,27,29,0.4)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  fixerChipName: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 9,
+    letterSpacing: 0.8,
+  },
+  fixerChipRep: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 10,
+    letterSpacing: 0.5,
   },
 });
