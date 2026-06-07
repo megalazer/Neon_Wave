@@ -1,11 +1,8 @@
 import { useStore } from '../store/index';
-import { PLACEHOLDER_LINES } from '../data/placeholderNarration';
+import { pickNarration } from '../data/placeholderNarration';
 import { calculateTeamLevel } from '../data/leveling';
 import { tryFireCrewInteraction } from './crewInteractionEngine';
 
-function pickNarration() {
-  return PLACEHOLDER_LINES[Math.floor(Math.random() * PLACEHOLDER_LINES.length)];
-}
 
 function makeId() {
   return `entry_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
@@ -78,10 +75,11 @@ export function advanceTurn() {
 
   if (!eventFired) {
     const turnNumber = afterState.character.turnNumber;
+    const playerStats = useStore.getState().crew.members.find(m => m.isPlayer)?.stats ?? {};
     store.addEntry({
       id: makeId(),
       turn: turnNumber,
-      text: pickNarration(),
+      text: pickNarration(playerStats),
       timestamp: new Date().toISOString(),
       type: 'narration',
     });

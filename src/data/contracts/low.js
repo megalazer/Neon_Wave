@@ -491,6 +491,7 @@ export const LOW_CONTRACTS = [
     faction: 'fac_undertow',
     factionRepReward: 12,
     factionRepPenalty: 6,
+    minFactionRep: 'FRIENDLY',
     description: 'A family in Kabuki is paying to get their daughter back from Red Chrome. Remi says quick and quiet. You say: define quick.',
     payout: 1800,
     deposit: 0,

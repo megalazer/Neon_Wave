@@ -23,6 +23,28 @@ export function applyRepToDraft(state, factionLabel, amount) {
   const cur = state.faction.rep[factionId] ?? 0;
   state.faction.rep[factionId] = clamp(cur + amount, REP_MIN, REP_MAX);
 
+  // Check tier change for log entry
+  const oldTier = repTierFromValue(cur);
+  const newVal = state.faction.rep[factionId];
+  const newTier = repTierFromValue(newVal);
+
+  if (oldTier !== newTier) {
+    const fac = FACTIONS[factionId];
+    const logText = newTier === 'HOSTILE' || newTier === 'COLD'
+      ? `REP_LOSS: ${fac.name} standing now ${newTier}.`
+      : `REP_GAIN: ${fac.name} standing now ${newTier}.`;
+
+    if (state.log) {
+      state.log.entries.push({
+        id: `rep_tier_${Date.now()}`,
+        turn: state.character?.turnNumber ?? 0,
+        text: logText,
+        timestamp: new Date().toISOString(),
+        type: newTier === 'HOSTILE' || newTier === 'COLD' ? 'narration' : 'acquisition',
+      });
+    }
+  }
+
   if (amount > 0) {
     const rivals = FACTIONS[factionId]?.rivals || [];
     for (const rid of rivals) {

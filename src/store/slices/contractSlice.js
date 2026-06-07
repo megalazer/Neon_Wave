@@ -357,6 +357,14 @@ export const createContractSlice = (set, get) => ({
       if (resolution.creditsEarned > 0) {
         state.character.credits += resolution.creditsEarned;
       }
+
+      // Rep tier payout bonus
+      const factionRep = contract.faction ? (state.faction?.rep?.[contract.faction] ?? 0) : 0;
+      const tierMultiplier = factionRep >= 150 ? 1.30 : factionRep >= 75 ? 1.20 : factionRep >= 25 ? 1.10 : 1.0;
+      const bonusCredits = Math.round(resolution.creditsEarned * (tierMultiplier - 1));
+      if (bonusCredits > 0) {
+        state.character.credits += bonusCredits;
+      }
       if (resolution.expEarned > 0) {
         const player = state.crew.members.find((m) => m.isPlayer);
         if (player) applyXPToCrewMember(state, player, resolution.expEarned);
@@ -384,9 +392,11 @@ export const createContractSlice = (set, get) => ({
         }
       }
 
+      const tierLabel = factionRep >= 150 ? 'EXALTED' : factionRep >= 75 ? 'ALLIED' : factionRep >= 25 ? 'FRIENDLY' : null;
+      const tierSuffix = tierLabel ? ` (${tierLabel} bonus: +${bonusCredits} CR)` : '';
       const logText =
         resolution.outcome === 'success'
-          ? `ACQUISITION: ${contract.name} complete. +${resolution.creditsEarned.toLocaleString()} CR, +${resolution.expEarned} EXP.`
+          ? `ACQUISITION: ${contract.name} complete. +${resolution.creditsEarned.toLocaleString()} CR, +${resolution.expEarned} EXP.${tierSuffix}`
           : resolution.outcome === 'failure'
           ? `CRITICAL: ${contract.name} went sideways. Salvaged ${resolution.creditsEarned.toLocaleString()} CR.`
           : `ABORT: ${contract.name} terminated. No payout.`;
