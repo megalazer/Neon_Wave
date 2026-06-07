@@ -27,6 +27,7 @@ import BattleScreen from './src/screens/BattleScreen';
 import GameOverScreen from './src/screens/GameOverScreen';
 import LevelUpBanner from './src/components/LevelUpBanner';
 import ChoiceModal from './src/components/ChoiceModal';
+import CrewInteractionToast from './src/components/CrewInteractionToast';
 import AchievementToast from './src/components/AchievementToast';
 
 const SCREEN_SUBTITLES = {
@@ -96,6 +97,13 @@ export default function App() {
       setBattleActive(true);
     }
   }, [contractPhase]);
+
+  // A flatline ends the run: tear down the battle takeover so the after-battle
+  // outcome overlay can't resurface on the next run after restart. The gameOver
+  // screen already renders ahead of the battle, this just clears the stale flag.
+  useEffect(() => {
+    if (gameOver) setBattleActive(false);
+  }, [gameOver]);
 
   const handleTabPress = useCallback((tabId) => {
     if (tabId === 'battle') {
@@ -212,6 +220,7 @@ export default function App() {
       />
       <LevelUpBanner />
       <AchievementToast />
+      <CrewInteractionToast />
       <ChoiceModal />
       <BottomNav activeTab={activeTab} onTabPress={handleTabPress} />
       <NoiseTexture />

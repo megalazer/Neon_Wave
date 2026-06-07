@@ -5,6 +5,11 @@ export const createWorldSlice = (set) => ({
     pendingLevelUp: null, // { target, memberName, from, to } — drives LevelUpBanner
     gameOver: false,
     gameOverReason: null,
+    crewInteraction: {
+      activeToast: null,  // { nameA, nameB, lines: string[], accent: string } | null
+      lastInteractionTurn: 0,
+      cooldownTurns: 0,
+    },
   },
 
   tickTurn: () =>
@@ -26,5 +31,10 @@ export const createWorldSlice = (set) => ({
     set((state) => {
       state.world.gameOver = true;
       state.world.gameOverReason = reason ?? 'FLATLINE';
+    }),
+
+  dismissCrewToast: () =>
+    set((state) => {
+      state.world.crewInteraction.activeToast = null;
     }),
 });

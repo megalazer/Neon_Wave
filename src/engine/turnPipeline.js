@@ -1,6 +1,7 @@
 import { useStore } from '../store/index';
 import { PLACEHOLDER_LINES } from '../data/placeholderNarration';
 import { calculateTeamLevel } from '../data/leveling';
+import { tryFireCrewInteraction } from './crewInteractionEngine';
 
 function pickNarration() {
   return PLACEHOLDER_LINES[Math.floor(Math.random() * PLACEHOLDER_LINES.length)];
@@ -83,6 +84,14 @@ export function advanceTurn() {
       text: pickNarration(),
       timestamp: new Date().toISOString(),
       type: 'narration',
+    });
+  }
+
+  // Crew banter — independent of events, gated by its own cooldown
+  const crewState = useStore.getState();
+  if (!crewState.combat.active && crewState.contract.activeContractId === null) {
+    useStore.setState((state) => {
+      tryFireCrewInteraction(state);
     });
   }
 }
