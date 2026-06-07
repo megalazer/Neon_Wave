@@ -30,7 +30,9 @@ neon-terminus/
     │       └── testCombatSlice.js
     ├── engine/
     │   ├── turnPipeline.js      the heartbeat: advanceTurn()
-    │   └── recruitGenerator.js  procedural crew spawns
+    │   ├── recruitGenerator.js  procedural crew spawns
+    │   ├── encounterGenerator.js  faction+tier+level → scaled enemy group; scaleEnemy/buildUnits
+    │   └── enemyTurn.js         pure planEnemyTurn: expands enemy moves → hit assignments
     ├── data/
     │   ├── origins.js           3 origins (corpo, street_kid, nomad)
     │   ├── operatives.js        5 seed crew members
@@ -58,7 +60,7 @@ neon-terminus/
     │   │   ├── mid.js           4 contracts
     │   │   ├── high.js          3 contracts
     │   │   └── faction.js       8 contracts
-    │   └── encounters.js / enemies.js  minimal; combat mostly uses TEST_HOSTILE_UNITS
+    │   └── enemies.js / encounters.js  faction-tagged roster (21) + named/boss encounters
     ├── screens/
     │   ├── LogScreen.js         NEURAL tab — turn feed + ADVANCE_CYCLE
     │   ├── HavenScreen.js       crew management
@@ -129,7 +131,7 @@ character, crew, world, log, event, contract, vendor, exchange, faction, achieve
 19 contracts (low/mid/high/faction) across 4 phase files. Lifecycle: feed → active → (combat) → resolving → feed. Multi-stage with stat checks. Combat bridge via `pendingCombatResult`.
 
 ### Combat
-Dice-driven in `testCombatSlice`. Round phases: roll→targeting→executing→enemy_turn→endRound. Cyber pool from team neural. Victory/defeat → `handleCombatResolution` if contract-active.
+Dice-driven in `testCombatSlice`. Round phases: roll→targeting→executing→enemy_turn→endRound. Cyber pool from team neural. Enemies are faction-tagged (`data/enemies.js`); fights are built by `engine/encounterGenerator.js` from the contract's faction+tier+party level (level-scaled HP/damage), or an explicit named/boss `encounterId`. Enemy moves (basic/focus/aoe/ramp/priority/telegraph + block) resolve via `engine/enemyTurn.js`. Victory/defeat → `handleCombatResolution` if contract-active.
 
 ### Persistence
 `achievementSlice` persists account+lifetime to AsyncStorage (key: `neon_terminus_account_achievements`). `devSlice` persists `dev_enabled`. Per-run state is in-memory, wiped on death.

@@ -1,8 +1,10 @@
 import { TEST_HOSTILE_UNITS, TEST_BATTLE_CONFIG } from '../../data/testBattle';
 import { ENCOUNTERS } from '../../data/encounters';
-import { ENEMIES } from '../../data/enemies';
+import { generateEncounter, buildUnits } from '../../engine/encounterGenerator';
+import { planEnemyTurn } from '../../engine/enemyTurn';
+import { getContract } from '../../data/contracts/index';
 import { CYBER_ABILITIES } from '../../data/cyberAbilities';
-import { distributeCombatXP } from '../../data/leveling';
+import { distributeCombatXP, calculateTeamLevel } from '../../data/leveling';
 import { FRIENDLY_LINE_COLORS } from '../../data/combatColors';
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -73,6 +75,13 @@ function depleteNeuralAfterBattle(state) {
   }
 }
 
+// Maps a party level to a contract tier for context-free battles (e.g. the dev/test battle).
+function tierFromLevel(level) {
+  if (level <= 3) return 'LOW';
+  if (level <= 7) return 'MID';
+  return 'HIGH';
+}
+
 // ── Slice ─────────────────────────────────────────────────────────────────────
 
 export const createTestCombatSlice = (set, get) => ({
@@ -108,14 +117,28 @@ export const createTestCombatSlice = (set, get) => ({
         .filter((m) => (m.vitals?.current ?? 1) > 0)
         .map((m) => ({ ...m, hp: { current: m.vitals.current, max: m.vitals.max } }));
 
-      const encounterId = state.contract.pendingCombatResult?.encounterId;
-      const encounter   = encounterId ? ENCOUNTERS[encounterId] : null;
-      const hostile = encounter
-        ? encounter.enemies.map((eid) => {
-            const template = ENEMIES[eid];
-            return { ...template, hp: { ...template.hp } };
-          })
-        : cloneUnits(TEST_HOSTILE_UNITS);
+      const pending = state.contract.pendingCombatResult;
+      const partyLevel =
+        state.crew.members.find((m) => m.isPlayer)?.level
+        ?? calculateTeamLevel(state.crew.members)
+        ?? 1;
+
+      let hostile;
+      if (pending?.encounterId && ENCOUNTERS[pending.encounterId]) {
+        // Explicit/boss encounter — build + scale its template list.
+        hostile = buildUnits(ENCOUNTERS[pending.encounterId].enemies, partyLevel);
+      } else {
+        // Generic fight — derive a faction-appropriate, level-scaled group from the active contract.
+        const contract = getContract(state.contract.activeContractId);
+        const tier = contract?.tier || tierFromLevel(partyLevel);
+        hostile = generateEncounter({ faction: contract?.faction ?? null, tier, partyLevel }).enemies;
+      }
+
+      // Roll each block enemy's defensive charge for the opening round (re-rolled each round in endRound).
+      for (const e of hostile) {
+        e.rampStacks = e.rampStacks ?? 0;
+        e.blockCharges = e.block && Math.random() < e.block.chance ? 1 : 0;
+      }
 
       const startingPool = calculateStartingCyberPool(friendly);
 
@@ -384,19 +407,27 @@ export const createTestCombatSlice = (set, get) => ({
         const targetId = attack.targetIds[0];
         const target = state.combat.hostile.find((u) => u.id === targetId);
         if (target && target.hp.current > 0) {
-          const hit = Math.min(attack.damage, target.hp.current);
-          target.hp.current -= hit;
-          state.combat.damageDealt += hit;
-          if (hit > 0) state.combat.attacksLanded += 1;
+          if (target.blockCharges > 0) {
+            target.blockCharges -= 1; // shielded: this hit is negated
+          } else {
+            const hit = Math.min(attack.damage, target.hp.current);
+            target.hp.current -= hit;
+            state.combat.damageDealt += hit;
+            if (hit > 0) state.combat.attacksLanded += 1;
+          }
         }
       } else if (attack.source === 'ability') {
         if (attack.effectType === 'damage') {
           for (const targetId of attack.targetIds) {
             const target = state.combat.hostile.find((u) => u.id === targetId);
             if (target && target.hp.current > 0) {
-              const dmg = Math.min(attack.damage, target.hp.current);
-              target.hp.current -= dmg;
-              state.combat.damageDealt += dmg;
+              if (target.blockCharges > 0) {
+                target.blockCharges -= 1;
+              } else {
+                const dmg = Math.min(attack.damage, target.hp.current);
+                target.hp.current -= dmg;
+                state.combat.damageDealt += dmg;
+              }
             }
           }
         } else if (attack.effectType === 'heal') {
@@ -442,22 +473,26 @@ export const createTestCombatSlice = (set, get) => ({
 
   beginEnemyTurn: () =>
     set((state) => {
-      const liveEnemies  = state.combat.hostile.filter((u) => u.hp.current > 0);
-      const liveFriendly = state.combat.friendly.filter((u) => u.hp.current > 0);
-      const assignments  = [];
-      for (const enemy of liveEnemies) {
-        if (!liveFriendly.length) break;
-        const target = liveFriendly[Math.floor(Math.random() * liveFriendly.length)];
-        const damage = 6 + Math.floor(Math.random() * 8);
-        assignments.push({ enemyId: enemy.id, targetId: target.id, damage });
+      const { assignments, patches } = planEnemyTurn({
+        hostile: state.combat.hostile,
+        friendly: state.combat.friendly,
+        round: state.combat.round,
+      });
+
+      // Apply ramp progression reported by the planner.
+      for (const enemyId of Object.keys(patches)) {
+        const enemy = state.combat.hostile.find((u) => u.id === enemyId);
+        if (enemy) enemy.rampStacks = patches[enemyId].rampStacks;
       }
+
       state.combat.enemyAssignments = assignments;
       state.combat.phase = 'enemy_turn';
       state.combat.pendingAbility = null;
 
+      // Preview = sum of incoming raw damage per friendly (pre-reduction, matches prior UX).
       const previews = {};
       for (const a of assignments) {
-        const target = liveFriendly.find((u) => u.id === a.targetId);
+        const target = state.combat.friendly.find((u) => u.id === a.targetId);
         if (!target) continue;
         if (!previews[a.targetId]) {
           previews[a.targetId] = { totalDamage: 0, hpAtCommit: target.hp.current, maxHp: target.hp.max };
@@ -467,12 +502,12 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.executingPreviews = previews;
     }),
 
-  applyEnemyHit: (enemyId) =>
+  applyEnemyHit: (assignmentId) =>
     set((state) => {
-      const a = state.combat.enemyAssignments.find((x) => x.enemyId === enemyId);
+      const a = state.combat.enemyAssignments.find((x) => x.id === assignmentId);
       if (!a) return;
       const target = state.combat.friendly.find((u) => u.id === a.targetId);
-      if (!target) return;
+      if (!target || target.hp.current <= 0) return; // target may have dropped earlier this enemy turn
 
       const reductionBuff = state.combat.squadBuffs.find((b) => b.type === 'damage_reduction');
       const multiplier = reductionBuff ? 1 - reductionBuff.value : 1;
@@ -511,6 +546,13 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.squadBuffs = state.combat.squadBuffs
         .map((b) => ({ ...b, duration: b.duration - 1 }))
         .filter((b) => b.duration > 0);
+
+      // Re-roll defensive shields for surviving block enemies at the top of each round.
+      for (const enemy of state.combat.hostile) {
+        if (enemy.hp.current > 0 && enemy.block) {
+          enemy.blockCharges = Math.random() < enemy.block.chance ? 1 : 0;
+        }
+      }
 
       // Regen is capped at maxCyberPool (the neural-derived ceiling for this fight)
       state.combat.cyberPool = Math.min(state.combat.maxCyberPool, state.combat.cyberPool + 1);
@@ -580,7 +622,7 @@ export const createTestCombatSlice = (set, get) => ({
 
       // High-tier enemy defeated
       const highTierDown = hostile.some((u) =>
-        ['HIGH_TRT', 'EX_TRT', 'high', 'extreme', 'boss'].includes(u.threat),
+        ['high', 'boss'].includes(u.threat),
       );
       if (highTierDown) get().triggerAchievement?.('acc_boss_down');
     }

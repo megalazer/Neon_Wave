@@ -234,7 +234,7 @@ export default function BattleScreen({ onExit }) {
 
       for (const a of enemyAssignments) {
         if (cancelled) return;
-        useStore.getState().applyEnemyHit(a.enemyId);
+        useStore.getState().applyEnemyHit(a.id);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         await delay(120);
       }

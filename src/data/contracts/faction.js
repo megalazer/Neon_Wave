@@ -1,6 +1,6 @@
 // Faction-flavored contracts. Same schema as low/mid/high; tagged with a canonical
 // faction id + rep reward/penalty. Two are FRIENDLY+ gated to show rep unlocking work.
-// Battle-triggering stages reuse the enc_gang_enforcer_solo encounter.
+// Battle-triggering stages spawn faction- and tier-appropriate encounters (see encounterGenerator).
 
 export const FACTION_CONTRACTS = [
   // ── LEXICON — gene-edit heist ──────────────────────────────────────────────
@@ -149,7 +149,6 @@ export const FACTION_CONTRACTS = [
             outcome: {
               text: 'You move first. Grammaton trains its people to end conversations cleanly.',
               branch: 'triggersBattle',
-              encounterId: 'enc_gang_enforcer_solo',
               onVictory: {
                 branch: 'complete',
                 text: 'Gear recovered, contractor cuffed for collection. The grammar holds.',
@@ -558,7 +557,6 @@ export const FACTION_CONTRACTS = [
             outcome: {
               text: 'You take the holder on a rain-slick overpass, between safehouse and the unknown. He doesn\'t give up the ledger easy.',
               branch: 'triggersBattle',
-              encounterId: 'enc_gang_enforcer_solo',
               onVictory: {
                 branch: 'advance',
                 text: 'He goes down. The ledger\'s yours, and dawn\'s still an hour off.',

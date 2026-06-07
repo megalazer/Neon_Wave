@@ -581,7 +581,6 @@ export const LOW_CONTRACTS = [
             fail: {
               text: 'He spins. Recognition lights his eyes. There\'s no talking out of this.',
               branch: 'triggersBattle',
-              encounterId: 'enc_gang_enforcer_solo',
               onVictory: {
                 branch: 'advance',
                 text: 'Down. Daya\'s door opens before the echo clears.',
@@ -598,7 +597,6 @@ export const LOW_CONTRACTS = [
             outcome: {
               text: 'No hesitation. You move first. The hallway decides the rest.',
               branch: 'triggersBattle',
-              encounterId: 'enc_gang_enforcer_solo',
               onVictory: {
                 branch: 'advance',
                 text: 'Clean. You step over him and knock twice on Daya\'s door.',

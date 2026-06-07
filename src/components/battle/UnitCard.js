@@ -152,7 +152,7 @@ export default function UnitCard({
           )}
           {unit.threat !== undefined && (
             <Text style={[styles.sub, { color: isDead ? `${RED}44` : `${RED}AA` }]}>
-              {unit.threat}
+              {String(unit.threat).toUpperCase()}
             </Text>
           )}
         </View>
