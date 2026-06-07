@@ -85,7 +85,7 @@ export const CHOICE_EVENTS = [
     weight: 3,
     triggers: { minTurn: 10, excludeFlags: ['flag_helped_mira', 'flag_cold_to_mira', 'flag_mira_owes_favor'] },
     title: 'GHOST_FROM_PAST',
-    prompt: 'Someone you used to know — Mira — stops you mid-street. She looks rough. "Hey. Listen. I need 200 CR. Just this once."',
+    prompt: 'Someone you used to know, Mira, stops you mid-street. She looks rough. "Hey. Listen. I need 200 CR. Just this once."',
     choices: [
       {
         id: 'give',
@@ -440,7 +440,7 @@ export const CHOICE_EVENTS = [
         id: 'gs_refuse',
         label: '[REFUSE_AND_WALK]',
         outcome: {
-          text: 'You walk past him. He doesn\'t stop you — he just records it. To Grammaton, defiance is a kind of grammar too, and they\'ve filed yours.',
+          text: 'You walk past him. He doesn\'t stop you; he just records it. To Grammaton, defiance is a kind of grammar too, and they\'ve filed yours.',
           effects: { factionDelta: { fac_grammaton: -10 }, morale: 2 },
         },
       },
@@ -466,7 +466,7 @@ export const CHOICE_EVENTS = [
         id: 'us_decline',
         label: '[DECLINE]',
         outcome: {
-          text: '"Not tonight." The fixer shrugs and melts back into the crowd. No harm, no rep — just a door you didn\'t walk through.',
+          text: '"Not tonight." The fixer shrugs and melts back into the crowd. No harm, no rep; just a door you didn\'t walk through.',
           effects: {},
         },
       },
@@ -478,7 +478,7 @@ export const CHOICE_EVENTS = [
     type: 'choice', weight: 4,
     triggers: { minTurn: 10 },
     title: 'STATIC_CELL',
-    prompt: 'A Static runner, face hidden in scrambled pixels, slides you a jammer. "One Lexicon data-node. Kill it for an hour. They write people like code — we think the block deserves a little silence. Yes or no."',
+    prompt: 'A Static runner, face hidden in scrambled pixels, slides you a jammer. "One Lexicon data-node. Kill it for an hour. They write people like code; we think the block deserves a little silence. Yes or no."',
     choices: [
       {
         id: 'sj_doit',
@@ -523,7 +523,7 @@ export const CHOICE_EVENTS = [
         id: 'lt_decline',
         label: '[KEEP_YOUR_TYPOS]',
         outcome: {
-          text: '"I\'ll keep my mistakes, thanks." The scribe inclines their head. "Mistakes are also a language." No edit, no rep — but Static would approve.',
+          text: '"I\'ll keep my mistakes, thanks." The scribe inclines their head. "Mistakes are also a language." No edit, no rep. But Static would approve.',
           effects: { factionDelta: { fac_static: 3 } },
         },
       },
@@ -568,7 +568,7 @@ export const CHOICE_EVENTS = [
         label: '[TAG_THE_COURIER]',
         statCheck: { stat: 'ghost', threshold: 13 },
         pass: {
-          text: 'You ghost a tracer onto an Undertow courier\'s case. The Signal logs it grateful. The gray economy is a little more visible tonight — and Undertow won\'t love that.',
+          text: 'You ghost a tracer onto an Undertow courier\'s case. The Signal logs it grateful. The gray economy is a little more visible tonight, and Undertow won\'t love that.',
           effects: { factionDelta: { fac_signal: 10, fac_undertow: -5 } },
         },
         fail: {
@@ -592,7 +592,7 @@ export const CHOICE_EVENTS = [
     type: 'choice', weight: 5,
     triggers: { minTurn: 12, faction: 'fac_undertow', repAtLeast: 25 },
     title: 'A_FAVOR_OWED',
-    prompt: 'An Undertow lieutenant calls in person — a rare honor. "You\'ve been solid. One of ours got pinched by Grammaton. Buy the arresting officer\'s silence for us. We\'ll remember it. Costs 800 to make it disappear."',
+    prompt: 'An Undertow lieutenant calls in person, a rare honor. "You\'ve been solid. One of ours got pinched by Grammaton. Buy the arresting officer\'s silence for us. We\'ll remember it. Costs 800 to make it disappear."',
     choices: [
       {
         id: 'uf_pay',
@@ -619,7 +619,7 @@ export const CHOICE_EVENTS = [
     type: 'choice', weight: 4,
     triggers: { minTurn: 13 },
     title: 'NOISE_OR_MEANING',
-    prompt: 'Two recruiters corner you at once — a Lexicon scribe and a Static runner, mid-argument. Each wants you to denounce the other publicly. The street is watching. Pick a side, or refuse the whole framing.',
+    prompt: 'Two recruiters corner you at once, a Lexicon scribe and a Static runner, mid-argument. Each wants you to denounce the other publicly. The street is watching. Pick a side, or refuse the whole framing.',
     choices: [
       {
         id: 'nl_lexicon',
@@ -664,7 +664,7 @@ export const CHOICE_EVENTS = [
         id: 'ri_act',
         label: '[ACT_ON_THE_TIP]',
         outcome: {
-          text: 'You move before midnight and clear a tidy margin on the crash. Referent counts you among the people who listen — which is the only people who matter to them. +500 CR.',
+          text: 'You move before midnight and clear a tidy margin on the crash. Referent counts you among the people who listen, the only people who matter to them. +500 CR.',
           effects: { credits: 500, factionDelta: { fac_referent: 8 } },
         },
       },

@@ -12,6 +12,6 @@ export const PLACEHOLDER_LINES = [
   "Acid rain. Again. Your coat sheds it but the smell lingers.",
   "Onyx Bureau patrol checkpoint went up on 4th Street.",
   "An anonymous credit transfer hits your account. 12 CR. Suspicious.",
-  "Your subdermal pings — temperature regulating, all systems nominal.",
+  "Your subdermal pings: temperature regulating, all systems nominal.",
   "Static on the wire. Someone's running a scrambler nearby.",
 ];

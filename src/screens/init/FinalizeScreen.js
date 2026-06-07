@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Modal, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Animated, {
   useSharedValue,
@@ -11,8 +11,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { STARTER_CYBERWARE } from '../../data/cyberware';
-import { deriveStats } from '../../data/origins';
+import { deriveStats, STAT_DESCRIPTIONS } from '../../data/origins';
 import { colors } from '../../theme/colors';
+import { labelCaps, fontStyles } from '../../theme/fonts';
 import InitHeader from '../../components/init/InitHeader';
 import InitFooter from '../../components/init/InitFooter';
 
@@ -20,94 +21,26 @@ const HEADER_H = 90;
 
 const STAT_KEYS = ['chrome', 'edge', 'ghost', 'face', 'grit', 'wire'];
 
-// --- SyslogCard ---
-function SyslogCard({ draft }) {
-  return (
-    <View style={styles.syslogCard}>
-      <View style={styles.syslogTop}>
-        <View>
-          <Text style={styles.syslogStreamLabel}>[DATA_STREAM]</Text>
-          <Text style={styles.syslogTitle}>SYSLOG: READY_FOR_SYNC</Text>
-        </View>
-        <View style={styles.lockedChip}>
-          <Text style={styles.lockedText}>LOCKED</Text>
-        </View>
-      </View>
-
-      {[
-        { label: 'SELECTED_PATH',     value: (draft.path || 'NONE').toUpperCase(), color: colors.primary },
-        { label: 'OPERATOR_HANDLE',   value: draft.name || 'UNKNOWN',              color: colors.secondary },
-        { label: 'LATENCY_PROTOCOL',  value: '0.0024ms (DIRECT)',                  color: colors.outline },
-      ].map((row) => (
-        <View key={row.label} style={styles.syslogRow}>
-          <View style={styles.syslogRowAccent} />
-          <View style={styles.syslogRowBody}>
-            <Text style={styles.syslogRowLabel}>{row.label}</Text>
-            <Text style={[styles.syslogRowValue, { color: row.color }]}>{row.value}</Text>
-          </View>
-        </View>
-      ))}
-
-      {/* Calibration bar */}
-      <View style={styles.calibWrap}>
-        <View style={styles.calibHeader}>
-          <Text style={styles.calibLabel}>NEURAL_CALIBRATION</Text>
-          <Text style={styles.calibPct}>88.42%</Text>
-        </View>
-        <View style={styles.calibBar}>
-          <View style={[styles.calibFill, { flex: 88 }]} />
-          <View style={{ flex: 3 }} />
-          <View style={styles.calibDash} />
-          <View style={{ flex: 2 }} />
-          <View style={styles.calibDash} />
-          <View style={{ flex: 4 }} />
-        </View>
-        <Text style={styles.calibItalic}>{'>> SYNAPTIC_BRIDGING_IN_PROGRESS...'}</Text>
-      </View>
-    </View>
-  );
-}
-
-// --- WarningCard ---
-function WarningCard() {
-  return (
-    <View style={styles.warningCard}>
-      <View style={styles.warningHeader}>
-        <MaterialIcons name="warning" size={14} color={colors.error} />
-        <Text style={styles.warningTitle}>CRITICAL_WARNING</Text>
-      </View>
-      <Text style={styles.warningBody}>
-        NEURAL OVERWRITE IS PERMANENT. PROCEEDING WILL ERASE ALL PREVIOUS BIOMETRIC SNAPSHOTS AND INITIALIZE A NEW IDENTITY CONSTRUCT. THERE IS NO RECOVERY PATH BEYOND THIS NODE.
-      </Text>
-      <View style={styles.warningBars}>
-        <View style={styles.wBar} />
-        <View style={[styles.wBar, { opacity: 0.55 }]} />
-        <View style={[styles.wBar, { opacity: 0.25 }]} />
-      </View>
-    </View>
-  );
-}
-
 // --- PortraitFrame ---
 function PortraitFrame({ draft }) {
   const handleName = draft.name || 'UNKNOWN';
 
   return (
-    <View style={styles.portrait}>
-      <View style={[styles.bracket, styles.bTL, { borderColor: colors.primary }]} />
-      <View style={[styles.bracket, styles.bTR, { borderColor: colors.secondary }]} />
-      <View style={[styles.bracket, styles.bBL, { borderColor: colors.primary }]} />
-      <View style={[styles.bracket, styles.bBR, { borderColor: colors.secondary }]} />
+    <View style={portrait.frame}>
+      <View style={[portrait.bracket, portrait.bTL, { borderColor: colors.primary }]} />
+      <View style={[portrait.bracket, portrait.bTR, { borderColor: colors.secondary }]} />
+      <View style={[portrait.bracket, portrait.bBL, { borderColor: colors.primary }]} />
+      <View style={[portrait.bracket, portrait.bBR, { borderColor: colors.secondary }]} />
 
-      <View style={styles.portraitCenter}>
+      <View style={portrait.center}>
         <MaterialIcons name="person" size={72} color={`${colors.primary}70`} />
-        <Text style={styles.avatarHandle}>{handleName}</Text>
-        <Text style={styles.avatarLabel}>NEURAL_AVATAR_NOT_RENDERED</Text>
+        <Text style={portrait.handle}>{handleName}</Text>
+        <Text style={portrait.label}>NEURAL_AVATAR_NOT_RENDERED</Text>
       </View>
 
-      <View style={styles.hud}>
-        <Text style={[styles.hudLine, { color: colors.primary }]}>SCAN_COORD: 34.90.11</Text>
-        <Text style={[styles.hudLine, { color: colors.secondary }]}>ID_SIG: 0x8842_FINAL</Text>
+      <View style={portrait.hud}>
+        <Text style={[portrait.hudLine, { color: colors.primary }]}>SCAN_COORD: 34.90.11</Text>
+        <Text style={[portrait.hudLine, { color: colors.secondary }]}>ID_SIG: 0x8842_FINAL</Text>
       </View>
     </View>
   );
@@ -149,19 +82,19 @@ function InitButton({ onPress }) {
   }, [onPress]);
 
   return (
-    <Animated.View style={[styles.initBtnWrapper, btnScaleStyle]}>
-      <TouchableOpacity style={styles.initBtn} onPress={handlePress} activeOpacity={0.9}>
-        <Animated.View style={[styles.initBtnTopLine, pulseStyle]} />
-        <View style={styles.initBtnScanWrap}>
-          <Animated.View style={[styles.initBtnScanStrip, scanStyle]} />
+    <Animated.View style={[initBtn.wrapper, btnScaleStyle]}>
+      <TouchableOpacity style={initBtn.btn} onPress={handlePress} activeOpacity={0.9}>
+        <Animated.View style={[initBtn.topLine, pulseStyle]} />
+        <View style={initBtn.scanWrap}>
+          <Animated.View style={[initBtn.scanStrip, scanStyle]} />
         </View>
-        <View style={styles.initBtnRow}>
+        <View style={initBtn.row}>
           <MaterialIcons name="bolt" size={24} color={colors.primary} />
-          <Text style={styles.initBtnText}>INITIALIZE_NEURAL</Text>
+          <Text style={initBtn.text}>INITIALIZE_NEURAL</Text>
         </View>
-        <View style={styles.initBtnFooter}>
-          <Text style={styles.initBtnFooterText}>SECURE_LINK: ESTABLISHED</Text>
-          <Text style={styles.initBtnFooterText}>ENCRYPTION: 1024-BIT_AES_QUAL</Text>
+        <View style={initBtn.footer}>
+          <Text style={initBtn.footerText}>SECURE_LINK: ESTABLISHED</Text>
+          <Text style={initBtn.footerText}>ENCRYPTION: 1024-BIT_AES_QUAL</Text>
         </View>
       </TouchableOpacity>
     </Animated.View>
@@ -171,21 +104,51 @@ function InitButton({ onPress }) {
 // --- StatsGrid ---
 function StatsGrid({ path }) {
   const stats = deriveStats(path);
+  const [activeStat, setActiveStat] = useState(null);
+
   return (
-    <View style={styles.statsSection}>
-      <Text style={styles.statsSectionLabel}>[INITIAL_STATS]</Text>
-      <View style={styles.statsGrid}>
-        {STAT_KEYS.map((key) => (
-          <View key={key} style={styles.statCell}>
-            <Text style={styles.statLabel}>{key.toUpperCase()}</Text>
-            <View style={styles.statValueRow}>
-              <Text style={styles.statValue}>{stats[key]}</Text>
-              <Text style={styles.statMax}>/20</Text>
-            </View>
-          </View>
-        ))}
+    <>
+      <View style={statsSc.statsSection}>
+        <Text style={statsSc.sectionLabel}>[INITIAL_STATS]</Text>
+        <Text style={statsSc.hint}>TAP A STAT FOR DETAILS</Text>
+        <View style={statsSc.grid}>
+          {STAT_KEYS.map((key) => (
+            <TouchableOpacity
+              key={key}
+              style={statsSc.cell}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setActiveStat(activeStat === key ? null : key);
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={statsSc.label}>{key.toUpperCase()}</Text>
+              <View style={statsSc.valueRow}>
+                <Text style={statsSc.value}>{stats[key]}</Text>
+                <Text style={statsSc.max}>/20</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
-    </View>
+
+      {/* Tooltip overlay */}
+      <Modal visible={activeStat !== null} transparent animationType="fade" onRequestClose={() => setActiveStat(null)}>
+        <Pressable style={statsSc.backdrop} onPress={() => setActiveStat(null)}>
+          <Pressable style={statsSc.tooltip} onPress={(e) => e.stopPropagation()}>
+            <View style={statsSc.tooltipHeader}>
+              <MaterialIcons name="info" size={14} color={colors.primary} />
+              <Text style={statsSc.tooltipTitle}>{activeStat?.toUpperCase()}</Text>
+            </View>
+            <Text style={statsSc.tooltipBody}>
+              {activeStat ? STAT_DESCRIPTIONS[activeStat] : ''}
+            </Text>
+            <View style={statsSc.tooltipBar} />
+            <Text style={statsSc.tooltipFooter}>TAP OUTSIDE TO DISMISS</Text>
+          </Pressable>
+        </Pressable>
+      </Modal>
+    </>
   );
 }
 
@@ -193,28 +156,28 @@ function StatsGrid({ path }) {
 function LoadoutCard({ item, selected, onSelect }) {
   return (
     <TouchableOpacity
-      style={[styles.cyberCard, selected && styles.cyberCardSelected, !selected && { opacity: 0.5 }]}
+      style={[loadout.card, selected && loadout.cardSelected, !selected && { opacity: 0.5 }]}
       onPress={() => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         onSelect(item.id);
       }}
       activeOpacity={0.8}
     >
-      <View style={[styles.cyberIcon, selected && styles.cyberIconSelected]}>
+      <View style={[loadout.icon, selected && loadout.iconSelected]}>
         <MaterialIcons name={item.icon} size={20} color={selected ? colors.secondaryContainer : colors.outline} />
       </View>
-      <View style={styles.cyberBody}>
-        <Text style={[styles.cyberName, selected && { color: colors.secondaryContainer }]}>
+      <View style={loadout.body}>
+        <Text style={[loadout.name, selected && { color: colors.secondaryContainer }]}>
           {item.name.toUpperCase()}
         </Text>
-        <View style={styles.cyberMeta}>
-          <Text style={styles.cyberSlot}>{item.slot.toUpperCase()}</Text>
-          <View style={styles.humChip}>
-            <Text style={styles.humChipText}>-{item.humanityCost} HUM</Text>
+        <View style={loadout.meta}>
+          <Text style={loadout.slot}>{item.slot.toUpperCase()}</Text>
+          <View style={loadout.humChip}>
+            <Text style={loadout.humChipText}>-{item.humanityCost} HUM</Text>
           </View>
         </View>
-        <Text style={styles.cyberDesc}>{item.description}</Text>
-        <Text style={styles.cyberFlavor}>{item.flavor}</Text>
+        <Text style={loadout.desc}>{item.description}</Text>
+        <Text style={loadout.flavor}>{item.flavor}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -260,31 +223,29 @@ export default function FinalizeScreen({ draft, onBack, onComplete }) {
   }, [draft, selectedCyberware, onComplete]);
 
   return (
-    <View style={styles.root}>
+    <View style={scr.root}>
       <InitHeader step={3} stepLabel="FINALIZATION" />
 
-      <Text style={styles.decalL} pointerEvents="none">NEURAL_VOID</Text>
-      <Text style={styles.decalR} pointerEvents="none">OVERWRITE_CMD</Text>
+      <Text style={scr.decalL} pointerEvents="none">NEURAL_VOID</Text>
+      <Text style={scr.decalR} pointerEvents="none">OVERWRITE_CMD</Text>
 
       <Animated.View style={[{ flex: 1 }, glitchStyle]}>
         <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.content}
+          style={scr.scroll}
+          contentContainerStyle={scr.content}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <SyslogCard draft={draft} />
-          <WarningCard />
           <PortraitFrame draft={draft} />
           <StatsGrid path={draft.path} />
 
           {/* Loadout selection */}
-          <View style={styles.loadoutSection}>
-            <View style={styles.loadoutHeader}>
+          <View style={loadout.section}>
+            <View style={loadout.header}>
               <MaterialIcons name="bolt" size={14} color={colors.secondaryContainer} />
-              <Text style={styles.loadoutHeaderLabel}>[STARTING_CYBERWARE_PROTOCOL]</Text>
+              <Text style={loadout.headerLabel}>[STARTING_CYBERWARE_PROTOCOL]</Text>
             </View>
-            <Text style={styles.loadoutSub}>
+            <Text style={loadout.sub}>
               Select one neural-grade implant for initial deployment.
             </Text>
             {STARTER_CYBERWARE.map((item) => (
@@ -298,8 +259,8 @@ export default function FinalizeScreen({ draft, onBack, onComplete }) {
           </View>
 
           {/* Back link */}
-          <TouchableOpacity onPress={onBack} style={styles.backRow} activeOpacity={0.7}>
-            <Text style={styles.backLink}>← BACK</Text>
+          <TouchableOpacity onPress={onBack} style={scr.backRow} activeOpacity={0.7}>
+            <Text style={scr.backLink}>← BACK</Text>
           </TouchableOpacity>
 
           <InitFooter />
@@ -311,113 +272,35 @@ export default function FinalizeScreen({ draft, onBack, onComplete }) {
   );
 }
 
-const styles = StyleSheet.create({
+// ── StyleSheet blocks ──────────────────────────────────────────────────────────
+
+const scr = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.background },
   scroll: { flex: 1 },
   content: {
     paddingTop: HEADER_H + 16,
     paddingHorizontal: 16,
     paddingBottom: 100,
-    gap: 12,
+    gap: 16,
   },
   decalL: {
     position: 'absolute', left: -48, top: '38%',
     transform: [{ rotate: '-90deg' }],
-    fontFamily: 'KodeMono_700Bold', fontSize: 30, color: colors.primary,
+    ...fontStyles.bold, fontSize: 30, color: colors.primary,
     opacity: 0.04, letterSpacing: 8, zIndex: 0,
   },
   decalR: {
     position: 'absolute', right: -72, top: '28%',
     transform: [{ rotate: '90deg' }],
-    fontFamily: 'KodeMono_700Bold', fontSize: 26, color: colors.secondaryContainer,
+    ...fontStyles.bold, fontSize: 26, color: colors.secondaryContainer,
     opacity: 0.04, letterSpacing: 6, zIndex: 0,
   },
+  backRow: { paddingVertical: 4 },
+  backLink: { ...labelCaps, fontSize: 11, color: colors.outline },
+});
 
-  // SYSLOG card
-  syslogCard: {
-    backgroundColor: colors.surfaceContainerLow,
-    borderTopWidth: 2,
-    borderBottomWidth: 2,
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
-    borderColor: `${colors.primary}33`,
-    borderTopColor: `${colors.primary}55`,
-    borderBottomColor: `${colors.primary}55`,
-    padding: 14,
-    gap: 10,
-  },
-  syslogTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  syslogStreamLabel: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 9,
-    color: colors.primary, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 4,
-  },
-  syslogTitle: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 14,
-    color: colors.onSurface, letterSpacing: 0.3, textTransform: 'uppercase',
-  },
-  lockedChip: {
-    borderWidth: 1, borderColor: colors.primary,
-    paddingHorizontal: 8, paddingVertical: 3,
-  },
-  lockedText: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 8,
-    color: colors.primary, letterSpacing: 1.5,
-  },
-  syslogRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  syslogRowAccent: {
-    width: 2, height: '100%', backgroundColor: colors.primary, minHeight: 32,
-  },
-  syslogRowBody: { flex: 1, gap: 2 },
-  syslogRowLabel: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 8,
-    color: `${colors.primary}66`, letterSpacing: 1.2, textTransform: 'uppercase',
-  },
-  syslogRowValue: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 13,
-    letterSpacing: 0.5, textTransform: 'uppercase',
-  },
-  calibWrap: { gap: 6 },
-  calibHeader: { flexDirection: 'row', justifyContent: 'space-between' },
-  calibLabel: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 9,
-    color: colors.primary, letterSpacing: 1.2, textTransform: 'uppercase',
-  },
-  calibPct: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 9,
-    color: colors.tertiaryFixedDim, letterSpacing: 1,
-  },
-  calibBar: {
-    height: 6, flexDirection: 'row',
-    backgroundColor: colors.surfaceContainerHighest,
-    overflow: 'hidden',
-  },
-  calibFill: { height: '100%', backgroundColor: colors.primary },
-  calibDash: { width: 3, height: '100%', backgroundColor: colors.primary, opacity: 0.4 },
-  calibItalic: {
-    fontFamily: 'KodeMono_400Regular', fontSize: 9,
-    color: `${colors.primary}66`, letterSpacing: 0.5, fontStyle: 'italic',
-  },
-
-  // Warning card
-  warningCard: {
-    backgroundColor: `${colors.errorContainer}1A`,
-    borderWidth: 1, borderColor: `${colors.error}33`,
-    padding: 12, gap: 10,
-  },
-  warningHeader: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  warningTitle: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 10,
-    color: colors.error, letterSpacing: 1.5, textTransform: 'uppercase',
-  },
-  warningBody: {
-    fontFamily: 'KodeMono_400Regular', fontSize: 11,
-    color: `${colors.error}CC`, letterSpacing: 0.5, lineHeight: 17,
-  },
-  warningBars: { gap: 3 },
-  wBar: { height: 2, backgroundColor: `${colors.error}55` },
-
-  // Portrait
-  portrait: {
+const portrait = StyleSheet.create({
+  frame: {
     backgroundColor: colors.surfaceContainerLow,
     borderWidth: 2,
     borderColor: colors.secondaryContainer,
@@ -431,32 +314,27 @@ const styles = StyleSheet.create({
   bTR: { top: 6, right: 6, borderTopWidth: 2, borderRightWidth: 2 },
   bBL: { bottom: 6, left: 6, borderBottomWidth: 2, borderLeftWidth: 2 },
   bBR: { bottom: 6, right: 6, borderBottomWidth: 2, borderRightWidth: 2 },
-  portraitCenter: { alignItems: 'center', gap: 6 },
-  avatarHandle: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 14,
-    color: colors.primary, letterSpacing: 1,
-  },
-  avatarLabel: {
-    fontFamily: 'KodeMono_400Regular', fontSize: 9,
-    color: `${colors.primary}55`, letterSpacing: 1.5, textTransform: 'uppercase',
-  },
+  center: { alignItems: 'center', gap: 6 },
+  handle: { ...fontStyles.bold, fontSize: 14, color: colors.primary, letterSpacing: 1 },
+  label: { ...fontStyles.regular, fontSize: 9, color: `${colors.primary}55`, letterSpacing: 1.5, textTransform: 'uppercase' },
   hud: {
     position: 'absolute', top: 10, right: 10,
     backgroundColor: `${colors.background}CC`,
     borderWidth: 1, borderColor: `${colors.primary}33`,
     padding: 6, gap: 2,
   },
-  hudLine: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 8, letterSpacing: 0.8,
-  },
-  initBtnWrapper: {
+  hudLine: { ...fontStyles.bold, fontSize: 8, letterSpacing: 0.8 },
+});
+
+const initBtn = StyleSheet.create({
+  wrapper: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     zIndex: 10,
   },
-  initBtn: {
+  btn: {
     backgroundColor: colors.background,
     borderWidth: 2, borderColor: colors.primary,
     shadowColor: colors.primary,
@@ -469,76 +347,84 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     gap: 8,
   },
-  initBtnTopLine: {
+  topLine: {
     position: 'absolute', top: 0, left: 0, right: 0,
     height: 2, backgroundColor: colors.primary,
   },
-  initBtnScanWrap: {
+  scanWrap: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden',
   },
-  initBtnScanStrip: {
+  scanStrip: {
     position: 'absolute', left: 0, right: 0,
     height: 40, backgroundColor: `${colors.primary}18`,
   },
-  initBtnRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
-  initBtnText: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 18,
+  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+  text: {
+    ...fontStyles.bold, fontSize: 18,
     color: colors.primary, letterSpacing: 3, textTransform: 'uppercase',
     textShadowColor: 'rgba(0,243,255,0.5)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
   },
-  initBtnFooter: {
-    flexDirection: 'row', justifyContent: 'space-between',
-  },
-  initBtnFooterText: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 8,
-    color: `${colors.primary}66`, letterSpacing: 1,
-  },
+  footer: { flexDirection: 'row', justifyContent: 'space-between' },
+  footerText: { ...fontStyles.bold, fontSize: 8, color: `${colors.primary}66`, letterSpacing: 1 },
+});
 
-  // Stats
+const statsSc = StyleSheet.create({
   statsSection: { gap: 8 },
-  statsSectionLabel: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 10,
-    color: colors.primary, letterSpacing: 1.5, textTransform: 'uppercase',
-  },
-  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  statCell: {
+  sectionLabel: { ...labelCaps, fontSize: 10, color: colors.primary },
+  hint: { ...fontStyles.regular, fontSize: 9, color: `${colors.outline}99`, letterSpacing: 0.5, textTransform: 'uppercase' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  cell: {
     width: '47%',
     backgroundColor: colors.surfaceContainer,
     borderWidth: 1, borderColor: colors.outlineVariant,
     padding: 10, gap: 4,
   },
-  statLabel: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 9,
-    color: colors.outline, letterSpacing: 1.5, textTransform: 'uppercase',
+  label: { ...labelCaps, fontSize: 9, color: colors.outline },
+  valueRow: { flexDirection: 'row', alignItems: 'baseline', gap: 2 },
+  value: { ...fontStyles.bold, fontSize: 22, color: colors.onSurface },
+  max: { ...fontStyles.bold, fontSize: 11, color: colors.primary },
+  // tooltip
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.75)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
   },
-  statValueRow: { flexDirection: 'row', alignItems: 'baseline', gap: 2 },
-  statValue: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 22, color: colors.onSurface,
+  tooltip: {
+    backgroundColor: colors.surfaceContainerLow,
+    borderWidth: 2,
+    borderColor: colors.primary,
+    padding: 20,
+    gap: 10,
+    maxWidth: 340,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 10,
   },
-  statMax: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 11, color: colors.primary,
-  },
+  tooltipHeader: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  tooltipTitle: { ...labelCaps, fontSize: 13, color: colors.primary },
+  tooltipBody: { ...fontStyles.regular, fontSize: 13, color: colors.onSurfaceVariant, lineHeight: 20, letterSpacing: 0.3 },
+  tooltipBar: { height: 1, backgroundColor: `${colors.primary}33` },
+  tooltipFooter: { ...fontStyles.regular, fontSize: 9, color: `${colors.outline}99`, textAlign: 'center', letterSpacing: 1 },
+});
 
-  // Loadout
-  loadoutSection: { gap: 10 },
-  loadoutHeader: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  loadoutHeaderLabel: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 10,
-    color: colors.secondaryContainer, letterSpacing: 1.5, textTransform: 'uppercase',
-  },
-  loadoutSub: {
-    fontFamily: 'KodeMono_400Regular', fontSize: 11,
-    color: colors.outline, letterSpacing: 0.5,
-  },
-  cyberCard: {
+const loadout = StyleSheet.create({
+  section: { gap: 10 },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  headerLabel: { ...labelCaps, fontSize: 10, color: colors.secondaryContainer },
+  sub: { ...fontStyles.regular, fontSize: 11, color: colors.outline, letterSpacing: 0.5 },
+  card: {
     flexDirection: 'row', gap: 12,
     borderWidth: 1, borderColor: colors.outlineVariant,
     backgroundColor: colors.surfaceContainerLow,
     padding: 12,
   },
-  cyberCardSelected: {
+  cardSelected: {
     borderWidth: 2, borderColor: colors.secondaryContainer,
     backgroundColor: `${colors.secondaryContainer}0D`,
     shadowColor: colors.secondaryContainer,
@@ -547,44 +433,22 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 6,
   },
-  cyberIcon: {
+  icon: {
     width: 40, height: 40,
     backgroundColor: `${colors.outline}18`,
     alignItems: 'center', justifyContent: 'center',
     flexShrink: 0,
   },
-  cyberIconSelected: { backgroundColor: `${colors.secondaryContainer}22` },
-  cyberBody: { flex: 1, gap: 4 },
-  cyberName: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 12,
-    color: colors.outline, letterSpacing: 0.5,
-  },
-  cyberMeta: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  cyberSlot: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 8,
-    color: colors.outline, letterSpacing: 1.5,
-  },
+  iconSelected: { backgroundColor: `${colors.secondaryContainer}22` },
+  body: { flex: 1, gap: 4 },
+  name: { ...fontStyles.bold, fontSize: 12, color: colors.outline, letterSpacing: 0.5 },
+  meta: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  slot: { ...labelCaps, fontSize: 8, color: colors.outline },
   humChip: {
     borderWidth: 1, borderColor: `${colors.error}55`,
     paddingHorizontal: 6, paddingVertical: 1,
   },
-  humChipText: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 8,
-    color: colors.error, letterSpacing: 1,
-  },
-  cyberDesc: {
-    fontFamily: 'KodeMono_400Regular', fontSize: 11,
-    color: colors.onSurfaceVariant, letterSpacing: 0.3,
-  },
-  cyberFlavor: {
-    fontFamily: 'KodeMono_400Regular', fontSize: 10,
-    color: `${colors.outline}88`, letterSpacing: 0.3, fontStyle: 'italic',
-  },
-
-  // Back
-  backRow: { paddingVertical: 4 },
-  backLink: {
-    fontFamily: 'KodeMono_700Bold', fontSize: 11,
-    color: colors.outline, letterSpacing: 1.5, textTransform: 'uppercase',
-  },
+  humChipText: { ...fontStyles.bold, fontSize: 8, color: colors.error, letterSpacing: 1 },
+  desc: { ...fontStyles.regular, fontSize: 11, color: colors.onSurfaceVariant, letterSpacing: 0.3 },
+  flavor: { ...fontStyles.regular, fontSize: 10, color: `${colors.outline}88`, letterSpacing: 0.3, fontStyle: 'italic' },
 });

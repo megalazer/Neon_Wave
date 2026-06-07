@@ -19,7 +19,7 @@ export const HIGH_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'INTERFACE',
-        prompt: 'You need a hardline to a Militech relay tower to even reach the perimeter. The tower is guarded by an automated defense grid — breach it, or find a dead terminal Dusk marked on an old map.',
+        prompt: 'You need a hardline to a Militech relay tower to even reach the perimeter. The tower is guarded by an automated defense grid, breach it, or find a dead terminal Dusk marked on an old map.',
         choices: [
           {
             id: 'bwp_breach',
@@ -39,7 +39,7 @@ export const HIGH_CONTRACTS = [
             label: 'Find Dusk\'s dead terminal',
             statCheck: { stat: 'grit', threshold: 13 },
             pass: {
-              text: 'Terminal is where Dusk said. Dusty, offline for years — but hardline is intact. You jack in.',
+              text: 'Terminal is where Dusk said. Dusty, offline for years, but hardline is intact. You jack in.',
               branch: 'advance',
             },
             fail: {
@@ -54,7 +54,7 @@ export const HIGH_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'NAVIGATE THE ICE',
-        prompt: 'You\'re at the perimeter. The Blackwall\'s ICE is unlike anything in the commercial sector — it probes back. You can push through with raw code, or look for a seam in its pattern.',
+        prompt: 'You\'re at the perimeter. The Blackwall\'s ICE is unlike anything in the commercial sector; it probes back. You can push through with raw code, or look for a seam in its pattern.',
         choices: [
           {
             id: 'bwp_push',
@@ -74,7 +74,7 @@ export const HIGH_CONTRACTS = [
             label: 'Look for a seam in the pattern',
             statCheck: { stat: 'wire', threshold: 14 },
             pass: {
-              text: 'There — a ghost of a maintenance path, years old. You thread through it. No friction. That shouldn\'t be possible.',
+              text: 'There, a ghost of a maintenance path, years old. You thread through it. No friction. That shouldn\'t be possible.',
               branch: 'advance',
             },
             fail: {
@@ -100,13 +100,13 @@ export const HIGH_CONTRACTS = [
               branch: 'advance',
             },
             fail: {
-              text: 'ICE clips you during disconnect. Your deck takes damage and some data is corrupted — but you\'re out.',
+              text: 'ICE clips you during disconnect. Your deck takes damage and some data is corrupted, but you\'re out.',
               branch: 'advance',
             },
           },
           {
             id: 'bwp_curate',
-            label: 'Curate carefully — stay longer',
+            label: 'Curate carefully, stay longer',
             statCheck: { stat: 'wire', threshold: 17 },
             pass: {
               text: 'You spend three full minutes inside. Perfectly curated dataset. You disconnect clean. Whatever you saw in there stays behind the wall. Mostly.',
@@ -121,7 +121,7 @@ export const HIGH_CONTRACTS = [
       },
     ],
     successNarration: 'Data extracted. Dusk goes quiet for six hours, then sends the largest transfer you\'ve ever received. No note.',
-    failureNarration: 'Data was corrupted or incomplete. Dusk pays a fraction — still more than most people see in a year.',
+    failureNarration: 'Data was corrupted or incomplete. Dusk pays a fraction. Still more than most people see in a year.',
     abortNarration: 'You disconnected early. Dusk sends a single line: "Don\'t contact me for a while."',
   },
 
@@ -145,7 +145,7 @@ export const HIGH_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'IDENTITY FABRICATION',
-        prompt: 'The legend needs to be airtight — employment history, psych profiles, social graph, biometric registration. Kade\'s team handles the physical documents. You need to seed the digital trail.',
+        prompt: 'The legend needs to be airtight: employment history, psych profiles, social graph, biometric registration. Kade\'s team handles the physical documents. You need to seed the digital trail.',
         choices: [
           {
             id: 'dc_h_deep',
@@ -156,7 +156,7 @@ export const HIGH_CONTRACTS = [
               branch: 'advance',
             },
             fail: {
-              text: 'Two systems flag inconsistencies. You patch them, but the trail has gaps. Kade says proceed — Arasaka audit teams are slow.',
+              text: 'Two systems flag inconsistencies. You patch them, but the trail has gaps. Kade says proceed. Arasaka audit teams are slow.',
               branch: 'advance',
             },
           },
@@ -180,7 +180,7 @@ export const HIGH_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'THE LONG CON',
-        prompt: 'Your asset is inside. Three weeks of cultivating trust with a target executive. There\'s a leak somewhere in Kade\'s operation — someone is asking questions about your asset\'s background. Neutralize the leak or redirect it.',
+        prompt: 'Your asset is inside. Three weeks of cultivating trust with a target executive. There\'s a leak somewhere in Kade\'s operation. Someone is asking questions about your asset\'s background. Neutralize the leak or redirect it.',
         choices: [
           {
             id: 'dc_h_redirect',
@@ -215,7 +215,7 @@ export const HIGH_CONTRACTS = [
         stageNumber: 3,
         label: 'STAGE_03',
         title: 'LOCK IN THE CHANNEL',
-        prompt: 'Asset is established and trusted. Now you need to set up an extraction protocol — a secure channel and a fallback exfil plan. Kade wants both or the contract doesn\'t pay.',
+        prompt: 'Asset is established and trusted. Now you need to set up an extraction protocol: a secure channel and a fallback exfil plan. Kade wants both or the contract doesn\'t pay.',
         choices: [
           {
             id: 'dc_h_channel',
@@ -226,7 +226,7 @@ export const HIGH_CONTRACTS = [
               branch: 'advance',
             },
             fail: {
-              text: 'Channel architecture has a vulnerability in the third relay. You patch it — but it\'s a weak point Kade notes.',
+              text: 'Channel architecture has a vulnerability in the third relay. You patch it, but it\'s a weak point Kade notes.',
               branch: 'advance',
             },
           },
@@ -282,7 +282,7 @@ export const HIGH_CONTRACTS = [
               branch: 'advance',
             },
             fail: {
-              text: 'System pushes back hard. You get partial data — a twelve-hour window, not forty-eight. Tighter margin.',
+              text: 'System pushes back hard. You get partial data: a twelve-hour window, not forty-eight. Tighter margin.',
               branch: 'advance',
             },
           },
@@ -306,7 +306,7 @@ export const HIGH_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'TARGET ACQUIRED',
-        prompt: 'You\'ve found your window. The target is in transit, detail reduced to four operators. Take the shot from distance — or get closer for a guaranteed hit but higher risk of exposure.',
+        prompt: 'You\'ve found your window. The target is in transit, detail reduced to four operators. Take the shot from distance, or get closer for a guaranteed hit but higher risk of exposure.',
         choices: [
           {
             id: 'lq_distance',
@@ -323,7 +323,7 @@ export const HIGH_CONTRACTS = [
           },
           {
             id: 'lq_close',
-            label: 'Close approach — guaranteed hit',
+            label: 'Close approach, guaranteed hit',
             outcome: {
               text: 'You move into the detail\'s perimeter. They see you before you see him.',
               branch: 'triggersBattle',
@@ -344,7 +344,7 @@ export const HIGH_CONTRACTS = [
         stageNumber: 3,
         label: 'STAGE_03',
         title: 'CLEAN EXIT',
-        prompt: 'Target neutralized. Sable Corp has been alerted — response teams deploying. City-wide APB will be active in six minutes. You need to be off the grid before that.',
+        prompt: 'Target neutralized. Sable Corp has been alerted. Response teams deploying. City-wide APB will be active in six minutes. You need to be off the grid before that.',
         choices: [
           {
             id: 'lq_ghost',
@@ -364,7 +364,7 @@ export const HIGH_CONTRACTS = [
             label: 'Acquire a vehicle and run hard',
             statCheck: { stat: 'wire', threshold: 13 },
             pass: {
-              text: 'You jack a MaxTac support vehicle — the irony isn\'t lost on you — and drive out of the response perimeter before anyone thinks to flag it.',
+              text: 'You jack a MaxTac support vehicle, the irony isn\'t lost on you, and drive out of the response perimeter before anyone thinks to flag it.',
               branch: 'complete',
             },
             fail: {
@@ -375,7 +375,7 @@ export const HIGH_CONTRACTS = [
         ],
       },
     ],
-    successNarration: 'Target eliminated. Clean exfil. Pyre\'s client sends double the agreed payout — apparently the target was worth more than disclosed.',
+    successNarration: 'Target eliminated. Clean exfil. Pyre\'s client sends double the agreed payout. Apparently the target was worth more than disclosed.',
     failureNarration: 'Target survived or escaped clean. Pyre delivers a partial payment and a blunt assessment of what went wrong.',
     abortNarration: 'Contract abandoned. Pyre keeps the full deposit and removes you from his active list.',
   },

@@ -215,7 +215,7 @@ export const FLAVOR_EVENTS = [
   {
     id: 'flv_static_jammer',
     type: 'flavor', weight: 4, faction: 'fac_static',
-    narration: '> Your comms hiss for ten seconds — a STATIC cell testing a jammer two rooftops over. Then the world\'s noise rushes back in.',
+    narration: '> Your comms hiss for ten seconds, a STATIC cell testing a jammer two rooftops over. Then the world\'s noise rushes back in.',
     effects: {}, accent: 'error',
   },
 
@@ -236,7 +236,7 @@ export const FLAVOR_EVENTS = [
   {
     id: 'flv_signal_allied',
     type: 'flavor', weight: 6, faction: 'fac_signal', repAtLeast: 75,
-    narration: '> Your deck pulls a clean SIGNAL backbone line — priority routing, no throttle. The pipes are open to you tonight.',
+    narration: '> Your deck pulls a clean SIGNAL backbone line, priority routing, no throttle. The pipes are open to you tonight.',
     effects: {}, accent: 'tertiary',
   },
   {

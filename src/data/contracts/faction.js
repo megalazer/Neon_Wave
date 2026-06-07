@@ -24,7 +24,7 @@ export const FACTION_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'THE CLINIC',
-        prompt: 'The scribe works out of a chrome-clean clinic in Westbrook. His research lives on an air-gapped wetware server — literally grown into a vat-brain. You can spoof credentials at the desk, or go in through the bio-waste duct.',
+        prompt: 'The scribe works out of a chrome-clean clinic in Westbrook. His research lives on an air-gapped wetware server, literally grown into a vat-brain. You can spoof credentials at the desk, or go in through the bio-waste duct.',
         choices: [
           {
             id: 'lx_spoof',
@@ -55,7 +55,7 @@ export const FACTION_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'THE VAT-BRAIN',
-        prompt: 'The research is encoded in living tissue. Copy it cleanly with a neural siphon (WIRE), or just cut the vat free and carry the whole wet mess out — cruder, leaves him nothing.',
+        prompt: 'The research is encoded in living tissue. Copy it cleanly with a neural siphon (WIRE), or just cut the vat free and carry the whole wet mess out. Cruder, leaves him nothing.',
         choices: [
           {
             id: 'lx_siphon',
@@ -117,7 +117,7 @@ export const FACTION_CONTRACTS = [
             label: 'Invoke Grammaton sanction',
             statCheck: { stat: 'face', threshold: 13 },
             pass: {
-              text: 'You read him the regulation, badge-cold. Half his crew stands down on the spot — they know the grammar too.',
+              text: 'You read him the regulation, badge-cold. Half his crew stands down on the spot. They know the grammar too.',
               branch: 'advance',
               effects: { rewardModifier: 0.2, factionRep: 0 },
             },
@@ -145,7 +145,7 @@ export const FACTION_CONTRACTS = [
         choices: [
           {
             id: 'gr_enforce',
-            label: 'Enforce — take him down',
+            label: 'Enforce, take him down',
             outcome: {
               text: 'You move first. Grammaton trains its people to end conversations cleanly.',
               branch: 'triggersBattle',
@@ -220,7 +220,7 @@ export const FACTION_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'THE SPLICE',
-        prompt: 'It\'s not a fault. Someone spliced a fat tap into the relay — pirate bandwidth, Static signature all over it. Rip the tap and restore the pipe, or leave it and report a simple fault for an easier life.',
+        prompt: 'It\'s not a fault. Someone spliced a fat tap into the relay. Pirate bandwidth, Static signature all over it. Rip the tap and restore the pipe, or leave it and report a simple fault for an easier life.',
         choices: [
           {
             id: 'sg_rip',
@@ -240,7 +240,7 @@ export const FACTION_CONTRACTS = [
               branch: 'complete',
             },
             fail: {
-              text: 'Your falsified log doesn\'t hold up to the Signal\'s diagnostics. They see the tap anyway — and that you hid it. Cooler reception.',
+              text: 'Your falsified log doesn\'t hold up to the Signal\'s diagnostics. They see the tap anyway, and that you hid it. Cooler reception.',
               branch: 'complete',
               effects: { rewardModifier: -0.1 },
             },
@@ -264,7 +264,7 @@ export const FACTION_CONTRACTS = [
     faction: 'fac_referent',
     factionRepReward: 16,
     factionRepPenalty: 10,
-    description: 'Referent Capital needs a competitor\'s valuation model corrupted twelve hours before a hostile bid. Not stolen — poisoned. Make their numbers lie in Referent\'s favor.',
+    description: 'Referent Capital needs a competitor\'s valuation model corrupted twelve hours before a hostile bid. Not stolen. Poisoned. Make their numbers lie in Referent\'s favor.',
     payout: 8800,
     deposit: 500,
     exp: 460,
@@ -305,7 +305,7 @@ export const FACTION_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'POISON THE WELL',
-        prompt: 'You reach the cluster. Inject a subtle bias that skews the valuation just enough to survive an audit (WIRE), or sledgehammer the model and make it obvious — louder, but Referent gets a cleaner kill.',
+        prompt: 'You reach the cluster. Inject a subtle bias that skews the valuation just enough to survive an audit (WIRE), or sledgehammer the model and make it obvious. Louder, but Referent gets a cleaner kill.',
         choices: [
           {
             id: 'rf_subtle',
@@ -325,7 +325,7 @@ export const FACTION_CONTRACTS = [
             id: 'rf_smash',
             label: 'Sledgehammer the model',
             outcome: {
-              text: 'You gut the valuation engine outright. Crude, undeniable, and twelve hours before the bid — exactly when it hurts most.',
+              text: 'You gut the valuation engine outright. Crude, undeniable, and twelve hours before the bid, exactly when it hurts most.',
               branch: 'complete',
               effects: { rewardModifier: 0.1 },
             },
@@ -333,7 +333,7 @@ export const FACTION_CONTRACTS = [
         ],
       },
     ],
-    successNarration: 'The competitor walks into the bid blind. Referent buys low and pays you a sliver of the spread — which is still a fortune.',
+    successNarration: 'The competitor walks into the bid blind. Referent buys low and pays you a sliver of the spread, which is still a fortune.',
     failureNarration: 'The poison didn\'t take. Referent eats the bid at full price and remembers the line item that failed.',
     abortNarration: 'You pulled out before the close. Referent prices your reliability accordingly. The number is not kind.',
   },
@@ -470,7 +470,7 @@ export const FACTION_CONTRACTS = [
               branch: 'advance',
             },
             fail: {
-              text: 'Your scripture\'s a beat off. They get suspicious — you slip away and take the long climb instead.',
+              text: 'Your scripture\'s a beat off. They get suspicious; you slip away and take the long climb instead.',
               branch: 'advance',
             },
           },
@@ -481,7 +481,7 @@ export const FACTION_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'MAKE IT NOISE',
-        prompt: 'Mid-transmission, the gospel pouring out across the district. Plant a clean jammer that kills the signal precisely, or overload the transmitter into a screaming feedback bloom — louder, uglier, very Static.',
+        prompt: 'Mid-transmission, the gospel pouring out across the district. Plant a clean jammer that kills the signal precisely, or overload the transmitter into a screaming feedback bloom. Louder, uglier, very Static.',
         choices: [
           {
             id: 'st_clean',
@@ -526,7 +526,7 @@ export const FACTION_CONTRACTS = [
     factionRepReward: 28,
     factionRepPenalty: 18,
     minFactionRep: 'ALLIED',
-    description: 'Undertow only whispers this one to family. A ledger exists that names every fixer in the gray economy — including Undertow\'s own. Steal it before Grammaton seizes it, or the whole underworld goes transparent.',
+    description: 'Undertow only whispers this one to family. A ledger exists that names every fixer in the gray economy, including Undertow\'s own. Steal it before Grammaton seizes it, or the whole underworld goes transparent.',
     payout: 32000,
     deposit: 2000,
     exp: 1700,
@@ -577,7 +577,7 @@ export const FACTION_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'WHAT IT\'S WORTH',
-        prompt: 'You hold the names of every fixer alive. Deliver it to Undertow as sworn — buried forever — or skim a copy for yourself first. Undertow would never know. Probably.',
+        prompt: 'You hold the names of every fixer alive. Deliver it to Undertow as sworn, buried forever, or skim a copy for yourself first. Undertow would never know. Probably.',
         choices: [
           {
             id: 'um_deliver',
@@ -622,7 +622,7 @@ export const FACTION_CONTRACTS = [
     faction: 'fac_referent',
     factionRepReward: 12,
     factionRepPenalty: 7,
-    description: 'Referent wants a rumor planted in three exchange backchannels — enough to move a thin synth-coin so they can short it. You\'re a vector for a lie that prices itself true.',
+    description: 'Referent wants a rumor planted in three exchange backchannels, enough to move a thin synth-coin so they can short it. You\'re a vector for a lie that prices itself true.',
     payout: 1800,
     deposit: 0,
     exp: 120,
@@ -665,7 +665,7 @@ export const FACTION_CONTRACTS = [
         ],
       },
     ],
-    successNarration: 'The coin spikes on nothing and Referent shorts the top. Value is whatever they say it is — and today they said it through you.',
+    successNarration: 'The coin spikes on nothing and Referent shorts the top. Value is whatever they say it is, and today they said it through you.',
     failureNarration: 'The rumor died on the vine. Referent\'s short closes flat and your cut closes flatter.',
     abortNarration: 'You declined to lie for them. Referent has no use for a vector that won\'t carry the payload.',
   },

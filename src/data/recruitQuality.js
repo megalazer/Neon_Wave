@@ -37,7 +37,7 @@ export const QUALITY_CONFIG = {
     arrivalNarrations: [
       'Rep checks out. Somebody trained them right.',
       'Ex-corporate, went freelance six months ago. Still sharp.',
-      'Street legend — locally. Capable. Might surprise you.',
+      'Street legend. Locally. Capable. Might surprise you.',
       'Professional. Clean record. Costs more for a reason.',
     ],
   },

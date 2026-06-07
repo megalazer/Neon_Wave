@@ -69,7 +69,7 @@ export default function GameOverScreen({ onRestart }) {
         </Animated.View>
 
         {/* FLATLINE header */}
-        <Animated.Text style={[styles.headline, glitchStyle]}>
+        <Animated.Text style={[styles.headline, glitchStyle]} numberOfLines={1} adjustsFontSizeToFit>
           FLATLINE
         </Animated.Text>
 

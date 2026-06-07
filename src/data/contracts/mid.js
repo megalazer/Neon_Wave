@@ -19,14 +19,14 @@ export const MID_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'RECON',
-        prompt: 'The warehouse runs a layered sensor net. Kade wants a full security map before the run. You can probe the net remotely — risking detection — or do a physical walk-around.',
+        prompt: 'The warehouse runs a layered sensor net. Kade wants a full security map before the run. You can probe the net remotely, risking detection, or do a physical walk-around.',
         choices: [
           {
             id: 'vb_remote',
             label: 'Remote probe the sensor net',
             statCheck: { stat: 'wire', threshold: 13 },
             pass: {
-              text: 'Full map acquired. Guard rotations, blind spots, sensor cycles — all of it. Kade is pleased.',
+              text: 'Full map acquired. Guard rotations, blind spots, sensor cycles. All of it. Kade is pleased.',
               branch: 'advance',
             },
             fail: {
@@ -54,7 +54,7 @@ export const MID_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'CRACK THE VAULT',
-        prompt: 'You\'re inside. The vault runs Helix\'s proprietary encryption — hardened against standard deck tools. Force through with raw processing power, or find the maintenance override Kade said might exist.',
+        prompt: 'You\'re inside. The vault runs Helix\'s proprietary encryption, hardened against standard deck tools. Force through with raw processing power, or find the maintenance override Kade said might exist.',
         choices: [
           {
             id: 'vb_brute',
@@ -74,7 +74,7 @@ export const MID_CONTRACTS = [
             label: 'Hunt for the maintenance override',
             statCheck: { stat: 'wire', threshold: 12 },
             pass: {
-              text: 'Override found behind a maintenance panel — Helix never purged the test credentials. Vault opens silent.',
+              text: 'Override found behind a maintenance panel. Helix never purged the test credentials. Vault opens silent.',
               branch: 'advance',
             },
             fail: {
@@ -89,7 +89,7 @@ export const MID_CONTRACTS = [
         stageNumber: 3,
         label: 'STAGE_03',
         title: 'EXFIL UNDER FIRE',
-        prompt: 'You have the goods. Three guards have been alerted — not by you, unrelated patrol change. You can fight through, or find a service tunnel Kade marked as an emergency exit.',
+        prompt: 'You have the goods. Three guards have been alerted; unrelated patrol change, not your op. You can fight through, or find a service tunnel Kade marked as an emergency exit.',
         choices: [
           {
             id: 'vb_fight',
@@ -116,7 +116,7 @@ export const MID_CONTRACTS = [
               branch: 'advance',
             },
             fail: {
-              text: 'Tunnel is sealed. You have to improvise — lose half the inventory ditching a guard, but you\'re out.',
+              text: 'Tunnel is sealed. You have to improvise. Lose half the inventory ditching a guard, but you\'re out.',
               branch: 'advance',
             },
           },
@@ -148,7 +148,7 @@ export const MID_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'SOCIAL ENGINEERING',
-        prompt: 'Target runs his personal comms through an encrypted private server. His assistant is the weak link. You need an in — talk your way close, or spoof a corporate identity to get access.',
+        prompt: 'Target runs his personal comms through an encrypted private server. His assistant is the weak link. You need an in; talk your way close, or spoof a corporate identity to get access.',
         choices: [
           {
             id: 'bo_charm',
@@ -172,7 +172,7 @@ export const MID_CONTRACTS = [
               branch: 'advance',
             },
             fail: {
-              text: 'Spoof triggers a flagging system. Your access is limited — partial logs only.',
+              text: 'Spoof triggers a flagging system. Your access is limited, partial logs only.',
               branch: 'advance',
             },
           },
@@ -183,7 +183,7 @@ export const MID_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'DATA EXTRACTION',
-        prompt: 'You\'re in the server. Evidence is in three encrypted partitions. You can grab everything in one sweep — loud and fast — or cherry-pick the best material carefully.',
+        prompt: 'You\'re in the server. Evidence is in three encrypted partitions. You can grab everything in one sweep, loud and fast, or cherry-pick the best material carefully.',
         choices: [
           {
             id: 'bo_sweep',
@@ -218,7 +218,7 @@ export const MID_CONTRACTS = [
         stageNumber: 3,
         label: 'STAGE_03',
         title: 'FINAL DELIVERY',
-        prompt: 'Evidence is packaged and ready. Nyx wants a face-to-face handoff in Kabuki — minimal trace. The exec\'s security team has been running elevated sweeps in the area. You\'ll need to get through them.',
+        prompt: 'Evidence is packaged and ready. Nyx wants a face-to-face handoff in Kabuki; minimal trace. The exec\'s security team has been running elevated sweeps in the area. You\'ll need to get through them.',
         choices: [
           {
             id: 'bo_blend',
@@ -229,7 +229,7 @@ export const MID_CONTRACTS = [
               branch: 'advance',
             },
             fail: {
-              text: 'Sweep team holds you at a checkpoint. You talk your way through — barely. Nyx is annoyed at the delay.',
+              text: 'Sweep team holds you at a checkpoint. You talk your way through, barely. Nyx is annoyed at the delay.',
               branch: 'advance',
             },
           },
@@ -274,7 +274,7 @@ export const MID_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'LOCATE ASSET',
-        prompt: 'The analyst — codename VESPER — is holed up somewhere in the Industrial District. She\'s gone dark on her primary comm. You can try to triangulate her emergency beacon, or work your contacts.',
+        prompt: 'The analyst, codename VESPER, is holed up somewhere in the Industrial District. She\'s gone dark on her primary comm. You can try to triangulate her emergency beacon, or work your contacts.',
         choices: [
           {
             id: 'ae_beacon',
@@ -309,7 +309,7 @@ export const MID_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'EXTRACTION',
-        prompt: 'VESPER is ready to move. Militech has a loose cordon around the Industrial District — standard sweep for their missing analyst. Fight through or find a gap in the net.',
+        prompt: 'VESPER is ready to move. Militech has a loose cordon around the Industrial District; standard sweep for their missing analyst. Fight through or find a gap in the net.',
         choices: [
           {
             id: 'ae_fight',
@@ -347,7 +347,7 @@ export const MID_CONTRACTS = [
         stageNumber: 3,
         label: 'STAGE_03',
         title: 'BORDER RUN',
-        prompt: 'City perimeter checkpoint. VESPER has forged papers Remi supplied. They\'re good — but the checkpoint officer is running deep scans tonight.',
+        prompt: 'City perimeter checkpoint. VESPER has forged papers Remi supplied. They\'re good, but the checkpoint officer is running deep scans tonight.',
         choices: [
           {
             id: 'ae_papers',
@@ -423,7 +423,7 @@ export const MID_CONTRACTS = [
             label: 'Pull their internal comms',
             statCheck: { stat: 'wire', threshold: 12 },
             pass: {
-              text: 'Comms are unencrypted — Valentinos aren\'t professional. Full patrol map in twenty minutes.',
+              text: 'Comms are unencrypted. Valentinos aren\'t professional. Full patrol map in twenty minutes.',
               branch: 'advance',
             },
             fail: {
@@ -438,7 +438,7 @@ export const MID_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'PLANT CHARGES',
-        prompt: 'Pyre\'s charges need to be placed at three structural points. You\'re inside. Two guards are still awake on an irregular pattern. Plant quick and dirty — or take them out first.',
+        prompt: 'Pyre\'s charges need to be placed at three structural points. You\'re inside. Two guards are still awake on an irregular pattern. Plant quick and dirty, or take them out first.',
         choices: [
           {
             id: 'bd_stealth',
@@ -476,7 +476,7 @@ export const MID_CONTRACTS = [
         stageNumber: 3,
         label: 'STAGE_03',
         title: 'BURN IT DOWN',
-        prompt: 'Charges are set. You\'re clear of the blast radius — theoretically. Pyre wants confirmation of destruction. Detonate remotely and walk, or stay to confirm visually.',
+        prompt: 'Charges are set. You\'re clear of the blast radius; theoretically. Pyre wants confirmation of destruction. Detonate remotely and walk, or stay to confirm visually.',
         choices: [
           {
             id: 'bd_remote',

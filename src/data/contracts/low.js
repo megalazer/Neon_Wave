@@ -19,7 +19,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'LOCATE RELAY',
-        prompt: 'The relay node is in a maintenance tunnel under Watson. You have partial coordinates. Breach the access grid to pinpoint it — or move blind and trust instinct.',
+        prompt: 'The relay node is in a maintenance tunnel under Watson. You have partial coordinates. Breach the access grid to pinpoint it, or move blind and trust instinct.',
         choices: [
           {
             id: 'sl_hack',
@@ -38,7 +38,7 @@ export const LOW_CONTRACTS = [
             id: 'sl_instinct',
             label: 'Move blind, trust instincts',
             outcome: {
-              text: 'Old-fashioned — follow the cable runs, listen for hum. Longer, no footprint.',
+              text: 'Old-fashioned. Follow the cable runs, listen for hum. Longer, no footprint.',
               branch: 'advance',
             },
           },
@@ -84,7 +84,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 3,
         label: 'STAGE_03',
         title: 'EXFIL CLEAN',
-        prompt: 'Job\'s done. Exit: back through the access tunnel — empty but long — or service entrance that puts you on the main street. Faster, visible.',
+        prompt: 'Job\'s done. Exit: back through the access tunnel, empty but long, or service entrance that puts you on the main street. Faster, visible.',
         choices: [
           {
             id: 'sl_tunnel',
@@ -96,14 +96,14 @@ export const LOW_CONTRACTS = [
           },
           {
             id: 'sl_street',
-            label: 'Street exit — blend in',
+            label: 'Street exit, blend in',
             statCheck: { stat: 'face', threshold: 10 },
             pass: {
               text: 'You blend into foot traffic like you belong. Clean.',
               branch: 'advance',
             },
             fail: {
-              text: 'Patrol scanner flags your ID. You bluff through — but your face is in their log.',
+              text: 'Patrol scanner flags your ID. You bluff through, but your face is in their log.',
               branch: 'advance',
             },
           },
@@ -111,7 +111,7 @@ export const LOW_CONTRACTS = [
       },
     ],
     successNarration: 'Signal tap operational. Data stream intercepted. Remi transfers full payout, minus commission.',
-    failureNarration: 'Tap was found and burned. Remi pays a fraction — more than nothing, less than agreed.',
+    failureNarration: 'Tap was found and burned. Remi pays a fraction. More than nothing, less than agreed.',
     abortNarration: 'You pulled the job mid-run. Remi marks the abort in the ledger. No payout.',
   },
 
@@ -135,7 +135,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'PICKUP',
-        prompt: 'Package is in a locker at Kabuki transit hub. The key code Nyx sent is a single-use cipher. Decode it on the fly — or talk your way in.',
+        prompt: 'Package is in a locker at Kabuki transit hub. The key code Nyx sent is a single-use cipher. Decode it on the fly, or talk your way in.',
         choices: [
           {
             id: 'pr_cipher',
@@ -170,7 +170,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'CHECKPOINT',
-        prompt: 'Second stop runs through a MaxTac patrol corridor. Vehicle scans running. Reroute through back streets — longer, invisible — or push straight through.',
+        prompt: 'Second stop runs through a MaxTac patrol corridor. Vehicle scans running. Reroute through back streets, longer, invisible, or push straight through.',
         choices: [
           {
             id: 'pr_reroute',
@@ -200,7 +200,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 3,
         label: 'STAGE_03',
         title: 'FINAL DELIVERY',
-        prompt: 'Last stop is a Japantown teahouse. Contact has a silver cochlear implant. She\'ll ask for a code word. Nyx gave you three options — only one is right. Read her, or ping Nyx.',
+        prompt: 'Last stop is a Japantown teahouse. Contact has a silver cochlear implant. She\'ll ask for a code word. Nyx gave you three options; only one is right. Read her, or ping Nyx.',
         choices: [
           {
             id: 'pr_read',
@@ -211,7 +211,7 @@ export const LOW_CONTRACTS = [
               branch: 'advance',
             },
             fail: {
-              text: 'Wrong word. You correct yourself fast — "Testing response time." She doesn\'t smile, but she takes the package.',
+              text: 'Wrong word. You correct yourself fast. "Testing response time." She doesn\'t smile, but she takes the package.',
               branch: 'advance',
             },
           },
@@ -275,7 +275,7 @@ export const LOW_CONTRACTS = [
             id: 'ge_spoof',
             label: 'Spoof the janitor\'s badge',
             outcome: {
-              text: 'Badge scan clears. Janitor\'s shift ended four hours ago — their access is still live.',
+              text: 'Badge scan clears. Janitor\'s shift ended four hours ago; their access is still live.',
               branch: 'advance',
             },
           },
@@ -286,7 +286,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'NAVIGATE FLOORS',
-        prompt: 'Target files are on the third floor. A security drone runs a slow circuit between floors two and three. Time your movement — or jack the drone.',
+        prompt: 'Target files are on the third floor. A security drone runs a slow circuit between floors two and three. Time your movement, or jack the drone.',
         choices: [
           {
             id: 'ge_timing',
@@ -297,7 +297,7 @@ export const LOW_CONTRACTS = [
               branch: 'advance',
             },
             fail: {
-              text: 'You mistime. Drone pings you but doesn\'t flag — faulty sensor array. You clear the floor anyway.',
+              text: 'You mistime. Drone pings you but doesn\'t flag. Faulty sensor array. You clear the floor anyway.',
               branch: 'advance',
             },
           },
@@ -325,7 +325,7 @@ export const LOW_CONTRACTS = [
         choices: [
           {
             id: 'ge_fast',
-            label: 'Fast crack — accept traces',
+            label: 'Fast crack, accept traces',
             statCheck: { stat: 'wire', threshold: 10 },
             pass: {
               text: 'Files out in forty seconds. Traces found eventually. You\'ll be long gone.',
@@ -338,7 +338,7 @@ export const LOW_CONTRACTS = [
           },
           {
             id: 'ge_clean',
-            label: 'Clean crack — take the time',
+            label: 'Clean crack, take the time',
             statCheck: { stat: 'wire', threshold: 13 },
             pass: {
               text: 'Three minutes. Zero traces. Like you were never there.',
@@ -377,7 +377,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'LOCATE THE MARK',
-        prompt: 'The mark — calls himself Ticho — dropped off the grid three days ago. Last seen at a Heywood bar. Burn a local contact or trace his last comm ping.',
+        prompt: 'The mark, who calls himself Ticho, dropped off the grid three days ago. Last seen at a Heywood bar. Burn a local contact or trace his last comm ping.',
         choices: [
           {
             id: 'dc_contacts',
@@ -401,7 +401,7 @@ export const LOW_CONTRACTS = [
               branch: 'advance',
             },
             fail: {
-              text: 'Ping bounces through a relay. Close enough — southeast Heywood, maintenance area.',
+              text: 'Ping bounces through a relay. Close enough. Southeast Heywood, maintenance area.',
               branch: 'advance',
             },
           },
@@ -450,7 +450,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 3,
         label: 'STAGE_03',
         title: 'COLLECT',
-        prompt: 'Ticho says he spent half. He\'ll hand over credits plus a cred chip, or sign over hardware worth the balance — but you\'d need to verify it.',
+        prompt: 'Ticho says he spent half. He\'ll hand over credits plus a cred chip, or sign over hardware worth the balance, but you\'d need to verify it.',
         choices: [
           {
             id: 'dc_cash',
@@ -501,7 +501,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'THE TIP',
-        prompt: 'Remi\'s contact is a woman named Hana — runs a noodle stall two blocks from the Red Chrome perimeter. She has partial building schematics and knows the crew rotation. Pay 200 for them, or work with what Remi streamed you.',
+        prompt: 'Remi\'s contact is a woman named Hana. Runs a noodle stall two blocks from the Red Chrome perimeter. She has partial building schematics and knows the crew rotation. Pay 200 for them, or work with what Remi streamed you.',
         choices: [
           {
             id: 'ur_buy_schematic',
@@ -534,7 +534,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'QUIET ENTRY',
-        prompt: 'The girl — Daya — is on the third floor of a repurposed commercial block. Two ways up: ghost the service stairwell, or pay the ground-floor watch to look the other way. He\'s asking 300.',
+        prompt: 'The girl, Daya, is on the third floor of a repurposed commercial block. Two ways up: ghost the service stairwell, or pay the ground-floor watch to look the other way. He\'s asking 300.',
         choices: [
           {
             id: 'ur_bribe_watch',
@@ -556,7 +556,7 @@ export const LOW_CONTRACTS = [
               effects: { rewardModifier: 0.15 },
             },
             fail: {
-              text: 'A loose grate. One of them hears something. You press flat and wait — two full minutes that feel like twenty. They don\'t investigate.',
+              text: 'A loose grate. One of them hears something. You press flat and wait. Two full minutes that feel like twenty. They don\'t investigate.',
               branch: 'advance',
             },
           },
@@ -567,7 +567,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 3,
         label: 'STAGE_03',
         title: 'ONE OBSTACLE',
-        prompt: 'Daya is behind a locked room at the end of the hall. Between you and her: one Red Chrome enforcer — augmented, bored, half-turned away. You could slip past him. Or you could end the conversation permanently.',
+        prompt: 'Daya is behind a locked room at the end of the hall. Between you and her: one Red Chrome enforcer, augmented, bored, half-turned away. You could slip past him. Or you could end the conversation permanently.',
         choices: [
           {
             id: 'ur_slip_past',
@@ -617,7 +617,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 4,
         label: 'STAGE_04',
         title: 'CLEAN EXIT',
-        prompt: 'Daya is with you. Rattled but mobile. Red Chrome will sweep this block within the hour. Remi wants a clean delivery to her designated drop — professional, traceable, commission intact. Or you return Daya to the family direct. Cuts Remi\'s take. She\'ll hear about it.',
+        prompt: 'Daya is with you. Rattled but mobile. Red Chrome will sweep this block within the hour. Remi wants a clean delivery to her designated drop, professional, traceable, commission intact. Or you return Daya to the family direct. Cuts Remi\'s take. She\'ll hear about it.',
         choices: [
           {
             id: 'ur_remi_drop',
@@ -647,7 +647,7 @@ export const LOW_CONTRACTS = [
       },
     ],
     successNarration: 'Daya delivered. Family pays. Remi transfers her commission. Job is in the ledger: clean.',
-    failureNarration: 'Extraction failed. Remi pays a fraction — she covered the logistics cost and nothing more.',
+    failureNarration: 'Extraction failed. Remi pays a fraction. She covered the logistics cost and nothing more.',
     abortNarration: 'You pulled out mid-run. Daya stays where she is. Remi marks the abort and says nothing, which is worse.',
   },
 ];

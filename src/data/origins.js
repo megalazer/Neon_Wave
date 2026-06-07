@@ -26,6 +26,16 @@ export function deriveStats(path) {
   };
 }
 
+// tappable tooltip descriptions for the FinalizeScreen stats grid
+export const STAT_DESCRIPTIONS = {
+  chrome: 'Physical augments / melee capability. Determines success in brute-force encounters and combat damage scaling.',
+  edge:   'Reflexes / street instincts. Used in combat initiative, underworld deals, and split-second judgment checks.',
+  ghost:  'Stealth / infiltration. Determines success in silent movement, bypassing detection, and covert operations.',
+  face:   'Charisma / persuasion. Used in social checks: bluffing, negotiating, commanding authority.',
+  grit:   'Endurance / toughness. Determines physical resilience, survival checks, and withstanding harsh conditions.',
+  wire:   'Netrunning / tech aptitude. Used in hacking, decryption, drone-jacking, and all deck-based checks.',
+};
+
 export const ORIGINS = [
   {
     id: 'corpo',
