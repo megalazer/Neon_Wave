@@ -60,7 +60,7 @@ export const QUALITY_CONFIG = {
     arrivalNarrations: [
       "Names like this don't show up in open pools. Favor called in.",
       "You've heard of them. Everyone has.",
-      'Militech tried to recruit them twice. Both times they said no.',
+      'Grammaton tried to recruit them twice. Both times they said no.',
       "One job together and you'll understand the price.",
     ],
   },

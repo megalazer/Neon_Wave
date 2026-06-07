@@ -139,7 +139,7 @@ export const MID_CONTRACTS = [
     faction: 'fac_grammaton',
     factionRepReward: 16,
     factionRepPenalty: 10,
-    description: 'Collect dirt on a mid-tier Petrochem exec. Nyx has a buyer. Evidence needs to be airtight.',
+    description: 'Collect dirt on a mid-tier Referent exec. Nyx has a buyer. Evidence needs to be airtight.',
     payout: 6000,
     deposit: 300,
     exp: 350,
@@ -266,7 +266,7 @@ export const MID_CONTRACTS = [
     factionRepReward: 16,
     factionRepPenalty: 10,
     minFactionRep: 'FRIENDLY',
-    description: 'A defecting Militech analyst wants out of the city. Remi has a buyer for the data she\'s carrying.',
+    description: 'A defecting Grammaton analyst wants out of the city. Remi has a buyer for the data she\'s carrying.',
     payout: 9000,
     deposit: 400,
     exp: 500,
@@ -311,7 +311,7 @@ export const MID_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'EXTRACTION',
-        prompt: 'VESPER is ready to move. Militech has a loose cordon around the Industrial District; standard sweep for their missing analyst. Fight through or find a gap in the net.',
+        prompt: 'VESPER is ready to move. Grammaton has a loose cordon around the Industrial District; standard sweep for their missing analyst. Fight through or find a gap in the net.',
         choices: [
           {
             id: 'ae_fight',
@@ -381,7 +381,7 @@ export const MID_CONTRACTS = [
       },
     ],
     successNarration: 'VESPER is out. Data delivered to Remi\'s buyer. Full transfer plus a commendation note: "High-difficulty run."',
-    failureNarration: 'Extraction failed. VESPER is in Militech custody. Remi pays a fraction for the attempt.',
+    failureNarration: 'Extraction failed. VESPER is in Grammaton custody. Remi pays a fraction for the attempt.',
     abortNarration: 'You abandoned the asset. Remi doesn\'t call you again for a month.',
   },
 
@@ -406,7 +406,7 @@ export const MID_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'RECON DEPOT',
-        prompt: 'Depot is guarded by six Valentinos. You need to know their patrol pattern before you move in with charges. Scout physically or pull their internal comms.',
+        prompt: 'Depot is guarded by six Static street crew. You need to know their patrol pattern before you move in with charges. Scout physically or pull their internal comms.',
         choices: [
           {
             id: 'bd_physical',
@@ -417,7 +417,7 @@ export const MID_CONTRACTS = [
               branch: 'advance',
             },
             fail: {
-              text: 'A Valentino spots you on the roof. You run. They don\'t pursue, but your observation window is blown.',
+              text: 'A Static crew member spots you on the roof. You run. They don\'t pursue, but your observation window is blown.',
               branch: 'advance',
             },
           },
@@ -426,7 +426,7 @@ export const MID_CONTRACTS = [
             label: 'Pull their internal comms',
             statCheck: { stat: 'wire', threshold: 12 },
             pass: {
-              text: 'Comms are unencrypted. Valentinos aren\'t professional. Full patrol map in twenty minutes.',
+              text: 'Comms are unencrypted. Static crews aren\'t professional. Full patrol map in twenty minutes.',
               branch: 'advance',
             },
             fail: {
@@ -460,7 +460,7 @@ export const MID_CONTRACTS = [
             id: 'bd_eliminate',
             label: 'Take out the guards first',
             outcome: {
-              text: 'Two Valentinos, close quarters. Pyre didn\'t say anything about clean.',
+              text: 'Two Static enforcers, close quarters. Pyre didn\'t say anything about clean.',
               branch: 'triggersBattle',
               onVictory: {
                 branch: 'advance',
@@ -498,7 +498,7 @@ export const MID_CONTRACTS = [
               branch: 'complete',
             },
             fail: {
-              text: 'A late-arriving Valentino vehicle spots you at the scene. You detonate and run in the same motion.',
+              text: 'A late-arriving Static vehicle spots you at the scene. You detonate and run in the same motion.',
               branch: 'advance',
             },
           },
@@ -506,7 +506,7 @@ export const MID_CONTRACTS = [
       },
     ],
     successNarration: 'Depot is ash. Pyre confirms structural collapse. Full transfer with a voice note: "Now that\'s how you do it."',
-    failureNarration: 'Depot partially damaged. Valentinos put the fire out. Pyre pays partial, and he\'s not happy.',
+    failureNarration: 'Depot partially damaged. Static crew put the fire out. Pyre pays partial, and he\'s not happy.',
     abortNarration: 'Run aborted. Depot still stands. Pyre keeps the deposit for wasted materials.',
   },
 ];

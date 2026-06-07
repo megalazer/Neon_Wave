@@ -20,7 +20,7 @@ export const HIGH_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'INTERFACE',
-        prompt: 'You need a hardline to a Militech relay tower to even reach the perimeter. The tower is guarded by an automated defense grid, breach it, or find a dead terminal Dusk marked on an old map.',
+        prompt: 'You need a hardline to a Grammaton relay tower to even reach the perimeter. The tower is guarded by an automated defense grid, breach it, or find a dead terminal Dusk marked on an old map.',
         choices: [
           {
             id: 'bwp_breach',
@@ -137,7 +137,7 @@ export const HIGH_CONTRACTS = [
     factionRepReward: 22,
     factionRepPenalty: 14,
     minFactionRep: 'ALLIED',
-    description: 'Plant a fabricated identity inside Arasaka\'s mid-tier management layer. Kade\'s client needs an inside channel for six months minimum.',
+    description: 'Plant a fabricated identity inside Grammaton\'s mid-tier management layer. Kade\'s client needs an inside channel for six months minimum.',
     payout: 45000,
     deposit: 3000,
     exp: 2200,
@@ -158,7 +158,7 @@ export const HIGH_CONTRACTS = [
               branch: 'advance',
             },
             fail: {
-              text: 'Two systems flag inconsistencies. You patch them, but the trail has gaps. Kade says proceed. Arasaka audit teams are slow.',
+              text: 'Two systems flag inconsistencies. You patch them, but the trail has gaps. Kade says proceed. Grammaton audit teams are slow.',
               branch: 'advance',
             },
           },
@@ -167,11 +167,11 @@ export const HIGH_CONTRACTS = [
             label: 'Minimal trail, rely on presentation',
             statCheck: { stat: 'face', threshold: 14 },
             pass: {
-              text: 'Less is more. The sparse trail reads as intentional privacy. Arasaka likes people with something to protect.',
+              text: 'Less is more. The sparse trail reads as intentional privacy. Grammaton likes people with something to protect.',
               branch: 'advance',
             },
             fail: {
-              text: 'Too minimal. Arasaka\'s automated screening flags the absence of data. You add more, rushing.',
+              text: 'Too minimal. Grammaton\'s automated screening flags the absence of data. You add more, rushing.',
               branch: 'advance',
             },
           },
@@ -189,7 +189,7 @@ export const HIGH_CONTRACTS = [
             label: 'Redirect the investigation',
             statCheck: { stat: 'face', threshold: 15 },
             pass: {
-              text: 'You plant a false trail pointing at a real Arasaka employee who fits the paranoia profile. Investigation ends there.',
+              text: 'You plant a false trail pointing at a real Grammaton employee who fits the paranoia profile. Investigation ends there.',
               branch: 'advance',
             },
             fail: {
@@ -248,7 +248,7 @@ export const HIGH_CONTRACTS = [
         ],
       },
     ],
-    successNarration: 'Asset embedded. Channel live. Kade\'s client will be pulling Arasaka intel for months. Largest payout you\'ve logged.',
+    successNarration: 'Asset embedded. Channel live. Kade\'s client will be pulling Grammaton intel for months. Largest payout you\'ve logged.',
     failureNarration: 'Asset was burned or channel was compromised. Kade recovers what he can. Partial payout for the attempt.',
     abortNarration: 'Operation abandoned. Kade has to extract the asset before they\'re burned. He keeps the deposit for the emergency pull.',
   },

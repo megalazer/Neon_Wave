@@ -367,7 +367,7 @@ export const CHOICE_EVENTS = [
     weight: 3,
     triggers: { minTurn: 8 },
     title: 'AMBUSH_WARNING',
-    prompt: 'A street kid grabs your sleeve: "Don\'t go down Viper Ave. Scavs set up shop. They\'re taking people for parts." She looks terrified.',
+    prompt: 'A street kid grabs your sleeve: "Don\'t go down Viper Ave. Static crew set up shop. They\'re taking people for parts." She looks terrified.',
     choices: [
       {
         id: 'pay_kid',
@@ -382,11 +382,11 @@ export const CHOICE_EVENTS = [
         label: '[HANDLE_IT]',
         statCheck: { stat: 'chrome', threshold: 14 },
         pass: {
-          text: 'You hit the Scav nest fast and hard. Three runners scatter. No casualties on your side. The block is clear.',
+          text: 'You hit the Static nest fast and hard. Three runners scatter. No casualties on your side. The block is clear.',
           effects: { morale: 6, factionDelta: { undercity: 4 } },
         },
         fail: {
-          text: "You walk in cocky and walk out bleeding. The Scavs were better armed than expected. -150 CR in med costs.",
+          text: "You walk in cocky and walk out bleeding. The Static crew were better armed than expected. -150 CR in med costs.",
           effects: { credits: -150, morale: -5 },
         },
       },

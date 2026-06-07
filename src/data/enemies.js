@@ -118,7 +118,7 @@ export const ENEMIES = {
   },
   enemy_grammaton_militech: {
     id: 'enemy_grammaton_militech',
-    name: 'MILITECH SPEC OPS',
+    name: 'GRAMMATON SPEC OPS',
     faction: 'fac_grammaton',
     threat: 'high',
     hp: { current: 140, max: 140 },
