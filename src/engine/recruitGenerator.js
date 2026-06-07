@@ -3,6 +3,7 @@ import { pickRandomName, pickRandomHandle, RECRUIT_CLASSES } from '../data/recru
 import { CYBERWARE_ITEMS } from '../data/cyberware';
 import { getClassProfile } from '../data/classProfiles';
 import { generateNetrunnerQuickhacks } from '../data/quickhacks';
+import { pickTrait, pickVoiceLine, pickBackstory } from '../data/recruitTraits';
 
 function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -113,5 +114,8 @@ export function generateRecruit(contractsCompleted, currentTurn, qualityOverride
     quickhacks: cls === 'netrunner' ? generateNetrunnerQuickhacks() : null,
     expiresAtTurn: currentTurn + 15,
     arrivalNarration: pickRandom(cfg.arrivalNarrations),
+trait:     pickTrait(quality),
+voiceLine: pickVoiceLine(cls, faction),
+backstory: pickBackstory(cls, faction, quality),
   };
 }

@@ -89,6 +89,22 @@ export default function RecruitCard({ recruit, credits, rosterFull, currentTurn,
         </View>
       </View>
 
+      {/* Voice line */}
+      {recruit.voiceLine ? (
+        <Text style={[styles.voiceLine, { color: cfg?.color || colors.outline }]} numberOfLines={1}>
+          "{recruit.voiceLine}"
+        </Text>
+      ) : null}
+
+      {/* Trait tag */}
+      {recruit.trait ? (
+        <View style={[styles.traitChip, { borderColor: cfg?.color || colors.outline }]}>
+          <Text style={[styles.traitChipText, { color: cfg?.color || colors.outline }]} numberOfLines={1}>
+            {recruit.trait}
+          </Text>
+        </View>
+      ) : null}
+
       {/* Stat pills */}
       <View style={styles.statRow}>
         <View style={styles.statPill}>
@@ -132,6 +148,13 @@ export default function RecruitCard({ recruit, credits, rosterFull, currentTurn,
           </Text>
         </View>
       )}
+
+      {/* Backstory */}
+      {recruit.backstory ? (
+        <Text style={styles.backstory} numberOfLines={2}>
+          {recruit.backstory}
+        </Text>
+      ) : null}
 
       {/* Footer */}
       <View style={styles.footer}>
@@ -357,5 +380,33 @@ const styles = StyleSheet.create({
     color: colors.outline,
     letterSpacing: 0.8,
     textTransform: 'uppercase',
+  },
+  voiceLine: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 10,
+    fontStyle: 'italic',
+    letterSpacing: 0.3,
+    marginTop: 2,
+  },
+  traitChip: {
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    marginTop: 4,
+  },
+  traitChipText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  backstory: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 9,
+    color: colors.outline,
+    letterSpacing: 0.3,
+    lineHeight: 13,
+    marginTop: 6,
   },
 });
