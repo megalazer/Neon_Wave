@@ -22,11 +22,7 @@ export default function PathScreen({ draft, onSetPath, onContinue }) {
       <Text style={styles.decalL} pointerEvents="none">NEURAL_VOID</Text>
       <Text style={styles.decalR} pointerEvents="none">OVERWRITE_CMD</Text>
 
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
+      <View style={styles.content}>
         {ORIGINS.map((origin) => {
           const active = selected === origin.id;
           return (
@@ -121,7 +117,7 @@ export default function PathScreen({ draft, onSetPath, onContinue }) {
         </TouchableOpacity>
 
         <InitFooter />
-      </ScrollView>
+      </View>
     </View>
   );
 }
@@ -130,10 +126,11 @@ const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.background },
   scroll: { flex: 1 },
   content: {
-    paddingTop: HEADER_H + 16,
+    flex: 1,
+    paddingTop: HEADER_H + 8,
     paddingHorizontal: 16,
-    paddingBottom: 16,
-    gap: 12,
+    paddingBottom: 8,
+    gap: 8,
   },
   decalL: {
     position: 'absolute',
@@ -164,11 +161,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   imgArea: {
-    height: 80,
+    height: 56,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  badge: {
     position: 'absolute',
     top: 6,
     right: 6,
@@ -200,29 +196,29 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
     borderBottomWidth: 1,
   },
-  cardBody: { padding: 12, gap: 8 },
+  cardBody: { padding: 8, gap: 4 },
   cardTitle: {
     fontFamily: 'KodeMono_700Bold',
-    fontSize: 16,
+    fontSize: 14,
     letterSpacing: 0.5,
     textTransform: 'uppercase',
   },
   cardDesc: {
     fontFamily: 'KodeMono_400Regular',
-    fontSize: 12,
+    fontSize: 10,
     color: colors.onSurfaceVariant,
     letterSpacing: 0.3,
-    lineHeight: 18,
+    lineHeight: 15,
   },
   cardBonus: {
     fontFamily: 'KodeMono_700Bold',
-    fontSize: 10,
+    fontSize: 9,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
   },
   selectRow: {
     borderWidth: 1,
-    paddingVertical: 8,
+    paddingVertical: 5,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -231,17 +227,16 @@ const styles = StyleSheet.create({
   },
   selectText: {
     fontFamily: 'KodeMono_700Bold',
-    fontSize: 10,
+    fontSize: 9,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
   },
   prompt: {
-    paddingVertical: 12,
-    paddingHorizontal: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
     borderWidth: 1,
     borderColor: `${colors.primary}26`,
     backgroundColor: `${colors.primary}06`,
-    marginTop: 4,
   },
   promptText: {
     fontFamily: 'KodeMono_400Regular',
@@ -250,9 +245,8 @@ const styles = StyleSheet.create({
   },
   continueBtn: {
     backgroundColor: colors.primary,
-    paddingVertical: 14,
+    paddingVertical: 12,
     alignItems: 'center',
-    marginTop: 4,
   },
   continueBtnOff: {
     backgroundColor: 'transparent',

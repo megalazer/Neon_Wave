@@ -15,13 +15,6 @@ export default function RecruitButton({ quality, canAfford, rosterFull, onRecrui
   const pressed = useSharedValue(0);
   const accentColor = quality ? (QUALITY_CONFIG[quality]?.color ?? FALLBACK_COLOR) : FALLBACK_COLOR;
 
-  const containerAnim = useAnimatedStyle(() => ({
-    backgroundColor: interpolateColor(pressed.value, [0, 1], ['rgba(0,0,0,0)', accentColor]),
-  }));
-  const labelAnim = useAnimatedStyle(() => ({
-    color: interpolateColor(pressed.value, [0, 1], [accentColor, colors.background]),
-  }));
-
   const disabled = !canAfford || rosterFull;
   const label = rosterFull
     ? '[ROSTER_FULL]'
@@ -29,8 +22,26 @@ export default function RecruitButton({ quality, canAfford, rosterFull, onRecrui
     ? '[NO_FUNDS]'
     : '[RECRUIT]';
 
+  const containerAnim = useAnimatedStyle(() => {
+    if (disabled) return { backgroundColor: 'transparent' };
+    return {
+      backgroundColor: interpolateColor(pressed.value, [0, 1], ['rgba(0,0,0,0)', accentColor]),
+    };
+  });
+  const labelAnim = useAnimatedStyle(() => {
+    if (disabled) return { color: `${accentColor}44` };
+    return { color: interpolateColor(pressed.value, [0, 1], [accentColor, colors.background]) };
+  });
+
   return (
-    <Animated.View style={[styles.btn, { borderColor: accentColor }, disabled && styles.btnDisabled, containerAnim]}>
+    <Animated.View
+      style={[
+        styles.btn,
+        { borderColor: disabled ? `${accentColor}33` : accentColor },
+        !disabled && { shadowColor: accentColor },
+        containerAnim,
+      ]}
+    >
       <TouchableOpacity
         onPressIn={() => { if (!disabled) pressed.value = withTiming(1, { duration: 75 }); }}
         onPressOut={() => { pressed.value = withTiming(0, { duration: 75 }); }}
@@ -49,19 +60,20 @@ const styles = StyleSheet.create({
   btn: {
     borderWidth: 1,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.35,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    elevation: 3,
+    minWidth: 130,
   },
-  btnDisabled: { opacity: 0.4 },
   inner: {
-    paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
   },
   label: {
     fontFamily: 'KodeMono_700Bold',
-    fontSize: 10,
-    letterSpacing: 1,
+    fontSize: 13,
+    letterSpacing: 1.5,
     textTransform: 'uppercase',
+    textAlign: 'center',
   },
 });

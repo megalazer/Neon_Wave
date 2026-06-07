@@ -296,7 +296,6 @@ export default function HavenScreen() {
         turnsSinceLastSpawn={turnsSinceLastSpawn}
       />
 
-      {/* Available Operatives */}
       <View style={styles.section}>
         <SectionHeader icon="group-add" label="[AVAILABLE_OPERATIVES]" color={colors.primary} />
         <ScrollView
@@ -313,7 +312,7 @@ export default function HavenScreen() {
               rosterFull={rosterFull}
               currentTurn={currentTurn}
               onRecruit={handleRecruit}
-              onDismiss={op.quality !== undefined ? dismissFromAvailable : null}
+              onDismiss={dismissFromAvailable}
             />
           ))}
           {availableOperatives.length === 0 && (

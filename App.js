@@ -74,7 +74,6 @@ export default function App() {
   const contractPhase    = useStore((s) => s.contract.phase);
   const playerInCrew     = useStore((s) => s.crew.members.some((m) => m.isPlayer));
   const gameOver         = useStore((s) => s.world.gameOver);
-  const initializeOperatives = useStore((s) => s.initializeOperatives);
   const initCharacter      = useStore((s) => s.initCharacter);
   const initDevMode        = useStore((s) => s.initDevMode);
   const initAchievements   = useStore((s) => s.initAchievements);
@@ -85,7 +84,6 @@ export default function App() {
   const inInitFlow = !playerInCrew;
 
   useEffect(() => {
-    initializeOperatives();
     initDevMode();
     initAchievements();
   }, []);

@@ -51,17 +51,11 @@ export default function RecruitCard({ recruit, credits, rosterFull, currentTurn,
   const cardContent = (
     <>
       {/* Top badge */}
-      {isGenerated ? (
-        <View style={[styles.qualityChip, { backgroundColor: quality === 'legendary' ? 'transparent' : cfg.color }]}>
-          <Text style={[styles.qualityChipText, quality === 'legendary' && styles.legendaryChipText]}>
-            {cfg.label}
-          </Text>
-        </View>
-      ) : (
-        <View style={[styles.idBadge, { backgroundColor: colors.primary }]}>
-          <Text style={styles.idBadgeText}>{recruit.displayId}</Text>
-        </View>
-      )}
+      <View style={[styles.qualityChip, { backgroundColor: quality === 'legendary' ? 'transparent' : cfg.color }]}>
+        <Text style={[styles.qualityChipText, quality === 'legendary' && styles.legendaryChipText]}>
+          {cfg.label}
+        </Text>
+      </View>
 
       {/* Portrait */}
       <View style={[styles.portrait, { borderColor: portraitColor }]}>
@@ -89,22 +83,6 @@ export default function RecruitCard({ recruit, credits, rosterFull, currentTurn,
         </View>
       </View>
 
-      {/* Voice line */}
-      {recruit.voiceLine ? (
-        <Text style={[styles.voiceLine, { color: cfg?.color || colors.outline }]} numberOfLines={1}>
-          "{recruit.voiceLine}"
-        </Text>
-      ) : null}
-
-      {/* Trait tag */}
-      {recruit.trait ? (
-        <View style={[styles.traitChip, { borderColor: cfg?.color || colors.outline }]}>
-          <Text style={[styles.traitChipText, { color: cfg?.color || colors.outline }]} numberOfLines={1}>
-            {recruit.trait}
-          </Text>
-        </View>
-      ) : null}
-
       {/* Stat pills */}
       <View style={styles.statRow}>
         <View style={styles.statPill}>
@@ -121,24 +99,7 @@ export default function RecruitCard({ recruit, credits, rosterFull, currentTurn,
         </View>
       </View>
 
-      {/* Cyberware chips */}
-      {isGenerated && recruit.equippedCyberware.length > 0 && (
-        <View style={styles.cwRow}>
-          {recruit.equippedCyberware.map((cwId) => {
-            const cw = CYBERWARE_ITEMS.find((c) => c.id === cwId);
-            return (
-              <View key={cwId} style={[styles.cwChip, { borderColor: `${cfg.color}88` }]}>
-                <Text style={[styles.cwText, { color: cfg.color }]} numberOfLines={1}>
-                  {cw?.name ?? cwId}
-                </Text>
-              </View>
-            );
-          })}
-        </View>
-      )}
-
       {/* Expiry */}
-      {isGenerated && (
         <View style={styles.expiryRow}>
           <MaterialIcons name="schedule" size={9} color={expiryUrgent ? colors.error : colors.outline} />
           <Text style={[styles.expiryText, expiryUrgent && styles.expiryUrgent]}>
@@ -149,24 +110,12 @@ export default function RecruitCard({ recruit, credits, rosterFull, currentTurn,
         </View>
       )}
 
-      {/* Backstory */}
-      {recruit.backstory ? (
-        <Text style={styles.backstory} numberOfLines={2}>
-          {recruit.backstory}
-        </Text>
-      ) : null}
-
       {/* Footer */}
       <View style={styles.footer}>
         <Text style={[styles.cost, { color: canAfford ? colors.tertiaryContainer : colors.error }]}>
           {recruit.cost.toLocaleString()} CR
         </Text>
         <View style={styles.footerBtns}>
-          {isGenerated && onDismiss && (
-            <TouchableOpacity style={styles.passBtn} onPress={() => onDismiss(recruit.id)} activeOpacity={0.7}>
-              <Text style={styles.passBtnText}>[PASS]</Text>
-            </TouchableOpacity>
-          )}
           <RecruitButton
             quality={quality}
             canAfford={canAfford}
