@@ -1,7 +1,7 @@
 import { ORIGIN_MODIFIERS, OPENING_NARRATION, deriveStats } from '../../data/origins';
 import { CYBERWARE_ITEMS } from '../../data/cyberware';
 import { getActiveAccountPerks } from '../../data/achievements';
-import { XP_THRESHOLDS, MAX_LEVEL } from '../../data/leveling';
+import { XP_THRESHOLDS, MAX_LEVEL, VITALITY_BASE, VITALITY_PER_GRIT_BASE } from '../../data/leveling';
 
 // Applies all active account perks to a freshly-built run. Reads unlocked account
 // achievements off the shared draft. Called exactly once per run init, after the
@@ -100,6 +100,8 @@ export const createCharacterSlice = (set) => ({
       const starterItem = CYBERWARE_ITEMS.find((c) => c.id === draft.starterCyberware);
       const humanityLoss = starterItem?.humanityCost ?? 4;
       const classMap = { corpo: 'FIXER', street_kid: 'STREET_SAMURAI', nomad: 'GHOST' };
+      const baseStats = deriveStats(draft.path);
+      const maxVitality = VITALITY_BASE + Math.round(baseStats.grit * VITALITY_PER_GRIT_BASE);
 
       state.crew.members = [
         {
@@ -109,10 +111,10 @@ export const createCharacterSlice = (set) => ({
           class: classMap[draft.path] || 'STREET_SAMURAI',
           level: 1,
           exp: 0,
-          vitals:   { current: 100, max: 100 },
+          vitals:   { current: maxVitality, max: maxVitality },
           neural:   { current: 100, max: 100 },
           humanity: { current: 80 - humanityLoss, max: 80 },
-          stats: { ...deriveStats(draft.path) },
+          stats: { ...baseStats },
           equippedCyberware: [draft.starterCyberware],
           maxCyberwareSlots: 3,
         },

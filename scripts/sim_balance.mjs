@@ -1,9 +1,11 @@
-// Final balance gate. Drives the REAL modules (generateEncounter, scaleEnemy,
-// buildUnits, planEnemyTurn, ENCOUNTERS) against a faithful player model.
-// Target: matched fights 3-5 rounds (HIGH up to ~6), LOW/MID winnable, HIGH risky (~85-90%).
+// Balance gate. Drives the REAL modules (generateEncounter, scaleEnemy, buildUnits,
+// planEnemyTurn, ENCOUNTERS) + real leveling HP formulas against a faithful player
+// model. Focus: early-game survivability across all 3 origins (incl. drained neural),
+// plus the level/tier diagonal. Target: early game survivable, no full-wipe spirals.
 import { generateEncounter, buildUnits } from '../src/engine/encounterGenerator.js';
 import { planEnemyTurn } from '../src/engine/enemyTurn.js';
 import { ENCOUNTERS } from '../src/data/encounters.js';
+import { VITALITY_BASE, VITALITY_PER_GRIT_BASE, vitalityGainPerLevel } from '../src/data/leveling.js';
 
 const ABIL = {
   netrunner: { cost: 1, kind: 'nuke', dmg: 15 },
@@ -18,6 +20,18 @@ const liveF = (f) => f.filter((u) => u.hp.current > 0);
 const pickE = (h) => { const l = liveE(h); if (!l.length) return null; const open = l.filter((e) => !(e.blockCharges > 0)); const p = open.length ? open : l; return p.reduce((a, b) => (b.hp.current < a.hp.current ? b : a)); };
 const hitE = (h, d) => { const t = pickE(h); if (!t) return; if (t.blockCharges > 0) { t.blockCharges -= 1; return; } t.hp.current = Math.max(0, t.hp.current - d); };
 
+// Real HP formulas
+function playerHP(grit, level) {
+  let hp = VITALITY_BASE + Math.round(grit * VITALITY_PER_GRIT_BASE);
+  for (let l = 2; l <= level; l++) hp += vitalityGainPerLevel(grit);
+  return hp;
+}
+function recruitHP(baseHP, grit, level) {
+  let hp = baseHP;
+  for (let l = 2; l <= level; l++) hp += vitalityGainPerLevel(grit);
+  return hp;
+}
+
 function battle(party, hostile) {
   const friendly = party.map((m) => ({ id: m.id, class: m.class, isPlayer: !!m.isPlayer, neural: m.neural, hp: { current: m.hp, max: m.hp } }));
   for (const e of hostile) { e.rampStacks = e.rampStacks ?? 0; e.blockCharges = e.block && Math.random() < e.block.chance ? 1 : 0; }
@@ -30,7 +44,7 @@ function battle(party, hostile) {
     for (const cls of ['chrome_doc', 'ghost', 'fixer', 'street_samurai', 'netrunner']) {
       if (!present.has(cls)) continue; const a = ABIL[cls]; if (pool < a.cost) continue;
       if (a.kind === 'heal') { if (minFrac < 0.5) { heal = true; pool -= a.cost; } }
-      else if (a.kind === 'reduce') { if (liveE(hostile).length >= 2) { reduce = true; pool -= a.cost; } }
+      else if (a.kind === 'reduce') { if (liveE(hostile).length >= 1) { reduce = true; pool -= a.cost; } }
       else if (a.kind === 'aoe') { if (liveE(hostile).length >= 2) { for (const e of liveE(hostile)) { if (e.blockCharges > 0) { e.blockCharges -= 1; continue; } e.hp.current = Math.max(0, e.hp.current - a.dmg); } pool -= a.cost; } }
       else if (a.kind === 'nuke') { hitE(hostile, a.dmg); pool -= a.cost; }
     }
@@ -50,39 +64,39 @@ function battle(party, hostile) {
   return { win: false, rounds: 20, friendly, timeout: true };
 }
 
-const PARTIES = {
-  L1: [{ id: 'player', class: 'street_samurai', isPlayer: true, hp: 100, neural: 100 }],
-  L3: [{ id: 'player', class: 'street_samurai', isPlayer: true, hp: 100, neural: 100 }, { id: 'r1', class: 'netrunner', hp: 75, neural: 55 }],
-  L4: [{ id: 'player', class: 'street_samurai', isPlayer: true, hp: 100, neural: 100 }, { id: 'r1', class: 'netrunner', hp: 80, neural: 60 }, { id: 'r2', class: 'fixer', hp: 78, neural: 60 }],
-  L5: [{ id: 'player', class: 'street_samurai', isPlayer: true, hp: 100, neural: 100 }, { id: 'r1', class: 'netrunner', hp: 95, neural: 80 }, { id: 'r2', class: 'fixer', hp: 90, neural: 75 }],
-  L7: [{ id: 'player', class: 'street_samurai', isPlayer: true, hp: 100, neural: 100 }, { id: 'r1', class: 'netrunner', hp: 110, neural: 90 }, { id: 'r2', class: 'fixer', hp: 100, neural: 85 }, { id: 'r3', class: 'chrome_doc', hp: 80, neural: 60 }],
-  L8: [{ id: 'player', class: 'street_samurai', isPlayer: true, hp: 100, neural: 100 }, { id: 'r1', class: 'netrunner', hp: 115, neural: 95 }, { id: 'r2', class: 'fixer', hp: 100, neural: 85 }, { id: 'r3', class: 'chrome_doc', hp: 90, neural: 70 }],
-  L10: [{ id: 'player', class: 'street_samurai', isPlayer: true, hp: 100, neural: 100 }, { id: 'r1', class: 'netrunner', hp: 140, neural: 130 }, { id: 'r2', class: 'fixer', hp: 110, neural: 90 }, { id: 'r3', class: 'chrome_doc', hp: 105, neural: 100 }],
+const ORIG = {
+  corpo:      { cls: 'fixer',          grit: 10, neural: 100 },
+  street_kid: { cls: 'street_samurai', grit: 10, neural: 100 },
+  nomad:      { cls: 'ghost',          grit: 13, neural: 100 },
 };
-// [party, tier, factionOrNull, boss?]
+const QUAL = { common: { hp: 75, neural: 55, grit: 8 }, rare: { hp: 105, neural: 85, grit: 12 } };
+const mkPlayer = (origin, level, nf = 1) => { const o = ORIG[origin]; return { id: 'player', isPlayer: true, class: o.cls, hp: playerHP(o.grit, level), neural: Math.round(o.neural * nf) }; };
+const mkRec = (id, cls, q, level, nf = 1) => { const Q = QUAL[q]; return { id, class: cls, hp: recruitHP(Q.hp, Q.grit, level), neural: Math.round(Q.neural * nf) }; };
+
 const CELLS = [
-  ['L1', 'LOW', null], ['L3', 'LOW', null],
-  ['L4', 'MID', 'fac_grammaton'], ['L5', 'MID', null], ['L7', 'MID', 'fac_signal'],
-  ['L8', 'HIGH', 'fac_referent'], ['L10', 'HIGH', null],
-  ['L10', 'HIGH', 'boss'],
+  ['L1 corpo(fix) rested',  [mkPlayer('corpo', 1)],            'LOW', 1],
+  ['L1 corpo(fix) DRAINED', [mkPlayer('corpo', 1, 0.3)],       'LOW', 1],
+  ['L1 street(sam) rested', [mkPlayer('street_kid', 1)],       'LOW', 1],
+  ['L1 nomad(gho) rested',  [mkPlayer('nomad', 1)],            'LOW', 1],
+  ['L1 nomad(gho) DRAINED', [mkPlayer('nomad', 1, 0.3)],       'LOW', 1],
+  ['L2 corpo solo',         [mkPlayer('corpo', 2)],            'LOW', 2],
+  ['L3 corpo+net',          [mkPlayer('corpo', 3), mkRec('r1', 'netrunner', 'common', 3)], 'LOW', 3],
+  ['L5 MID mixed',          [mkPlayer('street_kid', 5), mkRec('r1', 'netrunner', 'rare', 5), mkRec('r2', 'fixer', 'common', 5)], 'MID', 5],
+  ['L8 HIGH fac_referent',  [mkPlayer('street_kid', 8), mkRec('r1', 'netrunner', 'rare', 8), mkRec('r2', 'fixer', 'rare', 8), mkRec('r3', 'chrome_doc', 'common', 8)], 'HIGH', 8, false, 'fac_referent'],
+  ['L10 HIGH mixed',        [mkPlayer('street_kid', 10), mkRec('r1', 'netrunner', 'rare', 10), mkRec('r2', 'fixer', 'rare', 10), mkRec('r3', 'chrome_doc', 'rare', 10)], 'HIGH', 10],
+  ['L10 HIGH fac_grammaton',[mkPlayer('street_kid', 10), mkRec('r1', 'netrunner', 'rare', 10), mkRec('r2', 'fixer', 'rare', 10), mkRec('r3', 'chrome_doc', 'rare', 10)], 'HIGH', 10, false, 'fac_grammaton'],
+  ['L10 BOSS',              [mkPlayer('street_kid', 10), mkRec('r1', 'netrunner', 'rare', 10), mkRec('r2', 'fixer', 'rare', 10), mkRec('r3', 'chrome_doc', 'rare', 10)], 'HIGH', 10, 'boss'],
 ];
-const LVL = { L1: 1, L3: 3, L4: 4, L5: 5, L7: 7, L8: 8, L10: 10 };
 const N = 5000;
 
-console.log('cell        tier   faction        win%  rounds  hpLost%  enemyCounts');
-for (const [pl, tier, fac] of CELLS) {
-  const lvl = LVL[pl];
-  const boss = fac === 'boss';
-  let wins = 0, rs = 0, hl = 0, hn = 0; const counts = {};
+console.log('cell                    partyHP  win%  rounds  hpLost%');
+for (const [label, party, tier, lvl, boss, faction = null] of CELLS) {
+  let wins = 0, rs = 0, hl = 0, hn = 0;
   for (let i = 0; i < N; i++) {
-    const hostile = boss
-      ? buildUnits(ENCOUNTERS.enc_cyberpsycho.enemies, lvl)
-      : generateEncounter({ faction: boss ? null : fac, tier, partyLevel: lvl }).enemies;
-    if (i < 500) counts[hostile.length] = (counts[hostile.length] || 0) + 1;
-    const r = battle(PARTIES[pl], hostile);
+    const hostile = boss ? buildUnits(ENCOUNTERS.enc_cyberpsycho.enemies, lvl) : generateEncounter({ faction, tier, partyLevel: lvl }).enemies;
+    const r = battle(party, hostile);
     if (r.win) { wins++; rs += r.rounds; const mx = r.friendly.reduce((s, u) => s + u.hp.max, 0); const cu = r.friendly.reduce((s, u) => s + Math.max(0, u.hp.current), 0); hl += 1 - cu / mx; hn++; }
   }
-  const label = `${pl}${boss ? '/boss' : ''}`.padEnd(10);
-  const facL = (boss ? 'enc_cyberpsycho' : (fac || 'any')).padEnd(13);
-  console.log(`${label}  ${tier.padEnd(5)} ${facL}  ${(wins / N * 100).toFixed(0).padStart(3)}   ${(wins ? rs / wins : 0).toFixed(1).padStart(4)}    ${(hn ? hl / hn * 100 : 0).toFixed(0).padStart(4)}    ${JSON.stringify(counts)}`);
+  const partyHP = party.reduce((s, m) => s + m.hp, 0);
+  console.log(`${label.padEnd(22)}  ${String(partyHP).padStart(5)}  ${(wins / N * 100).toFixed(0).padStart(3)}   ${(wins ? rs / wins : 0).toFixed(1).padStart(4)}    ${(hn ? hl / hn * 100 : 0).toFixed(0).padStart(4)}`);
 }

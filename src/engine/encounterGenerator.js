@@ -3,9 +3,9 @@ import { ENEMIES } from '../data/enemies';
 // Tunable scaling/spawn knobs. Bands map combat tiers to enemy.threat tokens;
 // boss-tier units are intentionally excluded from generated pools.
 const TIER_TO_BAND = { LOW: 'low', MID: 'medium', HIGH: 'high' };
-const TIER_COUNTS = { LOW: [2, 2], MID: [2, 3], HIGH: [2, 3] }; // inclusive [min,max] enemy count
-const HP_BASE = 0.97, HP_PER_LEVEL = 0.013; // hp multiplier = HP_BASE + level*HP_PER_LEVEL
-const DMG_BASE = 0.73, DMG_PER_LEVEL = 0.021; // damage multiplier = DMG_BASE + level*DMG_PER_LEVEL
+const TIER_COUNTS = { LOW: [1, 2], MID: [2, 3], HIGH: [2, 3] }; // inclusive [min,max] enemy count
+const HP_BASE = 0.78, HP_PER_LEVEL = 0.032; // hp multiplier = HP_BASE + level*HP_PER_LEVEL (early-soft, L10≈1.10)
+const DMG_BASE = 0.68, DMG_PER_LEVEL = 0.022; // damage multiplier = DMG_BASE + level*DMG_PER_LEVEL
 
 // Party level drives scaling; clamp keeps factors bounded and predictable.
 export function clampLevel(level) {

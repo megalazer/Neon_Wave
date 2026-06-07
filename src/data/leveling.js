@@ -48,6 +48,18 @@ export function calculateTeamLevel(members) {
 
 const PLAYER_STAT_KEYS = ['chrome', 'edge', 'ghost', 'face', 'grit', 'wire'];
 
+// Vitality (max HP) growth. Flat base + grit-scaled bonus, so tougher (high-grit)
+// operatives gain more HP per level. Also drives the player's grit-derived starting
+// HP (VITALITY_BASE + grit * VITALITY_PER_GRIT_BASE).
+export const VITALITY_BASE = 85;            // floor of starting max HP
+export const VITALITY_PER_GRIT_BASE = 4;    // starting HP per point of grit
+export const VITALITY_PER_LEVEL_BASE = 4;   // flat max HP gained per level
+export const VITALITY_PER_GRIT_LEVEL = 0.5; // extra max HP per level per point of grit
+
+export function vitalityGainPerLevel(grit) {
+  return VITALITY_PER_LEVEL_BASE + Math.round((grit || 0) * VITALITY_PER_GRIT_LEVEL);
+}
+
 export function applyXPToCharacter(state, amount) {
   if (amount <= 0) return;
   const maxXP = XP_THRESHOLDS[MAX_LEVEL - 1];
@@ -104,10 +116,18 @@ export function applyXPToCrewMember(state, member, amount) {
       }
     }
 
+    // Vitality growth: flat + grit-scaled per level gained; heal by the gain too.
+    const grit = member.stats?.grit ?? 0;
+    const hpGain = vitalityGainPerLevel(grit) * (newLevel - oldLevel);
+    if (member.vitals) {
+      member.vitals.max += hpGain;
+      member.vitals.current = Math.min(member.vitals.max, member.vitals.current + hpGain);
+    }
+
     state.log.entries.push({
       id: `levelup_crew_${member.id}_${Date.now()}`,
       turn: state.character.turnNumber || 0,
-      text: `LEVEL_UP: ${member.name} reached Lvl_${String(newLevel).padStart(2, '0')}. Combat protocols enhanced.`,
+      text: `LEVEL_UP: ${member.name} reached Lvl_${String(newLevel).padStart(2, '0')}. +${hpGain} MAX_VITALITY. Combat protocols enhanced.`,
       timestamp: new Date().toISOString(),
       type: 'system',
     });

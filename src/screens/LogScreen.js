@@ -17,7 +17,6 @@ const BANNER_HEIGHT = 90;
 function CrewSlot({ member }) {
   const hpPct = member ? `${Math.round((member.vitals.current / member.vitals.max) * 100)}%` : '0%';
   const mpPct = member ? `${Math.round((member.neural.current / member.neural.max) * 100)}%` : '0%';
-  const humPct = member ? `${Math.round((member.humanity.current / member.humanity.max) * 100)}%` : '0%';
   const avatarColor = member ? (member.classColor || colors.primary) : `${colors.primary}40`;
 
   return (
@@ -37,11 +36,6 @@ function CrewSlot({ member }) {
         <View style={styles.barRow}>
           <View style={styles.barBg}>
             <View style={[styles.barFill, styles.barMp, { width: mpPct }]} />
-          </View>
-        </View>
-        <View style={styles.barRow}>
-          <View style={styles.barBg}>
-            <View style={[styles.barFill, styles.barHum, { width: humPct }]} />
           </View>
         </View>
       </View>
@@ -214,9 +208,6 @@ const styles = StyleSheet.create({
   },
   barMp: {
     backgroundColor: colors.primary,
-  },
-  barHum: {
-    backgroundColor: colors.secondaryContainer,
   },
 
   // Status bar

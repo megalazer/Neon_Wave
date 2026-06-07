@@ -121,7 +121,8 @@ and `world.flags`; `contractSlice` mutates `faction.rep` via the shared `applyRe
   credits + opening narration. (Note: 3 origins, but **6 stats** — `chrome, edge, ghost, face, grit, wire`,
   base 10 each.) `deriveStats(path)` = base + origin mods.
 - `initCharacter(draft)` builds the player as `crew.members[0]` (`id:'player'`, `isPlayer:true`,
-  class mapped `corpo→FIXER / street_kid→STREET_SAMURAI / nomad→GHOST`, level 1, vitals/neural 100,
+  class mapped `corpo→FIXER / street_kid→STREET_SAMURAI / nomad→GHOST`, level 1, neural 100,
+  vitals = grit-derived (`VITALITY_BASE + grit*VITALITY_PER_GRIT_BASE`, ~125 at base grit; nomad higher),
   humanity `80 − starterHumanityCost`, `maxCyberwareSlots:3`, starter cyberware equipped), seeds the
   opening log line, and applies account perks.
 
@@ -150,7 +151,8 @@ and `world.flags`; `contractSlice` mutates `faction.rep` via the shared `applyRe
 
 ### 6.4 Leveling (`data/leveling.js`)
 - `MAX_LEVEL = 10`; `XP_THRESHOLDS = [0,100,250,450,700,1050,1500,2100,2900,4000]` (cumulative).
-- `applyXPToCrewMember` raises level, grants **+1 to a random stat per level gained** (capped 20),
+- `applyXPToCrewMember` raises level, grants **+1 to a random stat per level gained** (capped 20) and
+  **grit-scaled max HP per level** (`vitalityGainPerLevel(grit)`, also healing by that amount),
   logs a `LEVEL_UP` line, and arms `world.pendingLevelUp` (first level-up per tick wins → `LevelUpBanner`).
 - `calculateTeamLevel` = floor(mean level of living members). `distributeCombatXP` splits XP equally
   among living members (the player counts as a member).
