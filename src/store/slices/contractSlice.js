@@ -2,6 +2,8 @@ import { ALL_CONTRACTS, getContract } from '../../data/contracts/index';
 import { applyXPToCrewMember } from '../../data/leveling';
 import { applyRepToDraft } from './factionSlice';
 import { repTierFromValue, tierMeetsRequirement } from '../../data/factions';
+import { CYBERWARE_ITEMS } from '../../data/cyberware';
+import { CYBERWARE_REWARD_POOLS, rollCyberwareReward } from '../../data/contractRewards';
 
 // Whether the player's rep with a contract's faction meets its minFactionRep gate.
 // minFactionRep is a tier label (e.g. 'FRIENDLY'); default '' / 'NEUTRAL' = no gate.
@@ -368,6 +370,27 @@ export const createContractSlice = (set, get) => ({
       if (resolution.expEarned > 0) {
         const player = state.crew.members.find((m) => m.isPlayer);
         if (player) applyXPToCrewMember(state, player, resolution.expEarned);
+      }
+
+      // Cyberware quest reward — tiered pool drop on success. Quest rewards bypass vendor faction gates.
+      if (resolution.outcome === 'success' && contract.cyberwareReward) {
+        const { pool, chance = 0.4 } = contract.cyberwareReward;
+        if (pool && CYBERWARE_REWARD_POOLS[pool] && Math.random() < chance) {
+          const itemId = rollCyberwareReward(pool);
+          if (itemId) {
+            const item = CYBERWARE_ITEMS.find((c) => c.id === itemId);
+            if (item) {
+              state.character.cyberwareInventory.push(item.id);
+              state.log.entries.push({
+                id: `rew_${itemId}_${Date.now()}`,
+                turn: state.character.turnNumber,
+                text: `REWARD: ${contract.name} — ${item.name} added to cyberware inventory.`,
+                timestamp: new Date().toISOString(),
+                type: 'acquisition',
+              });
+            }
+          }
+        }
       }
 
       if (resolution.outcome === 'success') {
