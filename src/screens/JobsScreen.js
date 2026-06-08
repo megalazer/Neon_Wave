@@ -456,8 +456,8 @@ export default function JobsScreen({ onNavigate }) {
   const acceptContract     = useStore((s) => s.acceptContract);
   const refreshContractFeed = useStore((s) => s.refreshContractFeed);
   const startTestBattle    = useStore((s) => s.startTestBattle);
-  const advanceTurn        = useStore((s) => s.advanceTurn);
   
+  // advanceTurn is imported directly, so we just use it
   // Seed the feed on first render if empty
   useEffect(() => {
     if (feedItems.length === 0 && contractPhase === 'feed') {
@@ -490,7 +490,7 @@ export default function JobsScreen({ onNavigate }) {
         setActiveMicrogame(null);
       }
     },
-    [activeMicrogame, executeActivity, advanceTurn, onNavigate]
+    [activeMicrogame, executeActivity, onNavigate]
   );
 
   const handleAccept = useCallback(

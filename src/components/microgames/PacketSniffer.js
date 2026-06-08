@@ -116,7 +116,7 @@ export default function PacketSniffer({ statValue, onResult, accentColor }) {
               { 
                 width: `${bandWidthPct * 100}%`,
                 left: `${(0.5 - bandWidthPct/2) * 100}%`,
-                backgroundColor: state === 'busted' ? colors.error : colors.tertiary 
+                backgroundColor: state === 'busted' ? colors.error : colors.primary 
               }
             ]} 
           />
