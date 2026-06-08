@@ -56,6 +56,7 @@ export default function ChromeCourier({ statValue, onResult, accentColor }) {
           if (collision) {
             clearInterval(gameLoop.current);
             setState('busted');
+            setTimeout(() => {
               // Lose only the current unbanked leg (checkpoints already banked are safe).
               const payoutMultiplier = district * 0.5; 
               if (district > 0) {
@@ -85,7 +86,6 @@ export default function ChromeCourier({ statValue, onResult, accentColor }) {
     setState('banked');
     const payoutMultiplier = 0.5 + (district * 0.5);
     onResult({ outcome: 'banked', payoutMultiplier, bankedSteps: district });
-  };
   };
 
   const handlePressOn = () => {
