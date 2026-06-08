@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { colors } from '../../theme/colors';
-import { fonts } from '../../theme/fonts';
 
 const TRACE_PER_SEC = 0.08;
 const SCORE_PER_SEC = 100;
@@ -148,7 +147,7 @@ export default function SignalJamming({ statValue, onResult, accentColor }) {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, justifyContent: 'space-between' },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  label: { fontFamily: fonts.mono, fontSize: 14, letterSpacing: 1 },
+  label: { fontFamily: 'KodeMono_700Bold', fontSize: 14, letterSpacing: 1 },
   traceBarContainer: { height: 8, backgroundColor: colors.surfaceHighlight, borderWidth: 1, borderColor: colors.outline, marginBottom: 40 },
   traceBarFill: { height: '100%', backgroundColor: colors.error },
   gameContainer: { flex: 1, justifyContent: 'center' },
@@ -157,9 +156,9 @@ const styles = StyleSheet.create({
   needle: { position: 'absolute', width: 4, height: 80, top: -10, marginLeft: -2, shadowColor: colors.primary, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 6 },
   controls: { height: 80, justifyContent: 'flex-end' },
   bigButton: { height: 60, borderWidth: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
-  bigButtonText: { fontFamily: fonts.mono, fontSize: 20, letterSpacing: 2 },
+  bigButtonText: { fontFamily: 'KodeMono_700Bold', fontSize: 20, letterSpacing: 2 },
   choiceRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 16 },
   holdButton: { flex: 2, height: 60, borderWidth: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
   choiceButton: { flex: 1, height: 60, borderWidth: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
-  choiceText: { fontFamily: fonts.mono, fontSize: 14, letterSpacing: 1, textAlign: 'center' }
+  choiceText: { fontFamily: 'KodeMono_700Bold', fontSize: 14, letterSpacing: 1, textAlign: 'center' }
 });

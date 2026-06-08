@@ -10,7 +10,6 @@ import Animated, {
   Easing 
 } from 'react-native-reanimated';
 import { colors } from '../../theme/colors';
-import { fonts } from '../../theme/fonts';
 
 const BASE_SPEED = 2000;
 const SPEED_MULT_PER_ROUND = 0.85;
@@ -170,7 +169,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   label: {
-    fontFamily: fonts.mono,
+    fontFamily: 'KodeMono_700Bold',
     fontSize: 14,
     letterSpacing: 1,
   },
@@ -225,7 +224,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
   bigButtonText: {
-    fontFamily: fonts.mono,
+    fontFamily: 'KodeMono_700Bold',
     fontSize: 20,
     letterSpacing: 2,
   },
@@ -243,7 +242,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
   choiceText: {
-    fontFamily: fonts.mono,
+    fontFamily: 'KodeMono_700Bold',
     fontSize: 14,
     letterSpacing: 1,
   }

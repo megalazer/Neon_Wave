@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { colors } from '../../theme/colors';
-import { fonts } from '../../theme/fonts';
 import { useStore } from '../../store';
 import ScanlineOverlay from '../ScanlineOverlay';
 import PacketSniffer from './PacketSniffer';
@@ -124,7 +123,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   headerText: {
-    fontFamily: fonts.mono,
+    fontFamily: 'KodeMono_700Bold',
     fontSize: 14,
     letterSpacing: 1.4,
   },
@@ -139,7 +138,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   title: {
-    fontFamily: fonts.mono,
+    fontFamily: 'KodeMono_700Bold',
     fontSize: 18,
     marginBottom: 24,
     textAlign: 'center',
@@ -152,7 +151,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
   buttonText: {
-    fontFamily: fonts.mono,
+    fontFamily: 'KodeMono_700Bold',
     fontSize: 14,
     letterSpacing: 1.4,
   },
@@ -164,7 +163,7 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
   glitchText: {
-    fontFamily: fonts.mono,
+    fontFamily: 'KodeMono_700Bold',
     fontSize: 32,
     color: colors.error,
     letterSpacing: 4,
@@ -174,7 +173,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   glitchSubtext: {
-    fontFamily: fonts.mono,
+    fontFamily: 'KodeMono_700Bold',
     fontSize: 12,
     color: colors.error,
     letterSpacing: 2,

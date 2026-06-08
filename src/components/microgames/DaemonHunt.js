@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { colors } from '../../theme/colors';
-import { fonts } from '../../theme/fonts';
 
 const GRID_SIZE = 9; // 3x3
 const BASE_WAVE_DURATION = 8000;
@@ -187,10 +186,10 @@ export default function DaemonHunt({ statValue, onResult, accentColor }) {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, justifyContent: 'space-between' },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
-  label: { fontFamily: fonts.mono, fontSize: 14, letterSpacing: 1 },
+  label: { fontFamily: 'KodeMono_700Bold', fontSize: 14, letterSpacing: 1 },
   traceBarContainer: { height: 8, backgroundColor: colors.surfaceHighlight, borderWidth: 1, borderColor: colors.outline, marginBottom: 16 },
   traceBarFill: { height: '100%', backgroundColor: colors.error },
-  timerText: { fontFamily: fonts.mono, fontSize: 18, color: colors.text, textAlign: 'center', marginBottom: 16 },
+  timerText: { fontFamily: 'KodeMono_700Bold', fontSize: 18, color: colors.text, textAlign: 'center', marginBottom: 16 },
   gameContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   grid: {
     width: 240,
@@ -210,5 +209,5 @@ const styles = StyleSheet.create({
   controls: { height: 80, justifyContent: 'flex-end' },
   choiceRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 16 },
   choiceButton: { flex: 1, height: 60, borderWidth: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
-  choiceText: { fontFamily: fonts.mono, fontSize: 14, letterSpacing: 1, textAlign: 'center' }
+  choiceText: { fontFamily: 'KodeMono_700Bold', fontSize: 14, letterSpacing: 1, textAlign: 'center' }
 });

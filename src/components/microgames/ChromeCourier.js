@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, PanResponder } from 'react-native';
 import { colors } from '../../theme/colors';
-import { fonts } from '../../theme/fonts';
 
 const LANES = [0, 1, 2];
 const DISTRICT_LENGTH = 15; // 15 "ticks" per district
@@ -150,16 +149,16 @@ export default function ChromeCourier({ statValue, onResult, accentColor }) {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 16, justifyContent: 'space-between' },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
-  label: { fontFamily: fonts.mono, fontSize: 14, letterSpacing: 1 },
+  label: { fontFamily: 'KodeMono_700Bold', fontSize: 14, letterSpacing: 1 },
   gameContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background, borderWidth: 1, borderColor: colors.outline, overflow: 'hidden' },
   road: { width: '80%', height: '100%', flexDirection: 'row' },
   lane: { flex: 1, position: 'relative' },
   midLane: { borderLeftWidth: 1, borderRightWidth: 1, borderColor: colors.surfaceHighlight, borderStyle: 'dashed' },
   player: { position: 'absolute', bottom: '10%', left: '20%', width: '60%', height: 40, borderRadius: 4, shadowColor: colors.primary, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 10 },
   obstacle: { position: 'absolute', left: '10%', width: '80%', height: 20, backgroundColor: colors.error, opacity: 0.8 },
-  swipeHint: { position: 'absolute', bottom: 20, fontFamily: fonts.mono, color: colors.outline, opacity: 0.5, letterSpacing: 4 },
+  swipeHint: { position: 'absolute', bottom: 20, fontFamily: 'KodeMono_700Bold', color: colors.outline, opacity: 0.5, letterSpacing: 4 },
   controls: { height: 80, justifyContent: 'flex-end', marginTop: 16 },
   choiceRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 16 },
   choiceButton: { flex: 1, height: 60, borderWidth: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
-  choiceText: { fontFamily: fonts.mono, fontSize: 14, letterSpacing: 1, textAlign: 'center' }
+  choiceText: { fontFamily: 'KodeMono_700Bold', fontSize: 14, letterSpacing: 1, textAlign: 'center' }
 });
