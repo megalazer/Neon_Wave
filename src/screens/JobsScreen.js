@@ -22,6 +22,7 @@ import { getContract } from '../data/contracts/index';
 import { getFixer } from '../data/fixers';
 import { getFaction, repTierFromValue, tierMeetsRequirement } from '../data/factions';
 import { colors } from '../theme/colors';
+import MicrogameHost from '../components/microgames/MicrogameHost';
 
 const BANNER_HEIGHT = 90;
 const NAV_HEIGHT = 72;
@@ -443,6 +444,7 @@ function FeedEmpty() {
 // --- JobsScreen ---
 export default function JobsScreen({ onNavigate }) {
   const [activeTab, setActiveTab] = useState('contracts');
+  const [activeMicrogame, setActiveMicrogame] = useState(null);
   const members       = useStore((s) => s.crew.members);
   const renown        = useStore((s) => s.character.renown);
   const playerLevel   = useStore((s) => s.crew.members.find((m) => m.isPlayer)?.level ?? 1);
@@ -454,7 +456,8 @@ export default function JobsScreen({ onNavigate }) {
   const acceptContract     = useStore((s) => s.acceptContract);
   const refreshContractFeed = useStore((s) => s.refreshContractFeed);
   const startTestBattle    = useStore((s) => s.startTestBattle);
-
+  const advanceTurn        = useStore((s) => s.advanceTurn);
+  
   // Seed the feed on first render if empty
   useEffect(() => {
     if (feedItems.length === 0 && contractPhase === 'feed') {
@@ -470,11 +473,24 @@ export default function JobsScreen({ onNavigate }) {
         onNavigate('battle');
         return;
       }
-      executeActivity(activityId);
-      advanceTurn();
-      onNavigate('neural');
+      
+      if (activity?.locked) return;
+      
+      setActiveMicrogame(activity);
     },
-    [executeActivity, startTestBattle, onNavigate],
+    [startTestBattle, onNavigate],
+  );
+
+  const handleMicrogameResult = useCallback(
+    (result) => {
+      if (activeMicrogame) {
+        executeActivity(activeMicrogame.id, result);
+        advanceTurn();
+        onNavigate('neural');
+        setActiveMicrogame(null);
+      }
+    },
+    [activeMicrogame, executeActivity, advanceTurn, onNavigate]
   );
 
   const handleAccept = useCallback(
@@ -528,6 +544,12 @@ export default function JobsScreen({ onNavigate }) {
           </View>
         )}
       </ScrollView>
+      {activeMicrogame && (
+        <MicrogameHost 
+          activity={activeMicrogame} 
+          onResult={handleMicrogameResult} 
+        />
+      )}
     </View>
   );
 }
