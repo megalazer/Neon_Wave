@@ -21,7 +21,6 @@ function rollOutcome(set, item, idPrefix, result = null) {
       const isBust = result.outcome === 'bust';
       const payoutMultiplier = result.payoutMultiplier || 0;
       const actualPayout = Math.floor(item.payout * payoutMultiplier);
-      const actualExp = Math.floor(item.exp * payoutMultiplier);
       const player = state.crew.members.find((m) => m.isPlayer);
       
       // Check for Gambler trait
@@ -32,13 +31,6 @@ function rollOutcome(set, item, idPrefix, result = null) {
       const finalPayout = Math.floor(actualPayout * traitBonusPayout);
       
       state.character.credits += finalPayout;
-      
-      if (actualExp > 0 && !isBust) {
-        if (player) applyXPToCrewMember(state, player, actualExp);
-        const crewXP = Math.floor(actualExp / 2);
-        if (crewXP > 0) distributeCombatXP(state, crewXP);
-      }
-
       if (isBust) {
         if (state.crew.members.length > 0) {
           const idx = Math.floor(Math.random() * state.crew.members.length);
@@ -59,7 +51,7 @@ function rollOutcome(set, item, idPrefix, result = null) {
         state.log.entries.push({
           id: `${idPrefix}_${item.id}_${Date.now()}`,
           turn: state.character.turnNumber,
-          text: `ACQUISITION: ${item.name.toUpperCase()} complete. Banked ${result.bankedSteps || 'steps'}. +${finalPayout.toLocaleString()} CR, +${actualExp} EXP.`,
+          text: `ACQUISITION: ${item.name.toUpperCase()} complete. Banked ${result.bankedSteps || 'steps'}. +${finalPayout.toLocaleString()} CR.`,
           timestamp: new Date().toISOString(),
           type: 'acquisition',
         });
