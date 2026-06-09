@@ -49,16 +49,6 @@ function computeCyberwareBonus(member) {
   return totals;
 }
 
-function calculateMaxRAM(members) {
-  const netrunners = members.filter(
-    (m) => m.class?.toLowerCase() === 'netrunner' && (m.vitals?.current ?? 1) > 0,
-  );
-  if (netrunners.length === 0) return 0;
-  const total = netrunners.reduce(
-    (sum, nr) => sum + ((nr.stats?.wire || 0) + (nr.stats?.edge || 0)), 0,
-  );
-  return Math.min(18, Math.floor(total / 4));
-}
 
 function getHumanityStatus(ratio) {
   if (ratio >= 0.7) return { label: 'STABLE',   color: colors.primary };
@@ -142,7 +132,6 @@ export default function StatsTab() {
 
   const aggregateStats   = computeAggregateStats(members);
   const classComposition = computeClassComposition(members);
-  const ramPool          = calculateMaxRAM(members);
   const count            = members.length;
 
   return (
@@ -173,11 +162,6 @@ export default function StatsTab() {
       {/* Combat Pools */}
       <View style={st.section}>
         <Text style={st.sectionLabel}>COMBAT_POOLS</Text>
-        <StatRow
-          label="RAM_POOL"
-          value={`${ramPool} max`}
-          note={ramPool > 0 ? 'netrunner stats' : 'no netrunners'}
-        />
         <StatRow label="CYBER_POOL" value="10 max" note="baseline" />
       </View>
 
