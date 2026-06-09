@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-nati
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { ORIGINS } from '../../data/origins';
+import { useStore } from '../../store/index';
 import { colors } from '../../theme/colors';
 import InitHeader from '../../components/init/InitHeader';
 import InitFooter from '../../components/init/InitFooter';
@@ -10,6 +11,7 @@ import InitFooter from '../../components/init/InitFooter';
 const HEADER_H = 90;
 
 export default function PathScreen({ draft, onSetPath, onContinue }) {
+  const unlocked = useStore((s) => s.achievements.account.unlocked);
   const selected = draft.path;
   const promptText = selected
     ? `> PATH_LOCKED: ${selected.toUpperCase()}. PROCEED_TO_IDENTITY?`
@@ -21,16 +23,19 @@ export default function PathScreen({ draft, onSetPath, onContinue }) {
 
       <Text style={styles.decalL} pointerEvents="none">NEURAL_VOID</Text>
       <Text style={styles.decalR} pointerEvents="none">OVERWRITE_CMD</Text>
-
       <View style={styles.content}>
         {ORIGINS.map((origin) => {
           const active = selected === origin.id;
+          const isLocked = origin.lockedBy && !unlocked.includes(origin.lockedBy);
+          const dimmed = isLocked && !active;
+          const borderColor = active ? origin.color : `${origin.color}${dimmed ? '15' : '33'}`;
+          const textColor = dimmed ? `${origin.color}33` : origin.color;
           return (
             <TouchableOpacity
               key={origin.id}
               style={[
                 styles.card,
-                { borderColor: active ? origin.color : `${origin.color}33` },
+                { borderColor },
                 active && {
                   shadowColor: origin.color,
                   shadowOffset: { width: 0, height: 0 },
@@ -38,16 +43,25 @@ export default function PathScreen({ draft, onSetPath, onContinue }) {
                   shadowRadius: 14,
                   elevation: 8,
                 },
+                dimmed && { opacity: 0.45 },
               ]}
               onPress={() => {
+                if (isLocked) {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+                  return;
+                }
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 onSetPath(origin.id);
               }}
-              activeOpacity={0.85}
+              activeOpacity={isLocked ? 1 : 0.85}
             >
               {/* Image placeholder area */}
               <View style={[styles.imgArea, { backgroundColor: `${origin.color}0D` }]}>
-                <MaterialIcons name={origin.icon} size={52} color={`${origin.color}55`} />
+                <MaterialIcons
+                  name={isLocked ? 'lock' : origin.icon}
+                  size={52}
+                  color={`${origin.color}${dimmed ? '1A' : '55'}`}
+                />
                 <View
                   style={[
                     styles.badge,
@@ -55,6 +69,7 @@ export default function PathScreen({ draft, onSetPath, onContinue }) {
                       borderColor: origin.color,
                       backgroundColor: active ? origin.color : 'transparent',
                     },
+                    dimmed && { opacity: 0.3 },
                   ]}
                 >
                   <Text style={[styles.badgeText, { color: active ? origin.onColor : origin.color }]}>
@@ -62,33 +77,44 @@ export default function PathScreen({ draft, onSetPath, onContinue }) {
                   </Text>
                 </View>
                 {/* Decor corners */}
-                <View style={[styles.cTL, { borderColor: `${origin.color}66` }]} />
-                <View style={[styles.cBR, { borderColor: `${origin.color}66` }]} />
+                <View style={[styles.cTL, { borderColor: `${origin.color}${dimmed ? '22' : '66'}` }]} />
+                <View style={[styles.cBR, { borderColor: `${origin.color}${dimmed ? '22' : '66'}` }]} />
               </View>
 
               {/* Card content */}
               <View style={styles.cardBody}>
-                <Text style={[styles.cardTitle, { color: origin.color }]}>
+                <Text style={[styles.cardTitle, { color: textColor }]}>
                   PROTOCOL: {origin.label}
                 </Text>
-                <Text style={styles.cardDesc}>{origin.desc}</Text>
-                <Text style={[styles.cardBonus, { color: `${origin.color}99` }]}>
+                <Text style={[styles.cardDesc, dimmed && { color: `${colors.outline}44` }]}>
+                  {origin.desc}
+                </Text>
+                <Text style={[styles.cardBonus, { color: `${origin.color}${dimmed ? '33' : '99'}` }]}>
                   {origin.bonusLine}
                 </Text>
-                <View
-                  style={[
-                    styles.selectRow,
-                    {
-                      borderColor: active ? origin.color : `${origin.color}44`,
-                      backgroundColor: active ? `${origin.color}1A` : 'transparent',
-                    },
-                  ]}
-                >
-                  {active && <MaterialIcons name="check-circle" size={12} color={origin.color} />}
-                  <Text style={[styles.selectText, { color: origin.color }]}>
-                    {active ? 'PATH_SELECTED' : 'EXECUTE_CHOICE'}
-                  </Text>
-                </View>
+                {isLocked ? (
+                  <View style={[styles.selectRow, { borderColor: `${colors.error}44`, backgroundColor: `${colors.error}0A` }]}>
+                    <MaterialIcons name="lock" size={12} color={colors.error} />
+                    <Text style={[styles.selectText, { color: colors.error }]}>
+                      REQUIRES: AMASS 1,000,000 CR IN A RUN
+                    </Text>
+                  </View>
+                ) : (
+                  <View
+                    style={[
+                      styles.selectRow,
+                      {
+                        borderColor: active ? origin.color : `${origin.color}44`,
+                        backgroundColor: active ? `${origin.color}1A` : 'transparent',
+                      },
+                    ]}
+                  >
+                    {active && <MaterialIcons name="check-circle" size={12} color={origin.color} />}
+                    <Text style={[styles.selectText, { color: origin.color }]}>
+                      {active ? 'PATH_SELECTED' : 'EXECUTE_CHOICE'}
+                    </Text>
+                  </View>
+                )}
               </View>
             </TouchableOpacity>
           );

@@ -408,4 +408,96 @@ export const FLAVOR_EVENTS = [
     effects: {},
     accent: 'primary',
   },
+
+  // ─── PATH-SPECIFIC FLAVOR EVENTS ───────────────────────────────────────────────
+
+  // CORPO — 4 events
+  {
+    id: 'flv_corpo_boardroom',
+    type: 'flavor', weight: 5, path: 'corpo',
+    narration: 'A Helix quarterly report scrolls across a public dataterm. You read the subtext between the numbers — the acquisition target is undervalued. Someone on the board is leaking.',
+    effects: {},
+    accent: 'primary',
+  },
+  {
+    id: 'flv_corpo_credentials',
+    type: 'flavor', weight: 4, path: 'corpo',
+    narration: 'Your old corporate access card still sits in your pocket. You haven\'t tried it in months. The magnetic strip is worn but the data layer is probably still live. Probably.',
+    effects: {},
+    accent: 'outline',
+  },
+  {
+    id: 'flv_corpo_rival',
+    type: 'flavor', weight: 4, path: 'corpo',
+    narration: 'You spot a former rival from the enclave at a Referent exchange terminal. They\'re wearing a lower clearance badge now. You don\'t say anything. They know you saw.',
+    effects: { morale: 2 },
+    accent: 'secondary',
+  },
+  {
+    id: 'flv_corpo_databroker',
+    type: 'flavor', weight: 3, path: 'corpo',
+    narration: 'A data-broker slides a sealed envelope across the bar. "Your old division\'s quarterly projections. Two hours before the board sees them. Make me an offer."',
+    effects: {},
+    accent: 'tertiary',
+  },
+
+  // STREET_KID — 4 events
+  {
+    id: 'flv_street_gridtag',
+    type: 'flavor', weight: 5, path: 'street_kid',
+    narration: 'A fresh grid-tag on the overpass pillar marks a new Static crew boundary. The style is familiar. Someone you ran with years ago is still alive and still claiming walls.',
+    effects: {},
+    accent: 'primary',
+  },
+  {
+    id: 'flv_street_hustle',
+    type: 'flavor', weight: 4, path: 'street_kid',
+    narration: 'Kabuki Market is alive at this hour. Three separate hustles unfold within earshot. You could join any of them. You read the angles without trying.',
+    effects: {},
+    accent: 'outline',
+  },
+  {
+    id: 'flv_street_runner',
+    type: 'flavor', weight: 4, path: 'street_kid',
+    narration: 'A young runner stares at you from a corner booth. The look says they want in. You remember being that hungry. You also remember what it cost.',
+    effects: { morale: -2 },
+    accent: 'secondary',
+  },
+  {
+    id: 'flv_street_undercity',
+    type: 'flavor', weight: 3, path: 'street_kid',
+    narration: 'The Undercity access grate on 4th is still unlocked. It\'s been unlocked for six years. Only street kids know. You almost smile.',
+    effects: {},
+    accent: 'tertiary',
+  },
+
+  // NOMAD — 4 events
+  {
+    id: 'flv_nomad_horizon',
+    type: 'flavor', weight: 5, path: 'nomad',
+    narration: 'Through a gap in the towers you catch the badlands horizon. Seventy klicks of open nothing. Your chest tightens. The city is a cage with better lights.',
+    effects: {},
+    accent: 'primary',
+  },
+  {
+    id: 'flv_nomad_convoy',
+    type: 'flavor', weight: 4, path: 'nomad',
+    narration: 'A nomad convoy passes on the mag-highway. Three rigs, clan markings, steady formation. You don\'t recognize the clan but your hand raises anyway. Old habit.',
+    effects: { morale: 3 },
+    accent: 'outline',
+  },
+  {
+    id: 'flv_nomad_rig',
+    type: 'flavor', weight: 4, path: 'nomad',
+    narration: 'Someone\'s rig is parked in a scrap lot, engine block exposed. The mods are badlands-spec — solar backup, dust filters, reinforced undercarriage. You could fix the timing in ten minutes.',
+    effects: {},
+    accent: 'secondary',
+  },
+  {
+    id: 'flv_nomad_beacon',
+    type: 'flavor', weight: 3, path: 'nomad',
+    narration: 'A distant nav beacon pings on a frequency no one in the city monitors. It\'s been pinging for three years. You still have the decoder. You still listen.',
+    effects: {},
+    accent: 'error',
+  },
 ];

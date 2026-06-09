@@ -1,4 +1,5 @@
 import { ORIGIN_MODIFIERS, OPENING_NARRATION, deriveStats } from '../../data/origins';
+import { resetNarrationHistory } from '../../data/placeholderNarration';
 import { CYBERWARE_ITEMS } from '../../data/cyberware';
 import { getActiveAccountPerks } from '../../data/achievements';
 import { XP_THRESHOLDS, MAX_LEVEL, VITALITY_BASE, VITALITY_PER_GRIT_BASE } from '../../data/leveling';
@@ -86,7 +87,8 @@ export const createCharacterSlice = (set) => ({
       state.character.turnNumber += 1;
     }),
 
-  initCharacter: (draft) =>
+  initCharacter: (draft) => {
+    resetNarrationHistory();
     set((state) => {
       const mods = ORIGIN_MODIFIERS[draft.path] || {};
 
@@ -132,5 +134,6 @@ export const createCharacterSlice = (set) => ({
 
       // Apply permanent account perks fresh for this run (after base player exists).
       applyAccountPerks(state);
-    }),
+    });
+  },
 });

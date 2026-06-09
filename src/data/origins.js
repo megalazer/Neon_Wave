@@ -46,6 +46,7 @@ export const ORIGINS = [
     onColor: '#00373a',
     icon: 'business',
     bonusLine: '+3 FACE  +2 WIRE  +800 CR',
+    lockedBy: 'acc_corpo_run',
   },
   {
     id: 'street_kid',

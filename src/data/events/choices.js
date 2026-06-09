@@ -678,4 +678,200 @@ export const CHOICE_EVENTS = [
       },
     ],
   },
+
+  // ─── PATH-SPECIFIC CHOICE EVENTS ───────────────────────────────────────────────
+
+  // CORPO — 2 events
+  {
+    id: 'chc_corpo_insider',
+    type: 'choice', weight: 4, path: 'corpo',
+    triggers: { minTurn: 6 },
+    title: 'ENCLAVE_ECHO',
+    prompt: 'An encrypted message hits your subdermal. Old routing signature — someone still inside your former division. "The merger is happening. I can get you in. One last job. You in?"',
+    choices: [
+      {
+        id: 'ci_accept',
+        label: '[ACCEPT_THE_JOB]',
+        statCheck: { stat: 'wire', threshold: 14 },
+        pass: {
+          text: 'You crack the old authentication layer and slide into the board\'s data stream. The intel is worth 1,200 CR to the right buyer. Your old contact vanishes again. Clean.',
+          effects: { credits: 1200, addFlags: ['flag_corpo_insider_job'] },
+        },
+        fail: {
+          text: 'The ICE is updated. Your credentials bounce. Someone logs the attempt. You pull out before they trace it, but your old contact goes dark. Smart.',
+          effects: { morale: -5 },
+        },
+      },
+      {
+        id: 'ci_decline',
+        label: '[DELETE_THE_MESSAGE]',
+        outcome: {
+          text: 'You wipe the message. That life is over. The enclave can merge without you. You sleep better than you expected.',
+          effects: { morale: 3 },
+        },
+      },
+    ],
+  },
+  {
+    id: 'chc_corpo_takeover',
+    type: 'choice', weight: 3, path: 'corpo',
+    triggers: { minTurn: 12, requiredFlags: ['flag_corpo_insider_job'] },
+    title: 'HOSTILE_ACQUISITION',
+    prompt: 'Your old contact surfaces again. They\'re frantic. "The merger is collapsing. There\'s a power vacuum. I can put your name in the hat. Executive clearance. Do you want back in?"',
+    choices: [
+      {
+        id: 'ct_exec',
+        label: '[TAKE_THE_SEAT]',
+        statCheck: { stat: 'face', threshold: 15 },
+        pass: {
+          text: 'You walk into the boardroom like you never left. The old guard steps aside. Your clearance is reactivated. +2,500 CR and a seat at the table.',
+          effects: { credits: 2500, morale: 8, factionDelta: { fac_lexicon: 15 } },
+        },
+        fail: {
+          text: 'The board sees you coming. They\'ve already filled the seat. Your contact is escorted out. You\'re not banned, but the door is definitely closed now.',
+          effects: { morale: -8, factionDelta: { fac_lexicon: -10 } },
+        },
+      },
+      {
+        id: 'ct_stay',
+        label: '[STAY_IN_THE_STREETS]',
+        outcome: {
+          text: 'You let the message expire. The enclave isn\'t your world anymore. The street is. You don\'t look back. That door closes forever, and you\'re fine with it.',
+          effects: { morale: 5, addFlags: ['flag_corpo_walked_away'] },
+        },
+      },
+    ],
+  },
+
+  // STREET_KID — 2 events
+  {
+    id: 'chc_street_crew',
+    type: 'choice', weight: 4, path: 'street_kid',
+    triggers: { minTurn: 5 },
+    title: 'OLD_CREW_CALLING',
+    prompt: 'A face from the old Static crew finds you at the noodle stall. "We\'re hitting a Lexicon cargo drone tonight. Could use someone who knows the grid. Split\'s even. You in, or you gone soft?"',
+    choices: [
+      {
+        id: 'sc_join',
+        label: '[JOIN_THE_HEIST]',
+        statCheck: { stat: 'ghost', threshold: 13 },
+        pass: {
+          text: 'You ghost the drone\'s tracking and redirect the cargo to a blind drop. The crew splits the haul. Your cut: 900 CR. They call you the ghost who never left.',
+          effects: { credits: 900, factionDelta: { fac_static: 10 } },
+        },
+        fail: {
+          text: 'The drone\'s security is tighter than expected. You trigger a proximity alarm. The crew scatters. You get away clean, but the haul is gone. Embarrassing.',
+          effects: { morale: -4, factionDelta: { fac_static: -5 } },
+        },
+      },
+      {
+        id: 'sc_pass',
+        label: '[SIT_THIS_ONE_OUT]',
+        outcome: {
+          text: 'You shake your head. "Not my fight anymore." The crew nods. They don\'t hold it against you. A street kid who survives long enough to say no is rare.',
+          effects: { morale: 2 },
+        },
+      },
+    ],
+  },
+  {
+    id: 'chc_street_market',
+    type: 'choice', weight: 3, path: 'street_kid',
+    triggers: { minTurn: 10 },
+    title: 'KABUKI_OPPORTUNITY',
+    prompt: 'A Kabuki Market stall is selling pre-collapse data-shards. The vendor doesn\'t know what they have. One shard glows faintly — military-grade encryption. The vendor wants 300 CR for the lot.',
+    choices: [
+      {
+        id: 'sm_buy',
+        label: '[BUY_THE_LOT]',
+        outcome: {
+          text: 'You pay 300 CR and walk away with twelve shards. The encrypted one contains Grammaton patrol routes from the last three months. Resale value: significant.',
+          effects: { credits: -300, addFlags: ['flag_patrol_intel'] },
+        },
+      },
+      {
+        id: 'sm_haggle',
+        label: '[HAGGLE_HARD]',
+        statCheck: { stat: 'face', threshold: 12 },
+        pass: {
+          text: 'You talk them down to 100 CR. They don\'t know what they\'re sitting on. The encrypted shard alone is worth twenty times that to the right buyer.',
+          effects: { credits: -100, addFlags: ['flag_patrol_intel'] },
+        },
+        fail: {
+          text: 'The vendor gets suspicious. "If you want it that bad, it\'s worth more." They pull the lot. You walk away empty-handed but wiser.',
+          effects: {},
+        },
+      },
+      {
+        id: 'sm_walk',
+        label: '[WALK_AWAY]',
+        outcome: {
+          text: 'You leave the shards on the table. Not every deal is yours to make. The next runner who picks them up might owe you a favor, or might not. You don\'t keep score.',
+          effects: {},
+        },
+      },
+    ],
+  },
+
+  // NOMAD — 2 events
+  {
+    id: 'chc_nomad_convoy',
+    type: 'choice', weight: 4, path: 'nomad',
+    triggers: { minTurn: 5 },
+    title: 'CONVOY_DISTRESS',
+    prompt: 'A clan convoy on the mag-highway pings a distress signal. Engine failure. They\'re sitting ducks for scavengers. The clan markings are unfamiliar, but the code is badlands-standard.',
+    choices: [
+      {
+        id: 'nc_help',
+        label: '[RENDER_AID]',
+        statCheck: { stat: 'chrome', threshold: 12 },
+        pass: {
+          text: 'You muscle the engine block back into alignment and recalibrate the fuel injectors. The convoy leader clasps your arm. "You\'re clan now, whether you wear the mark or not." +600 CR and a new ally.',
+          effects: { credits: 600, morale: 5, factionDelta: { fac_undercity: 8 } },
+        },
+        fail: {
+          text: 'The repair doesn\'t hold. The engine seizes again twenty klicks out. They send a thank-you ping anyway. Nomads remember the attempt more than the result.',
+          effects: { morale: -2 },
+        },
+      },
+      {
+        id: 'nc_ignore',
+        label: '[KEEP_MOVING]',
+        outcome: {
+          text: 'You let the distress signal fade. Every nomad clan learns to fix their own rigs. It\'s the first rule. They\'ll figure it out or they won\'t.',
+          effects: {},
+        },
+      },
+    ],
+  },
+  {
+    id: 'chc_nomad_salvage',
+    type: 'choice', weight: 3, path: 'nomad',
+    triggers: { minTurn: 10 },
+    title: 'WRECKAGE_FOUND',
+    prompt: 'You find a nomad rig wrecked in the badlands fringe, stripped of parts but still carrying a sealed cargo bay. The manifest is encrypted. The clan that owned it is either dead or moved on.',
+    choices: [
+      {
+        id: 'ns_crack',
+        label: '[CRACK_THE_BAY]',
+        statCheck: { stat: 'wire', threshold: 14 },
+        pass: {
+          text: 'You bypass the encryption. The cargo bay contains medical supplies — pre-collapse antibiotics. Priceless. You sell them quietly for 1,500 CR. The clan that lost them is long gone.',
+          effects: { credits: 1500, addFlags: ['flag_salvaged_supplies'] },
+        },
+        fail: {
+          text: 'The cargo bay\'s security triggers a distress beacon. Grammaton patrol is en route. You bail with nothing but a scorched deck and a lesson.',
+          effects: { morale: -5 },
+        },
+      },
+      {
+        id: 'ns_leave',
+        label: '[LEAVE_IT_BE]',
+        outcome: {
+          text: 'You leave the wreck untouched. Someone else will find it. Maybe the clan that lost it. Maybe not. The badlands take everything eventually.',
+          effects: { morale: 2 },
+        },
+      },
+    ],
+  },
 ];

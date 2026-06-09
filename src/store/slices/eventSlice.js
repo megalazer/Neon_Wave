@@ -135,6 +135,13 @@ function isEligible(event, state) {
   if (requiresCrew && state.crew.members.length === 0) return false;
   if (state.event.firedEventIds.has(event.id)) return false;
 
+  // Life path gate — if the event specifies a path, require match.
+  const pathGate = t.path || event.path;
+  if (pathGate) {
+    const paths = Array.isArray(pathGate) ? pathGate : [pathGate];
+    if (!paths.includes(state.character.path)) return false;
+  }
+
   // Faction rep gates — hard filter on standing with the tagged faction.
   const faction = t.faction || event.faction;
   if (faction) {
@@ -146,13 +153,22 @@ function isEligible(event, state) {
 }
 
 // Soft weight boost: faction-tinted events fire more often the stronger the
-// player's standing (either direction) with that faction. Untagged = neutral.
 function effectiveWeight(event, state) {
   const base = event.weight || 1;
+  let w = base;
+
+  // Path-match boost — tagged events feel more present on matching path
+  const pathGate = event.path || event.triggers?.path;
+  if (pathGate) {
+    const paths = Array.isArray(pathGate) ? pathGate : [pathGate];
+    if (paths.includes(state.character.path)) w *= 1.5;
+  }
+
+  // Faction rep boost
   const faction = event.faction || event.triggers?.faction;
-  if (!faction) return base;
+  if (!faction) return w;
   const mag = Math.min(1, Math.abs(repFor(state, faction)) / 100);
-  return base * (1 + mag); // up to 2x at |rep| >= 100
+  return w * (1 + mag); // up to 2x at |rep| >= 100
 }
 
 // Weighted random pick from an eligible pool.

@@ -48,6 +48,14 @@ export const ACHIEVEMENTS = {
     progressHint: (s) => `${(s.achievements.lifetime.totalCreditsEarned / 1000).toFixed(0)}K / 250K CR`,
     accountPerk: { type: 'start_credits', value: 5000, description: 'All runs start with +5,000 CR.' },
   },
+  acc_corpo_run: {
+    id: 'acc_corpo_run', scope: 'account', type: 'milestone', hidden: false,
+    name: 'CORPO_CLEARANCE',
+    description: 'Amass 1,000,000 CR in a single run. Unlocks the CORPO life path.',
+    condition: (s) => s.character.credits >= 1000000,
+    progressHint: (s) => `${(s.character.credits / 1000).toFixed(0)}K / 1,000K CR`,
+    accountPerk: { type: 'cosmetic_title', value: 'CORPO', description: 'Unlocks the title: CORPO.' },
+  },
   acc_survivor: {
     id: 'acc_survivor', scope: 'account', type: 'milestone', hidden: false,
     name: 'NINE_LIVES',

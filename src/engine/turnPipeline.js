@@ -79,7 +79,7 @@ export function advanceTurn() {
     store.addEntry({
       id: makeId(),
       turn: turnNumber,
-      text: pickNarration(playerStats),
+      text: pickNarration(playerStats, useStore.getState().character.path),
       timestamp: new Date().toISOString(),
       type: 'narration',
     });
