@@ -17,32 +17,93 @@ export function contractRepGateMet(state, contract) {
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
+function _playerLevel(state) {
+  return state.crew.members.find((m) => m.isPlayer)?.level ?? 1;
+}
+
+function _canAccept(state, contract, pLevel, credits) {
+  if (!contract) return false;
+  if (pLevel < contract.teamLevelRequired) return false;
+  if (!contractRepGateMet(state, contract)) return false;
+  if (contract.deposit > 0 && credits < contract.deposit) return false;
+  return true;
+}
+
+
 function _pickFeedContracts(state) {
   const completed  = new Set(state.contract.completedContracts);
   const inFeed     = new Set(state.contract.feedItems.map((i) => i.id));
-  const playerLevel = state.crew.members.find((m) => m.isPlayer)?.level ?? 1;
+  const pLevel     = _playerLevel(state);
+  const credits    = state.character.credits;
 
-  const pool = ALL_CONTRACTS.filter(
-    (c) => !completed.has(c.id) && !inFeed.has(c.id) && playerLevel >= c.teamLevelRequired,
+  const eligible = ALL_CONTRACTS.filter(
+    (c) => !completed.has(c.id) && !inFeed.has(c.id) && pLevel >= c.teamLevelRequired,
   );
 
-  // Shuffle pool
-  const shuffled = pool.slice().sort(() => Math.random() - 0.5);
-
-  // Try to keep tier diversity: prefer one of each available tier
-  const picks = [];
-  for (const tier of ['LOW', 'MID', 'HIGH']) {
-    const found = shuffled.find((c) => c.tier === tier && !picks.some((p) => p.id === c.id));
-    if (found) picks.push(found);
-    if (picks.length === 3) break;
+  // Partition into acceptable vs locked (rep-gated / unaffordable)
+  const acceptable = [];
+  const locked = [];
+  for (const c of eligible) {
+    if (_canAccept(state, c, pLevel, credits)) {
+      acceptable.push(c);
+    } else {
+      locked.push(c);
+    }
   }
-  // Backfill with any remaining if under 3
-  for (const c of shuffled) {
+
+  const shuffle = (a) => a.slice().sort(() => Math.random() - 0.5);
+  const shuffledAcceptable = shuffle(acceptable);
+  const shuffledLocked = shuffle(locked);
+
+  const picks = [];
+
+  // Tier-diversity pass over acceptable first
+  for (const tier of ['LOW', 'MID', 'HIGH']) {
+    const found = shuffledAcceptable.find((c) => c.tier === tier && !picks.some((p) => p.id === c.id));
+    if (found) picks.push(found);
+    if (picks.length >= 3) break;
+  }
+
+  // Backfill remaining with any acceptable
+  for (const c of shuffledAcceptable) {
+    if (picks.length >= 3) break;
+    if (!picks.some((p) => p.id === c.id)) picks.push(c);
+  }
+
+  // Backfill with locked teasers (rep-gated / unaffordable) so the player sees progression targets
+  for (const c of shuffledLocked) {
     if (picks.length >= 3) break;
     if (!picks.some((p) => p.id === c.id)) picks.push(c);
   }
 
   return picks.map((c) => ({ id: c.id, expiresIn: 10 }));
+}
+
+function _feedHasAcceptable(state) {
+  const pLevel  = _playerLevel(state);
+  const credits = state.character.credits;
+  return state.contract.feedItems.some((fi) => {
+    const c = getContract(fi.id);
+    return _canAccept(state, c, pLevel, credits);
+  });
+}
+
+function _ensureAcceptableInFeed(state) {
+  if (_feedHasAcceptable(state)) return;
+  // Merge fresh picks, sort acceptable-first
+  const newItems = _pickFeedContracts(state);
+  const existing = state.contract.feedItems;
+  const toAdd = newItems.filter((n) => !existing.some((e) => e.id === n.id));
+  const merged = [...existing, ...toAdd];
+  // Sort: acceptable first, locked last
+  const pLevel  = _playerLevel(state);
+  const credits = state.character.credits;
+  merged.sort((a, b) => {
+    const aOk = _canAccept(state, getContract(a.id), pLevel, credits) ? 1 : 0;
+    const bOk = _canAccept(state, getContract(b.id), pLevel, credits) ? 1 : 0;
+    return bOk - aOk;
+  });
+  state.contract.feedItems = merged.slice(0, 3);
 }
 
 function _applyOutcomeEffects(state, effects) {
@@ -142,26 +203,37 @@ export const createContractSlice = (set, get) => ({
     set((state) => {
       // Don't tick the feed mid-run
       if (state.contract.phase !== 'feed') return;
-
       // Decrement expiry on each item
       state.contract.feedItems = state.contract.feedItems
         .map((item) => ({ ...item, expiresIn: item.expiresIn - 1 }))
         .filter((item) => item.expiresIn > 0);
-
       // Decrement refresh counter
       if (state.contract.feedRefreshIn > 0) {
         state.contract.feedRefreshIn -= 1;
       }
-
-      // Refresh if counter hit zero or feed is now empty
-      if (state.contract.feedRefreshIn <= 0 || state.contract.feedItems.length === 0) {
+      // Refresh if counter hit zero, feed empty, or feed has no acceptable contract
+      if (
+        state.contract.feedRefreshIn <= 0 ||
+        state.contract.feedItems.length === 0 ||
+        !_feedHasAcceptable(state)
+      ) {
         const newItems = _pickFeedContracts(state);
-        // Merge: keep existing non-expired items, fill up to 3
         const existing = state.contract.feedItems;
         const toAdd = newItems.filter((n) => !existing.some((e) => e.id === n.id));
-        state.contract.feedItems = [...existing, ...toAdd].slice(0, 3);
+        // Merge and sort: acceptable first, locked last
+        const merged = [...existing, ...toAdd];
+        const pLevel  = _playerLevel(state);
+        const credits = state.character.credits;
+        merged.sort((a, b) => {
+          const aOk = _canAccept(state, getContract(a.id), pLevel, credits) ? 1 : 0;
+          const bOk = _canAccept(state, getContract(b.id), pLevel, credits) ? 1 : 0;
+          return bOk - aOk;
+        });
+        state.contract.feedItems = merged.slice(0, 3);
         state.contract.feedRefreshIn = 10;
       }
+      // Ensure invariant: feed has an acceptable contract if pool contains one
+      _ensureAcceptableInFeed(state);
     }),
 
   // ── Contract acceptance ────────────────────────────────────────────────────
@@ -441,6 +513,8 @@ export const createContractSlice = (set, get) => ({
       state.contract.resolution = null;
       state.contract.activeContractModifiers = 0;
       state.contract.hadCombatThisContract = false;
+      // Ensure feed has an acceptable contract after completion
+      _ensureAcceptableInFeed(state);
     });
 
     // Achievement hooks (after set)
