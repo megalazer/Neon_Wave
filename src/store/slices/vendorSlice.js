@@ -93,7 +93,7 @@ export const createVendorSlice = (set) => ({
 
       const costStr = item.cost > 0 ? ` -${item.cost.toLocaleString()} CR.` : '';
       state.log.entries.push({
-        id: `vend_cyber_${itemId}_${Date.now()}`,
+        id: `vend_cyber_${itemId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: `ACQUISITION: ${item.name} purchased.${costStr} Added to inventory.`,
         timestamp: new Date().toISOString(),
@@ -119,7 +119,7 @@ export const createVendorSlice = (set) => ({
       }
 
       state.log.entries.push({
-        id: `vend_hack_${quickhackId}_${Date.now()}`,
+        id: `vend_hack_${quickhackId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: `ACQUISITION: Quickhack module ${hack.name} acquired. -${hack.moduleCost.toLocaleString()} CR.`,
         timestamp: new Date().toISOString(),
@@ -147,7 +147,7 @@ export const createVendorSlice = (set) => ({
       state.vendor.quickhackModules.splice(moduleIdx, 1);
 
       state.log.entries.push({
-        id: `qhmod_${quickhackId}_${Date.now()}`,
+        id: `qhmod_${quickhackId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: `MODULE_INSTALLED: ${hack.name} → ${member.name} [${slotKey.toUpperCase()}].`,
         timestamp: new Date().toISOString(),

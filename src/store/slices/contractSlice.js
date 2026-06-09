@@ -258,7 +258,7 @@ export const createContractSlice = (set, get) => ({
       });
 
       state.log.entries.push({
-        id: `con_stg_${stage.id}_${Date.now()}`,
+        id: `con_stg_${stage.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text,
         timestamp: new Date().toISOString(),
@@ -301,7 +301,7 @@ export const createContractSlice = (set, get) => ({
       });
 
       state.log.entries.push({
-        id: `con_bat_${pending.stageId}_${Date.now()}`,
+        id: `con_bat_${pending.stageId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text,
         timestamp: new Date().toISOString(),
@@ -382,7 +382,7 @@ export const createContractSlice = (set, get) => ({
             if (item) {
               state.character.cyberwareInventory.push(item.id);
               state.log.entries.push({
-                id: `rew_${itemId}_${Date.now()}`,
+                id: `rew_${itemId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
                 turn: state.character.turnNumber,
                 text: `REWARD: ${contract.name} — ${item.name} added to cyberware inventory.`,
                 timestamp: new Date().toISOString(),
@@ -425,7 +425,7 @@ export const createContractSlice = (set, get) => ({
           : `ABORT: ${contract.name} terminated. No payout.`;
 
       state.log.entries.push({
-        id: `con_res_${activeContractId}_${Date.now()}`,
+        id: `con_res_${activeContractId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: logText,
         timestamp: new Date().toISOString(),

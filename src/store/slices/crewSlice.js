@@ -37,7 +37,7 @@ export const createCrewSlice = (set, get) => ({
       state.crew.availableOperatives.splice(idx, 1);
       recruitedQuality = op.quality;
       state.log.entries.push({
-        id: `recruit_${operativeId}_${Date.now()}`,
+        id: `recruit_${operativeId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: `ACQUISITION: ${op.name} has joined the crew. -${op.cost.toLocaleString()} CR.`,
         timestamp: new Date().toISOString(),
@@ -69,7 +69,7 @@ export const createCrewSlice = (set, get) => ({
       state.crew.turnsSinceLastSpawn = 0;
       const accentMap = { common: 'outline', rare: 'secondary', legendary: 'tertiary' };
       state.log.entries.push({
-        id: `spawn_${recruit.id}_${Date.now()}`,
+        id: `spawn_${recruit.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: currentTurn,
         text: recruit.arrivalNarration,
         timestamp: new Date().toISOString(),
@@ -99,7 +99,7 @@ export const createCrewSlice = (set, get) => ({
       state.crew.availableOperatives.push(recruit);
       state.crew.turnsSinceLastSpawn = 0;
       state.log.entries.push({
-        id: `spawn_cls_${recruit.id}_${Date.now()}`,
+        id: `spawn_cls_${recruit.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: currentTurn,
         text: `[DEV] Force-spawned ${quality.toUpperCase()} ${cls.toUpperCase()}: ${recruit.name} (${recruit.handle}).`,
         timestamp: new Date().toISOString(),
@@ -115,7 +115,7 @@ export const createCrewSlice = (set, get) => ({
       state.crew.availableOperatives.push(recruit);
       state.crew.turnsSinceLastSpawn = 0;
       state.log.entries.push({
-        id: `spawn_force_${recruit.id}_${Date.now()}`,
+        id: `spawn_force_${recruit.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: currentTurn,
         text: `[DEV] Force-spawned ${quality.toUpperCase()} recruit: ${recruit.name} (${recruit.handle}).`,
         timestamp: new Date().toISOString(),
@@ -177,7 +177,7 @@ export const createCrewSlice = (set, get) => ({
       member.equippedCyberware.push(cyberwareId);
       member.humanity.current -= item.humanityCost;
       state.log.entries.push({
-        id: `equip_${cyberwareId}_${Date.now()}`,
+        id: `equip_${cyberwareId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: `ACQUISITION: ${member.name} installed ${item.name}. -${item.humanityCost} HUMANITY.`,
         timestamp: new Date().toISOString(),
@@ -199,7 +199,7 @@ export const createCrewSlice = (set, get) => ({
       state.character.cyberwareInventory.push(cyberwareId);
       member.humanity.current = Math.min(member.humanity.max, member.humanity.current + item.humanityCost);
       state.log.entries.push({
-        id: `unequip_${cyberwareId}_${Date.now()}`,
+        id: `unequip_${cyberwareId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: `LOG: ${member.name} removed ${item.name}. +${item.humanityCost} HUMANITY.`,
         timestamp: new Date().toISOString(),
@@ -221,7 +221,7 @@ export const createCrewSlice = (set, get) => ({
       state.crew.members[memberIdx][stat].current = newVal;
       const statLabel = stat === 'vitals' ? 'VIT' : 'NEU';
       state.log.entries.push({
-        id: `recharge_${itemId}_${Date.now()}`,
+        id: `recharge_${itemId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: `SUPPLY: ${member.name} consumed ${item.name}. +${item.amount} ${statLabel}. -${item.cost.toLocaleString()} CR.`,
         timestamp: new Date().toISOString(),
@@ -241,7 +241,7 @@ export const createCrewSlice = (set, get) => ({
         state.crew.availableOperatives.push(member);
       }
       state.log.entries.push({
-        id: `dismiss_${memberId}_${Date.now()}`,
+        id: `dismiss_${memberId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: `LOG: ${member.name} has been dismissed from the crew. No credit refund.`,
         timestamp: new Date().toISOString(),

@@ -247,7 +247,7 @@ export const createEventSlice = (set) => ({
       if (selected.type === 'flavor') {
         applyEffects(state, selected.effects || {});
         state.log.entries.push({
-          id: `flv_${selected.id}_${Date.now()}`,
+          id: `flv_${selected.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           turn: state.character.turnNumber,
           text: selected.narration,
           timestamp: new Date().toISOString(),
@@ -297,7 +297,7 @@ export const createEventSlice = (set) => ({
       const accent = passed ? 'tertiary' : 'error';
 
       state.log.entries.push({
-        id: `chc_${event.id}_${choiceId}_${Date.now()}`,
+        id: `chc_${event.id}_${choiceId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: outcomeText,
         timestamp: new Date().toISOString(),
@@ -325,7 +325,7 @@ export const createEventSlice = (set) => ({
       state.event.firedEventIds.add(event.id);
       applyEffects(state, event.effects || {});
       state.log.entries.push({
-        id: `flv_dev_${event.id}_${Date.now()}`,
+        id: `flv_dev_${event.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: event.narration,
         timestamp: new Date().toISOString(),
@@ -351,7 +351,7 @@ export const createEventSlice = (set) => ({
       if (flavor) {
         applyEffects(state, flavor.effects || {});
         state.log.entries.push({
-          id: `flv_dev_${flavor.id}_${Date.now()}`,
+          id: `flv_dev_${flavor.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           turn: state.character.turnNumber,
           text: flavor.narration,
           timestamp: new Date().toISOString(),

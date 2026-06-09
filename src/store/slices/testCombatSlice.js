@@ -66,7 +66,7 @@ function depleteNeuralAfterBattle(state) {
 
   if (anyDrained) {
     state.log.entries.push({
-      id: `neural_drain_${Date.now()}`,
+      id: `neural_drain_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
       turn: state.character.turnNumber,
       text: 'NEURAL_DRAIN: Crew reserves depleted. Rest at Haven to recover.',
       timestamp: new Date().toISOString(),
@@ -167,7 +167,7 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.attacksLanded      = 0;
 
       state.log.entries.push({
-        id: `neural_sync_${Date.now()}`,
+        id: `neural_sync_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: `NEURAL_SYNC: Cyber capacity ${startingPool}/${MAX_CYBER_POOL} (team neural reserves).`,
         timestamp: new Date().toISOString(),
