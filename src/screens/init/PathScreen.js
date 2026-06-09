@@ -165,6 +165,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  badge: {
     position: 'absolute',
     top: 6,
     right: 6,
