@@ -20,10 +20,6 @@ function classKey(cls) {
   return (cls || '').toLowerCase().replace(/\s+/g, '_');
 }
 
-function statsAvg(stats) {
-  const vals = Object.values(stats);
-  return Math.round(vals.reduce((s, v) => s + v, 0) / vals.length);
-}
 
 export default function RecruitCard({ recruit, credits, rosterFull, currentTurn, onRecruit, onDismiss }) {
   const isGenerated = recruit.quality !== undefined;
@@ -95,7 +91,7 @@ export default function RecruitCard({ recruit, credits, rosterFull, currentTurn,
         </View>
         <View style={[styles.statPill, styles.statPillAccent]}>
           <Text style={[styles.statLabel, styles.statLabelAccent]}>AVG</Text>
-          <Text style={[styles.statVal, styles.statValAccent]}>{statsAvg(recruit.stats)}</Text>
+          <Text style={[styles.statVal, styles.statValAccent]}>{Math.round((recruit.vitals.current + recruit.neural.current) / 2)}</Text>
         </View>
       </View>
 
