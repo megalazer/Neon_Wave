@@ -74,7 +74,7 @@ export const createCharacterSlice = (set) => ({
       state.character.credits -= cost;
       state.character[assetType].push(assetId);
       state.log.entries.push({
-        id: `asset_${Date.now()}`,
+        id: `asset_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: `ACQUISITION: Acquired ${assetName}. -${cost.toLocaleString()} CR.`,
         timestamp: new Date().toISOString(),
@@ -124,7 +124,7 @@ export const createCharacterSlice = (set) => ({
 
       state.log.entries = [
         {
-          id: `init_${Date.now()}`,
+          id: `init_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           turn: 0,
           text: OPENING_NARRATION[draft.path] || OPENING_NARRATION.street_kid,
           timestamp: new Date().toISOString(),

@@ -36,7 +36,7 @@ export function applyRepToDraft(state, factionLabel, amount) {
 
     if (state.log) {
       state.log.entries.push({
-        id: `rep_tier_${Date.now()}`,
+        id: `rep_tier_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character?.turnNumber ?? 0,
         text: logText,
         timestamp: new Date().toISOString(),

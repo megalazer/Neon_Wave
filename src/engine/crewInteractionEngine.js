@@ -49,7 +49,7 @@ export function tryFireCrewInteraction(state) {
 
   // Push to log
   state.log.entries.push({
-    id: `crew_int_${Date.now()}`,
+    id: `crew_int_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
     turn: state.world.turnNumber,
     text: result.text,
     timestamp: new Date().toISOString(),

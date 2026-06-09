@@ -40,7 +40,7 @@ function rollOutcome(set, item, idPrefix, result = null) {
           );
         }
         state.log.entries.push({
-          id: `${idPrefix}_fail_${item.id}_${Date.now()}`,
+          id: `${idPrefix}_fail_${item.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           turn: state.character.turnNumber,
           text: `CRITICAL: ${result.bustReason || 'Mission went sideways'}. Salvaged ${finalPayout.toLocaleString()} CR. No EXP gained.`,
           timestamp: new Date().toISOString(),
@@ -49,7 +49,7 @@ function rollOutcome(set, item, idPrefix, result = null) {
         });
       } else {
         state.log.entries.push({
-          id: `${idPrefix}_${item.id}_${Date.now()}`,
+          id: `${idPrefix}_${item.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           turn: state.character.turnNumber,
           text: `ACQUISITION: ${item.name.toUpperCase()} complete. Banked ${result.bankedSteps || 'steps'}. +${finalPayout.toLocaleString()} CR.`,
           timestamp: new Date().toISOString(),
@@ -68,7 +68,7 @@ function rollOutcome(set, item, idPrefix, result = null) {
         const crewXP = Math.floor(item.exp / 2);
         if (crewXP > 0) distributeCombatXP(state, crewXP);
         state.log.entries.push({
-          id: `${idPrefix}_${item.id}_${Date.now()}`,
+          id: `${idPrefix}_${item.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           turn: state.character.turnNumber,
           text: `ACQUISITION: ${item.name} complete. +${item.payout.toLocaleString()} CR, +${item.exp} EXP.`,
           timestamp: new Date().toISOString(),
@@ -85,7 +85,7 @@ function rollOutcome(set, item, idPrefix, result = null) {
           );
         }
         state.log.entries.push({
-          id: `${idPrefix}_fail_${item.id}_${Date.now()}`,
+          id: `${idPrefix}_fail_${item.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           turn: state.character.turnNumber,
           text: `CRITICAL: ${item.name} went sideways. Salvaged ${halfPayout.toLocaleString()} CR. No EXP gained.`,
           timestamp: new Date().toISOString(),
