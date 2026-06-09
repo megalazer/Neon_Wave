@@ -12,44 +12,87 @@ function repFor(state, factionLabel) {
   return state.faction?.rep?.[fid] ?? 0;
 }
 
-function rollOutcome(set, item, idPrefix) {
+function rollOutcome(set, item, idPrefix, result = null) {
   set((state) => {
     if (!item || item.locked) return;
     if (state.character.renown < item.renownRequired) return;
 
-    const rate = SUCCESS_RATES[item.risk] ?? 0.7;
-    const success = Math.random() < rate;
-
-    if (success) {
-      state.character.credits += item.payout;
+    if (result) {
+      const isBust = result.outcome === 'bust';
+      const payoutMultiplier = result.payoutMultiplier || 0;
+      const actualPayout = Math.floor(item.payout * payoutMultiplier);
       const player = state.crew.members.find((m) => m.isPlayer);
-      if (player) applyXPToCrewMember(state, player, item.exp);
-      const crewXP = Math.floor(item.exp / 2);
-      if (crewXP > 0) distributeCombatXP(state, crewXP);
-      state.log.entries.push({
-        id: `${idPrefix}_${item.id}_${Date.now()}`,
-        turn: state.character.turnNumber,
-        text: `ACQUISITION: ${item.name} complete. +${item.payout.toLocaleString()} CR, +${item.exp} EXP.`,
-        timestamp: new Date().toISOString(),
-        type: 'acquisition',
-      });
-    } else {
-      const halfPayout = Math.floor(item.payout / 2);
-      state.character.credits += halfPayout;
-      if (state.crew.members.length > 0) {
-        const idx = Math.floor(Math.random() * state.crew.members.length);
-        state.crew.members[idx].vitals.current = Math.max(
-          0,
-          state.crew.members[idx].vitals.current - 10,
-        );
+      
+      // Check for Gambler trait
+      let traitBonusPayout = 1;
+      if (player?.traits?.includes('trt_gambler')) {
+         traitBonusPayout = isBust ? 0.9 : 1.05;
       }
-      state.log.entries.push({
-        id: `${idPrefix}_fail_${item.id}_${Date.now()}`,
-        turn: state.character.turnNumber,
-        text: `CRITICAL: ${item.name} went sideways. Salvaged ${halfPayout.toLocaleString()} CR. No EXP gained.`,
-        timestamp: new Date().toISOString(),
-        type: 'narration',
-      });
+      const finalPayout = Math.floor(actualPayout * traitBonusPayout);
+      
+      state.character.credits += finalPayout;
+      if (isBust) {
+        if (state.crew.members.length > 0) {
+          const idx = Math.floor(Math.random() * state.crew.members.length);
+          state.crew.members[idx].vitals.current = Math.max(
+            0,
+            state.crew.members[idx].vitals.current - (result.vitalsHit || 10),
+          );
+        }
+        state.log.entries.push({
+          id: `${idPrefix}_fail_${item.id}_${Date.now()}`,
+          turn: state.character.turnNumber,
+          text: `CRITICAL: ${result.bustReason || 'Mission went sideways'}. Salvaged ${finalPayout.toLocaleString()} CR. No EXP gained.`,
+          timestamp: new Date().toISOString(),
+          type: 'narration',
+          accent: 'error',
+        });
+      } else {
+        state.log.entries.push({
+          id: `${idPrefix}_${item.id}_${Date.now()}`,
+          turn: state.character.turnNumber,
+          text: `ACQUISITION: ${item.name.toUpperCase()} complete. Banked ${result.bankedSteps || 'steps'}. +${finalPayout.toLocaleString()} CR.`,
+          timestamp: new Date().toISOString(),
+          type: 'acquisition',
+        });
+      }
+    } else {
+      // Original RNG fallback (just in case)
+      const rate = SUCCESS_RATES[item.risk] ?? 0.7;
+      const success = Math.random() < rate;
+
+      if (success) {
+        state.character.credits += item.payout;
+        const player = state.crew.members.find((m) => m.isPlayer);
+        if (player) applyXPToCrewMember(state, player, item.exp);
+        const crewXP = Math.floor(item.exp / 2);
+        if (crewXP > 0) distributeCombatXP(state, crewXP);
+        state.log.entries.push({
+          id: `${idPrefix}_${item.id}_${Date.now()}`,
+          turn: state.character.turnNumber,
+          text: `ACQUISITION: ${item.name} complete. +${item.payout.toLocaleString()} CR, +${item.exp} EXP.`,
+          timestamp: new Date().toISOString(),
+          type: 'acquisition',
+        });
+      } else {
+        const halfPayout = Math.floor(item.payout / 2);
+        state.character.credits += halfPayout;
+        if (state.crew.members.length > 0) {
+          const idx = Math.floor(Math.random() * state.crew.members.length);
+          state.crew.members[idx].vitals.current = Math.max(
+            0,
+            state.crew.members[idx].vitals.current - 10,
+          );
+        }
+        state.log.entries.push({
+          id: `${idPrefix}_fail_${item.id}_${Date.now()}`,
+          turn: state.character.turnNumber,
+          text: `CRITICAL: ${item.name} went sideways. Salvaged ${halfPayout.toLocaleString()} CR. No EXP gained.`,
+          timestamp: new Date().toISOString(),
+          type: 'narration',
+          accent: 'error',
+        });
+      }
     }
   });
 }
@@ -143,9 +186,9 @@ export const createEventSlice = (set) => ({
 
   // ── Activity + contract execution (existing) ──────────────────────────────
 
-  executeActivity: (activityId) => {
+  executeActivity: (activityId, result = null) => {
     const activity = ACTIVITIES.find((a) => a.id === activityId);
-    rollOutcome(set, activity, 'act');
+    rollOutcome(set, activity, 'act', result);
   },
 
   // ── Random event selection — called once per turn from turnPipeline ────────
