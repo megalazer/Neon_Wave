@@ -39,14 +39,17 @@ export const NEUTRAL_CONTRACTS = [
           {
             id: 'nl_env_bribe',
             label: 'Slip the Scavvers 100 CR to look away',
-            cost: 100,
+            requires: { credits: 100 },
+            statCheck: { stat: 'face', threshold: 10 },
             pass: {
               text: 'You palm a hundred to the bigger one. He grunts, turns his back. The exchange happens smooth as silk. Professional courtesy buys a lot in Lowport.',
               branch: 'advance',
+              effects: { credits: -100 },
             },
             fail: {
               text: 'They take your money and laugh. "That covers us NOT looking." The pickup still works, but you paid a tax on the privilege.',
               branch: 'advance',
+              effects: { credits: -100 },
             },
           },
           {

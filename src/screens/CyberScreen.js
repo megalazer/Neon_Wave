@@ -277,7 +277,7 @@ function LoadoutContent({
         </View>
         {equippedItems.length > 0 ? (
           equippedItems.map((item, i) => (
-            <EquippedItemCard key={item.id} item={item} position={i + 1} onUnequip={onUnequip} />
+            <EquippedItemCard key={`${item.id}_${i}`} item={item} position={i + 1} onUnequip={onUnequip} />
           ))
         ) : (
           <View style={styles.emptyBox}>
@@ -295,9 +295,9 @@ function LoadoutContent({
           <Text style={styles.inventoryHeaderText}>Available_Inventory</Text>
         </View>
         {inventoryItems.length > 0 ? (
-          inventoryItems.map((item) => (
+          inventoryItems.map((item, i) => (
             <InventoryItemCard
-              key={item.id}
+              key={`${item.id}_${i}`}
               item={item}
               selectedMember={selectedMember}
               onEquip={onEquip}

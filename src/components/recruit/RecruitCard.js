@@ -106,6 +106,7 @@ export default function RecruitCard({ recruit, credits, rosterFull, currentTurn,
       )}
 
       {/* Expiry */}
+      {isGenerated && (
         <View style={styles.expiryRow}>
           <MaterialIcons name="schedule" size={9} color={expiryUrgent ? colors.error : colors.outline} />
           <Text style={[styles.expiryText, expiryUrgent && styles.expiryUrgent]}>
