@@ -13,6 +13,11 @@ export default function ChromeCourier({ statValue, onResult, accentColor }) {
   const [obstacles, setObstacles] = useState([]); // { lane, y } y goes from 0 to 100
   
   const gameLoop = useRef(null);
+  // PanResponder is created once; without a ref it would close over the
+  // mount-time `state`/`playerLane` forever (swipes during checkpoint/bust,
+  // lane drifting past the road edges).
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   const ghostScale = Math.max(1, statValue);
   const speed = Math.max(50, 150 - (district * 20) + (ghostScale * 5)); // tick ms
@@ -22,12 +27,12 @@ export default function ChromeCourier({ statValue, onResult, accentColor }) {
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderRelease: (evt, gestureState) => {
-        if (state !== 'playing') return;
+        if (stateRef.current !== 'playing') return;
         const dx = gestureState.dx;
-        if (dx > 30 && playerLane < 2) {
-          setPlayerLane(prev => prev + 1);
-        } else if (dx < -30 && playerLane > 0) {
-          setPlayerLane(prev => prev - 1);
+        if (dx > 30) {
+          setPlayerLane(prev => Math.min(2, prev + 1));
+        } else if (dx < -30) {
+          setPlayerLane(prev => Math.max(0, prev - 1));
         }
       },
     })

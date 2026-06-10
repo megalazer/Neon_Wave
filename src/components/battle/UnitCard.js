@@ -10,6 +10,33 @@ import { useStore } from '../../store/index';
 const CYAN = colors.primary;
 const RED  = colors.error;
 
+// Floating "-N" damage number — mounts, rises, fades; parent prunes it after
+// the animation window. Anchored just above the HP bar so the card's
+// overflow:hidden never clips it.
+function DamageFloater({ amount, isFriendly, color }) {
+  const anim = useSharedValue(0);
+
+  useEffect(() => {
+    anim.value = withTiming(1, { duration: 650, easing: Easing.out(Easing.cubic) });
+  }, []);
+
+  const style = useAnimatedStyle(() => ({
+    opacity: 1 - anim.value,
+    transform: [{ translateY: -14 * anim.value }],
+  }));
+
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[styles.floater, isFriendly ? styles.floaterRight : styles.floaterLeft, style]}
+    >
+      <Text style={[styles.floaterText, { color, textShadowColor: color }]}>
+        -{amount}
+      </Text>
+    </Animated.View>
+  );
+}
+
 export default function UnitCard({
   unit,
   variant = 'friendly',
@@ -47,7 +74,9 @@ export default function UnitCard({
   const cardRef              = useRef(null);
   const prevHpPctRef         = useRef(hpPct);
   const frozenTimeoutRef     = useRef(null);
+  const floaterIdRef         = useRef(0);
   const [frozenPreview, setFrozenPreview] = useState(null);
+  const [floaters, setFloaters] = useState([]);
 
   // Animate HP fill. Flash on every HP drop. Only show frozenPreview when there
   // is no snapshot — during execution/enemy_turn the snapshot handles the visual.
@@ -59,6 +88,14 @@ export default function UnitCard({
       // Brief white flash gives per-hit visual punctuation regardless of phase.
       flashOp.value = 0.9;
       flashOp.value = withTiming(0, { duration: 200 });
+
+      // Floating damage number — exact hit size, capped at 3 concurrent.
+      const dmgAmount = Math.max(1, Math.round((prevHp - hpPct) * hpMax));
+      const fid = ++floaterIdRef.current;
+      setFloaters((f) => [...f.slice(-2), { id: fid, amount: dmgAmount }]);
+      setTimeout(() => {
+        setFloaters((f) => f.filter((x) => x.id !== fid));
+      }, 700);
 
       // frozenPreview is only needed outside snapshot execution — it bridges the
       // gap between HP landing and the fill catching up in non-snapshot phases.
@@ -147,12 +184,12 @@ export default function UnitCard({
           </Text>
           {unit.level !== undefined && (
             <Text style={[styles.sub, { color: isDead ? `${accent}44` : `${accent}88` }]}>
-              LVL_{unit.level}
+              LVL_{unit.level} · {hpCurrent}/{hpMax}
             </Text>
           )}
           {unit.threat !== undefined && (
             <Text style={[styles.sub, { color: isDead ? `${RED}44` : `${RED}AA` }]}>
-              {String(unit.threat).toUpperCase()}
+              {String(unit.threat).toUpperCase()} · {hpCurrent}/{hpMax}
             </Text>
           )}
         </View>
@@ -210,6 +247,17 @@ export default function UnitCard({
           pointerEvents="none"
         />
       )}
+
+      {/* Floating damage numbers — anchored toward screen center so both
+          columns read at a glance during exchanges */}
+      {floaters.map((f) => (
+        <DamageFloater
+          key={f.id}
+          amount={f.amount}
+          isFriendly={isFriendly}
+          color={previewColor}
+        />
+      ))}
     </View>
   );
 
@@ -330,5 +378,22 @@ const styles = StyleSheet.create({
   },
   selectedOutline: {
     borderWidth: 2,
+  },
+  floater: {
+    position: 'absolute',
+    bottom: 10,
+  },
+  floaterRight: {
+    right: 8,
+  },
+  floaterLeft: {
+    left: 8,
+  },
+  floaterText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 12,
+    letterSpacing: 0.5,
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 6,
   },
 });

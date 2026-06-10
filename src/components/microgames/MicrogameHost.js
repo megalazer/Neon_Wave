@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { colors } from '../../theme/colors';
 import { useStore } from '../../store';
@@ -22,7 +22,13 @@ export default function MicrogameHost({ activity, onResult }) {
   const statName = STAT_MAP[activity.id] || 'wire';
   const statValue = player?.stats?.[statName] || 1;
 
+  // Children fire onResult from timers; guard so a stray double-fire can
+  // never execute the activity (and advance the turn) twice.
+  const resolvedRef = useRef(false);
+
   const handleResult = (result) => {
+    if (resolvedRef.current) return;
+    resolvedRef.current = true;
     if (result.outcome === 'bust') {
       setGlitch(true);
       setTimeout(() => {
