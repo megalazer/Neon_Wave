@@ -107,6 +107,10 @@ export function applyXPToCrewMember(state, member, amount) {
   member.level = newLevel;
 
   if (newLevel > oldLevel) {
+    if (member.isPlayer) {
+      syncRenown(state);
+      state.world.flags.add('flag_recent_level_up');
+    }
     // Stat bump
     const statKeys = Object.keys(member.stats || {});
     if (statKeys.length) {
@@ -145,4 +149,32 @@ export function distributeCombatXP(state, totalXP) {
   if (alive.length === 0) return;
   const xpPer = Math.floor(totalXP / alive.length);
   if (xpPer > 0) alive.forEach((m) => applyXPToCrewMember(state, m, xpPer));
+}
+
+const RENOWN_LABELS = [
+  'GHOST',       // Renown 0 (Level 1)
+  'RUNNER',      // Renown 1 (Level 2)
+  'OPERATIVE',   // Renown 2 (Level 3)
+  'SPECIALIST',  // Renown 3 (Level 4)
+  'EXALTED_I',   // Renown 4 (Level 5)
+  'EXALTED_II',  // Renown 5 (Level 6)
+  'LEGEND_I',    // Renown 6 (Level 7)
+  'LEGEND_II',   // Renown 7 (Level 8)
+  'LEGEND_III',  // Renown 8 (Level 9)
+  'APEX_RUNNER'  // Renown 9 (Level 10)
+];
+
+export function getRenownLabel(renown) {
+  return RENOWN_LABELS[Math.min(RENOWN_LABELS.length - 1, Math.max(0, renown))] || 'GHOST';
+}
+
+export function syncRenown(state) {
+  if (!state.crew || !state.crew.members) return;
+  const player = state.crew.members.find((m) => m.isPlayer);
+  if (!player) return;
+
+  const level = player.level || 1;
+  const renownValue = Math.max(0, level - 1);
+  state.character.renown = renownValue;
+  state.character.renownLabel = getRenownLabel(renownValue);
 }

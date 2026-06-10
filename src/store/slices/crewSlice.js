@@ -176,6 +176,7 @@ export const createCrewSlice = (set, get) => ({
       state.character.cyberwareInventory.splice(inventoryIdx, 1);
       member.equippedCyberware.push(cyberwareId);
       member.humanity.current -= item.humanityCost;
+      state.world.flags.add('flag_recent_equip');
       state.log.entries.push({
         id: `equip_${cyberwareId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
@@ -198,6 +199,7 @@ export const createCrewSlice = (set, get) => ({
       member.equippedCyberware.splice(equippedIdx, 1);
       state.character.cyberwareInventory.push(cyberwareId);
       member.humanity.current = Math.min(member.humanity.max, member.humanity.current + item.humanityCost);
+      state.world.flags.add('flag_recent_equip');
       state.log.entries.push({
         id: `unequip_${cyberwareId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,

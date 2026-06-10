@@ -170,9 +170,9 @@ function _applyOutcomeEffects(state, effects) {
 function _setResolution(state, contract, outcome) {
   let modifier  = state.contract.activeContractModifiers ?? 0;
 
-  // Vehicle logistics bonus: +2% payout per vehicle, cap +10%
+  // Vehicle logistics bonus: +5% payout per vehicle, cap +25%
   const vehicles = state.character.vehicles ?? [];
-  const vehicleBonus = vehicles.length > 0 ? Math.min(vehicles.length * 0.02, 0.10) : 0;
+  const vehicleBonus = vehicles.length > 0 ? Math.min(vehicles.length * 0.05, 0.25) : 0;
   if (vehicleBonus > 0) modifier += vehicleBonus;
 
   const basePayout =
@@ -567,6 +567,26 @@ export const createContractSlice = (set, get) => ({
         timestamp: new Date().toISOString(),
         type: resolution.outcome === 'success' ? 'acquisition' : 'narration',
       });
+      state.world.flags.add('flag_recent_contract');
+
+      if (resolution.outcome === 'success' && resolution.vehicleBonusApplied) {
+        const vehicles = state.character.vehicles ?? [];
+        const fleetSize = vehicles.length;
+        const flavorPhrases = [
+          `FLEET_LOGISTICS: Secure drop-points cleared. Transit optimized.`,
+          `FLEET_LOGISTICS: Fleet logistics network utilized. Delivery expedited.`,
+          `FLEET_LOGISTICS: High-speed transport routes secured. Payout extraction enhanced.`,
+          `FLEET_LOGISTICS: Assets deployed to decoy routes. Heat signature minimized.`
+        ];
+        const flavorText = flavorPhrases[Math.floor(Math.random() * flavorPhrases.length)];
+        state.log.entries.push({
+          id: `con_veh_flav_${activeContractId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+          turn: state.character.turnNumber,
+          text: `${flavorText} (Logistics fleet size: ${fleetSize})`,
+          timestamp: new Date().toISOString(),
+          type: 'narration',
+        });
+      }
 
       state.character.turnNumber += 1;
 

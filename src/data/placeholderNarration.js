@@ -133,6 +133,46 @@ const LOW_POOLS = {
   wire: LOW_WIRE,
 };
 
+// ─── REACTION NARRATION POOLS ────────────────────────────────────────────────────
+// Triggered by temporary world flags set during the player's last action.
+
+const RECENT_EQUIP_POOL = [
+  'Your new chrome settles under the skin. The diagnostic pings are still calibrating. Feels like potential.',
+  'The implant\'s firmware sync completes. For a moment your HUD flares with data you don\'t recognize. Then it quiets.',
+  'You flex your hand. The chrome responds. No latency. Whoever did the install knew their trade.',
+  'A phantom sensation runs through the new implant — your nerves mapping unfamiliar metal. It passes.',
+];
+
+const RECENT_PURCHASE_POOL = [
+  'You review the acquisition. The numbers balance. A rare feeling in this city.',
+  'The purchase settles in your inventory. Solid. Real. More than most people in Sector 7 can claim.',
+  'You check the deed. Everything is in order. For now. This is Night City; nothing stays orderly.',
+  'Your cred balance is lighter but your position is heavier. You traded liquidity for leverage. Good trade.',
+];
+
+const RECENT_LEVEL_UP_POOL = [
+  'Something clicks. Muscle memory you didn\'t train. Reflexes you didn\'t earn. But they\'re yours now.',
+  'You feel the threshold: sharper senses, faster calculations, deeper reserves. The grind pays in inches.',
+  'The city feels different at this tier. Smaller. More navigable. Or maybe you\'re just getting better at reading it.',
+  'Your HUD pings an updated threat assessment. Your own threat rating went up. Good.',
+];
+
+const RECENT_CONTRACT_POOL = [
+  'The fixer\'s payment hits your account. Clean transfer. The kind that doesn\'t attract Grammaton\'s attention.',
+  'Another job done. The creds are warm. The heat isn\'t. You call that a win.',
+  'You file the completion code. Your rep ticks up a fraction. Fixers talk. They\'ll know by morning.',
+  'The contract\'s done. You exhale. Didn\'t realize you were holding that breath.',
+  'Payment confirmed. The client leaves a five-star rating. You didn\'t know fixers had ratings.',
+];
+
+const RECENT_COMBAT_POOL = [
+  'Adrenaline fades. Your hands stop shaking. The street goes quiet again. You\'re still standing.',
+  'You check your vitals. Bruised but functional. The other guys can\'t say the same.',
+  'The brass casings cool on the pavement. Someone will clean them up. Not you.',
+  'Your ears are still ringing. The tinnitus is almost musical now. Almost.',
+  'You reload out of habit. The fight is over. Your body hasn\'t gotten the memo.',
+];
+
 // ─── REPETITION GUARD ───────────────────────────────────────────────────────────
 
 let recent = [];
@@ -159,8 +199,16 @@ function _tryPick(pool) {
   if (recent.length > RECENT_WINDOW) recent.shift();
   return candidate;
 }
+export function pickNarration(stats, path, flags) {
+  // ── Reaction gate: if the player just took a significant action, reflect it ──
+  if (flags) {
+    if (flags.has('flag_recent_combat')  && Math.random() < 0.7) return _tryPick(RECENT_COMBAT_POOL);
+    if (flags.has('flag_recent_contract') && Math.random() < 0.7) return _tryPick(RECENT_CONTRACT_POOL);
+    if (flags.has('flag_recent_level_up') && Math.random() < 0.7) return _tryPick(RECENT_LEVEL_UP_POOL);
+    if (flags.has('flag_recent_equip')    && Math.random() < 0.7) return _tryPick(RECENT_EQUIP_POOL);
+    if (flags.has('flag_recent_purchase') && Math.random() < 0.7) return _tryPick(RECENT_PURCHASE_POOL);
+  }
 
-export function pickNarration(stats, path) {
   const entries = Object.entries(stats);
   entries.sort((a, b) => b[1] - a[1]);
   const highest = entries[0];

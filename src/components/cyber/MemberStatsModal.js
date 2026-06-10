@@ -55,16 +55,25 @@ export default function MemberStatsModal({ visible, member, onClose }) {
               {STAT_KEYS.map((stat) => {
                 const base = member.stats?.[stat] ?? 0;
                 const cyberBonus = bonus[stat] || 0;
+                const basePct = (Math.min(20, base) / 20) * 100;
+                const bonusPct = (Math.min(20 - Math.min(20, base), cyberBonus) / 20) * 100;
                 return (
                   <View key={stat} style={styles.statRow}>
-                    <Text style={styles.statLabel}>{stat.toUpperCase().padEnd(8)}</Text>
-                    <Text style={styles.statBase}>{String(base).padStart(2)}</Text>
-                    {cyberBonus > 0 && (
-                      <Text style={styles.statBonus}>+{cyberBonus}</Text>
-                    )}
+                    <Text style={styles.statLabel}>{stat.toUpperCase()}</Text>
                     <View style={styles.statBar}>
-                      <View style={[styles.statBarFill, { width: `${Math.min(100, ((base + cyberBonus) / 20) * 100)}%`, backgroundColor: cyberBonus > 0 ? colors.primary : colors.outline }]} />
+                      {basePct > 0 && (
+                        <View style={[styles.statBarBase, { width: `${basePct}%` }]} />
+                      )}
+                      {bonusPct > 0 && (
+                        <View style={[styles.statBarBonus, { width: `${bonusPct}%` }]} />
+                      )}
                     </View>
+                    <Text style={styles.statValue}>
+                      {base + cyberBonus}
+                      {cyberBonus > 0 && (
+                        <Text style={styles.statValueBonus}> +{cyberBonus}</Text>
+                      )}
+                    </Text>
                   </View>
                 );
               })}
@@ -104,11 +113,12 @@ const styles = StyleSheet.create({
   section: { marginBottom: 12 },
   sectionLabel: { fontFamily: 'KodeMono_700Bold', fontSize: 9, color: colors.outline, letterSpacing: 1.2, marginBottom: 4, textTransform: 'uppercase' },
   statRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 3, gap: 4 },
-  statLabel: { fontFamily: 'KodeMono_400Regular', fontSize: 9, color: colors.onSurfaceVariant, width: 80 },
-  statBase: { fontFamily: 'KodeMono_700Bold', fontSize: 9, color: colors.onSurface, width: 20, textAlign: 'right' },
-  statBonus: { fontFamily: 'KodeMono_700Bold', fontSize: 9, color: colors.primary, width: 28 },
-  statBar: { flex: 1, height: 4, backgroundColor: colors.surfaceContainerHighest, borderRadius: 2 },
-  statBarFill: { height: '100%', borderRadius: 2 },
+  statLabel: { fontFamily: 'KodeMono_400Regular', fontSize: 9, color: colors.onSurfaceVariant, width: 56 },
+  statValue: { fontFamily: 'KodeMono_700Bold', fontSize: 9, color: colors.onSurface, width: 48, textAlign: 'right' },
+  statValueBonus: { color: colors.primary },
+  statBar: { flex: 1, height: 4, backgroundColor: colors.surfaceContainerHighest, borderRadius: 2, flexDirection: 'row', overflow: 'hidden' },
+  statBarBase: { height: '100%', backgroundColor: colors.outline },
+  statBarBonus: { height: '100%', backgroundColor: colors.primary },
   bodyText: { fontFamily: 'KodeMono_400Regular', fontSize: 9, color: colors.onSurfaceVariant, lineHeight: 14 },
   actions: { borderTopWidth: 1, borderTopColor: colors.outlineVariant, padding: 12 },
   closeBtn: { alignSelf: 'flex-end', borderWidth: 1, borderColor: colors.outline, paddingHorizontal: 14, paddingVertical: 8 },

@@ -80,11 +80,14 @@ export function advanceTurn() {
     store.addEntry({
       id: makeId(),
       turn: turnNumber,
-      text: pickNarration(playerStats, useStore.getState().character.path),
+      text: pickNarration(playerStats, useStore.getState().character.path, afterState.world.flags),
       timestamp: new Date().toISOString(),
       type: 'narration',
     });
   }
+
+  // Clear recent-action flags so they only affect the immediate next narration
+  store.clearRecentFlags();
 
   // Crew banter — independent of events, gated by its own cooldown
   const crewState = useStore.getState();

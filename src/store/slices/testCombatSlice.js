@@ -594,6 +594,7 @@ export const createTestCombatSlice = (set, get) => ({
           if (member) member.vitals.current = fighter.hp.current;
         }
       }
+      state.world.flags.add('flag_recent_combat');
 
       // Drain neural on both victory and defeat — being in the fight costs reserves
       depleteNeuralAfterBattle(state);

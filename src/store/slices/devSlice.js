@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { XP_THRESHOLDS, MAX_LEVEL, applyXPToCrewMember } from '../../data/leveling';
+import { XP_THRESHOLDS, MAX_LEVEL, applyXPToCrewMember, syncRenown } from '../../data/leveling';
 
 const TAP_TARGET = 7;
 const TAP_WINDOW = 3000;
@@ -147,6 +147,7 @@ export const createDevSlice = (set, get) => ({
       const lvl = Math.max(1, Math.min(MAX_LEVEL, Number(level) || 1));
       player.exp   = XP_THRESHOLDS[lvl - 1];
       player.level = lvl;
+      syncRenown(state);
     }),
 
   devAddCrewXP: (memberId, amount) =>
@@ -163,6 +164,9 @@ export const createDevSlice = (set, get) => ({
       const lvl = Math.max(1, Math.min(MAX_LEVEL, Number(level) || 1));
       member.exp   = XP_THRESHOLDS[lvl - 1];
       member.level = lvl;
+      if (member.isPlayer) {
+        syncRenown(state);
+      }
     }),
 
   devLevelAllCrew: (level) =>
@@ -172,6 +176,7 @@ export const createDevSlice = (set, get) => ({
         m.exp   = XP_THRESHOLDS[lvl - 1];
         m.level = lvl;
       });
+      syncRenown(state);
     }),
 
   devSetTeamLevel: (level) =>
@@ -181,6 +186,7 @@ export const createDevSlice = (set, get) => ({
         m.exp   = XP_THRESHOLDS[lvl - 1];
         m.level = lvl;
       });
+      syncRenown(state);
     }),
 
   devResetLeveling: () =>
@@ -189,6 +195,7 @@ export const createDevSlice = (set, get) => ({
         m.exp   = 0;
         m.level = 1;
       });
+      syncRenown(state);
     }),
 
   devTriggerLevelUpBanner: () =>

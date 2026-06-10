@@ -2,7 +2,7 @@ import { ORIGIN_MODIFIERS, OPENING_NARRATION, deriveStats } from '../../data/ori
 import { resetNarrationHistory } from '../../data/placeholderNarration';
 import { CYBERWARE_ITEMS } from '../../data/cyberware';
 import { getActiveAccountPerks } from '../../data/achievements';
-import { XP_THRESHOLDS, MAX_LEVEL, VITALITY_BASE, VITALITY_PER_GRIT_BASE } from '../../data/leveling';
+import { XP_THRESHOLDS, MAX_LEVEL, VITALITY_BASE, VITALITY_PER_GRIT_BASE, syncRenown } from '../../data/leveling';
 
 // Applies all active account perks to a freshly-built run. Reads unlocked account
 // achievements off the shared draft. Called exactly once per run init, after the
@@ -73,6 +73,7 @@ export const createCharacterSlice = (set) => ({
       if (state.character.credits < cost) return;
       state.character.credits -= cost;
       state.character[assetType].push(assetId);
+      state.world.flags.add('flag_recent_purchase');
       state.log.entries.push({
         id: `asset_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
@@ -156,6 +157,7 @@ export const createCharacterSlice = (set) => ({
 
       // Apply permanent account perks fresh for this run (after base player exists).
       applyAccountPerks(state);
+      syncRenown(state);
     });
   },
 });

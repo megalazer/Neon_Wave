@@ -123,7 +123,13 @@ function isEligible(event, state) {
   const requiredFlags = t.requiredFlags || [];
   const excludeFlags  = t.excludeFlags  || [];
   const minTurn       = t.minTurn       || 0;
-  const requiresCrew  = t.requiresCrew  || false;
+  const requiresCrew    = t.requiresCrew    || false;
+  const minCredits      = t.minCredits      || 0;
+  const maxCredits      = t.maxCredits;
+  const minLevel        = t.minLevel        || 0;
+  const requiresVehicle = t.requiresVehicle || false;
+  const requiresRealEstate = t.requiresRealEstate || false;
+  const lowHumanity     = t.lowHumanity     || false;
 
   for (const flag of requiredFlags) {
     if (!state.world.flags.has(flag)) return false;
@@ -133,6 +139,18 @@ function isEligible(event, state) {
   }
   if (minTurn && state.character.turnNumber < minTurn) return false;
   if (requiresCrew && state.crew.members.length === 0) return false;
+  if (minCredits && state.character.credits < minCredits) return false;
+  if (maxCredits != null && state.character.credits > maxCredits) return false;
+  if (minLevel) {
+    const player = state.crew.members.find((m) => m.isPlayer);
+    if (!player || (player.level || 1) < minLevel) return false;
+  }
+  if (requiresVehicle && (!state.character.vehicles || state.character.vehicles.length === 0)) return false;
+  if (requiresRealEstate && (!state.character.realEstate || state.character.realEstate.length === 0)) return false;
+  if (lowHumanity) {
+    const player = state.crew.members.find((m) => m.isPlayer);
+    if (!player || (player.humanity?.current ?? 100) > 30) return false;
+  }
   if (state.event.firedEventIds.has(event.id)) return false;
 
   // Life path gate — if the event specifies a path, require match.

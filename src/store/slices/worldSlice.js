@@ -37,4 +37,18 @@ export const createWorldSlice = (set) => ({
     set((state) => {
       state.world.crewInteraction.activeToast = null;
     }),
+
+  clearRecentFlags: () =>
+    set((state) => {
+      const recentFlags = [
+        'flag_recent_equip',
+        'flag_recent_purchase',
+        'flag_recent_level_up',
+        'flag_recent_contract',
+        'flag_recent_combat',
+      ];
+      for (const flag of recentFlags) {
+        state.world.flags.delete(flag);
+      }
+    }),
 });

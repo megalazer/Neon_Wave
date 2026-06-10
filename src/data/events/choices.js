@@ -874,4 +874,140 @@ export const CHOICE_EVENTS = [
       },
     ],
   },
+
+  // ── Reactive choice events ─────────────────────────────────────────────────────
+  {
+    id: 'chc_drag_race',
+    type: 'choice',
+    weight: 3,
+    triggers: { requiresVehicle: true, minTurn: 10 },
+    title: 'FLASH_TRAFFIC',
+    prompt: 'A tricked-out Quadra pulls alongside. The driver rolls down the window. "Five hundred creds. From the Glass Eye to the Saltgate docks. You in?"',
+    choices: [
+      {
+        id: 'race',
+        label: '[GUN_IT]',
+        statCheck: { stat: 'edge', threshold: 12 },
+        pass: {
+          text: 'You tear through the grid, threading gaps they didn\'t see. You cross the finish line three seconds ahead. The driver tosses you a credstick. "Clean run, choom."',
+          effects: { credits: 750, morale: 10 },
+        },
+        fail: {
+          text: 'You push too hard into a turn. The Quadra pulls ahead. You catch up at the docks but the bet is the bet. You hand over 500 CR.',
+          effects: { credits: -500, morale: -5 },
+        },
+      },
+      {
+        id: 'decline',
+        label: '[SHAKE_HEAD]',
+        outcome: {
+          text: 'You wave them off. They shrug and the Quadra\'s engine roars. Some other night.',
+          effects: {},
+        },
+      },
+      {
+        id: 'raise_stakes',
+        label: '[DOUBLE_OR_NOTHING]',
+        statCheck: { stat: 'face', threshold: 14 },
+        pass: {
+          text: '"A grand." They hesitate. Then they nod. The race is brutal — three near-misses — but you cross first. They pay without a word. Respect.',
+          effects: { credits: 1500, morale: 15, factionDelta: { streets: 5 } },
+        },
+        fail: {
+          text: '"A grand." They laugh. "You\'ve got chrome for brains." They rev the engine and peel off. The race is over before it starts.',
+          effects: { morale: -10 },
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'chc_high_stakes_heist',
+    type: 'choice',
+    weight: 3,
+    triggers: { minLevel: 6, minTurn: 20 },
+    title: 'ENCRYPTED_CHANNEL',
+    prompt: 'A fixer you\'ve never met pings your secure line. "Helix is moving prototype chrome through Sector 4 tonight. Two carriers. Light escort. My crew needs a ghost. You in for 20%?"',
+    choices: [
+      {
+        id: 'accept',
+        label: '[ACCEPT_JOB]',
+        statCheck: { stat: 'ghost', threshold: 14 },
+        pass: {
+          text: 'You ghost the convoy through three patrol sweeps. The crew lifts the chrome clean. Your cut is 2,000 CR. The fixer pings: "You\'re on the list now, runner."',
+          effects: { credits: 2000, morale: 15, addFlags: ['flag_heist_crew'] },
+        },
+        fail: {
+          text: 'Your jammer glitches mid-run. A patrol drone spots the crew. Shots fired. You bail with nothing but a scorched deck and a new enemy.',
+          effects: { morale: -15, factionDelta: { helix: -10 } },
+        },
+      },
+      {
+        id: 'negotiate',
+        label: '[NEGOTIATE_CUT]',
+        statCheck: { stat: 'face', threshold: 13 },
+        pass: {
+          text: '"Thirty percent." Silence on the line. Then: "...Fine. But you\'re on point." The job goes smooth. Your cut is 3,000 CR.',
+          effects: { credits: 3000, morale: 10 },
+        },
+        fail: {
+          text: '"Thirty percent." The line goes dead. Five seconds later: "Position\'s filled. Stay in your lane."',
+          effects: { morale: -5 },
+        },
+      },
+      {
+        id: 'decline_heist',
+        label: '[DECLINE]',
+        outcome: {
+          text: 'You kill the line. High-tier jobs mean high-tier heat. You\'re not ready for either. Not tonight.',
+          effects: { morale: -5 },
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'chc_cyberpsychosis_whisper',
+    type: 'choice',
+    weight: 4,
+    triggers: { lowHumanity: true, minTurn: 8 },
+    title: 'NEURAL_STATIC',
+    prompt: 'Your HUD glitches. For three seconds you see a face that isn\'t yours in your reflection. Then it\'s gone. Your chrome hums louder than it should. A diagnostics ping offers: SUPPRESS or INVESTIGATE.',
+    choices: [
+      {
+        id: 'suppress',
+        label: '[SUPPRESS_SIGNAL]',
+        statCheck: { stat: 'grit', threshold: 12 },
+        pass: {
+          text: 'You override the diagnostic. The hum recedes. Your hands are steady. You\'re still you. For now.',
+          effects: { morale: 5 },
+        },
+        fail: {
+          text: 'The override fails. The hum spikes. For a terrifying moment your arm moves without you telling it to. Then it stops. You\'re sweating.',
+          effects: { morale: -15 },
+        },
+      },
+      {
+        id: 'investigate',
+        label: '[INVESTIGATE_SIGNAL]',
+        statCheck: { stat: 'wire', threshold: 12 },
+        pass: {
+          text: 'You trace the signal to a damaged neural bridge. The firmware is three versions behind. You patch it manually. The hum stops. For now.',
+          effects: { morale: 10 },
+        },
+        fail: {
+          text: 'You dive into the diagnostic. The waveform is wrong — corrupted at the firmware level. You can\'t fix it. The hum stays. So does the face.',
+          effects: { morale: -10 },
+        },
+      },
+      {
+        id: 'ignore',
+        label: '[IGNORE_IT]',
+        outcome: {
+          text: 'You dismiss the ping. Chrome acts up sometimes. That\'s what everyone says. The face in your reflection doesn\'t come back. This time.',
+          effects: { morale: -5 },
+        },
+      },
+    ],
+  },
 ];

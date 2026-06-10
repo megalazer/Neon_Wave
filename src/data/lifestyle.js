@@ -76,7 +76,7 @@ export const VEHICLES = [
     attributes: [
       { label: 'Speed', value: 100 },
       { label: 'Armor', value: 33 },
-      { label: 'LOGISTICS_BONUS', value: '+2%' },
+      { label: 'LOGISTICS_BONUS', value: '+5%' },
     ],
     minigame: 'aerial_chase',
   },
@@ -91,7 +91,7 @@ export const VEHICLES = [
     attributes: [
       { label: 'Speed', value: 97 },
       { label: 'Handling', value: 88 },
-      { label: 'LOGISTICS_BONUS', value: '+2%' },
+      { label: 'LOGISTICS_BONUS', value: '+5%' },
     ],
     minigame: 'drag_race',
   },
@@ -106,7 +106,7 @@ export const VEHICLES = [
     attributes: [
       { label: 'Armor', value: 95 },
       { label: 'Speed', value: 40 },
-      { label: 'LOGISTICS_BONUS', value: '+2%' },
+      { label: 'LOGISTICS_BONUS', value: '+5%' },
     ],
     minigame: 'convoy_run',
   },
@@ -121,7 +121,7 @@ export const VEHICLES = [
     attributes: [
       { label: 'Handling', value: 90 },
       { label: 'Heat_Sign', value: 80 },
-      { label: 'LOGISTICS_BONUS', value: '+2%' },
+      { label: 'LOGISTICS_BONUS', value: '+5%' },
     ],
     minigame: 'street_race',
   },
