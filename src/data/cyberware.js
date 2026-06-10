@@ -16,7 +16,7 @@ export const CYBERWARE_ITEMS = [
   },
   {
     id: 'cyb_kiroshi_optic_v3',
-    name: 'Kiroshi_Optic_v3',
+    name: 'Helix_Optic_v3',
     slot: 'optic',
     icon: 'visibility',
     humanityCost: 4,
@@ -29,7 +29,7 @@ export const CYBERWARE_ITEMS = [
   },
   {
     id: 'cyb_sandevistan_apex',
-    name: 'Sandevistan_Apex',
+    name: 'Slipstream_Apex',
     slot: 'os',
     icon: 'bolt',
     humanityCost: 15,
@@ -56,7 +56,7 @@ export const CYBERWARE_ITEMS = [
   },
   {
     id: 'cyb_gorilla_arms_v1',
-    name: 'Gorilla_Arms_v1',
+    name: 'Piston_Arms_v1',
     slot: 'arms',
     icon: 'back-hand',
     humanityCost: 12,
@@ -96,7 +96,7 @@ export const CYBERWARE_ITEMS = [
   },
   {
     id: 'cyb_mantis_blades',
-    name: 'Mantis_Blades',
+    name: 'Razor_Arms',
     slot: 'arms',
     icon: 'content-cut',
     humanityCost: 14,
@@ -123,7 +123,7 @@ export const CYBERWARE_ITEMS = [
   },
   {
     id: 'starter_optic_basic',
-    name: 'Kiroshi_Optic_v1',
+    name: 'Helix_Optic_v1',
     slot: 'optic',
     icon: 'visibility',
     humanityCost: 3,
@@ -162,7 +162,7 @@ export const STARTER_CYBERWARE = [
   },
   {
     id: 'starter_optic_basic',
-    name: 'Kiroshi_Optic_v1',
+    name: 'Helix_Optic_v1',
     icon: 'visibility',
     slot: 'optic',
     humanityCost: 3,

@@ -100,7 +100,7 @@ export const createAchievementSlice = (set, get) => ({
         detailStr = ` [${def.reward.recruitQuality.toUpperCase()} RECRUIT]`;
       }
       draft.log.entries.push({
-        id: `ach_${id}_${Date.now()}`,
+        id: `ach_${id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: draft.character.turnNumber,
         text: `ACHIEVEMENT_UNLOCKED: ${def.name}${detailStr}`,
         timestamp: new Date().toISOString(),

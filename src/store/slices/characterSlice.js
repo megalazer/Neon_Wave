@@ -1,4 +1,5 @@
 import { ORIGIN_MODIFIERS, OPENING_NARRATION, deriveStats } from '../../data/origins';
+import { resetNarrationHistory } from '../../data/placeholderNarration';
 import { CYBERWARE_ITEMS } from '../../data/cyberware';
 import { getActiveAccountPerks } from '../../data/achievements';
 import { XP_THRESHOLDS, MAX_LEVEL, VITALITY_BASE, VITALITY_PER_GRIT_BASE } from '../../data/leveling';
@@ -73,7 +74,7 @@ export const createCharacterSlice = (set) => ({
       state.character.credits -= cost;
       state.character[assetType].push(assetId);
       state.log.entries.push({
-        id: `asset_${Date.now()}`,
+        id: `asset_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: `ACQUISITION: Acquired ${assetName}. -${cost.toLocaleString()} CR.`,
         timestamp: new Date().toISOString(),
@@ -86,7 +87,30 @@ export const createCharacterSlice = (set) => ({
       state.character.turnNumber += 1;
     }),
 
-  initCharacter: (draft) =>
+  collectAssetIncome: () =>
+    set((state) => {
+      const ownedRE = state.character.realEstate || [];
+      if (ownedRE.length === 0) return;
+      const { REAL_ESTATE } = require('../../data/lifestyle');
+      let totalIncome = 0;
+      for (const id of ownedRE) {
+        const re = REAL_ESTATE.find((r) => r.id === id);
+        if (re?.incomePerTurn) totalIncome += re.incomePerTurn;
+      }
+      if (totalIncome > 0) {
+        state.character.credits += totalIncome;
+        state.log.entries.push({
+          id: `rent_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+          turn: state.character.turnNumber,
+          text: `RENT_COLLECTED: +${totalIncome.toLocaleString()} CR (${ownedRE.length} properties)`,
+          timestamp: new Date().toISOString(),
+          type: 'acquisition',
+        });
+      }
+    }),
+
+  initCharacter: (draft) => {
+    resetNarrationHistory();
     set((state) => {
       const mods = ORIGIN_MODIFIERS[draft.path] || {};
 
@@ -122,7 +146,7 @@ export const createCharacterSlice = (set) => ({
 
       state.log.entries = [
         {
-          id: `init_${Date.now()}`,
+          id: `init_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           turn: 0,
           text: OPENING_NARRATION[draft.path] || OPENING_NARRATION.street_kid,
           timestamp: new Date().toISOString(),
@@ -132,5 +156,6 @@ export const createCharacterSlice = (set) => ({
 
       // Apply permanent account perks fresh for this run (after base player exists).
       applyAccountPerks(state);
-    }),
+    });
+  },
 });

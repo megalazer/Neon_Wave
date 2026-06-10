@@ -10,7 +10,7 @@ import { colors } from '../theme/colors';
 import { CYBERWARE_ITEMS } from '../data/cyberware';
 import EquipPreviewModal from '../components/cyber/EquipPreviewModal';
 import QuickhackModuleSection from '../components/cyber/QuickhackModuleSection';
-import StatsTab from '../components/cyber/StatsTab';
+import MemberStatsModal from '../components/cyber/MemberStatsModal';
 import VendorTab from '../components/cyber/VendorTab';
 
 const BANNER_HEIGHT  = 90;
@@ -91,6 +91,9 @@ function PersonnelCard({ member, selected, onPress }) {
           </Text>
           <Text style={[styles.personnelStatText, { color: statusColor }]}>{statusText}</Text>
         </View>
+      {selected && (
+        <Text style={styles.personnelHint}>[TAP_AGAIN_FOR_DIAGNOSTICS]</Text>
+      )}
       </View>
     </TouchableOpacity>
   );
@@ -189,7 +192,6 @@ function HumanityHUD({ member }) {
 
 const SUB_TABS = [
   { id: 'loadout', label: 'LOADOUT', icon: 'memory' },
-  { id: 'stats',   label: 'STATS',   icon: 'analytics' },
   { id: 'vendor',  label: 'VENDOR',  icon: 'store' },
 ];
 
@@ -325,6 +327,7 @@ export default function CyberScreen() {
   const [activeSubTab, setActiveSubTab] = useState('loadout');
   const [selectedId, setSelectedId]     = useState(null);
   const [pendingEquip, setPendingEquip] = useState(null); // { item, replacingItem } | null
+  const [statsMember, setStatsMember] = useState(null);
 
   useEffect(() => {
     if (!selectedId && members.length > 0) {
@@ -372,8 +375,14 @@ export default function CyberScreen() {
 
   const handleSelectMember = useCallback((id) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setSelectedId(id);
-  }, []);
+    if (id === selectedId) {
+      // Double-tap: open stats modal
+      const member = members.find((m) => m.id === id);
+      if (member) setStatsMember(member);
+    } else {
+      setSelectedId(id);
+    }
+  }, [selectedId, members]);
 
   const equippedCount = selectedMember ? selectedMember.equippedCyberware.length : 0;
   const maxSlots      = selectedMember ? selectedMember.maxCyberwareSlots : 8;
@@ -399,7 +408,6 @@ export default function CyberScreen() {
             onUnequip={handleUnequip}
           />
         )}
-        {activeSubTab === 'stats' && <StatsTab />}
         {activeSubTab === 'vendor' && <VendorTab />}
       </View>
 
@@ -414,6 +422,12 @@ export default function CyberScreen() {
         replacingItem={pendingEquip?.replacingItem}
         onConfirm={confirmEquip}
         onCancel={() => setPendingEquip(null)}
+      />
+
+      <MemberStatsModal
+        visible={!!statsMember}
+        member={statsMember}
+        onClose={() => setStatsMember(null)}
       />
     </View>
   );
@@ -575,6 +589,16 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
     textTransform: 'uppercase',
   },
+  personnelHint: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 7,
+    color: colors.outline,
+    textAlign: 'center',
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    marginTop: 2,
+  },
+
 
   // ── Equipped Section ───────────────────────────────────────────────────────
   equippedHeader: {

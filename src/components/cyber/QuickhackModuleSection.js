@@ -27,7 +27,7 @@ function SlotRow({ slotKey, hackId }) {
         <View style={q.slotFilled}>
           <MaterialIcons name={hack.icon} size={13} color={MAG} />
           <Text style={q.slotName}>{hack.name}</Text>
-          <Text style={q.slotRam}>{hack.ramCost} RAM</Text>
+          <Text style={q.slotRam}>{hack.neuralCost} NEU</Text>
         </View>
       ) : (
         <Text style={q.slotEmpty}>[EMPTY]</Text>
@@ -46,7 +46,7 @@ function ModuleRow({ hackId, onInstall }) {
       <View style={q.moduleInfo}>
         <Text style={q.moduleName}>{hack.name}</Text>
         <Text style={q.moduleMeta}>
-          {hack.tier.toUpperCase()} // {hack.ramCost} RAM
+          {hack.tier.toUpperCase()} // {hack.neuralCost} NEU
         </Text>
       </View>
       <TouchableOpacity style={q.installBtn} onPress={onInstall} activeOpacity={0.7}>

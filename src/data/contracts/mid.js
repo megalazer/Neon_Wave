@@ -225,7 +225,7 @@ export const MID_CONTRACTS = [
         stageNumber: 3,
         label: 'STAGE_03',
         title: 'FINAL DELIVERY',
-        prompt: 'Evidence is packaged and ready. Nyx wants a face-to-face handoff in Kabuki; minimal trace. The exec\'s security team has been running elevated sweeps in the area. You\'ll need to get through them.',
+        prompt: 'Evidence is packaged and ready. Nyx wants a face-to-face handoff in Saltgate; minimal trace. The exec\'s security team has been running elevated sweeps in the area. You\'ll need to get through them.',
         choices: [
           {
             id: 'bo_blend',
@@ -408,7 +408,7 @@ export const MID_CONTRACTS = [
     factionRepReward: 16,
     factionRepPenalty: 10,
     minFactionRep: 'FRIENDLY',
-    description: 'Gang supply depot in Heywood. Pyre wants it gone. Charges provided, delivery not included.',
+    description: 'Gang supply depot in Rustline. Pyre wants it gone. Charges provided, delivery not included.',
     payout: 8500,
     deposit: 200,
     exp: 450,

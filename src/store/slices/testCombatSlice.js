@@ -55,8 +55,11 @@ function depleteNeuralAfterBattle(state) {
   const living = state.crew.members.filter((m) => (m.vitals?.current ?? 1) > 0);
   if (living.length === 0) return;
 
+  const targets = living.filter(m => m.quickhacks && Object.values(m.quickhacks).some(id => id !== null));
+  if (targets.length === 0) return;
+
   let anyDrained = false;
-  for (const m of living) {
+  for (const m of targets) {
     const attributed = (spentByMember[m.id] ?? 0) * NEURAL_PER_CYBER;
     const drain      = BASELINE_PER_MEMBER + attributed;
     const prev       = m.neural.current;
@@ -66,7 +69,7 @@ function depleteNeuralAfterBattle(state) {
 
   if (anyDrained) {
     state.log.entries.push({
-      id: `neural_drain_${Date.now()}`,
+      id: `neural_drain_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
       turn: state.character.turnNumber,
       text: 'NEURAL_DRAIN: Crew reserves depleted. Rest at Haven to recover.',
       timestamp: new Date().toISOString(),
@@ -167,7 +170,7 @@ export const createTestCombatSlice = (set, get) => ({
       state.combat.attacksLanded      = 0;
 
       state.log.entries.push({
-        id: `neural_sync_${Date.now()}`,
+        id: `neural_sync_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: `NEURAL_SYNC: Cyber capacity ${startingPool}/${MAX_CYBER_POOL} (team neural reserves).`,
         timestamp: new Date().toISOString(),

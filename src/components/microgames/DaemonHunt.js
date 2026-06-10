@@ -23,10 +23,18 @@ export default function DaemonHunt({ statValue, onResult, accentColor }) {
   const timerRef = useRef(null);
   const spawnerRef = useRef(null);
   const daemonsRef = useRef({});
+  // Countdown lives in a ref so the wave-end transition runs in the interval
+  // body, not inside a setState updater (updaters must stay pure).
+  const timeLeftRef = useRef(BASE_WAVE_DURATION);
 
   useEffect(() => {
     if (state === 'playing') {
       let currentInfection = infection;
+
+      // Effect only (re)runs on state/round transitions, never mid-wave, so
+      // resetting the countdown here is safe.
+      timeLeftRef.current = waveDuration;
+      setTimeLeft(waveDuration);
       
       const gameLoop = setInterval(() => {
         const now = Date.now();
@@ -64,18 +72,16 @@ export default function DaemonHunt({ statValue, onResult, accentColor }) {
           setDaemons(currentDaemons);
         }
         
-        setTimeLeft(prev => {
-          if (prev <= 100) {
-            clearInterval(gameLoop);
-            clearInterval(spawnerRef.current);
-            setState('paused');
-            setRound(round + 1);
-            daemonsRef.current = {};
-            setDaemons({});
-            return waveDuration;
-          }
-          return prev - 100;
-        });
+        timeLeftRef.current -= 100;
+        setTimeLeft(timeLeftRef.current);
+        if (timeLeftRef.current <= 0) {
+          clearInterval(gameLoop);
+          clearInterval(spawnerRef.current);
+          daemonsRef.current = {};
+          setDaemons({});
+          setState('paused');
+          setRound(r => r + 1);
+        }
       }, 100);
       
       timerRef.current = gameLoop;
@@ -124,7 +130,6 @@ export default function DaemonHunt({ statValue, onResult, accentColor }) {
   };
 
   const handlePush = () => {
-    setTimeLeft(waveDuration);
     setState('playing');
   };
 

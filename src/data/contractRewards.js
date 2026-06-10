@@ -1,7 +1,7 @@
 // ── Contract Quest Reward Pools ─────────────────────────────────────────────────
 // These pools are used for quest-driven cyberware drops when a contract
 // carries a `cyberwareReward` field. Quest rewards bypass vendor faction gates
-// — even faction-gated items (Sandevistan Apex, Gorilla Arms, Mantis Blades)
+// — even faction-gated items (Slipstream Apex, Piston Arms, Razor Arms)
 // can drop here regardless of the player's current standing.
 
 export const CYBERWARE_REWARD_POOLS = {

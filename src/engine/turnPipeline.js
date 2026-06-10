@@ -42,6 +42,7 @@ export function advanceTurn() {
   store.tickTurn();
   store.tickPrices();
   store.tickFeed();
+  store.collectAssetIncome();
   store.tickVendor();
   store.trySpawnRecruit();
   store.tickAvailableOperatives();
@@ -79,7 +80,7 @@ export function advanceTurn() {
     store.addEntry({
       id: makeId(),
       turn: turnNumber,
-      text: pickNarration(playerStats),
+      text: pickNarration(playerStats, useStore.getState().character.path),
       timestamp: new Date().toISOString(),
       type: 'narration',
     });

@@ -43,8 +43,8 @@ const RARE_NAMES = [
 ];
 
 const LEGENDARY_NAMES = [
-  'Pisarek',   'Devtato', 'Samborhini', 'Silverhand',  'WHALE',
-  'Lucy', 'David', 'Rebecca', 'Blackhand', 'Broekel','Plague_Roach','Smasher'
+  'Pisarek',   'Devtato', 'Samborhini', 'Halcyon',  'WHALE',
+  'Mireille', 'Kaspar', 'Roan', 'Obsidian', 'Broekel','Plague_Roach','Bulwark'
 ];
 
 const COMMON_HANDLES = [

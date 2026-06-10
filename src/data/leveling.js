@@ -81,7 +81,7 @@ export function applyXPToCharacter(state, amount) {
     // Log entry
     const name = state.character.name || 'OPERATIVE';
     state.log.entries.push({
-      id: `levelup_player_${Date.now()}`,
+      id: `levelup_player_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
       turn: state.character.turnNumber || 0,
       text: `LEVEL_UP: ${name} reached Lvl_${String(newLevel).padStart(2, '0')}. Neural calibration updated. Stats refined.`,
       timestamp: new Date().toISOString(),
@@ -125,7 +125,7 @@ export function applyXPToCrewMember(state, member, amount) {
     }
 
     state.log.entries.push({
-      id: `levelup_crew_${member.id}_${Date.now()}`,
+      id: `levelup_crew_${member.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
       turn: state.character.turnNumber || 0,
       text: `LEVEL_UP: ${member.name} reached Lvl_${String(newLevel).padStart(2, '0')}. +${hpGain} MAX_VITALITY. Combat protocols enhanced.`,
       timestamp: new Date().toISOString(),

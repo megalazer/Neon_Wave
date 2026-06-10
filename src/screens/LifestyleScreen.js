@@ -93,12 +93,6 @@ function AssetsSummaryStrip({ reCount, vehCount, lxCount }) {
           </View>
         ))}
       </View>
-      <View style={styles.summaryRight}>
-        <Text style={styles.summaryProtocol}>ACTIVE_PROTOCOL: ASSET_ACQUISITION</Text>
-        <View style={styles.summaryBarBg}>
-          <View style={[styles.summaryBarFill, { width: '66%' }]} />
-        </View>
-      </View>
     </View>
   );
 }
@@ -190,6 +184,13 @@ function AssetCard({ asset, type, accent, accentOn, isOwned, credits, onPurchase
                 </Text>
               </View>
             ))}
+            {asset.incomePerTurn && (
+              <View style={[styles.attrChip, { borderColor: colors.tertiaryFixed, borderWidth: 1 }]}>
+                <Text style={[styles.attrChipText, { color: colors.tertiaryFixed }]}>
+                  RENT: +{asset.incomePerTurn.toLocaleString()} CR/T
+                </Text>
+              </View>
+            )}
           </View>
         ) : (
           <View style={styles.statBarsRow}>
@@ -234,45 +235,114 @@ function AssetCard({ asset, type, accent, accentOn, isOwned, credits, onPurchase
   );
 }
 
+
+function sortAssets(list, sort) {
+  const sorted = [...list];
+  if (sort === 'COST_ASC') sorted.sort((a, b) => a.cost - b.cost);
+  else if (sort === 'COST_DESC') sorted.sort((a, b) => b.cost - a.cost);
+  else if (sort === 'NAME') sorted.sort((a, b) => a.name.localeCompare(b.name));
+  return sorted;
+}
+
 // ─── AssetsTab ────────────────────────────────────────────────────────────────
 function AssetsTab({ credits, ownedRealEstate, ownedVehicles, luxuryItems, onPurchase, onLaunchMinigame }) {
+  const [assetFilter, setAssetFilter] = useState('ALL');
+  const [assetSort, setAssetSort] = useState('COST_DESC');
+
+  const filteredRealEstate = useMemo(() => {
+    let list = REAL_ESTATE;
+    if (assetFilter === 'OWNED') list = list.filter(a => ownedRealEstate.includes(a.id));
+    else if (assetFilter === 'UNOWNED') list = list.filter(a => !ownedRealEstate.includes(a.id));
+    else if (assetFilter === 'VEHICLES') list = [];
+    return sortAssets(list, assetSort);
+  }, [assetFilter, assetSort, ownedRealEstate]);
+
+  const filteredVehicles = useMemo(() => {
+    let list = VEHICLES;
+    if (assetFilter === 'OWNED') list = list.filter(a => ownedVehicles.includes(a.id));
+    else if (assetFilter === 'UNOWNED') list = list.filter(a => !ownedVehicles.includes(a.id));
+    else if (assetFilter === 'REAL_ESTATE') list = [];
+    return sortAssets(list, assetSort);
+  }, [assetFilter, assetSort, ownedVehicles]);
+
+  const SORT_LABELS = { COST_DESC: 'COST \u2193', COST_ASC: 'COST \u2191', NAME: 'NAME' };
+  const nextSort = assetSort === 'COST_DESC' ? 'COST_ASC' : assetSort === 'COST_ASC' ? 'NAME' : 'COST_DESC';
+
+  const FILTERS = ['ALL', 'REAL_ESTATE', 'VEHICLES', 'OWNED', 'UNOWNED'];
+
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
       <AssetsSummaryStrip reCount={ownedRealEstate.length} vehCount={ownedVehicles.length} lxCount={luxuryItems.length} />
 
-      <View style={styles.section}>
-        <SectionHeader index={1} label="REAL_ESTATE" accent={colors.primary} />
-        {REAL_ESTATE.map((asset) => (
-          <AssetCard
-            key={asset.id}
-            asset={asset}
-            type="re"
-            accent={colors.primary}
-            accentOn={colors.onPrimaryFixed}
-            isOwned={ownedRealEstate.includes(asset.id)}
-            credits={credits}
-            onPurchase={onPurchase}
-            onLaunchMinigame={onLaunchMinigame}
-          />
-        ))}
+      {/* Filter / Sort bar */}
+      <View style={styles.filterBar}>
+        <View style={styles.filterChips}>
+          {FILTERS.map((f) => (
+            <TouchableOpacity
+              key={f}
+              style={[styles.filterChip, assetFilter === f && styles.filterChipActive]}
+              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setAssetFilter(f); }}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.filterChipText, assetFilter === f && styles.filterChipTextActive]}>
+                {f}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <TouchableOpacity
+          style={styles.sortBtn}
+          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setAssetSort(nextSort); }}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.sortBtnText}>{SORT_LABELS[assetSort]}</Text>
+          <MaterialIcons name="sort" size={14} color={colors.outline} />
+        </TouchableOpacity>
       </View>
 
-      <View style={styles.section}>
-        <SectionHeader index={2} label="VEHICLES" accent={colors.secondaryContainer} />
-        {VEHICLES.map((asset) => (
-          <AssetCard
-            key={asset.id}
-            asset={asset}
-            type="veh"
-            accent={colors.secondaryContainer}
-            accentOn={colors.onSecondaryFixed}
-            isOwned={ownedVehicles.includes(asset.id)}
-            credits={credits}
-            onPurchase={onPurchase}
-            onLaunchMinigame={onLaunchMinigame}
-          />
-        ))}
-      </View>
+      {filteredRealEstate.length > 0 && (assetFilter !== 'VEHICLES' || assetFilter === 'ALL') && (
+        <View style={styles.section}>
+          <SectionHeader index={1} label="REAL_ESTATE" accent={colors.primary} />
+          {filteredRealEstate.map((asset) => (
+            <AssetCard
+              key={asset.id}
+              asset={asset}
+              type="re"
+              accent={colors.primary}
+              accentOn={colors.onPrimaryFixed}
+              isOwned={ownedRealEstate.includes(asset.id)}
+              credits={credits}
+              onPurchase={onPurchase}
+              onLaunchMinigame={onLaunchMinigame}
+            />
+          ))}
+        </View>
+      )}
+
+      {filteredVehicles.length > 0 && (assetFilter !== 'REAL_ESTATE' || assetFilter === 'ALL') && (
+        <View style={styles.section}>
+          <SectionHeader index={2} label="VEHICLES" accent={colors.secondaryContainer} />
+          {filteredVehicles.map((asset) => (
+            <AssetCard
+              key={asset.id}
+              asset={asset}
+              type="veh"
+              accent={colors.secondaryContainer}
+              accentOn={colors.onSecondaryFixed}
+              isOwned={ownedVehicles.includes(asset.id)}
+              credits={credits}
+              onPurchase={onPurchase}
+              onLaunchMinigame={onLaunchMinigame}
+            />
+          ))}
+        </View>
+      )}
+
+      {filteredRealEstate.length === 0 && filteredVehicles.length === 0 && (
+        <View style={styles.emptyFilter}>
+          <Text style={styles.emptyFilterText}>[NO_MATCHING_ASSETS]</Text>
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -1007,6 +1077,59 @@ const styles = StyleSheet.create({
   summaryBarFill: {
     height: '100%',
     backgroundColor: colors.secondaryContainer,
+  },
+
+  // Asset filter / sort bar
+  filterBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 8,
+  },
+  filterChips: { flexDirection: 'row', gap: 4, flexWrap: 'wrap', flex: 1 },
+  filterChip: {
+    borderWidth: 1,
+    borderColor: colors.outlineVariant,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  filterChipActive: {
+    borderColor: colors.primary,
+    backgroundColor: `${colors.primary}14`,
+  },
+  filterChipText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    color: colors.outline,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  filterChipTextActive: { color: colors.primary },
+  sortBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    borderWidth: 1,
+    borderColor: colors.outlineVariant,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  sortBtnText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    color: colors.outline,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  emptyFilter: {
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  emptyFilterText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 10,
+    color: colors.outline,
+    letterSpacing: 1,
   },
 
   // Faction standings card

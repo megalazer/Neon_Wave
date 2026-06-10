@@ -34,7 +34,7 @@ export const createDevSlice = (set, get) => ({
         state.dev.tapCount = 0;
         state.dev.lastTapTime = now;
         state.log.entries.push({
-          id: `dev_${Date.now()}`,
+          id: `dev_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           turn: state.character.turnNumber,
           text: newEnabled
             ? '[SYS] DEV_PROTOCOL ENGAGED. Restricted access granted.'
@@ -118,7 +118,7 @@ export const createDevSlice = (set, get) => ({
   devInjectLog: (text) =>
     set((state) => {
       state.log.entries.push({
-        id: `dev_inject_${Date.now()}`,
+        id: `dev_inject_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: String(text) || '[DEV_INJECTED_ENTRY]',
         timestamp: new Date().toISOString(),

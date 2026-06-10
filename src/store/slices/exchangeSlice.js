@@ -72,7 +72,7 @@ export const createExchangeSlice = (set) => ({
       state.character.credits -= creditsToSpend;
       const coinMeta = COINS.find((c) => c.id === coinId);
       state.log.entries.push({
-        id: `exch_buy_${Date.now()}`,
+        id: `exch_buy_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: `ACQUISITION: Purchased ${amount.toFixed(4)} ${coinMeta.symbol} @ ${coin.currentPrice.toLocaleString()} CR. -${creditsToSpend.toLocaleString()} CR.`,
         timestamp: new Date().toISOString(),
@@ -89,7 +89,7 @@ export const createExchangeSlice = (set) => ({
       state.character.credits += proceeds;
       const coinMeta = COINS.find((c) => c.id === coinId);
       state.log.entries.push({
-        id: `exch_sell_${Date.now()}`,
+        id: `exch_sell_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: `LIQUIDATION: Sold ${amountToSell.toFixed(4)} ${coinMeta.symbol} @ ${coin.currentPrice.toLocaleString()} CR. +${proceeds.toLocaleString()} CR.`,
         timestamp: new Date().toISOString(),

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Animated, {
-  useSharedValue, useAnimatedStyle, withTiming, withRepeat, Easing,
+  useSharedValue, useAnimatedStyle, withTiming, withRepeat, withSequence, Easing,
 } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
@@ -9,6 +9,33 @@ import { useStore } from '../../store/index';
 
 const CYAN = colors.primary;
 const RED  = colors.error;
+
+// Floating "-N" damage number — mounts, rises, fades; parent prunes it after
+// the animation window. Anchored just above the HP bar so the card's
+// overflow:hidden never clips it.
+function DamageFloater({ amount, isFriendly, color }) {
+  const anim = useSharedValue(0);
+
+  useEffect(() => {
+    anim.value = withTiming(1, { duration: 650, easing: Easing.out(Easing.cubic) });
+  }, []);
+
+  const style = useAnimatedStyle(() => ({
+    opacity: 1 - anim.value,
+    transform: [{ translateY: -14 * anim.value }],
+  }));
+
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[styles.floater, isFriendly ? styles.floaterRight : styles.floaterLeft, style]}
+    >
+      <Text style={[styles.floaterText, { color, textShadowColor: color }]}>
+        -{amount}
+      </Text>
+    </Animated.View>
+  );
+}
 
 export default function UnitCard({
   unit,
@@ -47,8 +74,26 @@ export default function UnitCard({
   const cardRef              = useRef(null);
   const prevHpPctRef         = useRef(hpPct);
   const frozenTimeoutRef     = useRef(null);
+  const floaterIdRef         = useRef(0);
   const [frozenPreview, setFrozenPreview] = useState(null);
+  const [floaters, setFloaters] = useState([]);
 
+  // ── Death punctuation ──
+  const prevIsDeadRef = useRef(false);
+  const deathFlicker  = useSharedValue(0);
+  const [showTerminated, setShowTerminated] = useState(false);
+
+  // ── Dice assignment chips (hostile cards only, targeting phase) ──
+  const combatDice  = useStore((s) => s.combat.dice);
+  const combatPhase = useStore((s) => s.combat.phase);
+  const assignedDice = !isFriendly && combatPhase === 'targeting'
+    ? combatDice.filter((d) => d.alive && d.spent && d.assignedTo === unit?.id)
+    : [];
+
+  // ── Enemy intent LOCK (friendly cards only, enemy_turn phase) ──
+  const enemyAssignments = useStore((s) => s.combat.enemyAssignments);
+  const isLockedByEnemy = isFriendly && combatPhase === 'enemy_turn'
+    && enemyAssignments.some((a) => a.targetId === unit?.id);
   // Animate HP fill. Flash on every HP drop. Only show frozenPreview when there
   // is no snapshot — during execution/enemy_turn the snapshot handles the visual.
   useEffect(() => {
@@ -59,6 +104,14 @@ export default function UnitCard({
       // Brief white flash gives per-hit visual punctuation regardless of phase.
       flashOp.value = 0.9;
       flashOp.value = withTiming(0, { duration: 200 });
+
+      // Floating damage number — exact hit size, capped at 3 concurrent.
+      const dmgAmount = Math.max(1, Math.round((prevHp - hpPct) * hpMax));
+      const fid = ++floaterIdRef.current;
+      setFloaters((f) => [...f.slice(-2), { id: fid, amount: dmgAmount }]);
+      setTimeout(() => {
+        setFloaters((f) => f.filter((x) => x.id !== fid));
+      }, 700);
 
       // frozenPreview is only needed outside snapshot execution — it bridges the
       // gap between HP landing and the fill catching up in non-snapshot phases.
@@ -72,6 +125,25 @@ export default function UnitCard({
 
     hpAnim.value = withTiming(hpPct, { duration: 350, easing: Easing.out(Easing.quad) });
   }, [hpPct]);
+
+  // ── Death punctuation: glitch flicker + [TERMINATED] stamp on death transition ──
+  useEffect(() => {
+    const wasDead = prevIsDeadRef.current;
+    prevIsDeadRef.current = isDead;
+    if (isDead && !wasDead) {
+      setShowTerminated(true);
+      deathFlicker.value = withSequence(
+        withTiming(1, { duration: 50 }),
+        withTiming(0, { duration: 30 }),
+        withTiming(1, { duration: 50 }),
+        withTiming(0, { duration: 30 }),
+        withTiming(1, { duration: 60 }),
+        withTiming(0, { duration: 200 }),
+        withTiming(1, { duration: 40 }),
+        withTiming(0, { duration: 100 }),
+      );
+    }
+  }, [isDead]);
 
   // Preview opacity: pulse during targeting (previewDamage > 0, no snapshot),
   // hold static at 0.7 during execution (snapshot present), fade out otherwise.
@@ -90,8 +162,9 @@ export default function UnitCard({
     return { width: `${pct}%` };
   });
 
-  const previewOpAnim = useAnimatedStyle(() => ({ opacity: previewOp.value }));
-  const flashStyle    = useAnimatedStyle(() => ({ opacity: flashOp.value }));
+  const previewOpAnim   = useAnimatedStyle(() => ({ opacity: previewOp.value }));
+  const flashStyle      = useAnimatedStyle(() => ({ opacity: flashOp.value }));
+  const deathFlickerAnim = useAnimatedStyle(() => ({ opacity: deathFlicker.value }));
 
   const handleCardLayout = useCallback(() => {
     if (!cardRef.current || !onMeasure) return;
@@ -147,12 +220,12 @@ export default function UnitCard({
           </Text>
           {unit.level !== undefined && (
             <Text style={[styles.sub, { color: isDead ? `${accent}44` : `${accent}88` }]}>
-              LVL_{unit.level}
+              LVL_{unit.level} · {hpCurrent}/{hpMax}
             </Text>
           )}
           {unit.threat !== undefined && (
             <Text style={[styles.sub, { color: isDead ? `${RED}44` : `${RED}AA` }]}>
-              {String(unit.threat).toUpperCase()}
+              {String(unit.threat).toUpperCase()} · {hpCurrent}/{hpMax}
             </Text>
           )}
         </View>
@@ -160,6 +233,16 @@ export default function UnitCard({
         {!isFriendly && portrait}
       </View>
 
+      {/* Dice assignment chips — show which dice are assigned to this hostile */}
+      {assignedDice.length > 0 && (
+        <View style={styles.diceChipRow}>
+          {assignedDice.map((d, i) => (
+            <View key={i} style={[styles.dieChip, { borderColor: CYAN }]}>
+              <Text style={styles.dieChipText}>{d.value}</Text>
+            </View>
+          ))}
+        </View>
+      )}
       {/* HP bar — four layers: track bg / animated fill / preview overlay / hit flash */}
       <View style={styles.hpBg}>
         {/* Layer 1: animated HP fill */}
@@ -210,6 +293,34 @@ export default function UnitCard({
           pointerEvents="none"
         />
       )}
+
+      {/* Enemy intent LOCK — pulsing warning when a hostile has targeted this friendly */}
+      {isLockedByEnemy && !isDead && (
+        <View style={[StyleSheet.absoluteFill, styles.lockOverlay]} pointerEvents="none">
+          <View style={[styles.lockBadge, isFriendly ? styles.lockBadgeRight : styles.lockBadgeLeft]}>
+            <MaterialIcons name="gps-fixed" size={10} color={RED} />
+            <Text style={styles.lockText}>LOCK</Text>
+          </View>
+        </View>
+      )}
+
+      {/* Death punctuation — glitchy [TERMINATED] stamp */}
+      {showTerminated && (
+        <Animated.View style={[StyleSheet.absoluteFill, styles.terminatedOverlay, deathFlickerAnim]} pointerEvents="none">
+          <Text style={styles.terminatedText}>[TERMINATED]</Text>
+        </Animated.View>
+      )}
+
+      {/* Floating damage numbers — anchored toward screen center so both
+          columns read at a glance during exchanges */}
+      {floaters.map((f) => (
+        <DamageFloater
+          key={f.id}
+          amount={f.amount}
+          isFriendly={isFriendly}
+          color={previewColor}
+        />
+      ))}
     </View>
   );
 
@@ -330,5 +441,81 @@ const styles = StyleSheet.create({
   },
   selectedOutline: {
     borderWidth: 2,
+  },
+  floater: {
+    position: 'absolute',
+    bottom: 10,
+  },
+  floaterRight: {
+    right: 8,
+  },
+  floaterLeft: {
+    left: 8,
+  },
+  floaterText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 12,
+    letterSpacing: 0.5,
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 6,
+  },
+  // ── Dice assignment chips ──
+  diceChipRow: {
+    flexDirection: 'row',
+    gap: 3,
+    marginTop: 3,
+  },
+  dieChip: {
+    borderWidth: 1,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+  },
+  dieChipText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 9,
+    color: CYAN,
+  },
+  // ── Enemy intent LOCK ──
+  lockOverlay: {
+    justifyContent: 'center',
+  },
+  lockBadge: {
+    position: 'absolute',
+    top: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+    backgroundColor: `${RED}22`,
+    borderWidth: 1,
+    borderColor: RED,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+  },
+  lockBadgeRight: {
+    right: 4,
+  },
+  lockBadgeLeft: {
+    left: 4,
+  },
+  lockText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 7,
+    color: RED,
+    letterSpacing: 1.5,
+  },
+  // ── Death punctuation ──
+  terminatedOverlay: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: `${RED}18`,
+  },
+  terminatedText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 11,
+    color: RED,
+    letterSpacing: 2,
+    textShadowColor: RED,
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
   },
 });

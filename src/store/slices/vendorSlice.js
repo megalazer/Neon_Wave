@@ -93,7 +93,7 @@ export const createVendorSlice = (set) => ({
 
       const costStr = item.cost > 0 ? ` -${item.cost.toLocaleString()} CR.` : '';
       state.log.entries.push({
-        id: `vend_cyber_${itemId}_${Date.now()}`,
+        id: `vend_cyber_${itemId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: `ACQUISITION: ${item.name} purchased.${costStr} Added to inventory.`,
         timestamp: new Date().toISOString(),
@@ -119,7 +119,7 @@ export const createVendorSlice = (set) => ({
       }
 
       state.log.entries.push({
-        id: `vend_hack_${quickhackId}_${Date.now()}`,
+        id: `vend_hack_${quickhackId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: `ACQUISITION: Quickhack module ${hack.name} acquired. -${hack.moduleCost.toLocaleString()} CR.`,
         timestamp: new Date().toISOString(),
@@ -143,13 +143,22 @@ export const createVendorSlice = (set) => ({
                     : 'slot3';
 
       if (!member.quickhacks) member.quickhacks = { slot1: null, slot2: null, slot3: null };
+      const previousHackId = member.quickhacks[slotKey];
       member.quickhacks[slotKey] = quickhackId;
       state.vendor.quickhackModules.splice(moduleIdx, 1);
 
+      // Return displaced module to inventory if the slot was occupied
+      if (previousHackId) {
+        state.vendor.quickhackModules.push(previousHackId);
+      }
+
+      const swapNote = previousHackId
+        ? ` Previous module ${QUICKHACKS[previousHackId]?.name ?? previousHackId} returned to inventory.`
+        : '';
       state.log.entries.push({
-        id: `qhmod_${quickhackId}_${Date.now()}`,
+        id: `qhmod_${quickhackId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
-        text: `MODULE_INSTALLED: ${hack.name} → ${member.name} [${slotKey.toUpperCase()}].`,
+        text: `MODULE_INSTALLED: ${hack.name} → ${member.name} [${slotKey.toUpperCase()}].${swapNote}`,
         timestamp: new Date().toISOString(),
         type: 'acquisition',
       });

@@ -20,10 +20,6 @@ function classKey(cls) {
   return (cls || '').toLowerCase().replace(/\s+/g, '_');
 }
 
-function statsAvg(stats) {
-  const vals = Object.values(stats);
-  return Math.round(vals.reduce((s, v) => s + v, 0) / vals.length);
-}
 
 export default function RecruitCard({ recruit, credits, rosterFull, currentTurn, onRecruit, onDismiss }) {
   const isGenerated = recruit.quality !== undefined;
@@ -39,6 +35,8 @@ export default function RecruitCard({ recruit, credits, rosterFull, currentTurn,
 
   const cardBorderColor = !isGenerated
     ? colors.primary
+    : canAfford
+    ? colors.primary
     : quality === 'rare'
     ? colors.secondaryContainer
     : colors.outlineVariant;
@@ -46,8 +44,8 @@ export default function RecruitCard({ recruit, credits, rosterFull, currentTurn,
   const turnsLeft = isGenerated ? recruit.expiresAtTurn - currentTurn : null;
   const expiryUrgent = isGenerated && turnsLeft <= 3;
 
+  const cardBgColor = canAfford ? `${colors.primary}08` : 'rgba(28,27,29,0.95)';
   const faction = getFaction(recruit.faction);
-
   const cardContent = (
     <>
       {/* Top badge */}
@@ -95,9 +93,17 @@ export default function RecruitCard({ recruit, credits, rosterFull, currentTurn,
         </View>
         <View style={[styles.statPill, styles.statPillAccent]}>
           <Text style={[styles.statLabel, styles.statLabelAccent]}>AVG</Text>
-          <Text style={[styles.statVal, styles.statValAccent]}>{statsAvg(recruit.stats)}</Text>
+          <Text style={[styles.statVal, styles.statValAccent]}>{Math.round((recruit.vitals.current + recruit.neural.current) / 2)}</Text>
         </View>
       </View>
+
+      {/* Affordability flavor text — signals the player they can recruit */}
+      {canAfford && !rosterFull && (
+        <View style={styles.flavorRow}>
+          <MaterialIcons name="sync" size={10} color={colors.primary} />
+          <Text style={styles.flavorText}>SYNC_READY — RECRUITMENT_VIABLE</Text>
+        </View>
+      )}
 
       {/* Expiry */}
         <View style={styles.expiryRow}>
@@ -136,7 +142,7 @@ export default function RecruitCard({ recruit, credits, rosterFull, currentTurn,
   }
 
   return (
-    <View style={[styles.card, { borderColor: cardBorderColor }, !isGenerated && styles.cardGlow]}>
+    <View style={[styles.card, { borderColor: cardBorderColor, backgroundColor: cardBgColor }, !isGenerated && styles.cardGlow]}>
       {cardContent}
     </View>
   );
@@ -297,6 +303,21 @@ const styles = StyleSheet.create({
   },
   expiryUrgent: {
     color: colors.error,
+  },
+  flavorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    borderTopWidth: 1,
+    borderTopColor: `${colors.primary}33`,
+    paddingTop: 6,
+  },
+  flavorText: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 8,
+    color: colors.primary,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
   },
   footer: {
     flexDirection: 'row',

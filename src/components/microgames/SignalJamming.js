@@ -13,6 +13,12 @@ export default function SignalJamming({ statValue, onResult, accentColor }) {
   
   const isHolding = useRef(false);
   const gameLoop = useRef(null);
+  // Live values for the game loop — keeps the tick pure of nested setState
+  // updaters and guarantees the result can only fire once.
+  const scoreRef = useRef(0);
+  const needleRef = useRef(0.5);
+  const traceRef = useRef(0);
+  const endedRef = useRef(false);
 
   const gritScale = Math.max(1, statValue);
   const traceRate = Math.max(0.02, TRACE_PER_SEC - (gritScale * 0.005));
@@ -28,49 +34,43 @@ export default function SignalJamming({ statValue, onResult, accentColor }) {
   };
 
   useEffect(() => {
-    if (state === 'playing') {
-      gameLoop.current = setInterval(() => {
-        setScore(s => {
-          const newScore = s + 50;
-          
-          setNeedlePos(p => {
-            const drift = getDriftSpeed(newScore);
-            const move = isHolding.current ? drift * 1.5 : -drift; // holding pushes right, otherwise drifts left
-            const newPos = Math.max(0, Math.min(1, p + move));
-            
-            const bandW = getBandWidth(newScore);
-            const bandStart = 0.5 - (bandW / 2);
-            const bandEnd = 0.5 + (bandW / 2);
-            
-            if (newPos < bandStart || newPos > bandEnd) {
-              // Busted
-              clearInterval(gameLoop.current);
-              setState('busted');
-              setTimeout(() => {
-                onResult({ outcome: 'bust', payoutMultiplier: 0.25, vitalsHit: 10, bustReason: 'Signal lost' });
-              }, 1000);
-            }
-            return newPos;
-          });
-          
-          setTrace(t => {
-            const newTrace = t + (traceRate * 0.05); // per 50ms
-            if (newTrace >= 1) {
-              clearInterval(gameLoop.current);
-              setState('busted');
-              setTimeout(() => {
-                onResult({ outcome: 'bust', payoutMultiplier: 0.25, vitalsHit: 10, bustReason: 'Helix traced you' });
-              }, 1000);
-            }
-            return newTrace;
-          });
-          
-          return newScore;
-        });
-      }, 50);
-      
-      return () => clearInterval(gameLoop.current);
-    }
+    if (state !== 'playing') return;
+
+    gameLoop.current = setInterval(() => {
+      if (endedRef.current) return;
+
+      const newScore = scoreRef.current + 50;
+      scoreRef.current = newScore;
+
+      const drift = getDriftSpeed(newScore);
+      const move = isHolding.current ? drift * 1.5 : -drift; // holding pushes right, otherwise drifts left
+      const newPos = Math.max(0, Math.min(1, needleRef.current + move));
+      needleRef.current = newPos;
+
+      const newTrace = traceRef.current + (traceRate * 0.05); // per 50ms
+      traceRef.current = newTrace;
+
+      setScore(newScore);
+      setNeedlePos(newPos);
+      setTrace(Math.min(1, newTrace));
+
+      const bandW = getBandWidth(newScore);
+      const outOfBand = newPos < 0.5 - bandW / 2 || newPos > 0.5 + bandW / 2;
+
+      // Single bust path — needle slip and trace maxing in the same tick can
+      // no longer both schedule onResult.
+      if (outOfBand || newTrace >= 1) {
+        endedRef.current = true;
+        clearInterval(gameLoop.current);
+        setState('busted');
+        const bustReason = outOfBand ? 'Signal lost' : 'Helix traced you';
+        setTimeout(() => {
+          onResult({ outcome: 'bust', payoutMultiplier: 0.25, vitalsHit: 10, bustReason });
+        }, 1000);
+      }
+    }, 50);
+
+    return () => clearInterval(gameLoop.current);
   }, [state, traceRate, onResult]);
 
   const handleStart = () => {
@@ -78,12 +78,13 @@ export default function SignalJamming({ statValue, onResult, accentColor }) {
   };
 
   const handleBail = () => {
-    if (state !== 'playing') return;
+    if (state !== 'playing' || endedRef.current) return;
+    endedRef.current = true;
     clearInterval(gameLoop.current);
     setState('banked');
     // 5 seconds = ~1.0 multiplier
-    const payoutMultiplier = Math.max(0.2, 0.2 + (score / 6000));
-    onResult({ outcome: 'banked', payoutMultiplier, bankedSteps: `${(score/1000).toFixed(1)}s` });
+    const payoutMultiplier = Math.max(0.2, 0.2 + (scoreRef.current / 6000));
+    onResult({ outcome: 'banked', payoutMultiplier, bankedSteps: `${(scoreRef.current / 1000).toFixed(1)}s` });
   };
 
   const bandWidth = getBandWidth(score);

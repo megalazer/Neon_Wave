@@ -6,8 +6,9 @@ export const REAL_ESTATE = [
     id: 're_skyline_apex',
     name: 'Skyline Apex Suite',
     listingId: '9942-X',
-    description: 'Carbon-fiber floors, 360-degree night city view.',
+    description: 'Carbon-fiber floors, 360-degree skyline view.',
     cost: 5000000,
+    incomePerTurn: 600,
     icon: 'apartment',
     attributes: [
       { label: 'LUXURY_GRADE', value: 'S' },
@@ -22,6 +23,7 @@ export const REAL_ESTATE = [
     listingId: '8800-N',
     description: 'Double-floor penthouse. Zero paper trail.',
     cost: 2800000,
+    incomePerTurn: 300,
     icon: 'business',
     attributes: [
       { label: 'LUXURY_GRADE', value: 'A' },
@@ -36,6 +38,7 @@ export const REAL_ESTATE = [
     listingId: '3311-G',
     description: 'Repurposed server-room. Off-grid access node.',
     cost: 320000,
+    incomePerTurn: 120,
     icon: 'warehouse',
     attributes: [
       { label: 'LUXURY_GRADE', value: 'B' },
@@ -46,10 +49,11 @@ export const REAL_ESTATE = [
   },
   {
     id: 're_kabuki_micro',
-    name: 'Kabuki Micro-Loft',
+    name: 'Saltgate Micro-Loft',
     listingId: '2120-K',
     description: 'Cozy, high-security, near the neon district.',
     cost: 150000,
+    incomePerTurn: 50,
     icon: 'home',
     attributes: [
       { label: 'LUXURY_GRADE', value: 'C' },
@@ -72,6 +76,7 @@ export const VEHICLES = [
     attributes: [
       { label: 'Speed', value: 100 },
       { label: 'Armor', value: 33 },
+      { label: 'LOGISTICS_BONUS', value: '+2%' },
     ],
     minigame: 'aerial_chase',
   },
@@ -86,6 +91,7 @@ export const VEHICLES = [
     attributes: [
       { label: 'Speed', value: 97 },
       { label: 'Handling', value: 88 },
+      { label: 'LOGISTICS_BONUS', value: '+2%' },
     ],
     minigame: 'drag_race',
   },
@@ -100,6 +106,7 @@ export const VEHICLES = [
     attributes: [
       { label: 'Armor', value: 95 },
       { label: 'Speed', value: 40 },
+      { label: 'LOGISTICS_BONUS', value: '+2%' },
     ],
     minigame: 'convoy_run',
   },
@@ -114,6 +121,7 @@ export const VEHICLES = [
     attributes: [
       { label: 'Handling', value: 90 },
       { label: 'Heat_Sign', value: 80 },
+      { label: 'LOGISTICS_BONUS', value: '+2%' },
     ],
     minigame: 'street_race',
   },

@@ -8,12 +8,12 @@ export const HIGH_CONTRACTS = [
     questline: 'Dusk\'s Edge',
     questlineStage: 1,
     cyberwareReward: { pool: 'HIGH', chance: 0.6 },
-    name: 'BLACKWALL_PROBE',
+    name: 'DEADWALL_PROBE',
     faction: 'fac_signal',
     factionRepReward: 22,
     factionRepPenalty: 14,
     minFactionRep: 'ALLIED',
-    description: 'Dusk wants data from the other side of the Blackwall. Nobody who\'s done this before is available to brief you.',
+    description: 'Dusk wants data from the other side of the Deadwall. Nobody who\'s done this before is available to brief you.',
     payout: 30000,
     deposit: 2000,
     exp: 1800,
@@ -58,7 +58,7 @@ export const HIGH_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'NAVIGATE THE ICE',
-        prompt: 'You\'re at the perimeter. The Blackwall\'s ICE is unlike anything in the commercial sector; it probes back. You can push through with raw code, or look for a seam in its pattern.',
+        prompt: 'You\'re at the perimeter. The Deadwall\'s ICE is unlike anything in the commercial sector; it probes back. You can push through with raw code, or look for a seam in its pattern.',
         choices: [
           {
             id: 'bwp_push',
@@ -376,7 +376,7 @@ export const HIGH_CONTRACTS = [
             label: 'Acquire a vehicle and run hard',
             statCheck: { stat: 'wire', threshold: 13 },
             pass: {
-              text: 'You jack a MaxTac support vehicle, the irony isn\'t lost on you, and drive out of the response perimeter before anyone thinks to flag it.',
+              text: 'You jack an Onyx Bureau support vehicle, the irony isn\'t lost on you, and drive out of the response perimeter before anyone thinks to flag it.',
               branch: 'complete',
             },
             fail: {

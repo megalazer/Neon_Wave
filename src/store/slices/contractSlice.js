@@ -5,6 +5,8 @@ import { repTierFromValue, tierMeetsRequirement } from '../../data/factions';
 import { CYBERWARE_ITEMS } from '../../data/cyberware';
 import { CYBERWARE_REWARD_POOLS, rollCyberwareReward } from '../../data/contractRewards';
 
+
+const FEED_SIZE = 6;
 // Whether the player's rep with a contract's faction meets its minFactionRep gate.
 // minFactionRep is a tier label (e.g. 'FRIENDLY'); default '' / 'NEUTRAL' = no gate.
 export function contractRepGateMet(state, contract) {
@@ -17,32 +19,132 @@ export function contractRepGateMet(state, contract) {
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
+function _playerLevel(state) {
+  return state.crew.members.find((m) => m.isPlayer)?.level ?? 1;
+}
+
+function _canAccept(state, contract, pLevel, credits) {
+  if (!contract) return false;
+  if (pLevel < contract.teamLevelRequired) return false;
+  if (!contractRepGateMet(state, contract)) return false;
+  if (contract.deposit > 0 && credits < contract.deposit) return false;
+  return true;
+}
+
+
 function _pickFeedContracts(state) {
   const completed  = new Set(state.contract.completedContracts);
   const inFeed     = new Set(state.contract.feedItems.map((i) => i.id));
-  const playerLevel = state.crew.members.find((m) => m.isPlayer)?.level ?? 1;
+  const pLevel     = _playerLevel(state);
+  const credits    = state.character.credits;
 
-  const pool = ALL_CONTRACTS.filter(
-    (c) => !completed.has(c.id) && !inFeed.has(c.id) && playerLevel >= c.teamLevelRequired,
+  const eligible = ALL_CONTRACTS.filter(
+    (c) => !completed.has(c.id) && !inFeed.has(c.id) && pLevel >= c.teamLevelRequired,
   );
 
-  // Shuffle pool
-  const shuffled = pool.slice().sort(() => Math.random() - 0.5);
-
-  // Try to keep tier diversity: prefer one of each available tier
-  const picks = [];
-  for (const tier of ['LOW', 'MID', 'HIGH']) {
-    const found = shuffled.find((c) => c.tier === tier && !picks.some((p) => p.id === c.id));
-    if (found) picks.push(found);
-    if (picks.length === 3) break;
+  // Partition: acceptable, locked (rep-gated / unaffordable), neutral
+  const neutral    = [];
+  const acceptable = [];
+  const locked     = [];
+  for (const c of eligible) {
+    if (_canAccept(state, c, pLevel, credits)) {
+      if (c.faction) {
+        acceptable.push(c);
+      } else {
+        neutral.push(c);
+      }
+    } else {
+      locked.push(c);
+    }
   }
-  // Backfill with any remaining if under 3
-  for (const c of shuffled) {
-    if (picks.length >= 3) break;
+
+  const shuffle = (a) => a.slice().sort(() => Math.random() - 0.5);
+  const shuffledNeutral    = shuffle(neutral);
+  const shuffledAcceptable = shuffle(acceptable);
+  const shuffledLocked     = shuffle(locked);
+
+  const picks = [];
+
+  // ── Questline continuity priority ──
+  // Find questlines the player has started: completed contracts with a questline field.
+  const questlineProgress = new Map(); // questline → highest completed stage
+  for (const cid of completed) {
+    const c = ALL_CONTRACTS.find((x) => x.id === cid);
+    if (c?.questline && c.questlineStage != null) {
+      const best = questlineProgress.get(c.questline) ?? 0;
+      if (c.questlineStage > best) questlineProgress.set(c.questline, c.questlineStage);
+    }
+  }
+
+  // For each active questline, find eligible contracts at the next stage.
+  if (questlineProgress.size > 0) {
+    const continuations = [];
+    for (const [ql, highestStage] of questlineProgress) {
+      const next = eligible.filter(
+        (c) => c.questline === ql && c.questlineStage === highestStage + 1,
+      );
+      continuations.push(...next);
+    }
+    // Sort by questlineStage ascending, pick up to 2.
+    continuations.sort((a, b) => (a.questlineStage ?? 99) - (b.questlineStage ?? 99));
+    for (const c of continuations) {
+      if (picks.length >= 2) break;
+      if (!picks.some((p) => p.id === c.id)) picks.push(c);
+    }
+  }
+
+  // Always include at least one neutral contract if available — prevents soft-locks
+  if (shuffledNeutral.length > 0 && !picks.some((p) => !ALL_CONTRACTS.find((c) => c.id === p.id)?.faction)) {
+    picks.push(shuffledNeutral[0]);
+  }
+
+  // Tier-diversity pass over faction acceptable
+  for (const tier of ['LOW', 'MID', 'HIGH']) {
+    if (picks.length >= FEED_SIZE) break;
+    const found = shuffledAcceptable.find((c) => c.tier === tier && !picks.some((p) => p.id === c.id));
+    if (found) picks.push(found);
+  }
+
+  // Backfill with any acceptable (neutral or faction, but preference neutral second)
+  for (const c of [...shuffledNeutral, ...shuffledAcceptable]) {
+    if (picks.length >= FEED_SIZE) break;
+    if (!picks.some((p) => p.id === c.id)) picks.push(c);
+  }
+
+  // Backfill with locked teasers so the player sees progression targets
+  for (const c of shuffledLocked) {
+    if (picks.length >= FEED_SIZE) break;
     if (!picks.some((p) => p.id === c.id)) picks.push(c);
   }
 
   return picks.map((c) => ({ id: c.id, expiresIn: 10 }));
+}
+
+function _feedHasAcceptable(state) {
+  const pLevel  = _playerLevel(state);
+  const credits = state.character.credits;
+  return state.contract.feedItems.some((fi) => {
+    const c = getContract(fi.id);
+    return _canAccept(state, c, pLevel, credits);
+  });
+}
+
+function _ensureAcceptableInFeed(state) {
+  if (_feedHasAcceptable(state)) return;
+  // Merge fresh picks, sort acceptable-first
+  const newItems = _pickFeedContracts(state);
+  const existing = state.contract.feedItems;
+  const toAdd = newItems.filter((n) => !existing.some((e) => e.id === n.id));
+  const merged = [...existing, ...toAdd];
+  // Sort: acceptable first, locked last
+  const pLevel  = _playerLevel(state);
+  const credits = state.character.credits;
+  merged.sort((a, b) => {
+    const aOk = _canAccept(state, getContract(a.id), pLevel, credits) ? 1 : 0;
+    const bOk = _canAccept(state, getContract(b.id), pLevel, credits) ? 1 : 0;
+    return bOk - aOk;
+  });
+  state.contract.feedItems = merged.slice(0, FEED_SIZE);
 }
 
 function _applyOutcomeEffects(state, effects) {
@@ -66,7 +168,13 @@ function _applyOutcomeEffects(state, effects) {
 }
 
 function _setResolution(state, contract, outcome) {
-  const modifier  = state.contract.activeContractModifiers ?? 0;
+  let modifier  = state.contract.activeContractModifiers ?? 0;
+
+  // Vehicle logistics bonus: +2% payout per vehicle, cap +10%
+  const vehicles = state.character.vehicles ?? [];
+  const vehicleBonus = vehicles.length > 0 ? Math.min(vehicles.length * 0.02, 0.10) : 0;
+  if (vehicleBonus > 0) modifier += vehicleBonus;
+
   const basePayout =
     outcome === 'success' ? contract.payout :
     outcome === 'failure' ? Math.floor(contract.payout / 4) : 0;
@@ -85,6 +193,7 @@ function _setResolution(state, contract, outcome) {
         : contract.abortNarration || 'Contract terminated.',
     modifierApplied: outcome === 'success' && modifier !== 0 ? modifier : null,
     baseCredits:     outcome === 'success' && modifier !== 0 ? basePayout : null,
+    vehicleBonusApplied: outcome === 'success' && vehicleBonus > 0 ? vehicleBonus : null,
   };
   state.contract.phase = 'resolving';
 }
@@ -106,6 +215,7 @@ export const createContractSlice = (set, get) => ({
     // Feed
     feedItems: [],        // [{ id, expiresIn }]
     feedRefreshIn: 0,     // turns until forced feed refresh; 0 = refresh immediately
+    rerollCooldown: 0,     // turns until manual reroll is available again
 
     // Active run
     phase: 'feed',        // 'feed' | 'active' | 'combat' | 'resolving'
@@ -138,30 +248,54 @@ export const createContractSlice = (set, get) => ({
       state.contract.feedRefreshIn = 10;
     }),
 
+  rerollContractFeed: () =>
+    set((state) => {
+      if (state.contract.rerollCooldown > 0) return;
+      if (state.contract.phase !== 'feed') return;
+      const newItems = _pickFeedContracts(state);
+      state.contract.feedItems = newItems;
+      state.contract.rerollCooldown = 3;
+    }),
+
   tickFeed: () =>
     set((state) => {
       // Don't tick the feed mid-run
       if (state.contract.phase !== 'feed') return;
-
+      // Decrement reroll cooldown
+      if (state.contract.rerollCooldown > 0) {
+        state.contract.rerollCooldown -= 1;
+      }
       // Decrement expiry on each item
       state.contract.feedItems = state.contract.feedItems
         .map((item) => ({ ...item, expiresIn: item.expiresIn - 1 }))
         .filter((item) => item.expiresIn > 0);
-
       // Decrement refresh counter
       if (state.contract.feedRefreshIn > 0) {
         state.contract.feedRefreshIn -= 1;
       }
-
-      // Refresh if counter hit zero or feed is now empty
-      if (state.contract.feedRefreshIn <= 0 || state.contract.feedItems.length === 0) {
+      // Refresh if counter hit zero, feed empty, or feed has no acceptable contract
+      if (
+        state.contract.feedRefreshIn <= 0 ||
+        state.contract.feedItems.length === 0 ||
+        !_feedHasAcceptable(state)
+      ) {
         const newItems = _pickFeedContracts(state);
-        // Merge: keep existing non-expired items, fill up to 3
         const existing = state.contract.feedItems;
         const toAdd = newItems.filter((n) => !existing.some((e) => e.id === n.id));
-        state.contract.feedItems = [...existing, ...toAdd].slice(0, 3);
+        // Merge and sort: acceptable first, locked last
+        const merged = [...existing, ...toAdd];
+        const pLevel  = _playerLevel(state);
+        const credits = state.character.credits;
+        merged.sort((a, b) => {
+          const aOk = _canAccept(state, getContract(a.id), pLevel, credits) ? 1 : 0;
+          const bOk = _canAccept(state, getContract(b.id), pLevel, credits) ? 1 : 0;
+          return bOk - aOk;
+        });
+        state.contract.feedItems = merged.slice(0, FEED_SIZE);
         state.contract.feedRefreshIn = 10;
       }
+      // Ensure invariant: feed has an acceptable contract if pool contains one
+      _ensureAcceptableInFeed(state);
     }),
 
   // ── Contract acceptance ────────────────────────────────────────────────────
@@ -258,7 +392,7 @@ export const createContractSlice = (set, get) => ({
       });
 
       state.log.entries.push({
-        id: `con_stg_${stage.id}_${Date.now()}`,
+        id: `con_stg_${stage.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text,
         timestamp: new Date().toISOString(),
@@ -301,7 +435,7 @@ export const createContractSlice = (set, get) => ({
       });
 
       state.log.entries.push({
-        id: `con_bat_${pending.stageId}_${Date.now()}`,
+        id: `con_bat_${pending.stageId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text,
         timestamp: new Date().toISOString(),
@@ -382,7 +516,7 @@ export const createContractSlice = (set, get) => ({
             if (item) {
               state.character.cyberwareInventory.push(item.id);
               state.log.entries.push({
-                id: `rew_${itemId}_${Date.now()}`,
+                id: `rew_${itemId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
                 turn: state.character.turnNumber,
                 text: `REWARD: ${contract.name} — ${item.name} added to cyberware inventory.`,
                 timestamp: new Date().toISOString(),
@@ -417,15 +551,17 @@ export const createContractSlice = (set, get) => ({
 
       const tierLabel = factionRep >= 150 ? 'EXALTED' : factionRep >= 75 ? 'ALLIED' : factionRep >= 25 ? 'FRIENDLY' : null;
       const tierSuffix = tierLabel ? ` (${tierLabel} bonus: +${bonusCredits} CR)` : '';
+      const vehicleSuffix = resolution.vehicleBonusApplied
+        ? ` (Logistics +${Math.round(resolution.vehicleBonusApplied * 100)}%)` : '';
       const logText =
         resolution.outcome === 'success'
-          ? `ACQUISITION: ${contract.name} complete. +${resolution.creditsEarned.toLocaleString()} CR, +${resolution.expEarned} EXP.${tierSuffix}`
+          ? `ACQUISITION: ${contract.name} complete. +${resolution.creditsEarned.toLocaleString()} CR, +${resolution.expEarned} EXP.${tierSuffix}${vehicleSuffix}`
           : resolution.outcome === 'failure'
           ? `CRITICAL: ${contract.name} went sideways. Salvaged ${resolution.creditsEarned.toLocaleString()} CR.`
           : `ABORT: ${contract.name} terminated. No payout.`;
 
       state.log.entries.push({
-        id: `con_res_${activeContractId}_${Date.now()}`,
+        id: `con_res_${activeContractId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: logText,
         timestamp: new Date().toISOString(),
@@ -441,6 +577,23 @@ export const createContractSlice = (set, get) => ({
       state.contract.resolution = null;
       state.contract.activeContractModifiers = 0;
       state.contract.hadCombatThisContract = false;
+      // Rolling backfill: remove completed id, refill to FEED_SIZE
+      state.contract.feedItems = state.contract.feedItems.filter(
+        (fi) => fi.id !== activeContractId,
+      );
+      const freshPicks = _pickFeedContracts(state);
+      const existing = state.contract.feedItems;
+      const toAdd = freshPicks.filter((n) => !existing.some((e) => e.id === n.id));
+      const merged = [...existing, ...toAdd];
+      // Sort: acceptable first, locked last
+      const pLevel  = _playerLevel(state);
+      const credits2 = state.character.credits;
+      merged.sort((a, b) => {
+        const aOk = _canAccept(state, getContract(a.id), pLevel, credits2) ? 1 : 0;
+        const bOk = _canAccept(state, getContract(b.id), pLevel, credits2) ? 1 : 0;
+        return bOk - aOk;
+      });
+      state.contract.feedItems = merged.slice(0, FEED_SIZE);
     });
 
     // Achievement hooks (after set)

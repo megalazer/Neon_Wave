@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, StyleSheet, StatusBar } from 'react-native';
+import Animated, {
+  useSharedValue, useAnimatedStyle, withTiming, Easing,
+} from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { colors } from '../theme/colors';
 import { useStore } from '../store/index';
@@ -79,8 +82,20 @@ function TacticalField({
   const hasSelection    = selectedFriendlyId !== null;
   const playerTargeting = hasSelection && phase === 'targeting';
 
+  const phaseBarColor = (() => {
+    switch (phase) {
+      case 'targeting':  return CYAN;
+      case 'executing':  return MAG;
+      case 'enemy_turn': return RED;
+      default:           return `${colors.outline}44`;
+    }
+  })();
+
   return (
     <View style={tac.wrap}>
+      {/* Phase-tinted indicator bar */}
+      <View style={[tac.phaseBar, { backgroundColor: phaseBarColor }]} />
+
       {/* Friendly column */}
       <View style={tac.col}>
         <View style={tac.sideLabel}>
@@ -161,6 +176,24 @@ export default function BattleScreen({ onExit }) {
 
   const [unitCoords, setUnitCoords] = useState({});
 
+  // ── Screen shake ──
+  const shakeOffset = useSharedValue(0);
+  const shakeStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: shakeOffset.value }],
+  }));
+  const triggerShake = useCallback(() => {
+    shakeOffset.value = -6;
+    shakeOffset.value = withTiming(6,  { duration: 35 });
+    shakeOffset.value = withTiming(-4, { duration: 35 });
+    shakeOffset.value = withTiming(4,  { duration: 35 });
+    shakeOffset.value = withTiming(-2, { duration: 35 });
+    shakeOffset.value = withTiming(2,  { duration: 35 });
+    shakeOffset.value = withTiming(0,  { duration: 35 });
+  }, [shakeOffset]);
+
+
+  // ── CyberPool pending spend preview ──
+  const previewSpend = combat.pendingAttacks.reduce((s, a) => s + (a.cyberCost || 0), 0);
   const pendingAbility        = combat.pendingAbility;
   const pendingAbilityData    = pendingAbility ? CYBER_ABILITIES[pendingAbility.classId] : null;
   const abilityIsSingleTarget = pendingAbilityData?.effect.type === 'single_target_damage';
@@ -198,12 +231,42 @@ export default function BattleScreen({ onExit }) {
 
     (async () => {
       const attacks = [...useStore.getState().combat.pendingAttacks];
+      const len = attacks.length;
 
-      for (const attack of attacks) {
+      for (let i = 0; i < len; i++) {
         if (cancelled) return;
+        const attack = attacks[i];
+        const isLast = i === len - 1;
+
+        // Look ahead: does this hit kill the target?
+        let willKill = false;
+        if (attack.effectType === 'damage') {
+          for (const targetId of attack.targetIds) {
+            const target = [...useStore.getState().combat.hostile].find((u) => u.id === targetId);
+            if (target && target.hp.current > 0 && attack.damage >= target.hp.current) {
+              willKill = true;
+              break;
+            }
+          }
+        }
+
         useStore.getState().applyPendingAttack(attack.id);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        await delay(80);
+
+        // Screen shake if damage >= 25% of any target's max HP
+        if (attack.damage > 0) {
+          for (const targetId of attack.targetIds) {
+            const target = useStore.getState().combat.hostile.find((u) => u.id === targetId);
+            if (target && attack.damage >= target.hp.max * 0.25) {
+              triggerShake();
+              break;
+            }
+          }
+        }
+
+        // Slower cinematic pacing for kill-shots and final attacks
+        await delay(willKill || isLast ? 300 : 80);
+
         if (useStore.getState().combat.phase === 'victory') return;
       }
 
@@ -221,7 +284,7 @@ export default function BattleScreen({ onExit }) {
     })();
 
     return () => { cancelled = true; };
-  }, [combat.phase]);
+  }, [combat.phase, triggerShake]);
 
   // ── Enemy turn ──
   useEffect(() => {
@@ -230,20 +293,35 @@ export default function BattleScreen({ onExit }) {
 
     (async () => {
       const { enemyAssignments } = useStore.getState().combat;
+      const len = enemyAssignments.length;
       await delay(50);
 
-      for (const a of enemyAssignments) {
+      for (let i = 0; i < len; i++) {
         if (cancelled) return;
+        const a = enemyAssignments[i];
+        const isLast = i === len - 1;
+
+        // Look ahead: will this enemy hit kill the target?
+        const target = useStore.getState().combat.friendly.find((u) => u.id === a.targetId);
+        const willKill = target && target.hp.current > 0 && a.damage >= target.hp.current;
+
         useStore.getState().applyEnemyHit(a.id);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        await delay(120);
+
+        // Screen shake if damage >= 25% of target's max HP
+        if (target && a.damage >= target.hp.max * 0.25) {
+          triggerShake();
+        }
+
+        // Slower cinematic pacing for kill-shots and final hits
+        await delay(willKill || isLast ? 350 : 120);
       }
 
       if (!cancelled) useStore.getState().endRound();
     })();
 
     return () => { cancelled = true; };
-  }, [combat.phase]);
+  }, [combat.phase, triggerShake]);
 
   // ── Handlers ──
 
@@ -390,21 +468,22 @@ export default function BattleScreen({ onExit }) {
         phase={phase}
         onLastDieLocked={handleLastDieLocked}
       />
-
-      <TacticalField
-        friendly={friendly}
-        hostile={hostile}
-        selectedFriendlyId={selectedFriendlyId}
-        phase={phase}
-        pendingAbility={pendingAbility}
-        abilityIsSingleTarget={abilityIsSingleTarget}
-        abilityAccent={abilityAccent}
-        previewByEnemy={previewByEnemy}
-        previewByFriendly={previewByFriendly}
-        onFriendlyPress={handleFriendlyPress}
-        onEnemyPress={handleEnemyPress}
-        onUnitMeasure={handleUnitMeasure}
-      />
+      <Animated.View style={[{ flex: 1 }, shakeStyle]}>
+        <TacticalField
+          friendly={friendly}
+          hostile={hostile}
+          selectedFriendlyId={selectedFriendlyId}
+          phase={phase}
+          pendingAbility={pendingAbility}
+          abilityIsSingleTarget={abilityIsSingleTarget}
+          abilityAccent={abilityAccent}
+          previewByEnemy={previewByEnemy}
+          previewByFriendly={previewByFriendly}
+          onFriendlyPress={handleFriendlyPress}
+          onEnemyPress={handleEnemyPress}
+          onUnitMeasure={handleUnitMeasure}
+        />
+      </Animated.View>
 
       <BuffChips squadBuffs={squadBuffs} />
 
@@ -427,7 +506,7 @@ export default function BattleScreen({ onExit }) {
       />
 
       {/* Cyber Pool bar */}
-      <CyberPool current={cyberPool} maxPool={maxCyberPool} />
+      <CyberPool current={cyberPool} maxPool={maxCyberPool} previewSpend={previewSpend} />
 
       {/* Main action button */}
       <ActionButton combat={combat} onPress={handleActionPress} />
@@ -491,6 +570,14 @@ const tac = StyleSheet.create({
     flexDirection: 'row',
     borderTopWidth: 1,
     borderTopColor: `${colors.outline}22`,
+  },
+  phaseBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: 2,
+    zIndex: 1,
   },
   col: {
     flex: 1,

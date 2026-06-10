@@ -16,6 +16,32 @@ const GENERIC = [
   'Static on the wire. Someone\'s running a scrambler nearby.',
 ];
 
+// ─── PATH-SPECIFIC NARRATION POOLS ──────────────────────────────────────────────
+
+const PATH_POOLS = {
+  corpo: [
+    'Your old access credentials still ping valid in three data enclaves. The board hasn\'t purged you yet. That\'s useful.',
+    'A Lexicon mid-manager clocks your corpo stance from across the bar. He pays for your drink. "You and I speak the same language."',
+    'The quarterly earnings projection scrolls across a Helix billboard. You read between the numbers without thinking. The merger is going to fail.',
+    'Your subdermal pings a familiar encrypted channel. The old network is still active. Someone forgot to revoke your keys.',
+    'A junior analyst from your old division spots you in Saltgate. He looks away first. That tells you everything.',
+  ],
+  street_kid: [
+    'A grid-tag on the wall marks this alley as Static crew territory. You recognize the hand. The artist is dead. The tag lives.',
+    'Saltgate Market is moving tonight. You can feel it: the stalls, the whispers, the deals that close in shadow. Home.',
+    'A street vendor you don\'t know nods like you\'ve been buying from him for years. "You got that look, choom. Survivor look."',
+    'Someone left a data-shard wedged in a drainpipe. Old-school dead drop. You know the code. The contents are worth more than the shard.',
+    'An Undertow courier slips past a Grammaton checkpoint two blocks ahead. Smooth. You used to run that route. Still could.',
+  ],
+  nomad: [
+    'The badlands skyline flickers on the horizon. You can feel the open road even through sixty floors of concrete. It never leaves.',
+    'A convoy rig rumbles past, engine tuned to a frequency you know in your bones. The driver flashes a light. Clan sign.',
+    'Someone\'s patched a solar cell into a dead streetlamp. Resourceful. That\'s badlands thinking. The city forgets; nomads remember.',
+    'Your hands remember the weight of a steering column. The city grid won\'t let you drive, but at night you map escape routes anyway.',
+    'A static-scarred nav beacon chirps on a frequency no one monitors anymore. You still have the decoder. You still listen.',
+  ],
+};
+
 const HIGH_CHROME = [
   'Your chrome hums beneath the skin. You feel like you could punch through a wall. You probably could.',
   'Every implant thrums in sync. For once, the metal feels like it belongs.',
@@ -107,24 +133,56 @@ const LOW_POOLS = {
   wire: LOW_WIRE,
 };
 
-export function pickNarration(stats) {
+// ─── REPETITION GUARD ───────────────────────────────────────────────────────────
+
+let recent = [];
+const RECENT_WINDOW = 6;
+const MAX_TRIES = 6;
+
+export function resetNarrationHistory() {
+  recent = [];
+}
+
+// Try to pick a line from a pool that isn't already in recent.
+function _tryPick(pool) {
+  for (let i = 0; i < MAX_TRIES; i++) {
+    const candidate = pool[Math.floor(Math.random() * pool.length)];
+    if (!recent.includes(candidate)) {
+      recent.push(candidate);
+      if (recent.length > RECENT_WINDOW) recent.shift();
+      return candidate;
+    }
+  }
+  // Exhausted retries — take the next random and record anyway.
+  const candidate = pool[Math.floor(Math.random() * pool.length)];
+  recent.push(candidate);
+  if (recent.length > RECENT_WINDOW) recent.shift();
+  return candidate;
+}
+
+export function pickNarration(stats, path) {
   const entries = Object.entries(stats);
   entries.sort((a, b) => b[1] - a[1]);
   const highest = entries[0];
   const lowest = entries[entries.length - 1];
 
+  // ~30% chance: draw from the current path pool first
+  if (path && PATH_POOLS[path] && Math.random() < 0.3) {
+    return _tryPick(PATH_POOLS[path]);
+  }
+
   // 40% chance: reflect highest stat
   if (Math.random() < 0.4) {
     const pool = HIGH_POOLS[highest[0]];
-    if (pool && pool.length > 0) return pool[Math.floor(Math.random() * pool.length)];
+    if (pool && pool.length > 0) return _tryPick(pool);
   }
 
   // 30% chance: reflect lowest stat
   if (Math.random() < 0.5) { // 0.5 of remaining 0.6 = 0.3
     const pool = LOW_POOLS[lowest[0]];
-    if (pool && pool.length > 0) return pool[Math.floor(Math.random() * pool.length)];
+    if (pool && pool.length > 0) return _tryPick(pool);
   }
 
   // Fallback: generic
-  return GENERIC[Math.floor(Math.random() * GENERIC.length)];
+  return _tryPick(GENERIC);
 }

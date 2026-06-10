@@ -40,7 +40,7 @@ function rollOutcome(set, item, idPrefix, result = null) {
           );
         }
         state.log.entries.push({
-          id: `${idPrefix}_fail_${item.id}_${Date.now()}`,
+          id: `${idPrefix}_fail_${item.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           turn: state.character.turnNumber,
           text: `CRITICAL: ${result.bustReason || 'Mission went sideways'}. Salvaged ${finalPayout.toLocaleString()} CR. No EXP gained.`,
           timestamp: new Date().toISOString(),
@@ -49,7 +49,7 @@ function rollOutcome(set, item, idPrefix, result = null) {
         });
       } else {
         state.log.entries.push({
-          id: `${idPrefix}_${item.id}_${Date.now()}`,
+          id: `${idPrefix}_${item.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           turn: state.character.turnNumber,
           text: `ACQUISITION: ${item.name.toUpperCase()} complete. Banked ${result.bankedSteps || 'steps'}. +${finalPayout.toLocaleString()} CR.`,
           timestamp: new Date().toISOString(),
@@ -68,7 +68,7 @@ function rollOutcome(set, item, idPrefix, result = null) {
         const crewXP = Math.floor(item.exp / 2);
         if (crewXP > 0) distributeCombatXP(state, crewXP);
         state.log.entries.push({
-          id: `${idPrefix}_${item.id}_${Date.now()}`,
+          id: `${idPrefix}_${item.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           turn: state.character.turnNumber,
           text: `ACQUISITION: ${item.name} complete. +${item.payout.toLocaleString()} CR, +${item.exp} EXP.`,
           timestamp: new Date().toISOString(),
@@ -85,7 +85,7 @@ function rollOutcome(set, item, idPrefix, result = null) {
           );
         }
         state.log.entries.push({
-          id: `${idPrefix}_fail_${item.id}_${Date.now()}`,
+          id: `${idPrefix}_fail_${item.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           turn: state.character.turnNumber,
           text: `CRITICAL: ${item.name} went sideways. Salvaged ${halfPayout.toLocaleString()} CR. No EXP gained.`,
           timestamp: new Date().toISOString(),
@@ -135,6 +135,13 @@ function isEligible(event, state) {
   if (requiresCrew && state.crew.members.length === 0) return false;
   if (state.event.firedEventIds.has(event.id)) return false;
 
+  // Life path gate — if the event specifies a path, require match.
+  const pathGate = t.path || event.path;
+  if (pathGate) {
+    const paths = Array.isArray(pathGate) ? pathGate : [pathGate];
+    if (!paths.includes(state.character.path)) return false;
+  }
+
   // Faction rep gates — hard filter on standing with the tagged faction.
   const faction = t.faction || event.faction;
   if (faction) {
@@ -146,13 +153,22 @@ function isEligible(event, state) {
 }
 
 // Soft weight boost: faction-tinted events fire more often the stronger the
-// player's standing (either direction) with that faction. Untagged = neutral.
 function effectiveWeight(event, state) {
   const base = event.weight || 1;
+  let w = base;
+
+  // Path-match boost — tagged events feel more present on matching path
+  const pathGate = event.path || event.triggers?.path;
+  if (pathGate) {
+    const paths = Array.isArray(pathGate) ? pathGate : [pathGate];
+    if (paths.includes(state.character.path)) w *= 1.5;
+  }
+
+  // Faction rep boost
   const faction = event.faction || event.triggers?.faction;
-  if (!faction) return base;
+  if (!faction) return w;
   const mag = Math.min(1, Math.abs(repFor(state, faction)) / 100);
-  return base * (1 + mag); // up to 2x at |rep| >= 100
+  return w * (1 + mag); // up to 2x at |rep| >= 100
 }
 
 // Weighted random pick from an eligible pool.
@@ -231,7 +247,7 @@ export const createEventSlice = (set) => ({
       if (selected.type === 'flavor') {
         applyEffects(state, selected.effects || {});
         state.log.entries.push({
-          id: `flv_${selected.id}_${Date.now()}`,
+          id: `flv_${selected.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           turn: state.character.turnNumber,
           text: selected.narration,
           timestamp: new Date().toISOString(),
@@ -281,7 +297,7 @@ export const createEventSlice = (set) => ({
       const accent = passed ? 'tertiary' : 'error';
 
       state.log.entries.push({
-        id: `chc_${event.id}_${choiceId}_${Date.now()}`,
+        id: `chc_${event.id}_${choiceId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: outcomeText,
         timestamp: new Date().toISOString(),
@@ -309,7 +325,7 @@ export const createEventSlice = (set) => ({
       state.event.firedEventIds.add(event.id);
       applyEffects(state, event.effects || {});
       state.log.entries.push({
-        id: `flv_dev_${event.id}_${Date.now()}`,
+        id: `flv_dev_${event.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
         text: event.narration,
         timestamp: new Date().toISOString(),
@@ -335,7 +351,7 @@ export const createEventSlice = (set) => ({
       if (flavor) {
         applyEffects(state, flavor.effects || {});
         state.log.entries.push({
-          id: `flv_dev_${flavor.id}_${Date.now()}`,
+          id: `flv_dev_${flavor.id}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
           turn: state.character.turnNumber,
           text: flavor.narration,
           timestamp: new Date().toISOString(),

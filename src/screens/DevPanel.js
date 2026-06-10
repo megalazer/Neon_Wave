@@ -676,6 +676,9 @@ function AchievementSection() {
       </View>
 
       <View style={[sec.row, { marginTop: 4 }]}>
+        <DevBtn label="[UNLOCK_CORPO_PATH]" onPress={() => triggerAchievement('acc_corpo_run')} />
+      </View>
+      <View style={[sec.row, { marginTop: 4 }]}>
         <DevBtn label="[RESET_RUN_ACH]" onPress={resetRunAchievements} danger />
         <DevBtn label="[RESET_ACCOUNT_PERKS]" onPress={resetPerks} danger />
       </View>
