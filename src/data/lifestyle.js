@@ -6,7 +6,7 @@ export const REAL_ESTATE = [
     id: 're_skyline_apex',
     name: 'Skyline Apex Suite',
     listingId: '9942-X',
-    description: 'Carbon-fiber floors, 360-degree night city view.',
+    description: 'Carbon-fiber floors, 360-degree skyline view.',
     cost: 5000000,
     icon: 'apartment',
     attributes: [
@@ -46,7 +46,7 @@ export const REAL_ESTATE = [
   },
   {
     id: 're_kabuki_micro',
-    name: 'Kabuki Micro-Loft',
+    name: 'Saltgate Micro-Loft',
     listingId: '2120-K',
     description: 'Cozy, high-security, near the neon district.',
     cost: 150000,

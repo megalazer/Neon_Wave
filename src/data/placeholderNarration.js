@@ -24,11 +24,11 @@ const PATH_POOLS = {
     'A Lexicon mid-manager clocks your corpo stance from across the bar. He pays for your drink. "You and I speak the same language."',
     'The quarterly earnings projection scrolls across a Helix billboard. You read between the numbers without thinking. The merger is going to fail.',
     'Your subdermal pings a familiar encrypted channel. The old network is still active. Someone forgot to revoke your keys.',
-    'A junior analyst from your old division spots you in Kabuki. He looks away first. That tells you everything.',
+    'A junior analyst from your old division spots you in Saltgate. He looks away first. That tells you everything.',
   ],
   street_kid: [
     'A grid-tag on the wall marks this alley as Static crew territory. You recognize the hand. The artist is dead. The tag lives.',
-    'Kabuki Market is moving tonight. You can feel it: the stalls, the whispers, the deals that close in shadow. Home.',
+    'Saltgate Market is moving tonight. You can feel it: the stalls, the whispers, the deals that close in shadow. Home.',
     'A street vendor you don\'t know nods like you\'ve been buying from him for years. "You got that look, choom. Survivor look."',
     'Someone left a data-shard wedged in a drainpipe. Old-school dead drop. You know the code. The contents are worth more than the shard.',
     'An Undertow courier slips past a Grammaton checkpoint two blocks ahead. Smooth. You used to run that route. Still could.',

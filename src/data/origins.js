@@ -52,7 +52,7 @@ export const ORIGINS = [
     id: 'street_kid',
     label: 'STREET_KID',
     badge: 'HUB_CONNECTED',
-    desc: 'Grid-native status. Initialization at Kabuki Market. Enhanced agility metrics.',
+    desc: 'Grid-native status. Initialization at Saltgate Market. Enhanced agility metrics.',
     color: '#fe00fe',
     onColor: '#380038',
     icon: 'person',
@@ -71,7 +71,7 @@ export const ORIGINS = [
 ];
 
 export const OPENING_NARRATION = {
-  street_kid: 'LOG: You step out of the Kabuki market underpass. Rain. Neon. The smell of synth-noodles and ozone. The grid hums around you.',
+  street_kid: 'LOG: You step out of the Saltgate market underpass. Rain. Neon. The smell of synth-noodles and ozone. The grid hums around you.',
   corpo: "LOG: Corporate plaza spits you out into the rain. Your old credentials are dust. The city doesn't remember you.",
   nomad: 'LOG: The badlands shrink behind you as the city swallows the horizon. Your truck is two days gone. You only brought what fit on your back.',
 };

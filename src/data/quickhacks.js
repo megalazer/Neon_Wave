@@ -63,7 +63,7 @@ export const QUICKHACKS = {
   },
   qh_cyberpsychosis: {
     id: 'qh_cyberpsychosis',
-    name: 'CYBERPSYCHOSIS',
+    name: 'NEURAL_CASCADE',
     tier: 'high',
     vendorTier: 'elite',
     neuralCost: 6,

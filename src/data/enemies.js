@@ -168,7 +168,7 @@ export const ENEMIES = {
   // BOSS
   enemy_static_cyberpsycho: {
     id: 'enemy_static_cyberpsycho',
-    name: 'CYBERPSYCHO',
+    name: 'CHROME_HUSK',
     faction: 'fac_static',
     threat: 'boss',
     hp: { current: 200, max: 200 },

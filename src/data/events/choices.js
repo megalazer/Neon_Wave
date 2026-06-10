@@ -778,8 +778,8 @@ export const CHOICE_EVENTS = [
     id: 'chc_street_market',
     type: 'choice', weight: 3, path: 'street_kid',
     triggers: { minTurn: 10 },
-    title: 'KABUKI_OPPORTUNITY',
-    prompt: 'A Kabuki Market stall is selling pre-collapse data-shards. The vendor doesn\'t know what they have. One shard glows faintly — military-grade encryption. The vendor wants 300 CR for the lot.',
+    title: 'SALTGATE_OPPORTUNITY',
+    prompt: 'A Saltgate Market stall is selling pre-collapse data-shards. The vendor doesn\'t know what they have. One shard glows faintly — military-grade encryption. The vendor wants 300 CR for the lot.',
     choices: [
       {
         id: 'sm_buy',

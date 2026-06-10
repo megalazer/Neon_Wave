@@ -26,7 +26,7 @@ export const FACTION_CONTRACTS = [
       {
         id: 'lx_clinic',
         stageNumber: 1,
-        prompt: 'Three factions at war. Lexicon moves to shape the outcome. The scribe works out of a chrome-clean clinic in Westbrook. His research lives on an air-gapped wetware server, literally grown into a vat-brain. You can spoof credentials at the desk, or go in through the bio-waste duct.',
+        prompt: 'Three factions at war. Lexicon moves to shape the outcome. The scribe works out of a chrome-clean clinic in Highmark. His research lives on an air-gapped wetware server, literally grown into a vat-brain. You can spoof credentials at the desk, or go in through the bio-waste duct.',
         label: 'STAGE_01',
         title: 'THE CLINIC',
         choices: [

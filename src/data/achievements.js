@@ -30,7 +30,7 @@ export const ACHIEVEMENTS = {
     description: 'Complete 100 contracts across all runs.',
     condition: (s) => s.achievements.lifetime.contractsCompleted >= 100,
     progressHint: (s) => `${s.achievements.lifetime.contractsCompleted}/100 contracts`,
-    accountPerk: { type: 'unlock_vendor_cyberware', value: 'cyb_sandevistan_apex', description: 'Sandevistan Apex can now appear in the vendor.' },
+    accountPerk: { type: 'unlock_vendor_cyberware', value: 'cyb_sandevistan_apex', description: 'Slipstream Apex can now appear in the vendor.' },
   },
   acc_apex_crew: {
     id: 'acc_apex_crew', scope: 'account', type: 'milestone', hidden: false,
@@ -79,7 +79,7 @@ export const ACHIEVEMENTS = {
     name: 'GIANT_SLAYER',
     description: 'Defeat a high-tier enemy (ever).',
     condition: null, progressHint: null,
-    accountPerk: { type: 'unlock_vendor_cyberware', value: 'cyb_mantis_blades', description: 'Mantis Blades can now appear in the vendor.' },
+    accountPerk: { type: 'unlock_vendor_cyberware', value: 'cyb_mantis_blades', description: 'Razor Arms can now appear in the vendor.' },
   },
 
   // ─── ACCOUNT — HIDDEN ──────────────────────────────────────────────────────
@@ -104,12 +104,12 @@ export const ACHIEVEMENTS = {
 
   acc_cyberpsycho: {
     id: 'acc_cyberpsycho', scope: 'account', type: 'milestone', hidden: true,
-    name: 'CYBERPSYCHO',
+    name: 'CHROME_FRACTURE',
     description: 'Drive a crew member below 5% humanity and keep them alive.',
     condition: (s) => s.crew.members.some((m) =>
       m.humanity && (m.humanity.current / m.humanity.max) < 0.05 && (m.vitals?.current ?? 1) > 0),
     progressHint: null,
-    accountPerk: { type: 'cosmetic_title', value: 'CYBERPSYCHO', description: 'Unlocks the title: CYBERPSYCHO. The chrome won.' },
+    accountPerk: { type: 'cosmetic_title', value: 'CHROME_FRACTURE', description: 'Unlocks the title: CHROME_FRACTURE. The chrome won.' },
   },
   acc_full_chrome: {
     id: 'acc_full_chrome', scope: 'account', type: 'milestone', hidden: true,
@@ -125,7 +125,7 @@ export const ACHIEVEMENTS = {
     name: 'GLASS_CANNON',
     description: 'Win a combat where your only damage came from quickhacks.',
     condition: null, progressHint: null,
-    accountPerk: { type: 'unlock_vendor_quickhack', value: 'qh_cyberpsychosis', description: 'Cyberpsychosis modules can now appear in the vendor.' },
+    accountPerk: { type: 'unlock_vendor_quickhack', value: 'qh_cyberpsychosis', description: 'Neural Cascade modules can now appear in the vendor.' },
   },
   acc_untouchable_streak: {
     id: 'acc_untouchable_streak', scope: 'account', type: 'milestone', hidden: true,

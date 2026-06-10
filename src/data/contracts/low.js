@@ -12,7 +12,7 @@ export const LOW_CONTRACTS = [
     faction: 'fac_signal',
     factionRepReward: 10,
     factionRepPenalty: 6,
-    description: 'Intercept a corporate data stream relay in Watson. Plant the tap, pull the feed, disappear.',
+    description: 'Intercept a corporate data stream relay in Lowport. Plant the tap, pull the feed, disappear.',
     payout: 1400,
     deposit: 0,
     exp: 90,
@@ -22,7 +22,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'LOCATE RELAY',
-        prompt: 'The relay node is in a maintenance tunnel under Watson. You have partial coordinates. Breach the access grid to pinpoint it, or move blind and trust instinct.',
+        prompt: 'The relay node is in a maintenance tunnel under Lowport. You have partial coordinates. Breach the access grid to pinpoint it, or move blind and trust instinct.',
         choices: [
           {
             id: 'sl_hack',
@@ -141,7 +141,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'PICKUP',
-        prompt: 'Package is in a locker at Kabuki transit hub. The key code Nyx sent is a single-use cipher. Decode it on the fly, or talk your way in.',
+        prompt: 'Package is in a locker at Saltgate transit hub. The key code Nyx sent is a single-use cipher. Decode it on the fly, or talk your way in.',
         choices: [
           {
             id: 'pr_cipher',
@@ -176,7 +176,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'CHECKPOINT',
-        prompt: 'Second stop runs through a MaxTac patrol corridor. Vehicle scans running. Reroute through back streets, longer, invisible, or push straight through.',
+        prompt: 'Second stop runs through an Onyx Bureau patrol corridor. Vehicle scans running. Reroute through back streets, longer, invisible, or push straight through.',
         choices: [
           {
             id: 'pr_reroute',
@@ -206,7 +206,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 3,
         label: 'STAGE_03',
         title: 'FINAL DELIVERY',
-        prompt: 'Last stop is a Japantown teahouse. Contact has a silver cochlear implant. She\'ll ask for a code word. Nyx gave you three options; only one is right. Read her, or ping Nyx.',
+        prompt: 'Last stop is a Lantern Row teahouse. Contact has a silver cochlear implant. She\'ll ask for a code word. Nyx gave you three options; only one is right. Read her, or ping Nyx.',
         choices: [
           {
             id: 'pr_read',
@@ -230,7 +230,7 @@ export const LOW_CONTRACTS = [
               branch: 'advance',
             },
             fail: {
-              text: 'Signal bounces in Japantown\'s mesh fog. You guess. You guess right.',
+              text: 'Signal bounces in Lantern Row\'s mesh fog. You guess. You guess right.',
               branch: 'advance',
             },
           },
@@ -379,7 +379,7 @@ export const LOW_CONTRACTS = [
     faction: 'fac_undertow',
     factionRepReward: 10,
     factionRepPenalty: 6,
-    description: 'Heywood loan shark wants his eddies back. Mark is hiding. Pyre wants results, not reports.',
+    description: 'Rustline loan shark wants his eddies back. Mark is hiding. Pyre wants results, not reports.',
     payout: 1200,
     deposit: 0,
     exp: 80,
@@ -389,7 +389,7 @@ export const LOW_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'LOCATE THE MARK',
-        prompt: "Nyx called in a marker. Your courier work earned trust \u2014 now she needs muscle. The mark, who calls himself Ticho, dropped off the grid three days ago. Last seen at a Heywood bar. Burn a local contact or trace his last comm ping.",
+        prompt: "Nyx called in a marker. Your courier work earned trust \u2014 now she needs muscle. The mark, who calls himself Ticho, dropped off the grid three days ago. Last seen at a Rustline bar. Burn a local contact or trace his last comm ping.",
         choices: [
           {
             id: 'dc_contacts',
@@ -413,7 +413,7 @@ export const LOW_CONTRACTS = [
               branch: 'advance',
             },
             fail: {
-              text: 'Ping bounces through a relay. Close enough. Southeast Heywood, maintenance area.',
+              text: 'Ping bounces through a relay. Close enough. Southeast Rustline, maintenance area.',
               branch: 'advance',
             },
           },
@@ -507,7 +507,7 @@ export const LOW_CONTRACTS = [
     factionRepReward: 12,
     factionRepPenalty: 6,
     minFactionRep: 'FRIENDLY',
-    description: 'A family in Kabuki is paying to get their daughter back from Red Chrome. Remi says quick and quiet. You say: define quick.',
+    description: 'A family in Saltgate is paying to get their daughter back from Red Chrome. Remi says quick and quiet. You say: define quick.',
     payout: 1800,
     deposit: 0,
     exp: 120,

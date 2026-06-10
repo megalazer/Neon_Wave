@@ -105,7 +105,7 @@ and whose are light. They keep the data. They always keep the data.
 
 *Sample contracts: SIGNAL_TAP (intercept a corporate data stream), DEAD_RELAY
 (restore a dark relay in the Undercity, find out who spliced the line),
-BLACKWALL_PROBE (extract data from beyond the Blackwall ICE).*
+BLACKWALL_PROBE (extract data from beyond the Deadwall ICE).*
 
 ---
 
@@ -183,7 +183,7 @@ Static is not unified. It is not supposed to be. Organization is a kind of
 signal.
 
 *Sample contracts: KILL_THE_WORD (silence a Lexicon broadcast node mid-gospel
-transmission), BURN_IT_DOWN (eliminate a rival gang supply depot in Heywood).*
+transmission), BURN_IT_DOWN (eliminate a rival gang supply depot in Rustline).*
 
 ---
 
