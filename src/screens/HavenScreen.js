@@ -20,7 +20,6 @@ import { colors } from '../theme/colors';
 import { RECHARGE_ITEMS } from '../data/rechargeItems';
 import { calculateTeamLevel } from '../data/leveling';
 import RecruitCard from '../components/recruit/RecruitCard';
-import FactionRepBar from '../components/FactionRepBar';
 
 const BANNER_HEIGHT = 90;
 const NAV_HEIGHT = 72;
@@ -357,7 +356,6 @@ export default function HavenScreen() {
         ))}
       </View>
 
-      <FactionRepBar />
     </ScrollView>
 
     <ConfirmModal
