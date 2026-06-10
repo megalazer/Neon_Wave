@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ import { advanceTurn } from '../engine/turnPipeline';
 import { ACTIVITIES } from '../data/activities';
 import { getContract } from '../data/contracts/index';
 import { getFixer, FIXERS } from '../data/fixers';
-import { getFaction, repTierFromValue, tierMeetsRequirement } from '../data/factions';
+import { getFaction, repTierFromValue, tierMeetsRequirement, FACTION_LIST } from '../data/factions';
 import { colors } from '../theme/colors';
 import MicrogameHost from '../components/microgames/MicrogameHost';
 
@@ -472,6 +472,7 @@ function FixerRepRoster() {
 export default function JobsScreen({ onNavigate }) {
   const [activeTab, setActiveTab] = useState('contracts');
   const [activeMicrogame, setActiveMicrogame] = useState(null);
+  const [factionFilter, setFactionFilter] = useState('ALL');
   const members       = useStore((s) => s.crew.members);
   const renown        = useStore((s) => s.character.renown);
   const playerLevel   = useStore((s) => s.crew.members.find((m) => m.isPlayer)?.level ?? 1);
@@ -479,6 +480,8 @@ export default function JobsScreen({ onNavigate }) {
   const factionRep    = useStore((s) => s.faction.rep);
   const feedItems     = useStore((s) => s.contract.feedItems);
   const contractPhase = useStore((s) => s.contract.phase);
+  const rerollCooldown = useStore((s) => s.contract.rerollCooldown);
+  const rerollContractFeed = useStore((s) => s.rerollContractFeed);
   const executeActivity    = useStore((s) => s.executeActivity);
   const acceptContract     = useStore((s) => s.acceptContract);
   const refreshContractFeed = useStore((s) => s.refreshContractFeed);
@@ -491,6 +494,18 @@ export default function JobsScreen({ onNavigate }) {
       refreshContractFeed();
     }
   }, []);
+
+  const filteredFeed = useMemo(() => {
+    if (factionFilter === 'ALL') return feedItems;
+    if (factionFilter === 'NEUTRAL') return feedItems.filter((item) => {
+      const c = getContract(item.id);
+      return c && !c.faction;
+    });
+    return feedItems.filter((item) => {
+      const c = getContract(item.id);
+      return c && c.faction === factionFilter;
+    });
+  }, [feedItems, factionFilter]);
 
   const handleExecute = useCallback(
     (activityId) => {
@@ -543,10 +558,51 @@ export default function JobsScreen({ onNavigate }) {
 
         {activeTab === 'contracts' && (
           <View style={styles.activitiesList}>
+            {/* Faction filter chips */}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterChipsScroll} contentContainerStyle={styles.filterChipsContent}>
+              {[{ tag: 'ALL', accent: colors.primary },
+                { tag: 'NEUTRAL', accent: colors.outline },
+                ...FACTION_LIST.map((f) => ({ tag: f.tag, accent: f.accent })),
+              ].map(({ tag, accent }) => {
+                const active = factionFilter === tag;
+                return (
+                  <TouchableOpacity
+                    key={tag}
+                    style={[
+                      styles.filterChip,
+                      active
+                        ? { backgroundColor: accent, borderColor: accent }
+                        : { borderColor: accent, borderWidth: 1 },
+                    ]}
+                    onPress={() => setFactionFilter(tag)}
+                  >
+                    <Text style={[styles.filterChipText, active && { color: colors.background }]}>
+                      {tag}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+
+            {/* Rescan button */}
+            <TouchableOpacity
+              style={[styles.rescanButton, (rerollCooldown > 0 || contractPhase !== 'feed') && styles.rescanButtonDisabled]}
+              disabled={rerollCooldown > 0 || contractPhase !== 'feed'}
+              onPress={rerollContractFeed}
+            >
+              <Text style={[styles.rescanButtonText, (rerollCooldown > 0 || contractPhase !== 'feed') && styles.rescanButtonTextDisabled]}>
+                {rerollCooldown > 0 ? `[RESCAN_FEED // ${rerollCooldown}T]` : '[RESCAN_FEED]'}
+              </Text>
+            </TouchableOpacity>
+
             {feedItems.length === 0 ? (
               <FeedEmpty />
+            ) : filteredFeed.length === 0 ? (
+              <View style={styles.noMatchContainer}>
+                <Text style={styles.noMatchText}>[NO_MATCHING_CONTRACTS]</Text>
+              </View>
             ) : (
-              feedItems.map((item) => (
+              filteredFeed.map((item) => (
                 <ContractCard
                   key={item.id}
                   feedItem={item}
@@ -932,5 +988,67 @@ const styles = StyleSheet.create({
     fontFamily: 'KodeMono_700Bold',
     fontSize: 10,
     letterSpacing: 0.5,
+  },
+
+  // Faction filter chips
+  filterChipsScroll: {
+    marginBottom: 10,
+  },
+  filterChipsContent: {
+    gap: 8,
+    paddingRight: 8,
+  },
+  filterChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 4,
+  },
+  filterChipText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 9,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    color: colors.onSurface,
+  },
+
+  // Rescan button
+  rescanButton: {
+    alignSelf: 'flex-end',
+    borderWidth: 1,
+    borderColor: colors.primary,
+    backgroundColor: 'rgba(28,27,29,0.4)',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    marginBottom: 10,
+  },
+  rescanButtonDisabled: {
+    borderColor: `${colors.outline}66`,
+    opacity: 0.5,
+  },
+  rescanButtonText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 10,
+    color: colors.primary,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  rescanButtonTextDisabled: {
+    color: colors.outline,
+  },
+
+  // No match placeholder
+  noMatchContainer: {
+    borderWidth: 1,
+    borderColor: `${colors.outline}33`,
+    backgroundColor: 'rgba(28,27,29,0.4)',
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  noMatchText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 10,
+    color: colors.outline,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
   },
 });
