@@ -558,42 +558,45 @@ export default function JobsScreen({ onNavigate }) {
 
         {activeTab === 'contracts' && (
           <View style={styles.activitiesList}>
-            {/* Faction filter chips */}
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterChipsScroll} contentContainerStyle={styles.filterChipsContent}>
-              {[{ tag: 'ALL', accent: colors.primary },
-                { tag: 'NEUTRAL', accent: colors.outline },
-                ...FACTION_LIST.map((f) => ({ tag: f.tag, accent: f.accent })),
-              ].map(({ tag, accent }) => {
-                const active = factionFilter === tag;
-                return (
-                  <TouchableOpacity
-                    key={tag}
-                    style={[
-                      styles.filterChip,
-                      active
-                        ? { backgroundColor: accent, borderColor: accent }
-                        : { borderColor: accent, borderWidth: 1 },
-                    ]}
-                    onPress={() => setFactionFilter(tag)}
-                  >
-                    <Text style={[styles.filterChipText, active && { color: colors.background }]}>
-                      {tag}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
+            <View style={styles.filterSection}>
+              <View style={styles.filterHeaderRow}>
+                <Text style={styles.filterSectionLabel}>FILTER_BY_FACTION</Text>
+                <TouchableOpacity
+                  style={[styles.rescanButton, (rerollCooldown > 0 || contractPhase !== 'feed') && styles.rescanButtonDisabled]}
+                  disabled={rerollCooldown > 0 || contractPhase !== 'feed'}
+                  onPress={rerollContractFeed}
+                >
+                  <Text style={[styles.rescanButtonText, (rerollCooldown > 0 || contractPhase !== 'feed') && styles.rescanButtonTextDisabled]}>
+                    {rerollCooldown > 0 ? `RESCAN // ${rerollCooldown}T` : 'RESCAN_FEED'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-            {/* Rescan button */}
-            <TouchableOpacity
-              style={[styles.rescanButton, (rerollCooldown > 0 || contractPhase !== 'feed') && styles.rescanButtonDisabled]}
-              disabled={rerollCooldown > 0 || contractPhase !== 'feed'}
-              onPress={rerollContractFeed}
-            >
-              <Text style={[styles.rescanButtonText, (rerollCooldown > 0 || contractPhase !== 'feed') && styles.rescanButtonTextDisabled]}>
-                {rerollCooldown > 0 ? `[RESCAN_FEED // ${rerollCooldown}T]` : '[RESCAN_FEED]'}
-              </Text>
-            </TouchableOpacity>
+              <View style={styles.filterChipsContainer}>
+                {[{ tag: 'ALL', accent: colors.primary, id: 'ALL' },
+                  { tag: 'NEUTRAL', accent: colors.outline, id: 'NEUTRAL' },
+                  ...FACTION_LIST.map((f) => ({ tag: f.tag, accent: f.accent, id: f.id })),
+                ].map(({ tag, accent, id }) => {
+                  const active = factionFilter === id;
+                  return (
+                    <TouchableOpacity
+                      key={id}
+                      style={[
+                        styles.filterChip,
+                        active
+                          ? { backgroundColor: accent, borderColor: accent }
+                          : { borderColor: accent, borderWidth: 1 },
+                      ]}
+                      onPress={() => setFactionFilter(id)}
+                    >
+                      <Text style={[styles.filterChipText, active && { color: colors.background }]}>
+                        {tag}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
 
             {feedItems.length === 0 ? (
               <FeedEmpty />
@@ -991,45 +994,59 @@ const styles = StyleSheet.create({
   },
 
   // Faction filter chips
-  filterChipsScroll: {
-    marginBottom: 10,
+  filterSection: {
+    marginBottom: 14,
   },
-  filterChipsContent: {
-    gap: 8,
-    paddingRight: 8,
+  filterHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  filterSectionLabel: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 9,
+    color: `${colors.primary}99`,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  filterChipsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
   },
   filterChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 2,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   filterChipText: {
     fontFamily: 'KodeMono_700Bold',
     fontSize: 9,
-    letterSpacing: 1.2,
+    letterSpacing: 0.8,
     textTransform: 'uppercase',
     color: colors.onSurface,
   },
-
-  // Rescan button
   rescanButton: {
-    alignSelf: 'flex-end',
     borderWidth: 1,
     borderColor: colors.primary,
-    backgroundColor: 'rgba(28,27,29,0.4)',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    marginBottom: 10,
+    backgroundColor: 'rgba(28,27,29,0.3)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 2,
   },
   rescanButtonDisabled: {
-    borderColor: `${colors.outline}66`,
+    borderColor: `${colors.outline}44`,
     opacity: 0.5,
   },
   rescanButtonText: {
     fontFamily: 'KodeMono_700Bold',
-    fontSize: 10,
+    fontSize: 8,
     color: colors.primary,
-    letterSpacing: 1.5,
+    letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
   rescanButtonTextDisabled: {
