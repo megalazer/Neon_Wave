@@ -42,6 +42,7 @@ export function advanceTurn() {
   store.tickTurn();
   store.tickPrices();
   store.tickFeed();
+  store.collectAssetIncome();
   store.tickVendor();
   store.trySpawnRecruit();
   store.tickAvailableOperatives();

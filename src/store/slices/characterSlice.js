@@ -87,6 +87,28 @@ export const createCharacterSlice = (set) => ({
       state.character.turnNumber += 1;
     }),
 
+  collectAssetIncome: () =>
+    set((state) => {
+      const ownedRE = state.character.realEstate || [];
+      if (ownedRE.length === 0) return;
+      const { REAL_ESTATE } = require('../../data/lifestyle');
+      let totalIncome = 0;
+      for (const id of ownedRE) {
+        const re = REAL_ESTATE.find((r) => r.id === id);
+        if (re?.incomePerTurn) totalIncome += re.incomePerTurn;
+      }
+      if (totalIncome > 0) {
+        state.character.credits += totalIncome;
+        state.log.entries.push({
+          id: `rent_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+          turn: state.character.turnNumber,
+          text: `RENT_COLLECTED: +${totalIncome.toLocaleString()} CR (${ownedRE.length} properties)`,
+          timestamp: new Date().toISOString(),
+          type: 'acquisition',
+        });
+      }
+    }),
+
   initCharacter: (draft) => {
     resetNarrationHistory();
     set((state) => {
