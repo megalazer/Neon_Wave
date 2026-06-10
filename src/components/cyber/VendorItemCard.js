@@ -51,7 +51,7 @@ export default function VendorItemCard({ stockEntry, soldOut, canAfford, onPurch
 
         <Text style={[vc.meta, soldOut && vc.dimText]}>
           {isHack
-            ? `${data.neuralCost} NEU   TIER: ${data.vendorTier.toUpperCase()}`
+            ? `${data.neuralCost} NEU   SLOT: ${data.tier.toUpperCase()} // ${data.vendorTier.toUpperCase()}`
             : `SLOT: ${data.slot.toUpperCase()}   HUM: ${data.humanityCost}   TIER: ${(data.vendorTier ?? 'basic').toUpperCase()}`}
         </Text>
 

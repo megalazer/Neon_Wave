@@ -143,13 +143,22 @@ export const createVendorSlice = (set) => ({
                     : 'slot3';
 
       if (!member.quickhacks) member.quickhacks = { slot1: null, slot2: null, slot3: null };
+      const previousHackId = member.quickhacks[slotKey];
       member.quickhacks[slotKey] = quickhackId;
       state.vendor.quickhackModules.splice(moduleIdx, 1);
 
+      // Return displaced module to inventory if the slot was occupied
+      if (previousHackId) {
+        state.vendor.quickhackModules.push(previousHackId);
+      }
+
+      const swapNote = previousHackId
+        ? ` Previous module ${QUICKHACKS[previousHackId]?.name ?? previousHackId} returned to inventory.`
+        : '';
       state.log.entries.push({
         id: `qhmod_${quickhackId}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
-        text: `MODULE_INSTALLED: ${hack.name} → ${member.name} [${slotKey.toUpperCase()}].`,
+        text: `MODULE_INSTALLED: ${hack.name} → ${member.name} [${slotKey.toUpperCase()}].${swapNote}`,
         timestamp: new Date().toISOString(),
         type: 'acquisition',
       });
