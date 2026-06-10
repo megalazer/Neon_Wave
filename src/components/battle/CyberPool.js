@@ -1,17 +1,43 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import Animated, {
+  useSharedValue, useAnimatedStyle, withRepeat, withTiming, Easing,
+} from 'react-native-reanimated';
 import { colors } from '../../theme/colors';
 
 const MAG              = colors.secondaryContainer;
 const LOW_NEURAL_FLOOR = 5; // TUNABLE — at or below this max, tint signals depleted neural
 
-export default function CyberPool({ current, maxPool = 10 }) {
+function PulsingCell({ filled, style }) {
+  const pulse = useSharedValue(0.35);
+
+  useEffect(() => {
+    pulse.value = withRepeat(
+      withTiming(1, { duration: 600, easing: Easing.inOut(Easing.quad) }),
+      -1,
+      true,
+    );
+  }, []);
+
+  const animStyle = useAnimatedStyle(() => ({ opacity: pulse.value }));
+
+  return (
+    <Animated.View
+      style={[style, animStyle]}
+    />
+  );
+}
+
+export default function CyberPool({ current, maxPool = 10, previewSpend = 0 }) {
   const clampedMax = Math.max(1, Math.round(maxPool));
   const filled     = Math.max(0, Math.min(clampedMax, Math.round(current)));
   const isLow      = clampedMax <= LOW_NEURAL_FLOOR;
   const barColor   = isLow ? colors.error : MAG;
   const labelColor = isLow ? `${colors.error}CC` : MAG;
   const countColor = isLow ? `${colors.error}88` : `${MAG}AA`;
+
+  // Cells in range [filled - previewSpend, filled) are about to be consumed
+  const previewStart = Math.max(0, filled - Math.round(previewSpend));
 
   return (
     <View style={styles.wrap}>
@@ -25,17 +51,22 @@ export default function CyberPool({ current, maxPool = 10 }) {
       </View>
 
       <View style={styles.cells}>
-        {Array.from({ length: clampedMax }, (_, i) => (
-          <View
-            key={i}
-            style={[
-              styles.cell,
-              i < filled
-                ? [styles.cellFilled, { backgroundColor: barColor, shadowColor: barColor }]
-                : styles.cellEmpty,
-            ]}
-          />
-        ))}
+        {Array.from({ length: clampedMax }, (_, i) => {
+          const isFilled       = i < filled;
+          const isPreviewSpend = i >= previewStart && i < filled;
+          const cellStyle = [
+            styles.cell,
+            isFilled
+              ? [styles.cellFilled, { backgroundColor: barColor, shadowColor: barColor }]
+              : styles.cellEmpty,
+          ];
+
+          if (isPreviewSpend) {
+            return <PulsingCell key={i} filled={filled} style={cellStyle} />;
+          }
+
+          return <View key={i} style={cellStyle} />;
+        })}
       </View>
     </View>
   );
