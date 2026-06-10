@@ -1,4 +1,4 @@
-import { ENEMIES } from '../data/enemies';
+import { ENEMIES } from '../data/enemies.js';
 
 // Tunable scaling/spawn knobs. Bands map combat tiers to enemy.threat tokens;
 // boss-tier units are intentionally excluded from generated pools.
