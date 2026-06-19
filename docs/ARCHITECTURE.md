@@ -24,6 +24,7 @@ neon-terminus/
     │       ├── vendorSlice.js
     │       ├── exchangeSlice.js
     │       ├── factionSlice.js
+    │       ├── relationshipSlice.js
     │       ├── achievementSlice.js
     │       ├── legacySlice.js       stub — unused; real persistence in achievementSlice
     │       ├── devSlice.js
@@ -49,12 +50,14 @@ neon-terminus/
     │   ├── activities.js        6 activities (incl. test battle)
     │   ├── fixers.js            5 fixers
     │   ├── factions.js          6 factions
-    │   ├── achievements.js      25 achievements (17 account, 8 run)
+    │   ├── relationships.js     bond model + interaction resolver
+    │   ├── friends.js           3 life-path friends
     │   ├── eventPacing.js       cooldown + escalation constants
     │   ├── placeholderNarration.js  15 fallback lines
     │   ├── events/
     │   │   ├── flavor.js        42 flavor events
-    │   │   └── choices.js       19 choice events
+    │   │   ├── choices.js       19 choice events
+    │   │   └── relationships.js 8 relationship-driven events
     │   ├── contracts/
     │   │   ├── low.js           4 contracts
     │   │   ├── mid.js           4 contracts

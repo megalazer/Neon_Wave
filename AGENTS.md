@@ -50,7 +50,7 @@ There is **no build/test/lint command** — see Testing & QA.
 
 ## Important Files
 - `App.js` — root state machine, tab routing, global overlay/shell mounting.
-- `src/store/index.js` — store composition (`create(immer(...))`, `enableMapSet()`, 13 slices).
+- `src/store/index.js` — store composition (`create(immer(...))`, `enableMapSet()`, 14 slices).
 - `src/engine/turnPipeline.js` — `advanceTurn()` turn heartbeat.
 - `src/data/` — all game content (data-driven; no content in engine/UI).
 - `src/theme/colors.js`, `src/theme/fonts.js` — design tokens and font loading.

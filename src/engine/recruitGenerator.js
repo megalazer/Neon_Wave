@@ -105,6 +105,8 @@ export function generateRecruit(contractsCompleted, currentTurn, qualityOverride
     exp:   0,
     level: 1,
     alive: true,
+    bond:   0,
+    lastBondTurn: 0,
     vitals:   { current: vitalsMax, max: vitalsMax },
     neural:   { current: neuralMax, max: neuralMax },
     humanity: { current: Math.max(0, humanityMax - humanityDeduction), max: humanityMax },

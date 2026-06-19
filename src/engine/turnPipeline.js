@@ -46,6 +46,7 @@ export function advanceTurn() {
   store.tickVendor();
   store.trySpawnRecruit();
   store.tickAvailableOperatives();
+  store.tickRelationships();
 
   // Achievement tracking — lifetime counters + milestone polling
   const teamLevel = calculateTeamLevel(useStore.getState().crew.members);

@@ -31,7 +31,7 @@ If a design decision conflicts between this file and the HTML exports, the HTML 
 - **Bottom nav:** 5 tabs (HAVEN / CYBER / NEURAL / JOBS / LIFESTYLE). NEURAL is centered and ~1.4x larger than the others, always visually emphasized. Active tab has cyan border-top, tint background, pulsing cyan glow (2s loop, opacity 0.3→0.8→0.3).
 
 ## Architectural Rules
-- Zustand store is sliced — 13 domain slices, never one monolith. Always use `immer` middleware (enableMapSet).
+- Zustand store is sliced — 14 domain slices, never one monolith. Always use `immer` middleware (enableMapSet).
 - Components subscribe to narrow selectors, never the full store: `useStore(s => s.log.entries)` not `useStore()`.
 - Engine functions are pure where possible — take state, return new state.
 - All game content lives in `src/data/` as JS objects. No hardcoded content in engine code.

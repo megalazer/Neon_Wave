@@ -28,6 +28,9 @@ import ConfirmModal from '../components/ConfirmModal';
 import MinigameStub from '../components/MinigameStub';
 import TradeModal from '../components/TradeModal';
 import Sparkline from '../components/Sparkline';
+import { INTERACTIONS, bondTierFromValue, BOND_MIN, BOND_MAX, getBondPerks, BOND_TIER_RANK, fixerTierFromRep } from '../data/relationships';
+import { FRIENDS } from '../data/friends';
+import { FIXERS } from '../data/fixers';
 import { colors } from '../theme/colors';
 
 const SCREEN_W = Dimensions.get('window').width;
@@ -47,6 +50,7 @@ function SegmentedTabs({ active, onSelect, achievementsUnread }) {
     { id: 'assets', label: 'ASSETS' },
     { id: 'exchange', label: 'EXCHANGE' },
     { id: 'factions', label: 'FACTIONS' },
+    { id: 'relations', label: 'BONDS' },
     { id: 'achievements', label: 'TROPHIES', dot: achievementsUnread },
   ];
   return (
@@ -828,6 +832,262 @@ function FactionsTab({ rep }) {
   );
 }
 
+
+// ─── GiftPicker ───────────────────────────────────────────────────────────────
+function GiftPicker({ visible, onPick, onCancel }) {
+  if (!visible) return null;
+  const opts = [
+    { id: 'tech',   label: 'TECH',    icon: 'memory',        color: colors.tertiaryFixed },
+    { id: 'luxury', label: 'LUXURY',  icon: 'diamond',       color: '#ffd700' },
+    { id: 'street', label: 'STREET',  icon: 'local-bar',     color: colors.secondary },
+  ];
+  return (
+    <View style={relStyles.backdrop}>
+      <View style={relStyles.giftModal}>
+        <Text style={relStyles.giftTitle}>CHOOSE_GIFT</Text>
+        {opts.map((o) => (
+          <TouchableOpacity
+            key={o.id}
+            style={[relStyles.giftBtn, { borderColor: o.color }]}
+            onPress={() => onPick(o.id)}
+            activeOpacity={0.8}
+          >
+            <MaterialIcons name={o.icon} size={14} color={o.color} />
+            <Text style={[relStyles.giftBtnText, { color: o.color }]}>{o.label}</Text>
+          </TouchableOpacity>
+        ))}
+        <TouchableOpacity style={relStyles.giftCancel} onPress={onCancel} activeOpacity={0.8}>
+          <Text style={relStyles.giftCancelText}>[CANCEL]</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+// ─── RelationCard ─────────────────────────────────────────────────────────────
+function RelationCard({ entity, kind, tier, pct, bond, accent, credits, onInteract, onFavor }) {
+  // Filter interactions by kind
+  const allowed = INTERACTIONS.filter((ix) => {
+    if (kind === 'fixer') return ix.id === 'int_talk' || ix.id === 'int_gift';
+    return true;
+  });
+
+  const tierRank = (BOND_TIER_RANK[tier] ?? 0);
+  const perks = getBondPerks(tierRank);
+
+  return (
+    <View style={[relStyles.card, { borderLeftColor: accent }]}>
+      {/* Header: name + faction tag */}
+      <View style={relStyles.headerRow}>
+        <View style={relStyles.titleBlock}>
+          <Text style={[relStyles.name, { color: accent }]}>{entity.name || entity.handle}</Text>
+          {entity.class && (
+            <Text style={relStyles.role}>{entity.class.toUpperCase()}</Text>
+          )}
+          {entity.bio && (
+            <Text style={relStyles.bio} numberOfLines={2}>{entity.bio}</Text>
+          )}
+        </View>
+        {entity.tag && (
+          <View style={[relStyles.tagChip, { borderColor: accent }]}>
+            <Text style={[relStyles.tagText, { color: accent }]}>{entity.tag}</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Bond bar */}
+      <View style={relStyles.bondRow}>
+        <Text style={[relStyles.tier, { color: accent }]}>{tier}</Text>
+        <Text style={relStyles.bondValue}>{bond}</Text>
+      </View>
+      <View style={relStyles.barTrack}>
+        <View style={[relStyles.barFill, { width: `${Math.max(2, pct)}%`, backgroundColor: accent }]} />
+      </View>
+
+      {/* Hidden perks */}
+      {perks.length > 0 && (
+        <View style={relStyles.perksRow}>
+          {perks.map((p, i) => (
+            <Text key={i} style={[relStyles.perkTag, { color: accent }]}>
+              {p.tag}
+            </Text>
+          ))}
+        </View>
+      )}
+
+      {/* Interaction buttons */}
+      <View style={relStyles.btnRow}>
+        {allowed.map((ix) => {
+          const disabled = ix.creditCost > credits || (ix.minTier && tierRank < (BOND_TIER_RANK[ix.minTier] ?? 0));
+          return (
+            <TouchableOpacity
+              key={ix.id}
+              style={[relStyles.btn, disabled && relStyles.btnDisabled, { borderColor: disabled ? colors.outline : accent }]}
+              onPress={() => {
+                if (disabled) return;
+                if (ix.id === 'int_gift') {
+                  onInteract(ix.id, null); // caller opens picker
+                } else {
+                  onInteract(ix.id);
+                }
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={[relStyles.btnText, { color: disabled ? colors.outline : accent }]}>
+                {ix.label}
+              </Text>
+              {ix.creditCost > 0 && (
+                <Text style={[relStyles.btnCost, { color: disabled ? colors.outline : accent }]}>
+                  {ix.creditCost}CR
+                </Text>
+              )}
+            </TouchableOpacity>
+          );
+        })}
+        {/* Favor button (friends only) */}
+        {kind === 'friend' && onFavor && !entity.favorUsed && tierRank >= 3 && (
+          <TouchableOpacity
+            style={[relStyles.btn, { borderColor: colors.tertiaryFixed }]}
+            onPress={() => onFavor(entity.id)}
+            activeOpacity={0.7}
+          >
+            <Text style={[relStyles.btnText, { color: colors.tertiaryFixed }]}>
+              [FAVOR]
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
+  );
+}
+
+// ─── RelationsTab ─────────────────────────────────────────────────────────────
+function RelationsTab({ crewMembers, friends, fixerRep, path, credits, onInteractCrew, onInteractFriend, onInteractFixer, onFavor }) {
+  const nonPlayerCrew = (crewMembers || []).filter((m) => !m.isPlayer && m.alive !== false && (m.vitals?.current ?? 1) > 0);
+  const metFriends = Object.entries(friends || {}).filter(([, f]) => f.met);
+
+  return (
+    <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      {/* Summary strip */}
+      <View style={styles.achSummaryStrip}>
+        <View style={styles.summaryLeft}>
+          <View style={styles.summaryBlock}>
+            <Text style={styles.summaryBlockLabel}>PATH</Text>
+            <Text style={styles.summaryBlockValue}>{(path || '').toUpperCase()}</Text>
+          </View>
+        </View>
+        <View style={styles.summaryRight}>
+          <Text style={styles.summaryProtocol}>RELATIONSHIP_NETWORK</Text>
+        </View>
+      </View>
+
+      {/* ── Crew ── */}
+      <View style={styles.section}>
+        <SectionHeader index={1} label="CREW" accent={colors.primary} />
+        {nonPlayerCrew.length === 0 ? (
+          <Text style={relStyles.empty}>NO_CREW — RECRUIT IN HAVEN</Text>
+        ) : (
+          nonPlayerCrew.map((m) => {
+            const b = m.bond ?? 0;
+            const tier = bondTierFromValue(b);
+            const pct = Math.round(((b - BOND_MIN) / (BOND_MAX - BOND_MIN)) * 100);
+            const factionDef = FACTIONS[m.faction];
+            const entity = {
+              id: m.id,
+              name: m.name,
+              class: m.class,
+              tag: factionDef?.tag,
+              bio: m.backstory,
+              favorUsed: false,
+            };
+            return (
+              <RelationCard
+                key={m.id}
+                entity={entity}
+                kind="crew"
+                tier={tier}
+                pct={pct}
+                bond={b}
+                accent={m.classColor || colors.primary}
+                credits={credits}
+                onInteract={(interactionId, giftCat) => onInteractCrew(m.id, interactionId, giftCat)}
+              />
+            );
+          })
+        )}
+      </View>
+
+      {/* ── Friends ── */}
+      <View style={styles.section}>
+        <SectionHeader index={2} label="FRIENDS" accent={colors.secondary} />
+        {metFriends.length === 0 ? (
+          <Text style={relStyles.empty}>NO_FRIENDS_YET</Text>
+        ) : (
+          metFriends.map(([fid, friend]) => {
+            const friendDef = FRIENDS.find((f) => f.id === fid);
+            if (!friendDef) return null;
+            const b = friend.bond ?? 0;
+            const tier = bondTierFromValue(b);
+            const pct = Math.round(((b - BOND_MIN) / (BOND_MAX - BOND_MIN)) * 100);
+            const factionDef = FACTIONS[friendDef.faction];
+            const entity = {
+              id: fid,
+              name: friendDef.display || friendDef.name,
+              tag: factionDef?.tag,
+              bio: friendDef.bio,
+              favorUsed: friend.favorUsed,
+            };
+            return (
+              <RelationCard
+                key={fid}
+                entity={entity}
+                kind="friend"
+                tier={tier}
+                pct={pct}
+                bond={b}
+                accent={factionDef?.accent || colors.secondary}
+                credits={credits}
+                onInteract={(interactionId, giftCat) => onInteractFriend(fid, interactionId, giftCat)}
+                onFavor={onFavor}
+              />
+            );
+          })
+        )}
+      </View>
+
+      {/* ── Fixers ── */}
+      <View style={styles.section}>
+        <SectionHeader index={3} label="FIXERS" accent={colors.tertiaryFixed} />
+        {FIXERS.map((f) => {
+          const rep = fixerRep?.[f.id] ?? 0;
+          const tier = fixerTierFromRep(rep);
+          // Map fixer rep to a pct for the bar (max shown = 20)
+          const pct = Math.min(100, Math.round((rep / 20) * 100));
+          const entity = {
+            id: f.id,
+            name: f.name,
+            handle: f.handle,
+            tag: null,
+            bio: f.bio,
+          };
+          return (
+            <RelationCard
+              key={f.id}
+              entity={entity}
+              kind="fixer"
+              tier={tier}
+              pct={pct}
+              bond={rep}
+              accent={f.color}
+              credits={credits}
+              onInteract={(interactionId, giftCat) => onInteractFixer(f.id, interactionId, giftCat)}
+            />
+          );
+        })}
+      </View>
+    </ScrollView>
+  );
+}
 // ─── LifestyleScreen ──────────────────────────────────────────────────────────
 export default function LifestyleScreen() {
   const [activeSubTab, setActiveSubTab] = useState('assets');
@@ -856,6 +1116,16 @@ export default function LifestyleScreen() {
   const markAchievementsSeen = useStore((s) => s.markAchievementsSeen);
   const setSelectedTitle = useStore((s) => s.setSelectedTitle);
   const setSelectedTheme = useStore((s) => s.setSelectedTheme);
+  const crewMembers      = useStore((s) => s.crew.members);
+  const friends          = useStore((s) => s.relationship.friends);
+  const fixerRep         = useStore((s) => s.contract.fixerRep);
+  const path             = useStore((s) => s.character.path);
+  const interactWithCrew  = useStore((s) => s.interactWithCrew);
+  const interactWithFriend = useStore((s) => s.interactWithFriend);
+  const interactWithFixer  = useStore((s) => s.interactWithFixer);
+  const useFriendFavor     = useStore((s) => s.useFriendFavor);
+
+  const [giftPickerTarget, setGiftPickerTarget] = useState(null); // { kind:'crew'|'friend'|'fixer', id:string }
 
   // Clear the unread dot when the achievements tab is opened
   useEffect(() => {
@@ -915,6 +1185,39 @@ export default function LifestyleScreen() {
         />
       ) : activeSubTab === 'factions' ? (
         <FactionsTab rep={factionRep} />
+      ) : activeSubTab === 'relations' ? (
+        <RelationsTab
+          crewMembers={crewMembers}
+          friends={friends}
+          fixerRep={fixerRep}
+          path={path}
+          credits={credits}
+          onInteractCrew={(memberId, interactionId, giftCat) => {
+            if (interactionId === 'int_gift') {
+              setGiftPickerTarget({ kind: 'crew', id: memberId });
+            } else {
+              interactWithCrew(memberId, interactionId);
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            }
+          }}
+          onInteractFriend={(friendId, interactionId, giftCat) => {
+            if (interactionId === 'int_gift') {
+              setGiftPickerTarget({ kind: 'friend', id: friendId });
+            } else {
+              interactWithFriend(friendId, interactionId);
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            }
+          }}
+          onInteractFixer={(fixerId, interactionId, giftCat) => {
+            if (interactionId === 'int_gift') {
+              setGiftPickerTarget({ kind: 'fixer', id: fixerId });
+            } else {
+              interactWithFixer(fixerId, interactionId);
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            }
+          }}
+          onFavor={useFriendFavor}
+        />
       ) : activeSubTab === 'achievements' ? (
         <AchievementsTab
           state={useStore.getState()}
@@ -967,6 +1270,20 @@ export default function LifestyleScreen() {
           onCancel={() => setTradeTarget(null)}
         />
       )}
+
+      <GiftPicker
+        visible={giftPickerTarget !== null}
+        onPick={(category) => {
+          if (!giftPickerTarget) return;
+          const { kind, id } = giftPickerTarget;
+          if (kind === 'crew') interactWithCrew(id, 'int_gift', category);
+          else if (kind === 'friend') interactWithFriend(id, 'int_gift', category);
+          else if (kind === 'fixer') interactWithFixer(id, 'int_gift', category);
+          setGiftPickerTarget(null);
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        }}
+        onCancel={() => setGiftPickerTarget(null)}
+      />
     </View>
   );
 }
@@ -1005,7 +1322,7 @@ const styles = StyleSheet.create({
   },
   segTabText: {
     fontFamily: 'KodeMono_700Bold',
-    fontSize: 11,
+    fontSize: 8,
     color: colors.outline,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
@@ -1663,6 +1980,184 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: colors.outline,
     letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+});
+
+// ─── Relationship styles ─────────────────────────────────────────────────────
+const relStyles = StyleSheet.create({
+  // Card
+  card: {
+    borderWidth: 1,
+    borderColor: `${colors.outline}4D`,
+    borderLeftWidth: 3,
+    backgroundColor: colors.surfaceContainerLow,
+    padding: 12,
+    gap: 10,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  titleBlock: { gap: 2, flex: 1 },
+  name: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 14,
+    letterSpacing: 0.5,
+  },
+  role: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 9,
+    color: colors.outline,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  bio: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 9,
+    color: colors.onSurfaceVariant,
+    lineHeight: 14,
+  },
+  tagChip: {
+    borderWidth: 1,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  tagText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  // Bond bar
+  bondRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  tier: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 11,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  bondValue: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 14,
+    color: colors.onSurface,
+  },
+  barTrack: {
+    height: 5,
+    backgroundColor: colors.surfaceContainerHigh,
+    overflow: 'hidden',
+  },
+  barFill: {
+    height: '100%',
+  },
+  // Perks
+  perksRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  perkTag: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderWidth: 1,
+    borderColor: `${colors.outline}4D`,
+  },
+  // Buttons
+  btnRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  btn: {
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    flexDirection: 'row',
+    gap: 4,
+    alignItems: 'center',
+  },
+  btnDisabled: {
+    opacity: 0.4,
+  },
+  btnText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 9,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  btnCost: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 8,
+    letterSpacing: 0.5,
+  },
+  // Empty state
+  empty: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 11,
+    color: colors.outline,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    paddingVertical: 20,
+    textAlign: 'center',
+  },
+  // Gift picker
+  backdrop: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  giftModal: {
+    width: SCREEN_W * 0.7,
+    backgroundColor: colors.surfaceContainerLowest,
+    borderWidth: 1,
+    borderColor: colors.outlineVariant,
+    padding: 20,
+    gap: 12,
+  },
+  giftTitle: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 12,
+    color: colors.onSurface,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+  },
+  giftBtn: {
+    borderWidth: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  giftBtnText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 12,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  giftCancel: {
+    paddingVertical: 8,
+    alignItems: 'center',
+  },
+  giftCancelText: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 10,
+    color: colors.outline,
+    letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
 });
