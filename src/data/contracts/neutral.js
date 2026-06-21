@@ -361,7 +361,7 @@ export const NEUTRAL_CONTRACTS = [
           {
             id: 'nce_ghost_elevator',
             label: 'Take the service elevator during guard break',
-            statCheck: { stat: 'ghost', threshold: 12 },
+            statCheck: { stat: 'ghost', threshold: 14 },
             pass: {
               text: '0231. The guard\'s chair is empty. You ride the service elevator to 14 without a single camera catching your face. The scientist is waiting with a go-bag.',
               branch: 'advance',
@@ -375,7 +375,7 @@ export const NEUTRAL_CONTRACTS = [
           {
             id: 'nce_stair_climb',
             label: 'Take the stairs — fourteen floors, no cameras',
-            statCheck: { stat: 'grit', threshold: 12 },
+            statCheck: { stat: 'grit', threshold: 14 },
             pass: {
               text: 'Fourteen flights. Your legs burn but you\'re invisible the whole way. No cameras in the stairwell. No guards. The scientist is impressed: "Most people take the elevator."',
               branch: 'advance',
@@ -390,7 +390,7 @@ export const NEUTRAL_CONTRACTS = [
           {
             id: 'nce_disguise',
             label: 'Disguise as a maintenance worker',
-            statCheck: { stat: 'face', threshold: 12 },
+            statCheck: { stat: 'face', threshold: 14 },
             pass: {
               text: '"HVAC inspection." You flash the badge and a clipboard. The guard barely looks up. The scientist walks out with you in a maintenance jumpsuit, head down, just another worker on a graveyard shift.',
               branch: 'advance',
@@ -410,7 +410,7 @@ export const NEUTRAL_CONTRACTS = [
           {
             id: 'nce_exit_roof',
             label: 'Exit via the roof and zipline to the parking structure',
-            statCheck: { stat: 'edge', threshold: 13 },
+            statCheck: { stat: 'edge', threshold: 15 },
             pass: {
               text: 'You clip the scientist to your harness. Zip. Forty meters across open air. They scream in your ear the whole way, but you land on the parking structure clean.',
               branch: 'complete',
@@ -424,7 +424,7 @@ export const NEUTRAL_CONTRACTS = [
           {
             id: 'nce_exit_underground',
             label: 'Go down — through the subbasement loading dock',
-            statCheck: { stat: 'ghost', threshold: 12 },
+            statCheck: { stat: 'ghost', threshold: 14 },
             pass: {
               text: 'Subbasement four. Loading dock for chemical shipments. No one checks IDs here — they\'re too worried about the hazmat labels. You and the scientist walk out between two tankers.',
               branch: 'complete',
@@ -438,7 +438,7 @@ export const NEUTRAL_CONTRACTS = [
           {
             id: 'nce_exit_front',
             label: 'Walk out the front door with forged credentials',
-            statCheck: { stat: 'face', threshold: 13 },
+            statCheck: { stat: 'face', threshold: 15 },
             pass: {
               text: '"Dr. Chen, night consultation." You hand over the forged badge. The Grammaton guard checks her list — Chen isn\'t on it. You hold eye contact. She waves you through.',
               branch: 'complete',
@@ -479,7 +479,7 @@ export const NEUTRAL_CONTRACTS = [
           {
             id: 'nds_spine',
             label: 'Take the maintenance spine — fastest route',
-            statCheck: { stat: 'grit', threshold: 13 },
+            statCheck: { stat: 'grit', threshold: 15 },
             pass: {
               text: 'You move through the spine at speed, vaulting conduits and squeezing through collapsed sections. The noise echoes off metal — but no one\'s down here to hear it. You reach the crash site first.',
               branch: 'advance',
@@ -494,7 +494,7 @@ export const NEUTRAL_CONTRACTS = [
           {
             id: 'nds_aqueduct',
             label: 'Navigate the old aqueduct — quiet approach',
-            statCheck: { stat: 'ghost', threshold: 12 },
+            statCheck: { stat: 'ghost', threshold: 14 },
             pass: {
               text: 'The aqueduct is dry now — just echoes and rat bones. You move silently through the dark, emerging at the crash site from an angle no one was watching.',
               branch: 'advance',
@@ -508,7 +508,7 @@ export const NEUTRAL_CONTRACTS = [
           {
             id: 'nds_transit',
             label: 'Cut through the collapsed transit tunnel',
-            statCheck: { stat: 'wire', threshold: 13 },
+            statCheck: { stat: 'wire', threshold: 15 },
             pass: {
               text: 'The transit tunnel\'s still semi-powered. You reroute a junction box, cut through a maintenance hatch, and emerge practically on top of the crash site. Efficiency.',
               branch: 'advance',
@@ -528,7 +528,7 @@ export const NEUTRAL_CONTRACTS = [
           {
             id: 'nds_crew_intimidate',
             label: 'Intimidate them into backing off',
-            statCheck: { stat: 'face', threshold: 13 },
+            statCheck: { stat: 'face', threshold: 15 },
             pass: {
               text: '"That\'s Dusk\'s salvage." The name lands like a punch. Two of them step back. The third hesitates, then nods. "Tell Dusk we didn\'t know." They leave the computer and walk.',
               branch: 'complete',
@@ -543,7 +543,7 @@ export const NEUTRAL_CONTRACTS = [
           {
             id: 'nds_crew_ghost',
             label: 'Snatch the drive while they argue about the casing',
-            statCheck: { stat: 'ghost', threshold: 13 },
+            statCheck: { stat: 'ghost', threshold: 15 },
             pass: {
               text: 'They\'re arguing about the casing — someone stripped a bolt. You ghost up behind them, pop the drive, and disappear into the dark before they even notice the weight change in the chassis.',
               branch: 'complete',
@@ -557,7 +557,7 @@ export const NEUTRAL_CONTRACTS = [
           {
             id: 'nds_crew_talk',
             label: 'Propose a temporary alliance — split the haul',
-            statCheck: { stat: 'face', threshold: 11 },
+            statCheck: { stat: 'face', threshold: 14 },
             pass: {
               text: '"Dusk wants the data. You want the hardware. We can both walk away happy." The lead salvager thinks about it, then grins. "Smart. Tell Dusk we said hello." Everyone wins.',
               branch: 'complete',

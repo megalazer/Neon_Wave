@@ -28,7 +28,7 @@ export const MID_CONTRACTS = [
           {
             id: 'vb_remote',
             label: 'Remote probe the sensor net',
-            statCheck: { stat: 'wire', threshold: 13 },
+            statCheck: { stat: 'wire', threshold: 15 },
             pass: {
               text: 'Full map acquired. Guard rotations, blind spots, sensor cycles. All of it. Kade is pleased.',
               branch: 'advance',
@@ -41,7 +41,7 @@ export const MID_CONTRACTS = [
           {
             id: 'vb_physical',
             label: 'Physical walk-around',
-            statCheck: { stat: 'grit', threshold: 11 },
+            statCheck: { stat: 'grit', threshold: 14 },
             pass: {
               text: 'Six hours of circling the perimeter. You know every camera angle by heart. Zero digital trace.',
               branch: 'advance',
@@ -63,7 +63,7 @@ export const MID_CONTRACTS = [
           {
             id: 'vb_brute',
             label: 'Brute-force the encryption',
-            statCheck: { stat: 'wire', threshold: 14 },
+            statCheck: { stat: 'wire', threshold: 16 },
             pass: {
               text: 'Forty-minute crack. Your deck runs hot. Vault opens. Nobody\'s been alerted.',
               branch: 'advance',
@@ -76,7 +76,7 @@ export const MID_CONTRACTS = [
           {
             id: 'vb_override',
             label: 'Hunt for the maintenance override',
-            statCheck: { stat: 'wire', threshold: 12 },
+            statCheck: { stat: 'wire', threshold: 14 },
             pass: {
               text: 'Override found behind a maintenance panel. Helix never purged the test credentials. Vault opens silent.',
               branch: 'advance',
@@ -114,7 +114,7 @@ export const MID_CONTRACTS = [
           {
             id: 'vb_tunnel',
             label: 'Find the service tunnel',
-            statCheck: { stat: 'wire', threshold: 13 },
+            statCheck: { stat: 'wire', threshold: 15 },
             pass: {
               text: 'Kade\'s map leads you to a maintenance hatch. You\'re out before the guard rotation clears.',
               branch: 'advance',
@@ -160,7 +160,7 @@ export const MID_CONTRACTS = [
           {
             id: 'bo_charm',
             label: 'Charm the assistant directly',
-            statCheck: { stat: 'face', threshold: 13 },
+            statCheck: { stat: 'face', threshold: 15 },
             pass: {
               text: 'Two coffee meetings and a planted listening device. The assistant trusts you. You\'re in.',
               branch: 'advance',
@@ -173,7 +173,7 @@ export const MID_CONTRACTS = [
           {
             id: 'bo_spoof',
             label: 'Spoof a corporate identity',
-            statCheck: { stat: 'wire', threshold: 12 },
+            statCheck: { stat: 'wire', threshold: 14 },
             pass: {
               text: 'Fabricated ID clears the server\'s whitelist. You have remote access for forty-eight hours.',
               branch: 'advance',
@@ -195,7 +195,7 @@ export const MID_CONTRACTS = [
           {
             id: 'bo_sweep',
             label: 'Grab everything, one sweep',
-            statCheck: { stat: 'wire', threshold: 13 },
+            statCheck: { stat: 'wire', threshold: 15 },
             pass: {
               text: 'Full sweep completed before the intrusion system wakes. You have more material than Nyx expected.',
               branch: 'advance',
@@ -208,7 +208,7 @@ export const MID_CONTRACTS = [
           {
             id: 'bo_selective',
             label: 'Cherry-pick, stay clean',
-            statCheck: { stat: 'wire', threshold: 11 },
+            statCheck: { stat: 'wire', threshold: 14 },
             pass: {
               text: 'Three perfectly curated files. Airtight evidence. Nyx will be able to charge twice the going rate.',
               branch: 'advance',
@@ -230,7 +230,7 @@ export const MID_CONTRACTS = [
           {
             id: 'bo_blend',
             label: 'Blend through the sweep zone',
-            statCheck: { stat: 'face', threshold: 13 },
+            statCheck: { stat: 'face', threshold: 15 },
             pass: {
               text: 'You look like a corporate commuter. The sweep team doesn\'t give you a second look. Nyx gets the package.',
               branch: 'advance',
@@ -243,7 +243,7 @@ export const MID_CONTRACTS = [
           {
             id: 'bo_route',
             label: 'Find an alternate route',
-            statCheck: { stat: 'wire', threshold: 12 },
+            statCheck: { stat: 'wire', threshold: 14 },
             pass: {
               text: 'You hack traffic management to create a coverage gap. Clean path to Nyx. Textbook.',
               branch: 'advance',
@@ -289,7 +289,7 @@ export const MID_CONTRACTS = [
           {
             id: 'ae_beacon',
             label: 'Triangulate her emergency beacon',
-            statCheck: { stat: 'wire', threshold: 12 },
+            statCheck: { stat: 'wire', threshold: 14 },
             pass: {
               text: 'Beacon signal is faint but you narrow it down to a block in the refinery district. VESPER makes contact.',
               branch: 'advance',
@@ -302,7 +302,7 @@ export const MID_CONTRACTS = [
           {
             id: 'ae_contacts',
             label: 'Work your contacts',
-            statCheck: { stat: 'face', threshold: 11 },
+            statCheck: { stat: 'face', threshold: 14 },
             pass: {
               text: 'A fixer associate puts you onto a safe house address. VESPER is there, scared but alive.',
               branch: 'advance',
@@ -341,7 +341,7 @@ export const MID_CONTRACTS = [
           {
             id: 'ae_gap',
             label: 'Find a gap in the cordon',
-            statCheck: { stat: 'grit', threshold: 12 },
+            statCheck: { stat: 'grit', threshold: 14 },
             pass: {
               text: 'You spot a rotation blind spot and move VESPER through it in under three minutes. Textbook.',
               branch: 'advance',
@@ -363,7 +363,7 @@ export const MID_CONTRACTS = [
           {
             id: 'ae_papers',
             label: 'Trust the forged papers',
-            statCheck: { stat: 'grit', threshold: 12 },
+            statCheck: { stat: 'grit', threshold: 14 },
             pass: {
               text: 'VESPER holds it together. The officer scans and waves you through. You breathe.',
               branch: 'advance',
@@ -376,7 +376,7 @@ export const MID_CONTRACTS = [
           {
             id: 'ae_bribe',
             label: 'Bribe the checkpoint officer',
-            statCheck: { stat: 'face', threshold: 13 },
+            statCheck: { stat: 'face', threshold: 15 },
             pass: {
               text: 'Officer pockets the chip and doesn\'t scan. "Fast lane." VESPER is out.',
               branch: 'advance',
@@ -423,7 +423,7 @@ export const MID_CONTRACTS = [
           {
             id: 'bd_physical',
             label: 'Physical recon',
-            statCheck: { stat: 'grit', threshold: 11 },
+            statCheck: { stat: 'grit', threshold: 14 },
             pass: {
               text: 'Two-hour observation from a rooftop. You map every patrol rotation. Pyre says the intel is clean.',
               branch: 'advance',
@@ -436,7 +436,7 @@ export const MID_CONTRACTS = [
           {
             id: 'bd_comms',
             label: 'Pull their internal comms',
-            statCheck: { stat: 'wire', threshold: 12 },
+            statCheck: { stat: 'wire', threshold: 14 },
             pass: {
               text: 'Comms are unencrypted. Static crews aren\'t professional. Full patrol map in twenty minutes.',
               branch: 'advance',
@@ -458,7 +458,7 @@ export const MID_CONTRACTS = [
           {
             id: 'bd_stealth',
             label: 'Plant around the guards',
-            statCheck: { stat: 'wire', threshold: 12 },
+            statCheck: { stat: 'wire', threshold: 14 },
             pass: {
               text: 'All three charges placed. Guards never knew you were there. Detonation sequence armed.',
               branch: 'advance',
@@ -504,7 +504,7 @@ export const MID_CONTRACTS = [
           {
             id: 'bd_confirm',
             label: 'Stay for visual confirmation',
-            statCheck: { stat: 'grit', threshold: 11 },
+            statCheck: { stat: 'grit', threshold: 14 },
             pass: {
               text: 'You watch the depot go up. Nothing left but framework. Pyre gets the confirmation footage.',
               branch: 'complete',

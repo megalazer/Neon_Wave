@@ -348,7 +348,7 @@ export const LOW_CONTRACTS = [
           {
             id: 'ge_clean',
             label: 'Clean crack, take the time',
-            statCheck: { stat: 'wire', threshold: 13 },
+            statCheck: { stat: 'wire', threshold: 12 },
             pass: {
               text: 'Three minutes. Zero traces. Like you were never there.',
               branch: 'advance',
@@ -588,7 +588,7 @@ export const LOW_CONTRACTS = [
           {
             id: 'ur_slip_past',
             label: 'Slip past the enforcer',
-            statCheck: { stat: 'ghost', threshold: 13 },
+            statCheck: { stat: 'ghost', threshold: 12 },
             pass: {
               text: 'You move like smoke. He never turns around. Daya\'s door is ahead.',
               branch: 'advance',
@@ -1041,7 +1041,7 @@ export const LOW_CONTRACTS = [
           {
             id: 'ff_anomaly',
             label: 'Plant a sharper anomaly',
-            statCheck: { stat: 'wire', threshold: 13 },
+            statCheck: { stat: 'wire', threshold: 12 },
             pass: {
               text: 'You leave a beautiful false floor under the price. It will collapse when Referent steps on it.',
               branch: 'complete',

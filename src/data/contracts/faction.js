@@ -33,7 +33,7 @@ export const FACTION_CONTRACTS = [
           {
             id: 'lx_spoof',
             label: 'Spoof clinic credentials',
-            statCheck: { stat: 'face', threshold: 12 },
+            statCheck: { stat: 'face', threshold: 14 },
             pass: {
               text: 'You wear someone else\'s name like a tailored coat. The desk waves you through to the inner lab.',
               branch: 'advance',
@@ -64,7 +64,7 @@ export const FACTION_CONTRACTS = [
           {
             id: 'lx_siphon',
             label: 'Siphon the data clean',
-            statCheck: { stat: 'wire', threshold: 13 },
+            statCheck: { stat: 'wire', threshold: 15 },
             pass: {
               text: 'Bit by bit, the vat-brain whispers its secrets into your deck. He\'ll never know it was read.',
               branch: 'complete',
@@ -122,7 +122,7 @@ export const FACTION_CONTRACTS = [
           {
             id: 'gr_announce',
             label: 'Invoke Grammaton sanction',
-            statCheck: { stat: 'face', threshold: 13 },
+            statCheck: { stat: 'face', threshold: 15 },
             pass: {
               text: 'You read him the regulation, badge-cold. Half his crew stands down on the spot. They know the grammar too.',
               branch: 'advance',
@@ -293,7 +293,7 @@ export const FACTION_CONTRACTS = [
           {
             id: 'rf_pass',
             label: 'Talk your way to a floor pass',
-            statCheck: { stat: 'face', threshold: 13 },
+            statCheck: { stat: 'face', threshold: 15 },
             pass: {
               text: 'You speak fluent money. Security prints you a badge and a coffee. The floor swallows you whole.',
               branch: 'advance',
@@ -324,7 +324,7 @@ export const FACTION_CONTRACTS = [
           {
             id: 'rf_subtle',
             label: 'Inject a subtle bias',
-            statCheck: { stat: 'wire', threshold: 14 },
+            statCheck: { stat: 'wire', threshold: 16 },
             pass: {
               text: 'A few decimal points, moved like a card off the bottom of the deck. The model will lie and swear it\'s telling the truth.',
               branch: 'complete',
@@ -565,7 +565,7 @@ export const FACTION_CONTRACTS = [
           {
             id: 'um_safehouse',
             label: 'Hit the safehouse first',
-            statCheck: { stat: 'ghost', threshold: 15 },
+            statCheck: { stat: 'ghost', threshold: 19 },
             pass: {
               text: 'You\'re in and out of the safehouse like a held breath. The ledger\'s in your pocket before Grammaton\'s vans even roll.',
               branch: 'advance',
@@ -614,7 +614,7 @@ export const FACTION_CONTRACTS = [
           {
             id: 'um_skim',
             label: 'Skim a copy for yourself',
-            statCheck: { stat: 'wire', threshold: 15 },
+            statCheck: { stat: 'wire', threshold: 19 },
             pass: {
               text: 'You ghost a copy onto cold storage no one will ever scan, then deliver the original. Leverage for a rainier day. Undertow suspects nothing.',
               branch: 'complete',

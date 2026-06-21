@@ -28,7 +28,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'bwp_breach',
             label: 'Breach the defense grid',
-            statCheck: { stat: 'wire', threshold: 15 },
+            statCheck: { stat: 'wire', threshold: 19 },
             pass: {
               text: 'Grid peels back under your deck. You have sixty seconds before it reboots. Hardline connected.',
               branch: 'advance',
@@ -41,7 +41,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'bwp_dead',
             label: 'Find Dusk\'s dead terminal',
-            statCheck: { stat: 'grit', threshold: 13 },
+            statCheck: { stat: 'grit', threshold: 18 },
             pass: {
               text: 'Terminal is where Dusk said. Dusty, offline for years, but hardline is intact. You jack in.',
               branch: 'advance',
@@ -63,7 +63,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'bwp_push',
             label: 'Push through with raw code',
-            statCheck: { stat: 'wire', threshold: 16 },
+            statCheck: { stat: 'wire', threshold: 20 },
             pass: {
               text: 'Your deck nearly bricks twice. You hold it together through sheer experience. You\'re through. Something is watching you from the other side.',
               branch: 'advance',
@@ -76,7 +76,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'bwp_seam',
             label: 'Look for a seam in the pattern',
-            statCheck: { stat: 'wire', threshold: 14 },
+            statCheck: { stat: 'wire', threshold: 18 },
             pass: {
               text: 'There, a ghost of a maintenance path, years old. You thread through it. No friction. That shouldn\'t be possible.',
               branch: 'advance',
@@ -98,7 +98,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'bwp_grab',
             label: 'Grab everything and disconnect',
-            statCheck: { stat: 'wire', threshold: 14 },
+            statCheck: { stat: 'wire', threshold: 18 },
             pass: {
               text: 'Massive data pull. You disconnect at the last second before the ICE closes. Your deck is smoking. Dusk will be very happy.',
               branch: 'advance',
@@ -111,7 +111,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'bwp_curate',
             label: 'Curate carefully, stay longer',
-            statCheck: { stat: 'wire', threshold: 17 },
+            statCheck: { stat: 'wire', threshold: 20 },
             pass: {
               text: 'You spend three full minutes inside. Perfectly curated dataset. You disconnect clean. Whatever you saw in there stays behind the wall. Mostly.',
               branch: 'complete',
@@ -158,7 +158,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'dc_h_deep',
             label: 'Build a deep digital trail',
-            statCheck: { stat: 'wire', threshold: 15 },
+            statCheck: { stat: 'wire', threshold: 19 },
             pass: {
               text: 'Seven years of fabricated digital existence planted across twelve systems. Background check will pass even internal audit.',
               branch: 'advance',
@@ -171,7 +171,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'dc_h_minimal',
             label: 'Minimal trail, rely on presentation',
-            statCheck: { stat: 'face', threshold: 14 },
+            statCheck: { stat: 'face', threshold: 18 },
             pass: {
               text: 'Less is more. The sparse trail reads as intentional privacy. Grammaton likes people with something to protect.',
               branch: 'advance',
@@ -193,7 +193,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'dc_h_redirect',
             label: 'Redirect the investigation',
-            statCheck: { stat: 'face', threshold: 15 },
+            statCheck: { stat: 'face', threshold: 19 },
             pass: {
               text: 'You plant a false trail pointing at a real Grammaton employee who fits the paranoia profile. Investigation ends there.',
               branch: 'advance',
@@ -206,7 +206,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'dc_h_silence',
             label: 'Find and silence the leak source',
-            statCheck: { stat: 'wire', threshold: 14 },
+            statCheck: { stat: 'wire', threshold: 18 },
             pass: {
               text: 'Leak was an automated flag in Kade\'s own system. You kill it clean. No trace of the investigation.',
               branch: 'advance',
@@ -228,7 +228,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'dc_h_channel',
             label: 'Build the secure channel',
-            statCheck: { stat: 'wire', threshold: 15 },
+            statCheck: { stat: 'wire', threshold: 19 },
             pass: {
               text: 'Dead-drop mesh node, rotating cipher, two fallback relays. Channel will run for eighteen months minimum. Kade\'s client gets their inside track.',
               branch: 'advance',
@@ -241,7 +241,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'dc_h_both',
             label: 'Build channel and exfil plan simultaneously',
-            statCheck: { stat: 'wire', threshold: 17 },
+            statCheck: { stat: 'wire', threshold: 20 },
             pass: {
               text: 'Dual-track build: channel goes live and exfil protocol is clean and tested. Kade calls it the best setup he\'s ever seen. Full bonus.',
               branch: 'complete',
@@ -288,7 +288,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'lq_hack',
             label: 'Breach their scheduling system',
-            statCheck: { stat: 'wire', threshold: 14 },
+            statCheck: { stat: 'wire', threshold: 18 },
             pass: {
               text: 'Sable\'s scheduling system is hardened but not unhackable. Forty-eight hour window confirmed. You have a window.',
               branch: 'advance',
@@ -301,7 +301,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'lq_tail',
             label: 'Tail the detail for a day',
-            statCheck: { stat: 'grit', threshold: 13 },
+            statCheck: { stat: 'grit', threshold: 18 },
             pass: {
               text: 'Twenty-two hours of surveillance. You map their gaps personally. Three clean windows.',
               branch: 'advance',
@@ -323,7 +323,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'lq_distance',
             label: 'Long-range shot, keep distance',
-            statCheck: { stat: 'grit', threshold: 15 },
+            statCheck: { stat: 'grit', threshold: 19 },
             pass: {
               text: 'Clean shot at three hundred meters. Target down before the detail knows where you are. You\'re already moving.',
               branch: 'advance',
@@ -361,7 +361,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'lq_ghost',
             label: 'Ghost out through the underlevels',
-            statCheck: { stat: 'grit', threshold: 14 },
+            statCheck: { stat: 'grit', threshold: 18 },
             pass: {
               text: 'You drop into the maintenance understructure and disappear. APB activates above you. You surface three kilometers away, clean.',
               branch: 'advance',
@@ -374,7 +374,7 @@ export const HIGH_CONTRACTS = [
           {
             id: 'lq_vehicle',
             label: 'Acquire a vehicle and run hard',
-            statCheck: { stat: 'wire', threshold: 13 },
+            statCheck: { stat: 'wire', threshold: 18 },
             pass: {
               text: 'You jack an Onyx Bureau support vehicle, the irony isn\'t lost on you, and drive out of the response perimeter before anyone thinks to flag it.',
               branch: 'complete',

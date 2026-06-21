@@ -4,6 +4,7 @@ import { ALL_FLAVOR_EVENTS, ALL_CHOICE_EVENTS } from '../../data/events/index';
 import { EVENT_COOLDOWN, FLAVOR_MIN_GAP, FLAVOR_MAX_GAP, FLAVOR_CHANCE } from '../../data/eventPacing';
 import { applyRepToDraft } from './factionSlice';
 import { resolveLegacyFaction } from '../../data/factions';
+import { getEffectiveStat } from '../../data/cyberware';
 
 const SUCCESS_RATES = { low: 0.9, moderate: 0.7, high: 0.5 };
 
@@ -298,8 +299,8 @@ export const createEventSlice = (set) => ({
       let passed = true;
 
       if (choice.statCheck) {
-        const player  = state.crew.members.find((m) => m.isPlayer);
-        const statVal = player?.stats?.[choice.statCheck.stat] ?? 10;
+        const player = state.crew.members.find((m) => m.isPlayer);
+        const statVal = getEffectiveStat(player, choice.statCheck.stat);
         const roll = statVal + Math.floor(Math.random() * 6);
         passed = roll >= choice.statCheck.threshold;
         const branch = passed ? choice.pass : choice.fail;

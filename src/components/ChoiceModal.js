@@ -12,6 +12,7 @@ import { useStore } from '../store/index';
 import { ALL_CHOICE_EVENTS } from '../data/events/index';
 import { getContract } from '../data/contracts/index';
 import { getFixer } from '../data/fixers';
+import { getEffectiveStats } from '../data/cyberware';
 import ConfirmModal from './ConfirmModal';
 import { colors } from '../theme/colors';
 
@@ -183,8 +184,9 @@ export default function ChoiceModal() {
   const abortContract      = useStore((s) => s.abortContract);
   const dismissResolution  = useStore((s) => s.dismissResolution);
 
-  const playerStats   = useStore((s) => s.crew.members.find((m) => m.isPlayer)?.stats ?? {});
+  const player = useStore((s) => s.crew.members.find((m) => m.isPlayer));
   const playerCredits = useStore((s) => s.character.credits);
+  const playerStats = getEffectiveStats(player);
 
   const [showAbortConfirm, setShowAbortConfirm] = useState(false);
   const dismissTimer = useRef(null);

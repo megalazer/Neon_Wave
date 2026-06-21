@@ -2,7 +2,7 @@ import { ALL_CONTRACTS, getContract } from '../../data/contracts/index';
 import { applyXPToCrewMember } from '../../data/leveling';
 import { applyRepToDraft } from './factionSlice';
 import { repTierFromValue, tierMeetsRequirement } from '../../data/factions';
-import { CYBERWARE_ITEMS } from '../../data/cyberware';
+import { CYBERWARE_ITEMS, getEffectiveStat } from '../../data/cyberware';
 import { CYBERWARE_REWARD_POOLS, rollCyberwareReward } from '../../data/contractRewards';
 
 
@@ -352,9 +352,9 @@ export const createContractSlice = (set, get) => ({
       let passed = true;
 
       if (choice.statCheck) {
-        const player  = state.crew.members.find((m) => m.isPlayer);
-        const statVal = player?.stats?.[choice.statCheck.stat] ?? 10;
-        const roll    = statVal + Math.floor(Math.random() * 6);
+        const player = state.crew.members.find((m) => m.isPlayer);
+        const statVal = getEffectiveStat(player, choice.statCheck.stat);
+        const roll = statVal + Math.floor(Math.random() * 6);
         passed        = roll >= choice.statCheck.threshold;
         branchData    = passed ? choice.pass : choice.fail;
       } else {

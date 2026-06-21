@@ -1,23 +1,11 @@
 import React from 'react';
 import { View, Text, Modal, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { CYBERWARE_ITEMS } from '../../data/cyberware';
+import { CYBERWARE_ITEMS, getCyberwareBonuses } from '../../data/cyberware';
 import { colors } from '../../theme/colors';
 
 const STAT_KEYS = ['chrome', 'edge', 'ghost', 'face', 'grit', 'wire'];
 
-function computeCyberwareBonus(member) {
-  const totals = {};
-  (member.equippedCyberware || []).forEach((cybId) => {
-    const cyb = CYBERWARE_ITEMS.find((c) => c.id === cybId);
-    if (cyb?.bonuses) {
-      Object.entries(cyb.bonuses).forEach(([stat, val]) => {
-        totals[stat] = (totals[stat] || 0) + val;
-      });
-    }
-  });
-  return totals;
-}
 
 function getHumanityStatus(ratio) {
   if (ratio < 0.3) return { label: 'DISSOCIATIVE', color: colors.error };
@@ -27,7 +15,7 @@ function getHumanityStatus(ratio) {
 
 export default function MemberStatsModal({ visible, member, onClose }) {
   if (!visible || !member) return null;
-  const bonus = computeCyberwareBonus(member);
+  const bonus = getCyberwareBonuses(member);
   const bonusEntries = Object.entries(bonus);
   const hRatio = member.humanity.current / member.humanity.max;
   const hStatus = getHumanityStatus(hRatio);

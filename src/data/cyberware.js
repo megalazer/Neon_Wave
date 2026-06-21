@@ -149,6 +149,44 @@ export const CYBERWARE_ITEMS = [
   },
 ];
 
+export const CYBERWARE_BY_ID = CYBERWARE_ITEMS.reduce((map, item) => {
+  map[item.id] = item;
+  return map;
+}, {});
+
+export function getCyberwareBonuses(member) {
+  const totals = {};
+  for (const cyberwareId of member?.equippedCyberware || []) {
+    const cyberware = CYBERWARE_BY_ID[cyberwareId];
+    if (!cyberware?.bonuses) continue;
+    for (const [stat, value] of Object.entries(cyberware.bonuses)) {
+      totals[stat] = (totals[stat] || 0) + value;
+    }
+  }
+  return totals;
+}
+
+export function getEffectiveStat(member, stat, fallback = 10) {
+  const base = member?.stats?.[stat] ?? fallback;
+  let cyberwareBonus = 0;
+  for (const cyberwareId of member?.equippedCyberware || []) {
+    cyberwareBonus += CYBERWARE_BY_ID[cyberwareId]?.bonuses?.[stat] || 0;
+  }
+  return Math.min(20, base + cyberwareBonus);
+}
+
+export function getEffectiveStats(member) {
+  const bonuses = getCyberwareBonuses(member);
+  const stats = {};
+  for (const stat of new Set([
+    ...Object.keys(member?.stats || {}),
+    ...Object.keys(bonuses),
+  ])) {
+    stats[stat] = Math.min(20, (member?.stats?.[stat] || 0) + (bonuses[stat] || 0));
+  }
+  return stats;
+}
+
 export const STARTER_CYBERWARE = [
   {
     id: 'starter_neural_link',
