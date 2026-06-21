@@ -664,4 +664,491 @@ export const LOW_CONTRACTS = [
     failureNarration: 'Extraction failed. Remi pays a fraction. She covered the logistics cost and nothing more.',
     abortNarration: 'You pulled out mid-run. Daya stays where she is. Remi marks the abort and says nothing, which is worse.',
   },
+
+  // ── Rep seed contracts: faction entry jobs ─────────────────────────────────
+  {
+    id: 'con_low_signal_drone_wake',
+    tier: 'LOW',
+    teamLevelRequired: 1,
+    fixerId: 'remi',
+    moduleNumber: 'C-L06',
+    questline: "Remi's Net",
+    questlineStage: 3,
+    cyberwareReward: { pool: 'LOW', chance: 0.4 },
+    name: 'DRONE_WAKE',
+    faction: 'fac_signal',
+    factionRepReward: 15,
+    factionRepPenalty: 7,
+    description: 'A Signal maintenance swarm woke up angry after a Static ghost-script hit the local pipe. Trace the bad code, then decide whether to purge the drones or put them down.',
+    payout: 1700,
+    deposit: 0,
+    exp: 110,
+    stages: [
+      {
+        id: 'dw_trace',
+        stageNumber: 1,
+        label: 'STAGE_01',
+        title: 'BAD WAKE',
+        prompt: 'Six relay drones are circling a commuter bridge, screaming packet noise into every public channel. Signal wants the source tagged before the city sends heavier guns.',
+        choices: [
+          {
+            id: 'dw_sniff',
+            label: 'Sniff the ghost-script trail',
+            statCheck: { stat: 'wire', threshold: 11 },
+            pass: {
+              text: 'Static fingerprints all over the wake command. You isolate the payload and mark the infected drones.',
+              branch: 'advance',
+              effects: { rewardModifier: 0.15 },
+            },
+            fail: {
+              text: 'The script keeps shedding false trails. You still tag the infected drones, but Signal sees the delay.',
+              branch: 'advance',
+            },
+          },
+          {
+            id: 'dw_climb',
+            label: 'Climb the bridge spine for direct access',
+            statCheck: { stat: 'grit', threshold: 11 },
+            pass: {
+              text: 'You crawl the bridge ribs while traffic screams below. Direct line to the swarm controller, clean read.',
+              branch: 'advance',
+            },
+            fail: {
+              text: 'A drone clips the rail near your hand. You keep climbing, slower and louder.',
+              branch: 'advance',
+            },
+          },
+        ],
+      },
+      {
+        id: 'dw_cull',
+        stageNumber: 2,
+        label: 'STAGE_02',
+        title: 'CULL OR CLEAN',
+        prompt: 'The drones are half-restored and half-feral. You can risk a remote purge, or shoot the swarm out of the air before it hits the market block.',
+        choices: [
+          {
+            id: 'dw_purge',
+            label: 'Remote-purge the wake command',
+            statCheck: { stat: 'wire', threshold: 12 },
+            pass: {
+              text: 'The swarm drops into maintenance hover, obedient again. Signal likes a repair better than a replacement bill.',
+              branch: 'complete',
+              effects: { rewardModifier: 0.2 },
+            },
+            fail: {
+              text: 'The purge only half-takes. You ground the closest drones with emergency shutdowns and Signal eats the hardware loss.',
+              branch: 'complete',
+            },
+          },
+          {
+            id: 'dw_down',
+            label: 'Put the swarm down',
+            outcome: {
+              text: 'You go loud. The drones answer with cutting lasers and panic-broadcast screams.',
+              branch: 'triggersBattle',
+              onVictory: {
+                branch: 'complete',
+                text: 'The last drone folds into sparks. Signal loses hardware, not face.',
+                effects: { rewardModifier: 0.1 },
+              },
+              onDefeat: {
+                branch: 'fail',
+                text: 'The swarm drives you off the bridge. Signal has to black out the whole block to end it.',
+              },
+            },
+          },
+        ],
+      },
+    ],
+    successNarration: 'Signal logs the drone wake contained and the Static payload archived. Remi sends the payout with a new trust flag attached.',
+    failureNarration: 'The wake spreads before Signal can clamp it. Remi pays for the attempt, not the cleanup.',
+    abortNarration: 'You left the swarm screaming over the market. Signal remembers the dropped call.',
+  },
+
+  {
+    id: 'con_low_lexicon_bloodscript',
+    tier: 'LOW',
+    teamLevelRequired: 2,
+    fixerId: 'kade',
+    moduleNumber: 'C-L07',
+    questline: null,
+    questlineStage: null,
+    cyberwareReward: { pool: 'LOW', chance: 0.4 },
+    name: 'BLOODSCRIPT_SAMPLE',
+    faction: 'fac_lexicon',
+    factionRepReward: 12,
+    factionRepPenalty: 7,
+    description: 'The Lexicon wants a stolen clinic sample before the patient record updates. No sermon, no kidnapping — just one vial and the metadata attached to it.',
+    payout: 1900,
+    deposit: 0,
+    exp: 120,
+    stages: [
+      {
+        id: 'bs_window',
+        stageNumber: 1,
+        label: 'STAGE_01',
+        title: 'CLINIC WINDOW',
+        prompt: 'The sample sits in a street clinic fridge for one hour before courier pickup. Pose as emergency maintenance, or slip through the patient intake crush.',
+        choices: [
+          {
+            id: 'bs_maintenance',
+            label: 'Pose as emergency maintenance',
+            statCheck: { stat: 'face', threshold: 11 },
+            pass: {
+              text: 'You sell the lie with a badged tablet and two impatient sighs. The clinic manager points you at the cold room.',
+              branch: 'advance',
+              effects: { rewardModifier: 0.1 },
+            },
+            fail: {
+              text: 'The manager wants a work order number. You improvise one and get waved through after a tense minute.',
+              branch: 'advance',
+            },
+          },
+          {
+            id: 'bs_intake',
+            label: 'Ride the patient intake crowd',
+            statCheck: { stat: 'ghost', threshold: 11 },
+            pass: {
+              text: 'You move with the queue until the camera angle breaks. One door, one badge swipe cloned, you are inside.',
+              branch: 'advance',
+            },
+            fail: {
+              text: 'A nurse almost spots you. A spilled med tray buys the distraction you need.',
+              branch: 'advance',
+            },
+          },
+        ],
+      },
+      {
+        id: 'bs_fridge',
+        stageNumber: 2,
+        label: 'STAGE_02',
+        title: 'COLD CHAIN',
+        prompt: 'The vial is locked in a smart fridge that logs every open event. Crack the fridge quietly, or spoof the courier pickup early.',
+        choices: [
+          {
+            id: 'bs_crack',
+            label: 'Crack the smart fridge',
+            statCheck: { stat: 'wire', threshold: 12 },
+            pass: {
+              text: 'The fridge opens without a log entry. Vial in cold sleeve, metadata copied, no one wiser.',
+              branch: 'complete',
+              effects: { rewardModifier: 0.2 },
+            },
+            fail: {
+              text: 'The fridge logs a maintenance open. You pull the vial anyway and bury the event in noise.',
+              branch: 'complete',
+            },
+          },
+          {
+            id: 'bs_spoof',
+            label: 'Spoof courier pickup',
+            statCheck: { stat: 'face', threshold: 12 },
+            pass: {
+              text: 'You become the courier for ninety seconds. Signature accepted, vial released.',
+              branch: 'complete',
+              effects: { rewardModifier: 0.15 },
+            },
+            fail: {
+              text: 'The courier code is stale. You talk fast, blame dispatch, and leave before anyone calls back.',
+              branch: 'complete',
+            },
+          },
+        ],
+      },
+    ],
+    successNarration: 'The Lexicon receives blood and metadata. Kade says the word for trust is written in small jobs first.',
+    failureNarration: 'The sample degraded before delivery. The Lexicon pays for effort and nothing sacred.',
+    abortNarration: 'You walked from the clinic empty. The sample entered official custody and left your reach.',
+  },
+
+  {
+    id: 'con_low_grammaton_badge_check',
+    tier: 'LOW',
+    teamLevelRequired: 2,
+    fixerId: 'kade',
+    moduleNumber: 'C-L08',
+    questline: null,
+    questlineStage: null,
+    cyberwareReward: { pool: 'LOW', chance: 0.4 },
+    name: 'BADGE_CHECK',
+    faction: 'fac_grammaton',
+    factionRepReward: 12,
+    factionRepPenalty: 7,
+    description: 'A Grammaton patrol is selling confiscated gear out of evidence lockers. The rulebook wants its teeth back.',
+    payout: 2100,
+    deposit: 0,
+    exp: 130,
+    stages: [
+      {
+        id: 'bc_audit',
+        stageNumber: 1,
+        label: 'STAGE_01',
+        title: 'EVIDENCE TRAIL',
+        prompt: 'Gear vanishes between seizure and catalog. Pull the locker logs, or lean on the night clerk who signs the transfers.',
+        choices: [
+          {
+            id: 'bc_logs',
+            label: 'Pull locker logs',
+            statCheck: { stat: 'wire', threshold: 11 },
+            pass: {
+              text: 'Locker logs show a badge ID opening the cage after every seizure. Pattern is clean enough for Grammaton.',
+              branch: 'advance',
+              effects: { rewardModifier: 0.1 },
+            },
+            fail: {
+              text: 'The logs are scrubbed. You recover enough fragments to name a patrol shift.',
+              branch: 'advance',
+            },
+          },
+          {
+            id: 'bc_clerk',
+            label: 'Lean on the night clerk',
+            statCheck: { stat: 'face', threshold: 11 },
+            pass: {
+              text: 'The clerk hates dirty badges more than pressure. Names, dates, buyer channel.',
+              branch: 'advance',
+            },
+            fail: {
+              text: 'The clerk clams up. Their shaking hands still point you at the right shift roster.',
+              branch: 'advance',
+            },
+          },
+        ],
+      },
+      {
+        id: 'bc_recover',
+        stageNumber: 2,
+        label: 'STAGE_02',
+        title: 'RECOVER THE RULE',
+        prompt: 'The dirty patrol arrives to move tonight\'s haul. Serve the writ and make them stand down, or take the gear before the market opens.',
+        choices: [
+          {
+            id: 'bc_writ',
+            label: 'Serve the writ cold',
+            statCheck: { stat: 'face', threshold: 12 },
+            pass: {
+              text: 'You read the citation number. Two badges go pale and put their hands on the wall.',
+              branch: 'complete',
+              effects: { rewardModifier: 0.2 },
+            },
+            fail: {
+              text: 'They laugh at the writ until dispatch confirms it. You still recover the gear, but the room remembers the disrespect.',
+              branch: 'complete',
+            },
+          },
+          {
+            id: 'bc_force',
+            label: 'Hit the patrol before they move',
+            outcome: {
+              text: 'Dirty badges reach for clean guns. Grammaton paperwork can wait.',
+              branch: 'triggersBattle',
+              onVictory: {
+                branch: 'complete',
+                text: 'Patrol down, gear recovered, rulebook satisfied.',
+                effects: { rewardModifier: 0.1 },
+              },
+              onDefeat: {
+                branch: 'fail',
+                text: 'The patrol drives you out and dumps the evidence before Grammaton can seal the cage.',
+              },
+            },
+          },
+        ],
+      },
+    ],
+    successNarration: 'Grammaton records the recovered gear and the corrected breach. Kade forwards a clipped commendation: "Order restored."',
+    failureNarration: 'The dirty patrol moves the gear before it can be secured. Grammaton pays a procedural fraction.',
+    abortNarration: 'You left the evidence trail open. Grammaton files you under unreliable.',
+  },
+
+  {
+    id: 'con_low_referent_false_floor',
+    tier: 'LOW',
+    teamLevelRequired: 2,
+    fixerId: 'remi',
+    moduleNumber: 'C-L09',
+    questline: null,
+    questlineStage: null,
+    cyberwareReward: { pool: 'LOW', chance: 0.4 },
+    name: 'FALSE_FLOOR',
+    faction: 'fac_referent',
+    factionRepReward: 13,
+    factionRepPenalty: 7,
+    description: 'A backroom exchange is lying about volume, badly. Referent wants the numbers corrected just enough that only the right people notice.',
+    payout: 2000,
+    deposit: 0,
+    exp: 120,
+    stages: [
+      {
+        id: 'ff_entry',
+        stageNumber: 1,
+        label: 'STAGE_01',
+        title: 'BACKROOM LEDGER',
+        prompt: 'The exchange runs behind a pawn shop with three cameras and one bored guard. Walk in as an auditor, or ghost through the repair corridor.',
+        choices: [
+          {
+            id: 'ff_auditor',
+            label: 'Walk in as an auditor',
+            statCheck: { stat: 'face', threshold: 11 },
+            pass: {
+              text: 'Nobody wants to argue with someone holding a clipboard and a fine schedule. The ledger terminal is yours.',
+              branch: 'advance',
+              effects: { rewardModifier: 0.1 },
+            },
+            fail: {
+              text: 'The guard asks one real question. You dodge it with fees and jargon until he gives up.',
+              branch: 'advance',
+            },
+          },
+          {
+            id: 'ff_corridor',
+            label: 'Ghost through the repair corridor',
+            statCheck: { stat: 'ghost', threshold: 11 },
+            pass: {
+              text: 'Repair corridor, blind camera, cheap lock. You surface behind the terminal wall.',
+              branch: 'advance',
+            },
+            fail: {
+              text: 'A loose panel clangs. The guard checks the wrong hallway while you slip inside.',
+              branch: 'advance',
+            },
+          },
+        ],
+      },
+      {
+        id: 'ff_numbers',
+        stageNumber: 2,
+        label: 'STAGE_02',
+        title: 'PRICE THE LIE',
+        prompt: 'The books are ugly. You can correct the false volume cleanly, or plant a sharper anomaly that lets Referent short the room later.',
+        choices: [
+          {
+            id: 'ff_clean',
+            label: 'Correct the false volume',
+            statCheck: { stat: 'wire', threshold: 12 },
+            pass: {
+              text: 'The numbers settle into a shape that looks honest because it is. Referent can price the room now.',
+              branch: 'complete',
+              effects: { rewardModifier: 0.15 },
+            },
+            fail: {
+              text: 'The ledger fights back with broken validation. You force the correction through with a visible seam.',
+              branch: 'complete',
+            },
+          },
+          {
+            id: 'ff_anomaly',
+            label: 'Plant a sharper anomaly',
+            statCheck: { stat: 'wire', threshold: 13 },
+            pass: {
+              text: 'You leave a beautiful false floor under the price. It will collapse when Referent steps on it.',
+              branch: 'complete',
+              effects: { rewardModifier: 0.25 },
+            },
+            fail: {
+              text: 'The anomaly is too obvious. You roll it back to the clean correction before it trips an alarm.',
+              branch: 'complete',
+            },
+          },
+        ],
+      },
+    ],
+    successNarration: 'Referent receives the corrected ledger and the market gets a little less fake in exactly the profitable direction.',
+    failureNarration: 'The ledger update lands late. Referent still prices the room, but discounts your cut.',
+    abortNarration: 'You left the exchange lying. Referent has no patience for unpriced noise.',
+  },
+
+  {
+    id: 'con_low_static_noise_tax',
+    tier: 'LOW',
+    teamLevelRequired: 2,
+    fixerId: 'pyre',
+    moduleNumber: 'C-L10',
+    questline: null,
+    questlineStage: null,
+    cyberwareReward: { pool: 'LOW', chance: 0.4 },
+    name: 'NOISE_TAX',
+    faction: 'fac_static',
+    factionRepReward: 12,
+    factionRepPenalty: 7,
+    description: 'A corporate ad tower is charging every public screen in Lowport a silent bandwidth tax. Static wants the tower singing garbage by dawn.',
+    payout: 1800,
+    deposit: 0,
+    exp: 115,
+    stages: [
+      {
+        id: 'nt_access',
+        stageNumber: 1,
+        label: 'STAGE_01',
+        title: 'TOWER ACCESS',
+        prompt: 'The ad tower is bolted to a luxury hab stack. Climb the maintenance ladder under the billboard wash, or spoof a contractor drone and ride the service lift.',
+        choices: [
+          {
+            id: 'nt_ladder',
+            label: 'Climb the maintenance ladder',
+            statCheck: { stat: 'grit', threshold: 11 },
+            pass: {
+              text: 'Forty meters of wet ladder and seizure-bright ads. You reach the cabinet with your eyes burning.',
+              branch: 'advance',
+              effects: { rewardModifier: 0.1 },
+            },
+            fail: {
+              text: 'An ad flare blinds you halfway up. You wait it out and keep climbing, slower.',
+              branch: 'advance',
+            },
+          },
+          {
+            id: 'nt_lift',
+            label: 'Spoof the contractor lift',
+            statCheck: { stat: 'wire', threshold: 11 },
+            pass: {
+              text: 'The lift accepts a forged maintenance drone ID. You ride up inside the tower\'s own blind spot.',
+              branch: 'advance',
+            },
+            fail: {
+              text: 'The lift stalls two floors short. You pry the hatch and finish on the ladder.',
+              branch: 'advance',
+            },
+          },
+        ],
+      },
+      {
+        id: 'nt_jam',
+        stageNumber: 2,
+        label: 'STAGE_02',
+        title: 'MAKE IT STATIC',
+        prompt: 'The billing daemon hides inside the ad scheduler. Kill only the tax module, or flood the whole tower with raw static and send a louder message.',
+        choices: [
+          {
+            id: 'nt_precise',
+            label: 'Kill only the tax module',
+            statCheck: { stat: 'wire', threshold: 12 },
+            pass: {
+              text: 'The daemon dies without touching the ad feed. Screens across Lowport stop bleeding microfees.',
+              branch: 'complete',
+              effects: { rewardModifier: 0.15 },
+            },
+            fail: {
+              text: 'The daemon hides behind three schedulers. You kill it, but the tower hiccups loud enough for corp techs to notice.',
+              branch: 'complete',
+            },
+          },
+          {
+            id: 'nt_flood',
+            label: 'Flood the tower with raw static',
+            outcome: {
+              text: 'Every ad becomes white noise for six beautiful minutes. Static calls that a receipt.',
+              branch: 'complete',
+              effects: { rewardModifier: 0.1 },
+            },
+          },
+        ],
+      },
+    ],
+    successNarration: 'Lowport screens stop paying the invisible tax. Pyre says Static heard the silence underneath the noise.',
+    failureNarration: 'The tax daemon respawns by noon. Static pays for the window and complains about permanence.',
+    abortNarration: 'You left the tower charging the poor by the pixel. Static has a long memory for sellouts and quitters.',
+  },
 ];

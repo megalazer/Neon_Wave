@@ -56,10 +56,11 @@ neon-terminus/
     │   │   ├── flavor.js        42 flavor events
     │   │   └── choices.js       19 choice events
     │   ├── contracts/
-    │   │   ├── low.js           4 contracts
+    │   │   ├── low.js           10 contracts
     │   │   ├── mid.js           4 contracts
     │   │   ├── high.js          3 contracts
-    │   │   └── faction.js       8 contracts
+    │   │   ├── faction.js       8 contracts
+    │   │   └── neutral.js       5 contracts
     │   └── enemies.js / encounters.js  faction-tagged roster (21) + named/boss encounters
     ├── screens/
     │   ├── LogScreen.js         NEURAL tab — turn feed + ADVANCE_CYCLE
@@ -128,7 +129,7 @@ character, crew, world, log, event, contract, vendor, exchange, faction, achieve
 42 flavor + 19 choice. Cooldown 4 turns, escalating choice probability. `ChoiceModal` handles both random events and contract stages.
 
 ### Contracts
-19 contracts (low/mid/high/faction) across 4 phase files. Lifecycle: feed → active → (combat) → resolving → feed. Multi-stage with stat checks. Combat bridge via `pendingCombatResult`.
+30 contracts (low/mid/high/faction/neutral) across 5 phase files; 10 are combat-capable. Lifecycle: feed → active → (combat) → resolving → feed. Multi-stage with stat checks. Combat bridge via `pendingCombatResult`.
 
 ### Combat
 Dice-driven in `testCombatSlice`. Round phases: roll→targeting→executing→enemy_turn→endRound. Cyber pool from team neural. Enemies are faction-tagged (`data/enemies.js`); fights are built by `engine/encounterGenerator.js` from the contract's faction+tier+party level (level-scaled HP/damage), or an explicit named/boss `encounterId`. Enemy moves (basic/focus/aoe/ramp/priority/telegraph + block) resolve via `engine/enemyTurn.js`. Victory/defeat → `handleCombatResolution` if contract-active.
