@@ -20,10 +20,14 @@ import { colors } from '../theme/colors';
 import { RECHARGE_ITEMS } from '../data/rechargeItems';
 import { calculateTeamLevel } from '../data/leveling';
 import RecruitCard from '../components/recruit/RecruitCard';
+import PortraitPreview from '../components/recruit/PortraitPreview';
+import PortraitLabModal from '../components/recruit/PortraitLabModal';
 
 const BANNER_HEIGHT = 90;
 const NAV_HEIGHT = 72;
 const MAX_CREW = 4;
+
+
 
 function SectionHeader({ icon, label, color }) {
   return (
@@ -61,6 +65,13 @@ function RosterRow({ member, index, onDismiss }) {
     <View style={[styles.rosterRow, member.isPlayer && styles.rosterRowPlayer]}>
       <View style={styles.rosterLeft}>
         <Text style={styles.rosterIndex}>{indexLabel}</Text>
+        <PortraitPreview
+          character={member}
+          portrait={member.portrait}
+          size={44}
+          borderColor={member.isPlayer ? colors.secondary : colors.primary}
+          backgroundColor={colors.surfaceContainerHigh}
+        />
         <View>
           <Text style={styles.rosterName}>{member.name}</Text>
           {member.isPlayer && <Text style={styles.rosterPlayerTag}>[OPERATOR]</Text>}
@@ -114,7 +125,14 @@ function RecipientSelector({ members, selectedId, onSelect }) {
             onPress={() => onSelect(m.id)}
             activeOpacity={0.7}
           >
-            <MaterialIcons name="person" size={18} color={active ? colors.primary : colors.outline} />
+            <PortraitPreview
+              character={m}
+              portrait={m.portrait}
+              size={20}
+              borderColor="transparent"
+              backgroundColor="transparent"
+              showMissingHint={false}
+            />
             <Text style={[styles.recipientName, active && styles.recipientNameActive]} numberOfLines={1}>
               {m.name}
             </Text>
@@ -232,6 +250,7 @@ export default function HavenScreen() {
   const scrollRef = useRef(null);
   const [confirmDismiss, setConfirmDismiss] = useState(null);
   const [selectedRecipient, setSelectedRecipient] = useState(null);
+  const [portraitLabOpen, setPortraitLabOpen] = useState(false);
 
   const availableOperatives  = useStore((s) => s.crew.availableOperatives);
   const members              = useStore((s) => s.crew.members);
@@ -276,6 +295,8 @@ export default function HavenScreen() {
     scrollRef.current?.scrollTo({ y: 0, animated: true });
   }, []);
 
+
+
   const rosterFull = members.length >= MAX_CREW;
   const emptySlotCount = Math.max(0, MAX_CREW - members.length);
 
@@ -294,6 +315,15 @@ export default function HavenScreen() {
         contractsCompleted={completedContracts.length}
         turnsSinceLastSpawn={turnsSinceLastSpawn}
       />
+
+      {/* Portrait Lab opener */}
+      <View style={styles.section}>
+        <SectionHeader icon="face" label="[PORTRAIT_LAB]" color={colors.tertiaryContainer} />
+        <TouchableOpacity style={styles.labOpenBtn} onPress={() => setPortraitLabOpen(true)} activeOpacity={0.8}>
+          <MaterialIcons name="open-in-full" size={14} color={colors.tertiaryContainer} />
+          <Text style={styles.labOpenBtnText}>[OPEN_PORTRAIT_LAB]</Text>
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.section}>
         <SectionHeader icon="group-add" label="[AVAILABLE_OPERATIVES]" color={colors.primary} />
@@ -356,8 +386,16 @@ export default function HavenScreen() {
         ))}
       </View>
 
+
     </ScrollView>
 
+
+    <PortraitLabModal
+      visible={portraitLabOpen}
+      onClose={() => setPortraitLabOpen(false)}
+      completedContracts={completedContracts.length}
+      currentTurn={currentTurn}
+    />
     <ConfirmModal
       visible={confirmDismiss !== null}
       variant="destructive"
@@ -623,6 +661,25 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
+
+  labOpenBtn: {
+    borderWidth: 1,
+    borderColor: colors.tertiaryContainer,
+    borderRadius: 0,
+    paddingVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    backgroundColor: `${colors.tertiaryContainer}10`,
+  },
+  labOpenBtnText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 10,
+    color: colors.tertiaryContainer,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
 });
 
 const team = StyleSheet.create({
@@ -714,3 +771,5 @@ const pool = StyleSheet.create({
     textTransform: 'uppercase',
   },
 });
+
+const lab = {};

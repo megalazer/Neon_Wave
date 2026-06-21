@@ -12,6 +12,7 @@ import EquipPreviewModal from '../components/cyber/EquipPreviewModal';
 import QuickhackModuleSection from '../components/cyber/QuickhackModuleSection';
 import MemberStatsModal from '../components/cyber/MemberStatsModal';
 import VendorTab from '../components/cyber/VendorTab';
+import PortraitPreview from '../components/recruit/PortraitPreview';
 
 const BANNER_HEIGHT  = 90;
 const NAV_HEIGHT     = 72;
@@ -63,14 +64,13 @@ function PersonnelCard({ member, selected, onPress }) {
       activeOpacity={0.85}
     >
       <View style={styles.personnelTop}>
-        <View style={[styles.portrait, { borderColor: selected ? colors.primaryFixedDim : colors.outline }]}>
-          <MaterialIcons
-            name="person"
-            size={28}
-            color={member.classColor}
-            style={{ opacity: selected ? 0.9 : 0.5 }}
-          />
-        </View>
+        <PortraitPreview
+          character={member}
+          portrait={member.portrait}
+          size={46}
+          borderColor={selected ? colors.primaryFixedDim : colors.outline}
+          backgroundColor={colors.surfaceContainerHigh}
+        />
         <View style={styles.personnelInfo}>
           <Text
             style={[styles.personnelName, { color: selected ? colors.primaryFixedDim : colors.outline }]}
@@ -545,15 +545,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     marginBottom: 10,
-  },
-  portrait: {
-    width: 48,
-    height: 48,
-    borderWidth: 1,
-    backgroundColor: colors.surfaceContainerHigh,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
   },
   personnelInfo: {
     flex: 1,

@@ -7,6 +7,7 @@ import { CYBERWARE_ITEMS } from '../../data/cyberware';
 import { getFaction } from '../../data/factions';
 import AnimatedRainbowBorder from './AnimatedRainbowBorder';
 import RecruitButton from './RecruitButton';
+import PortraitPreview from './PortraitPreview';
 
 const CLASS_ICONS = {
   netrunner:      'psychology',
@@ -49,21 +50,22 @@ export default function RecruitCard({ recruit, credits, rosterFull, currentTurn,
   const cardContent = (
     <>
       {/* Top badge */}
-      <View style={[styles.qualityChip, { backgroundColor: quality === 'legendary' ? 'transparent' : cfg.color }]}>
+      <View style={[styles.qualityChip, { backgroundColor: quality === 'legendary' ? 'transparent' : cfg?.color || colors.outline }]}>
         <Text style={[styles.qualityChipText, quality === 'legendary' && styles.legendaryChipText]}>
-          {cfg.label}
+          {cfg?.label || 'OPERATIVE'}
         </Text>
       </View>
 
       {/* Portrait */}
-      <View style={[styles.portrait, { borderColor: portraitColor }]}>
-        <MaterialIcons
-          name={CLASS_ICONS[classKey(recruit.class)] || 'person'}
-          size={52}
-          color={portraitColor}
-          style={{ opacity: 0.75 }}
-        />
-      </View>
+      <PortraitPreview
+        size={null}
+        character={recruit}
+        portrait={recruit.portrait}
+        borderColor={portraitColor}
+        backgroundColor={colors.surfaceContainerHigh}
+        fallbackIcon={CLASS_ICONS[classKey(recruit.class)] || 'person'}
+        style={styles.portrait}
+      />
 
       {/* Identity */}
       <View style={styles.identity}>
@@ -201,7 +203,8 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   portrait: {
-    height: 112,
+    width: '100%',
+    aspectRatio: 1,
     backgroundColor: colors.surfaceContainerHigh,
     borderWidth: 1,
     alignItems: 'center',

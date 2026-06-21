@@ -235,7 +235,7 @@ export const createDevSlice = (set, get) => ({
       if (state.achievements) state.achievements.run.unlocked = [];
       // Faction rep is run-scoped — reset on flatline
       if (state.faction) for (const fid of Object.keys(state.faction.rep)) state.faction.rep[fid] = 0;
-      if (state.relationship) state.relationship.friends = {};
+      if (state.relationship) { state.relationship.friends = {}; state.relationship.lastOutcome = null; }
       if (state.contract) state.contract.fixerRep = {};
     }),
 
@@ -268,7 +268,7 @@ export const createDevSlice = (set, get) => ({
         state.achievements.toastQueue       = [];
       }
       if (state.faction) for (const fid of Object.keys(state.faction.rep)) state.faction.rep[fid] = 0;
-      if (state.relationship) state.relationship.friends = {};
+      if (state.relationship) { state.relationship.friends = {}; state.relationship.lastOutcome = null; }
       if (state.contract) state.contract.fixerRep = {};
     }),
 

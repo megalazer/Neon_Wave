@@ -47,11 +47,11 @@ function fmtCR(n) {
 // ─── SegmentedTabs ────────────────────────────────────────────────────────────
 function SegmentedTabs({ active, onSelect, achievementsUnread }) {
   const TABS = [
-    { id: 'assets', label: 'ASSETS' },
-    { id: 'exchange', label: 'EXCHANGE' },
-    { id: 'factions', label: 'FACTIONS' },
-    { id: 'relations', label: 'BONDS' },
-    { id: 'achievements', label: 'TROPHIES', dot: achievementsUnread },
+    { id: 'assets', label: 'ASSETS', icon: 'account-balance-wallet' },
+    { id: 'exchange', label: 'EXCHANGE', icon: 'show-chart' },
+    { id: 'factions', label: 'FACTIONS', icon: 'groups' },
+    { id: 'relations', label: 'BONDS', icon: 'favorite' },
+    { id: 'achievements', label: 'TROPHIES', icon: 'emoji-events', dot: achievementsUnread },
   ];
   return (
     <View style={styles.segmented}>
@@ -67,6 +67,7 @@ function SegmentedTabs({ active, onSelect, achievementsUnread }) {
             }}
             activeOpacity={0.8}
           >
+            <MaterialIcons name={tab.icon} size={20} color={isActive ? colors.primary : colors.outline} />
             <Text style={[styles.segTabText, isActive && styles.segTabTextActive]}>
               {tab.label}
             </Text>
@@ -865,18 +866,12 @@ function GiftPicker({ visible, onPick, onCancel }) {
 }
 
 // ─── RelationCard ─────────────────────────────────────────────────────────────
-function RelationCard({ entity, kind, tier, pct, bond, accent, credits, onInteract, onFavor }) {
-  // Filter interactions by kind
-  const allowed = INTERACTIONS.filter((ix) => {
-    if (kind === 'fixer') return ix.id === 'int_talk' || ix.id === 'int_gift';
-    return true;
-  });
-
+function RelationCard({ entity, kind, tier, pct, bond, accent, onOpen }) {
   const tierRank = (BOND_TIER_RANK[tier] ?? 0);
   const perks = getBondPerks(tierRank);
 
   return (
-    <View style={[relStyles.card, { borderLeftColor: accent }]}>
+    <TouchableOpacity style={[relStyles.card, { borderLeftColor: accent }]} onPress={onOpen} activeOpacity={0.85}>
       {/* Header: name + faction tag */}
       <View style={relStyles.headerRow}>
         <View style={relStyles.titleBlock}>
@@ -893,6 +888,11 @@ function RelationCard({ entity, kind, tier, pct, bond, accent, credits, onIntera
             <Text style={[relStyles.tagText, { color: accent }]}>{entity.tag}</Text>
           </View>
         )}
+      </View>
+
+      {/* Heart */}
+      <View style={relStyles.heartRow}>
+        <MaterialIcons name="favorite" size={18} color={accent} />
       </View>
 
       {/* Bond bar */}
@@ -915,56 +915,192 @@ function RelationCard({ entity, kind, tier, pct, bond, accent, credits, onIntera
         </View>
       )}
 
-      {/* Interaction buttons */}
-      <View style={relStyles.btnRow}>
-        {allowed.map((ix) => {
-          const disabled = ix.creditCost > credits || (ix.minTier && tierRank < (BOND_TIER_RANK[ix.minTier] ?? 0));
-          return (
-            <TouchableOpacity
-              key={ix.id}
-              style={[relStyles.btn, disabled && relStyles.btnDisabled, { borderColor: disabled ? colors.outline : accent }]}
-              onPress={() => {
-                if (disabled) return;
-                if (ix.id === 'int_gift') {
-                  onInteract(ix.id, null); // caller opens picker
-                } else {
-                  onInteract(ix.id);
-                }
-              }}
-              activeOpacity={0.7}
-            >
-              <Text style={[relStyles.btnText, { color: disabled ? colors.outline : accent }]}>
-                {ix.label}
-              </Text>
-              {ix.creditCost > 0 && (
-                <Text style={[relStyles.btnCost, { color: disabled ? colors.outline : accent }]}>
-                  {ix.creditCost}CR
-                </Text>
-              )}
-            </TouchableOpacity>
-          );
-        })}
-        {/* Favor button (friends only) */}
-        {kind === 'friend' && onFavor && !entity.favorUsed && tierRank >= 3 && (
-          <TouchableOpacity
-            style={[relStyles.btn, { borderColor: colors.tertiaryFixed }]}
-            onPress={() => onFavor(entity.id)}
-            activeOpacity={0.7}
-          >
-            <Text style={[relStyles.btnText, { color: colors.tertiaryFixed }]}>
-              [FAVOR]
-            </Text>
-          </TouchableOpacity>
-        )}
+      {/* Tap hint */}
+      <View style={relStyles.tapHintRow}>
+        <Text style={relStyles.tapHint}>TAP_TO_INTERACT</Text>
+        <MaterialIcons name="chevron-right" size={14} color={colors.outline} />
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
+
+// ─── InteractionMenu ──────────────────────────────────────────────────────────
+function InteractionMenu({ entity, kind, tier, pct, bond, accent, credits, turnNumber, lastOutcome, onInteract, onFavor, onBack }) {
+  const allowed = INTERACTIONS.filter((ix) => {
+    if (kind === 'fixer') return ix.id === 'int_talk' || ix.id === 'int_gift';
+    return true;
+  });
+  const tierRank = (BOND_TIER_RANK[tier] ?? 0);
+  const perks = getBondPerks(tierRank);
+
+  return (
+    <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      {/* Back button */}
+      <TouchableOpacity style={relStyles.menuBack} onPress={onBack}>
+        <MaterialIcons name="arrow-back" size={16} color={colors.primary} />
+        <Text style={relStyles.menuBackText}>BACK</Text>
+      </TouchableOpacity>
+
+      {/* Header: card visuals */}
+      <View style={[relStyles.card, { borderLeftColor: accent }]}>
+        <View style={relStyles.headerRow}>
+          <View style={relStyles.titleBlock}>
+            <Text style={[relStyles.name, { color: accent }]}>{entity.name || entity.handle}</Text>
+            {entity.class && (
+              <Text style={relStyles.role}>{entity.class.toUpperCase()}</Text>
+            )}
+            {entity.bio && (
+              <Text style={relStyles.bio} numberOfLines={4}>{entity.bio}</Text>
+            )}
+          </View>
+          {entity.tag && (
+            <View style={[relStyles.tagChip, { borderColor: accent }]}>
+              <Text style={[relStyles.tagText, { color: accent }]}>{entity.tag}</Text>
+            </View>
+          )}
+        </View>
+        <View style={relStyles.heartRow}>
+          <MaterialIcons name="favorite" size={18} color={accent} />
+        </View>
+        <View style={relStyles.bondRow}>
+          <Text style={[relStyles.tier, { color: accent }]}>{tier}</Text>
+          <Text style={relStyles.bondValue}>{bond}</Text>
+        </View>
+        <View style={relStyles.barTrack}>
+          <View style={[relStyles.barFill, { width: `${Math.max(2, pct)}%`, backgroundColor: accent }]} />
+        </View>
+        {perks.length > 0 && (
+          <View style={relStyles.perksRow}>
+            {perks.map((p, i) => (
+              <Text key={i} style={[relStyles.perkTag, { color: accent }]}>
+                {p.tag}
+              </Text>
+            ))}
+          </View>
+        )}
+      </View>
+
+      {/* Outcome banner */}
+      {lastOutcome && lastOutcome.id === entity.id && (
+        <View style={[relStyles.outcomeBanner, { borderLeftColor: (lastOutcome.intensity === 'rejected' || lastOutcome.intensity === 'insincere') ? colors.error : colors.tertiaryFixed }]}>
+          <Text style={relStyles.outcomeText}>{lastOutcome.text}</Text>
+          <Text style={relStyles.outcomeDelta}>{lastOutcome.bondDelta >= 0 ? '+' : ''}{lastOutcome.bondDelta} BOND</Text>
+        </View>
+      )}
+
+      {/* Interaction rows */}
+      {allowed.map((ix) => {
+        const locked = ix.minTier && tierRank < (BOND_TIER_RANK[ix.minTier] ?? 0);
+        const tooPoor = ix.creditCost > credits;
+        const onCd = ix.cooldown && entity.lastBondTurn != null && (turnNumber - entity.lastBondTurn) < ix.cooldown;
+        const disabled = locked || tooPoor || onCd;
+        const meta = locked ? `LOCKED · ${ix.minTier}` : onCd ? 'COOLDOWN' : ix.creditCost > 0 ? `${ix.creditCost} CR` : '';
+        return (
+          <TouchableOpacity
+            key={ix.id}
+            style={[relStyles.menuRow, disabled && relStyles.btnDisabled, { borderLeftColor: accent }]}
+            disabled={disabled}
+            onPress={() => onInteract(ix.id)}
+          >
+            <MaterialIcons name={ix.icon} size={18} color={accent} />
+            <View style={relStyles.menuRowText}>
+              <Text style={[relStyles.menuRowLabel, { color: accent }]}>{ix.label}</Text>
+              <Text style={relStyles.menuRowDesc}>{ix.desc}</Text>
+            </View>
+            {meta ? <Text style={relStyles.menuRowMeta}>{meta}</Text> : null}
+          </TouchableOpacity>
+        );
+      })}
+
+      {/* Favor row (friends only) */}
+      {kind === 'friend' && onFavor && !entity.favorUsed && tierRank >= 3 && (
+        <TouchableOpacity
+          style={[relStyles.menuRow, { borderLeftColor: colors.tertiaryFixed }]}
+          onPress={() => onFavor(entity.id)}
+        >
+          <MaterialIcons name="handshake" size={18} color={colors.tertiaryFixed} />
+          <View style={relStyles.menuRowText}>
+            <Text style={[relStyles.menuRowLabel, { color: colors.tertiaryFixed }]}>[CALL_FAVOR]</Text>
+            <Text style={relStyles.menuRowDesc}>Cash in a one-time favor.</Text>
+          </View>
+        </TouchableOpacity>
+      )}
+    </ScrollView>
+  );
+}
 // ─── RelationsTab ─────────────────────────────────────────────────────────────
-function RelationsTab({ crewMembers, friends, fixerRep, path, credits, onInteractCrew, onInteractFriend, onInteractFixer, onFavor }) {
+function RelationsTab({ crewMembers, friends, fixerRep, path, credits, onInteractCrew, onInteractFriend, onInteractFixer, onFavor, lastOutcome, turnNumber }) {
   const nonPlayerCrew = (crewMembers || []).filter((m) => !m.isPlayer && m.alive !== false && (m.vitals?.current ?? 1) > 0);
   const metFriends = Object.entries(friends || {}).filter(([, f]) => f.met);
+  const [selected, setSelected] = useState(null); // { kind, id }
+
+  // If a contact is selected, render InteractionMenu
+  if (selected) {
+    let menuEntity = null;
+    let menuKind = null;
+    let menuTier = null;
+    let menuPct = null;
+    let menuBond = null;
+    let menuAccent = colors.primary;
+    let menuLastBondTurn = null;
+
+    if (selected.kind === 'crew') {
+      const m = crewMembers.find((c) => c.id === selected.id);
+      if (!m || m.alive === false || (m.vitals?.current ?? 0) <= 0) { setSelected(null); return null; }
+      const b = m.bond ?? 0;
+      const factionDef = FACTIONS[m.faction];
+      menuEntity = { id: m.id, name: m.name, class: m.class, tag: factionDef?.tag, bio: m.backstory, favorUsed: false, lastBondTurn: m.lastBondTurn };
+      menuKind = 'crew';
+      menuTier = bondTierFromValue(b);
+      menuPct = Math.round(((b - BOND_MIN) / (BOND_MAX - BOND_MIN)) * 100);
+      menuBond = b;
+      menuAccent = m.classColor || colors.primary;
+    } else if (selected.kind === 'friend') {
+      const friend = friends[selected.id];
+      const friendDef = FRIENDS.find((f) => f.id === selected.id);
+      if (!friend?.met || !friendDef) { setSelected(null); return null; }
+      const b = friend.bond ?? 0;
+      const factionDef = FACTIONS[friendDef.faction];
+      menuEntity = { id: selected.id, name: friendDef.display || friendDef.name, tag: factionDef?.tag, bio: friendDef.bio, favorUsed: friend.favorUsed, lastBondTurn: friend.lastBondTurn };
+      menuKind = 'friend';
+      menuTier = bondTierFromValue(b);
+      menuPct = Math.round(((b - BOND_MIN) / (BOND_MAX - BOND_MIN)) * 100);
+      menuBond = b;
+      menuAccent = factionDef?.accent || colors.secondary;
+    } else if (selected.kind === 'fixer') {
+      const f = FIXERS.find((x) => x.id === selected.id);
+      if (!f) { setSelected(null); return null; }
+      const rep = fixerRep?.[f.id] ?? 0;
+      menuEntity = { id: f.id, name: f.name, handle: f.handle, tag: null, bio: f.bio };
+      menuKind = 'fixer';
+      menuTier = fixerTierFromRep(rep);
+      menuPct = Math.min(100, Math.round((rep / 20) * 100));
+      menuBond = rep;
+      menuAccent = f.color;
+    }
+
+    return (
+      <InteractionMenu
+        entity={menuEntity}
+        kind={menuKind}
+        tier={menuTier}
+        pct={menuPct}
+        bond={menuBond}
+        accent={menuAccent}
+        credits={credits}
+        turnNumber={turnNumber}
+        lastOutcome={lastOutcome}
+        onBack={() => setSelected(null)}
+        onInteract={(iid, gc) => {
+          if (selected.kind === 'crew') onInteractCrew(selected.id, iid, gc);
+          else if (selected.kind === 'friend') onInteractFriend(selected.id, iid, gc);
+          else onInteractFixer(selected.id, iid, gc);
+        }}
+        onFavor={onFavor}
+      />
+    );
+  }
 
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -999,6 +1135,7 @@ function RelationsTab({ crewMembers, friends, fixerRep, path, credits, onInterac
               tag: factionDef?.tag,
               bio: m.backstory,
               favorUsed: false,
+              lastBondTurn: m.lastBondTurn,
             };
             return (
               <RelationCard
@@ -1009,8 +1146,7 @@ function RelationsTab({ crewMembers, friends, fixerRep, path, credits, onInterac
                 pct={pct}
                 bond={b}
                 accent={m.classColor || colors.primary}
-                credits={credits}
-                onInteract={(interactionId, giftCat) => onInteractCrew(m.id, interactionId, giftCat)}
+                onOpen={() => setSelected({ kind: 'crew', id: m.id })}
               />
             );
           })
@@ -1036,6 +1172,7 @@ function RelationsTab({ crewMembers, friends, fixerRep, path, credits, onInterac
               tag: factionDef?.tag,
               bio: friendDef.bio,
               favorUsed: friend.favorUsed,
+              lastBondTurn: friend.lastBondTurn,
             };
             return (
               <RelationCard
@@ -1046,9 +1183,7 @@ function RelationsTab({ crewMembers, friends, fixerRep, path, credits, onInterac
                 pct={pct}
                 bond={b}
                 accent={factionDef?.accent || colors.secondary}
-                credits={credits}
-                onInteract={(interactionId, giftCat) => onInteractFriend(fid, interactionId, giftCat)}
-                onFavor={onFavor}
+                onOpen={() => setSelected({ kind: 'friend', id: fid })}
               />
             );
           })
@@ -1079,8 +1214,7 @@ function RelationsTab({ crewMembers, friends, fixerRep, path, credits, onInterac
               pct={pct}
               bond={rep}
               accent={f.color}
-              credits={credits}
-              onInteract={(interactionId, giftCat) => onInteractFixer(f.id, interactionId, giftCat)}
+              onOpen={() => setSelected({ kind: 'fixer', id: f.id })}
             />
           );
         })}
@@ -1124,6 +1258,8 @@ export default function LifestyleScreen() {
   const interactWithFriend = useStore((s) => s.interactWithFriend);
   const interactWithFixer  = useStore((s) => s.interactWithFixer);
   const useFriendFavor     = useStore((s) => s.useFriendFavor);
+  const lastOutcome        = useStore((s) => s.relationship.lastOutcome);
+  const turnNumber         = useStore((s) => s.character.turnNumber);
 
   const [giftPickerTarget, setGiftPickerTarget] = useState(null); // { kind:'crew'|'friend'|'fixer', id:string }
 
@@ -1217,6 +1353,8 @@ export default function LifestyleScreen() {
             }
           }}
           onFavor={useFriendFavor}
+          lastOutcome={lastOutcome}
+          turnNumber={turnNumber}
         />
       ) : activeSubTab === 'achievements' ? (
         <AchievementsTab
@@ -1309,11 +1447,11 @@ const styles = StyleSheet.create({
   },
   segTab: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 11,
+    gap: 3,
+    paddingVertical: 9,
   },
   segTabActive: {
     backgroundColor: `${colors.primary}0F`,
@@ -1322,7 +1460,7 @@ const styles = StyleSheet.create({
   },
   segTabText: {
     fontFamily: 'KodeMono_700Bold',
-    fontSize: 8,
+    fontSize: 9,
     color: colors.outline,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
@@ -2071,33 +2209,73 @@ const relStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: `${colors.outline}4D`,
   },
-  // Buttons
-  btnRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
+  // Heart
+  heartRow: { alignItems: 'center', paddingVertical: 2 },
+  // Tap hint
+  tapHintRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 2 },
+  tapHint: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    color: colors.outline,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
   },
-  btn: {
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    flexDirection: 'row',
+  // Interaction menu
+  menuBack: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4 },
+  menuBackText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 10,
+    color: colors.primary,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  outcomeBanner: {
+    borderLeftWidth: 3,
+    backgroundColor: colors.surfaceContainerLow,
+    padding: 10,
     gap: 4,
-    alignItems: 'center',
   },
-  btnDisabled: {
-    opacity: 0.4,
+  outcomeText: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 11,
+    color: colors.onSurfaceVariant,
+    lineHeight: 16,
   },
-  btnText: {
+  outcomeDelta: {
     fontFamily: 'KodeMono_700Bold',
     fontSize: 9,
+    color: colors.outline,
+    letterSpacing: 1,
+  },
+  btnDisabled: { opacity: 0.4 },
+  menuRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderWidth: 1,
+    borderColor: `${colors.outline}4D`,
+    borderLeftWidth: 3,
+    backgroundColor: colors.surfaceContainerLow,
+    padding: 12,
+  },
+  menuRowText: { flex: 1, gap: 2 },
+  menuRowLabel: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 11,
     letterSpacing: 1,
     textTransform: 'uppercase',
   },
-  btnCost: {
+  menuRowDesc: {
     fontFamily: 'KodeMono_400Regular',
+    fontSize: 9,
+    color: colors.onSurfaceVariant,
+  },
+  menuRowMeta: {
+    fontFamily: 'KodeMono_700Bold',
     fontSize: 8,
-    letterSpacing: 0.5,
+    color: colors.outline,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   // Empty state
   empty: {

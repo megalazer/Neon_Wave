@@ -1,5 +1,5 @@
 import {
-  resolveInteraction, getInteraction, bondTierFromValue,
+  resolveInteraction, getInteraction, bondTierFromValue, pickDialogue,
   BOND_TIER_RANK, BOND_MIN, BOND_MAX, PATH_RELATIONSHIP_MODIFIERS,
 } from '../../data/relationships';
 import { applyRepToDraft } from './factionSlice';
@@ -10,18 +10,10 @@ function clamp(v, lo, hi) {
   return Math.max(lo, Math.min(hi, v));
 }
 
-// ── Intensity → toast line ──────────────────────────────────────────────────
-
-const INTENSITY_LINES = {
-  success:   'The gesture lands.',
-  partial:   'They appreciate the attempt, barely.',
-  insincere: "They see right through it. Doesn't land.",
-};
-
 // ── Internal apply helper ────────────────────────────────────────────────────
 // Mutates the immer draft: bond, morale, credits, faction bleed, toast, log.
 
-function _applyResult(state, target, descriptor, displayName, accent) {
+function _applyResult(state, target, descriptor, displayName, accent, interactionId, entityId) {
   if (!descriptor.ok) return;
 
   target.bond = descriptor.newBond;
@@ -44,7 +36,7 @@ function _applyResult(state, target, descriptor, displayName, accent) {
   }
 
   // Toast (reuse crewInteraction toast channel)
-  const line = INTENSITY_LINES[descriptor.intensity] || INTENSITY_LINES.success;
+  const line = pickDialogue(interactionId, descriptor.intensity).replace(/\{name\}/g, displayName);
   state.world.crewInteraction.activeToast = {
     nameA: displayName,
     nameB: null,
@@ -59,7 +51,9 @@ function _applyResult(state, target, descriptor, displayName, accent) {
     ? 'TENSION'
     : descriptor.intensity === 'partial'
       ? 'AWKWARD'
-      : 'BOND';
+      : descriptor.intensity === 'rejected'
+        ? 'REJECTED'
+        : 'BOND';
   const deltaStr = descriptor.bondDelta >= 0
     ? `+${descriptor.bondDelta}`
     : String(descriptor.bondDelta);
@@ -69,7 +63,7 @@ function _applyResult(state, target, descriptor, displayName, accent) {
     text: `${tag}: ${displayName} — ${line} (${deltaStr} bond)`,
     timestamp: new Date().toISOString(),
     type: 'ambient',
-    accent: descriptor.intensity === 'insincere' ? 'error' : 'tertiary',
+    accent: (descriptor.intensity === 'insincere' || descriptor.intensity === 'rejected') ? 'error' : 'tertiary',
   });
 
   // Tier-up line
@@ -83,6 +77,15 @@ function _applyResult(state, target, descriptor, displayName, accent) {
       accent: 'tertiary',
     });
   }
+
+  state.relationship.lastOutcome = {
+    id: entityId,
+    interactionId,
+    text: line,
+    intensity: descriptor.intensity,
+    bondDelta: descriptor.bondDelta,
+    ts: Date.now(),
+  };
 }
 
 // ── Slice factory ────────────────────────────────────────────────────────────
@@ -90,6 +93,7 @@ function _applyResult(state, target, descriptor, displayName, accent) {
 export const createRelationshipSlice = (set, get) => ({
   relationship: {
     friends: {},   // { [friendId]: { bond, lastBondTurn, met, favorUsed } }
+    lastOutcome: null,
   },
 
   // ── Crew interactions ──────────────────────────────────────────────────────
@@ -124,7 +128,7 @@ export const createRelationshipSlice = (set, get) => ({
 
       if (!descriptor.ok) return;
 
-      _applyResult(state, member, descriptor, member.name, member.classColor || colors.primary);
+      _applyResult(state, member, descriptor, member.name, member.classColor || colors.primary, interactionId, member.id);
 
       // Increment recent counter on success
       member.recentInteractions[interactionId] = recentSame + 1;
@@ -165,7 +169,7 @@ export const createRelationshipSlice = (set, get) => ({
 
       if (!descriptor.ok) return;
 
-      _applyResult(state, friend, descriptor, friendDef.display || friendDef.name, friendDef.accentColor || colors.primary);
+      _applyResult(state, friend, descriptor, friendDef.display || friendDef.name, friendDef.accentColor || colors.primary, interactionId, friendId);
 
       friend.recentInteractions[interactionId] = recentSame + 1;
     }),
@@ -214,14 +218,23 @@ export const createRelationshipSlice = (set, get) => ({
       const FIXERS_DATA = require('../../data/fixers').FIXERS;
       const fixerDef = FIXERS_DATA.find((f) => f.id === fixerId);
       const display = fixerDef?.handle || fixerId;
+      const line = pickDialogue(interactionId, descriptor.intensity).replace(/\{name\}/g, display);
       state.log.entries.push({
         id: `rel_fixer_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         turn: state.character.turnNumber,
-        text: `FIXER: ${display} — ${INTENSITY_LINES.success} (+${gain} fixer standing)`,
+        text: `FIXER: ${display} — ${line} (+${gain} fixer standing)`,
         timestamp: new Date().toISOString(),
         type: 'ambient',
         accent: fixerDef?.color || colors.outline,
       });
+      state.relationship.lastOutcome = {
+        id: fixerId,
+        interactionId,
+        text: line,
+        intensity: descriptor.intensity,
+        bondDelta: gain,
+        ts: Date.now(),
+      };
     }),
 
   // ── Friend favors ──────────────────────────────────────────────────────────
@@ -311,6 +324,7 @@ export const createRelationshipSlice = (set, get) => ({
   resetRelationships: () =>
     set((state) => {
       state.relationship.friends = {};
+      state.relationship.lastOutcome = null;
     }),
 
   // ── Dev ────────────────────────────────────────────────────────────────────

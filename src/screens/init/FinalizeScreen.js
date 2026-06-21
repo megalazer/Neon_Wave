@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Modal, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Animated, {
@@ -16,14 +16,22 @@ import { colors } from '../../theme/colors';
 import { labelCaps, fontStyles } from '../../theme/fonts';
 import InitHeader from '../../components/init/InitHeader';
 import InitFooter from '../../components/init/InitFooter';
+import PortraitPreview from '../../components/recruit/PortraitPreview';
+import { generatePortrait, seededPortraitRng } from '../../engine/portraitGenerator';
 
 const HEADER_H = 90;
 
 const STAT_KEYS = ['chrome', 'edge', 'ghost', 'face', 'grit', 'wire'];
 
+function portraitClassForPath(path) {
+  const classMap = { corpo: 'FIXER', street_kid: 'STREET_SAMURAI', nomad: 'GHOST' };
+  return classMap[path] || 'STREET_SAMURAI';
+}
+
 // --- PortraitFrame ---
-function PortraitFrame({ draft }) {
+function PortraitFrame({ draft, portraitSpec }) {
   const handleName = draft.name || 'UNKNOWN';
+  const previewCharacter = { name: handleName, class: portraitClassForPath(draft.path) };
 
   return (
     <View style={portrait.frame}>
@@ -33,9 +41,15 @@ function PortraitFrame({ draft }) {
       <View style={[portrait.bracket, portrait.bBR, { borderColor: colors.secondary }]} />
 
       <View style={portrait.center}>
-        <MaterialIcons name="person" size={72} color={`${colors.primary}70`} />
+        <PortraitPreview
+          character={previewCharacter}
+          portrait={portraitSpec}
+          size={128}
+          borderColor="transparent"
+          backgroundColor="transparent"
+        />
         <Text style={portrait.handle}>{handleName}</Text>
-        <Text style={portrait.label}>NEURAL_AVATAR_NOT_RENDERED</Text>
+        <Text style={portrait.label}>NEURAL_AVATAR_RENDERED</Text>
       </View>
 
       <View style={portrait.hud}>
@@ -197,6 +211,19 @@ export default function FinalizeScreen({ draft, onBack, onComplete }) {
     opacity: glitchOpacity.value,
   }));
 
+  const portraitCharacter = useMemo(() => ({
+    name: draft.name || 'UNKNOWN',
+    class: portraitClassForPath(draft.path),
+  }), [draft.name, draft.path]);
+
+  const portraitSpec = useMemo(
+    () => generatePortrait(
+      portraitCharacter,
+      seededPortraitRng(`${draft.path}_${draft.name || 'operator'}`),
+    ),
+    [portraitCharacter, draft.path, draft.name],
+  );
+
   const handleInitialize = useCallback(() => {
     if (committed.current) return;
     committed.current = true;
@@ -218,9 +245,9 @@ export default function FinalizeScreen({ draft, onBack, onComplete }) {
     );
 
     setTimeout(() => {
-      onComplete({ ...draft, starterCyberware: selectedCyberware });
+      onComplete({ ...draft, starterCyberware: selectedCyberware, portrait: portraitSpec });
     }, 620);
-  }, [draft, selectedCyberware, onComplete]);
+  }, [draft, selectedCyberware, portraitSpec, onComplete]);
 
   return (
     <View style={scr.root}>
@@ -236,7 +263,7 @@ export default function FinalizeScreen({ draft, onBack, onComplete }) {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          <PortraitFrame draft={draft} />
+          <PortraitFrame draft={draft} portraitSpec={portraitSpec} />
           <StatsGrid path={draft.path} />
 
           {/* Loadout selection */}

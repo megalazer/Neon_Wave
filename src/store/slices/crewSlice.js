@@ -4,6 +4,7 @@ import { RECHARGE_ITEMS } from '../../data/rechargeItems';
 import { CYBERWARE_ITEMS } from '../../data/cyberware';
 import { applyXPToCrewMember, distributeCombatXP as _distribute } from '../../data/leveling';
 import { generateRecruit } from '../../engine/recruitGenerator';
+import { seededPortraitRng, withPortrait } from '../../engine/portraitGenerator';
 
 export const createCrewSlice = (set, get) => ({
   crew: {
@@ -15,14 +16,14 @@ export const createCrewSlice = (set, get) => ({
 
   initializeOperatives: () =>
     set((state) => {
-      state.crew.availableOperatives = OPERATIVES.map((op) => ({
+      state.crew.availableOperatives = OPERATIVES.map((op) => withPortrait({
         ...op,
         vitals: { ...op.vitals },
         neural: { ...op.neural },
         humanity: { ...op.humanity },
         equippedCyberware: [...op.equippedCyberware],
         stats: { ...op.stats },
-      }));
+      }, seededPortraitRng(op.id)));
     }),
 
   recruitOperative: (operativeId) => {

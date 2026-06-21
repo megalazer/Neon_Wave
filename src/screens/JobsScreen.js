@@ -23,6 +23,7 @@ import { getFixer, FIXERS } from '../data/fixers';
 import { getFaction, repTierFromValue, tierMeetsRequirement, FACTION_LIST } from '../data/factions';
 import { colors } from '../theme/colors';
 import MicrogameHost from '../components/microgames/MicrogameHost';
+import PortraitPreview from '../components/recruit/PortraitPreview';
 
 const BANNER_HEIGHT = 90;
 const NAV_HEIGHT = 72;
@@ -86,7 +87,11 @@ function MonitorCell({ member }) {
   return (
     <View style={styles.monitorCell}>
       <View style={[styles.monitorAvatar, member && styles.monitorAvatarFilled]}>
-        <MaterialIcons name="person" size={18} color={member ? (member.classColor || colors.primary) : `${colors.primary}40`} />
+        {member ? (
+          <PortraitPreview character={member} portrait={member.portrait} size={34} borderColor="transparent" backgroundColor="transparent" showMissingHint={false} />
+        ) : (
+          <MaterialIcons name="person" size={18} color={`${colors.primary}40`} />
+        )}
       </View>
       <View style={styles.monitorInfo}>
         <Text style={[styles.monitorName, member && styles.monitorNameFilled]} numberOfLines={1}>

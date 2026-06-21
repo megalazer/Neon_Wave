@@ -80,6 +80,8 @@ export const LEGACY_FACTION_MAP = {
   helix:       'fac_grammaton',
   onyx:        'fac_undertow',
   sable:       'fac_referent',
+  fac_undercity: 'fac_undertow',
+  streets:       'fac_undertow',
 };
 
 export function getFaction(id) {

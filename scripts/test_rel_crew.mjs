@@ -2,7 +2,7 @@
 // Run: node scripts/test_rel_crew.mjs
 import { strict as assert } from 'node:assert';
 import {
-  resolveInteraction, bondTierFromValue, getBondPerks,
+  resolveInteraction, bondTierFromValue, getBondPerks, pickDialogue,
   INTERACTIONS, PATH_RELATIONSHIP_MODIFIERS, BOND_TIER_RANK, BOND_MIN, BOND_MAX,
 } from '../src/data/relationships.js';
 
@@ -216,6 +216,88 @@ check('unknown interaction returns not ok', () => {
   const res = resolveInteraction(ctx({ interactionId: 'nonexistent' }));
   assert.equal(res.ok, false);
   assert.equal(res.reason, 'unknown');
+});
+
+// ── 18. insult success → bondDelta 2, intensity success ───────────────────────
+check('insult success → bondDelta 2, intensity success', () => {
+  const res = resolveInteraction(ctx({ interactionId: 'int_insult', rng: rngHigh }));
+  assert.ok(res.ok);
+  assert.equal(res.bondDelta, 2);
+  assert.equal(res.intensity, 'success');
+  assert.equal(res.moraleDelta, 1);
+});
+
+// ── 19. insult fail → bondDelta -6, intensity rejected ────────────────────────
+check('insult fail → bondDelta -6, intensity rejected', () => {
+  const res = resolveInteraction(ctx({ interactionId: 'int_insult', playerFace: 1, rng: rngLow }));
+  assert.ok(res.ok);
+  assert.equal(res.bondDelta, -6);
+  assert.equal(res.intensity, 'rejected');
+  assert.equal(res.moraleDelta, -2);
+});
+
+// ── 20. insult fail floors bond at 0 ──────────────────────────────────────────
+check('insult fail floors bond at 0', () => {
+  const res = resolveInteraction(ctx({ interactionId: 'int_insult', entityBond: 3, playerFace: 1, rng: rngLow }));
+  assert.ok(res.ok);
+  assert.equal(res.newBond, 0);
+});
+
+// ── 21. seduce locked below ACQUAINTANCE ──────────────────────────────────────
+check('seduce locked below ACQUAINTANCE', () => {
+  const res = resolveInteraction(ctx({ interactionId: 'int_seduce', entityBond: 10, turnNumber: 20, entityLastTurn: 0 }));
+  assert.equal(res.ok, false);
+  assert.equal(res.reason, 'locked');
+});
+
+// ── 22. seduce success → bondDelta 10, intensity success, moraleDelta 3 ───────
+check('seduce success → bondDelta 10, intensity success', () => {
+  const res = resolveInteraction(ctx({ interactionId: 'int_seduce', entityBond: 25, turnNumber: 20, entityLastTurn: 0, rng: rngHigh }));
+  assert.ok(res.ok);
+  assert.equal(res.bondDelta, 10);
+  assert.equal(res.intensity, 'success');
+  assert.equal(res.moraleDelta, 3);
+});
+
+// ── 23. seduce fail → bondDelta -5, intensity rejected ────────────────────────
+check('seduce fail → bondDelta -5, intensity rejected', () => {
+  const res = resolveInteraction(ctx({ interactionId: 'int_seduce', entityBond: 25, turnNumber: 20, entityLastTurn: 0, playerFace: 1, rng: rngLow }));
+  assert.ok(res.ok);
+  assert.equal(res.bondDelta, -5);
+  assert.equal(res.intensity, 'rejected');
+});
+
+// ── 24. insult grants no faction rep on fail ──────────────────────────────────
+check('insult fail grants no faction rep', () => {
+  const res = resolveInteraction(ctx({ interactionId: 'int_insult', playerFace: 1, rng: rngLow }));
+  assert.ok(res.ok);
+  assert.equal(res.factionBleed, 0);
+});
+
+// ── 25. insult success grants no faction rep (field is 0) ─────────────────────
+check('insult success grants no faction rep', () => {
+  const res = resolveInteraction(ctx({ interactionId: 'int_insult', rng: rngHigh }));
+  assert.ok(res.ok);
+  assert.equal(res.factionBleed, 0);
+});
+
+// ── 26. pickDialogue returns {name} template ──────────────────────────────────
+check("pickDialogue returns {name} template", () => {
+  const line = pickDialogue('int_insult', 'rejected', () => 0);
+  assert.ok(line.includes('{name}'));
+});
+
+// ── 27. pickDialogue falls back to success pool ───────────────────────────────
+check('pickDialogue falls back to success pool', () => {
+  const line = pickDialogue('int_gift', 'partial', () => 0);
+  assert.equal(typeof line, 'string');
+  assert.ok(line.length > 0);
+});
+
+// ── 28. pickDialogue unknown → GENERIC_DIALOGUE ──────────────────────────────
+check('pickDialogue unknown → GENERIC_DIALOGUE', () => {
+  const line = pickDialogue('nope', 'success', () => 0);
+  assert.equal(line, 'The gesture lands.');
 });
 
 // ── Summary ──────────────────────────────────────────────────────────────────

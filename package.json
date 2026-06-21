@@ -6,7 +6,10 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "gen:portraits": "node scripts/gen_portraits.mjs",
+    "test:portraits": "node scripts/test_portraits.mjs",
+    "gen:portrait-pieces": "node scripts/gen_portrait_pieces.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/kode-mono": "^0.4.1",

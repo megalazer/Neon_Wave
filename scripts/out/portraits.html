@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEON TERMINUS // PORTRAIT GALLERY</title>
+<style>
+  :root { --bg:#0e0e10; --fg:#e5e1e4; --cyan:#00f3ff; --magenta:#fe00fe; --line:#3a494b; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px; background: var(--bg); color: var(--fg);
+    font-family: 'Kode Mono', ui-monospace, monospace;
+  }
+  h1 {
+    font-size: 18px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--cyan); margin: 0 0 4px 0;
+  }
+  .sub { color: #849495; font-size: 12px; letter-spacing: 2px; margin-bottom: 24px; }
+  .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px)  { .grid { grid-template-columns: 1fr; } }
+  .card {
+    border: 1px solid var(--line); border-radius: 0; background: #131315;
+    padding: 12px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .portrait {
+    width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border: 1px solid var(--line);
+    image-rendering: pixelated; background: #000;
+  }
+  .portrait.placeholder {
+    display: flex; align-items: center; padding: 10px; font-size: 10px;
+    line-height: 1.4; color: #849495; overflow: auto;
+  }
+  .name { font-size: 15px; color: var(--fg); letter-spacing: 1px; }
+  .handle { font-size: 11px; color: var(--magenta); letter-spacing: 2px; }
+  .cls { font-size: 11px; color: var(--cyan); letter-spacing: 3px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    font-size: 9px; letter-spacing: 1px; padding: 3px 6px; border: 1px solid;
+    border-radius: 0;
+  }
+  .layers { display: flex; flex-direction: column; gap: 3px; border-top: 1px solid var(--line); padding-top: 8px; }
+  .layer { display: grid; grid-template-columns: 78px 64px 1fr; gap: 6px; font-size: 9px; line-height: 1.3; }
+  .lname { color: #849495; text-transform: uppercase; letter-spacing: 1px; }
+  .lrarity { text-transform: uppercase; letter-spacing: 1px; }
+  .lasset { color: var(--fg); }
+  .stats { display: flex; flex-wrap: wrap; gap: 6px; border-top: 1px solid var(--line); padding-top: 8px; }
+  .stat { font-size: 9px; color: #b9cacb; letter-spacing: 1px; }
+  .stat b { color: var(--cyan); }
+</style>
+</head>
+<body>
+  <h1>Neon Terminus // Portrait Gallery</h1>
+  <div class="sub">4 PORTRAITS &middot; DRY-RUN (NO API KEY)</div>
+  <div class="grid">
+
+      <div class="card">
+        <div class="portrait placeholder">16-bit pixel-art character portrait, head-and-shoulders bust, front-facing, solid black background, cyberpunk, neon cyan (#00f3ff) and magenta (#fe00fe) rim lighting, sharp detailed pixels, single character. A rare ripperdoc called Helix_Null. background: faint neon alley haze with magenta spill; base: weathered organic face, neutral skin tone, light stubble; clothing: stained surgical scrubs and basic latex gloves; cybernetics: magnifying optical loupe over one eye; headwear: flat surgical cap over matted hair.</div>
+        <div class="name">Helix_Null</div>
+        <div class="handle">CHROME_GHOST</div>
+        <div class="cls">CHROME_DOC</div>
+        <div class="chips">
+          <span class="chip" style="border-color:#fe00fe;color:#fe00fe">RECRUIT RARE</span>
+          <span class="chip" style="border-color:#00f3ff;color:#00f3ff">PORTRAIT UNCOMMON</span>
+        </div>
+        <div class="layers">
+        <div class="layer">
+          <span class="lname">background</span>
+          <span class="lrarity" style="color:#00f3ff">uncommon</span>
+          <span class="lasset">faint neon alley haze with magenta spill</span>
+        </div>
+        <div class="layer">
+          <span class="lname">base</span>
+          <span class="lrarity" style="color:#849495">common</span>
+          <span class="lasset">weathered organic face, neutral skin tone, light stubble</span>
+        </div>
+        <div class="layer">
+          <span class="lname">clothing</span>
+          <span class="lrarity" style="color:#849495">common</span>
+          <span class="lasset">stained surgical scrubs and basic latex gloves</span>
+        </div>
+        <div class="layer">
+          <span class="lname">cybernetics</span>
+          <span class="lrarity" style="color:#00f3ff">uncommon</span>
+          <span class="lasset">magnifying optical loupe over one eye</span>
+        </div>
+        <div class="layer">
+          <span class="lname">headwear</span>
+          <span class="lrarity" style="color:#849495">common</span>
+          <span class="lasset">flat surgical cap over matted hair</span>
+        </div>
+        </div>
+        <div class="stats">
+          <span class="stat"><b>CHROME</b> 10</span>
+          <span class="stat"><b>EDGE</b> 11</span>
+          <span class="stat"><b>GHOST</b> 15</span>
+          <span class="stat"><b>FACE</b> 12</span>
+          <span class="stat"><b>GRIT</b> 14</span>
+          <span class="stat"><b>WIRE</b> 14</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="portrait placeholder">16-bit pixel-art character portrait, head-and-shoulders bust, front-facing, solid black background, cyberpunk, neon cyan (#00f3ff) and magenta (#fe00fe) rim lighting, sharp detailed pixels, single character. A rare ripperdoc called Sorel_Wire. background: dark room lit by a single cyan monitor; base: clean organic face, tired eyes; clothing: sterile white synthetic medical jacket; cybernetics: tired organic eyes, no augments; headwear: blood-spatter holographic overlay around the head.</div>
+        <div class="name">Sorel_Wire</div>
+        <div class="handle">VOID_TRACE</div>
+        <div class="cls">CHROME_DOC</div>
+        <div class="chips">
+          <span class="chip" style="border-color:#fe00fe;color:#fe00fe">RECRUIT RARE</span>
+          <span class="chip" style="border-color:#ffb400;color:#ffb400">PORTRAIT LEGENDARY</span>
+        </div>
+        <div class="layers">
+        <div class="layer">
+          <span class="lname">background</span>
+          <span class="lrarity" style="color:#00f3ff">uncommon</span>
+          <span class="lasset">dark room lit by a single cyan monitor</span>
+        </div>
+        <div class="layer">
+          <span class="lname">base</span>
+          <span class="lrarity" style="color:#849495">common</span>
+          <span class="lasset">clean organic face, tired eyes</span>
+        </div>
+        <div class="layer">
+          <span class="lname">clothing</span>
+          <span class="lrarity" style="color:#00f3ff">uncommon</span>
+          <span class="lasset">sterile white synthetic medical jacket</span>
+        </div>
+        <div class="layer">
+          <span class="lname">cybernetics</span>
+          <span class="lrarity" style="color:#849495">common</span>
+          <span class="lasset">tired organic eyes, no augments</span>
+        </div>
+        <div class="layer">
+          <span class="lname">headwear</span>
+          <span class="lrarity" style="color:#ffb400">legendary</span>
+          <span class="lasset">blood-spatter holographic overlay around the head</span>
+        </div>
+        </div>
+        <div class="stats">
+          <span class="stat"><b>CHROME</b> 9</span>
+          <span class="stat"><b>EDGE</b> 11</span>
+          <span class="stat"><b>GHOST</b> 12</span>
+          <span class="stat"><b>FACE</b> 14</span>
+          <span class="stat"><b>GRIT</b> 15</span>
+          <span class="stat"><b>WIRE</b> 12</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="portrait placeholder">16-bit pixel-art character portrait, head-and-shoulders bust, front-facing, solid black background, cyberpunk, neon cyan (#00f3ff) and magenta (#fe00fe) rim lighting, sharp detailed pixels, single character. A rare ripperdoc called Vespa_Null. background: flat charcoal-black void; base: clean organic face, tired eyes; clothing: stained surgical scrubs and basic latex gloves; cybernetics: tired organic eyes, no augments; headwear: neon-lit respirator mask.</div>
+        <div class="name">Vespa_Null</div>
+        <div class="handle">DARK_EDGE</div>
+        <div class="cls">CHROME_DOC</div>
+        <div class="chips">
+          <span class="chip" style="border-color:#fe00fe;color:#fe00fe">RECRUIT RARE</span>
+          <span class="chip" style="border-color:#fe00fe;color:#fe00fe">PORTRAIT RARE</span>
+        </div>
+        <div class="layers">
+        <div class="layer">
+          <span class="lname">background</span>
+          <span class="lrarity" style="color:#849495">common</span>
+          <span class="lasset">flat charcoal-black void</span>
+        </div>
+        <div class="layer">
+          <span class="lname">base</span>
+          <span class="lrarity" style="color:#849495">common</span>
+          <span class="lasset">clean organic face, tired eyes</span>
+        </div>
+        <div class="layer">
+          <span class="lname">clothing</span>
+          <span class="lrarity" style="color:#849495">common</span>
+          <span class="lasset">stained surgical scrubs and basic latex gloves</span>
+        </div>
+        <div class="layer">
+          <span class="lname">cybernetics</span>
+          <span class="lrarity" style="color:#849495">common</span>
+          <span class="lasset">tired organic eyes, no augments</span>
+        </div>
+        <div class="layer">
+          <span class="lname">headwear</span>
+          <span class="lrarity" style="color:#fe00fe">rare</span>
+          <span class="lasset">neon-lit respirator mask</span>
+        </div>
+        </div>
+        <div class="stats">
+          <span class="stat"><b>CHROME</b> 11</span>
+          <span class="stat"><b>EDGE</b> 11</span>
+          <span class="stat"><b>GHOST</b> 9</span>
+          <span class="stat"><b>FACE</b> 11</span>
+          <span class="stat"><b>GRIT</b> 15</span>
+          <span class="stat"><b>WIRE</b> 13</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="portrait placeholder">16-bit pixel-art character portrait, head-and-shoulders bust, front-facing, solid black background, cyberpunk, neon cyan (#00f3ff) and magenta (#fe00fe) rim lighting, sharp detailed pixels, single character. A common ripperdoc called Chrome_Rex. background: faint neon alley haze with magenta spill; base: face half-replaced with seamless chrome; clothing: armored medical coat with a tool harness; cybernetics: tired organic eyes, no augments; headwear: blood-spatter holographic overlay around the head.</div>
+        <div class="name">Chrome_Rex</div>
+        <div class="handle">DEEP_GHOST</div>
+        <div class="cls">CHROME_DOC</div>
+        <div class="chips">
+          <span class="chip" style="border-color:#849495;color:#849495">RECRUIT COMMON</span>
+          <span class="chip" style="border-color:#ffb400;color:#ffb400">PORTRAIT LEGENDARY</span>
+        </div>
+        <div class="layers">
+        <div class="layer">
+          <span class="lname">background</span>
+          <span class="lrarity" style="color:#00f3ff">uncommon</span>
+          <span class="lasset">faint neon alley haze with magenta spill</span>
+        </div>
+        <div class="layer">
+          <span class="lname">base</span>
+          <span class="lrarity" style="color:#ffb400">legendary</span>
+          <span class="lasset">face half-replaced with seamless chrome</span>
+        </div>
+        <div class="layer">
+          <span class="lname">clothing</span>
+          <span class="lrarity" style="color:#fe00fe">rare</span>
+          <span class="lasset">armored medical coat with a tool harness</span>
+        </div>
+        <div class="layer">
+          <span class="lname">cybernetics</span>
+          <span class="lrarity" style="color:#849495">common</span>
+          <span class="lasset">tired organic eyes, no augments</span>
+        </div>
+        <div class="layer">
+          <span class="lname">headwear</span>
+          <span class="lrarity" style="color:#ffb400">legendary</span>
+          <span class="lasset">blood-spatter holographic overlay around the head</span>
+        </div>
+        </div>
+        <div class="stats">
+          <span class="stat"><b>CHROME</b> 7</span>
+          <span class="stat"><b>EDGE</b> 5</span>
+          <span class="stat"><b>GHOST</b> 5</span>
+          <span class="stat"><b>FACE</b> 9</span>
+          <span class="stat"><b>GRIT</b> 9</span>
+          <span class="stat"><b>WIRE</b> 8</span>
+        </div>
+      </div>
+  </div>
+</body>
+</html>

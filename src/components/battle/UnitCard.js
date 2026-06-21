@@ -6,6 +6,7 @@ import Animated, {
 import { MaterialIcons } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
 import { useStore } from '../../store/index';
+import PortraitPreview from '../recruit/PortraitPreview';
 
 const CYAN = colors.primary;
 const RED  = colors.error;
@@ -189,11 +190,22 @@ export default function UnitCard({
 
   const portrait = (
     <View style={[styles.portrait, { borderColor: isDead ? `${accent}44` : accent }]}>
-      <MaterialIcons
-        name="person"
-        size={20}
-        color={isDead ? `${accent}44` : `${accent}CC`}
-      />
+      {isFriendly && unit?.portrait ? (
+        <PortraitPreview
+          character={unit}
+          portrait={unit.portrait}
+          size={32}
+          borderColor="transparent"
+          backgroundColor="transparent"
+          showMissingHint={false}
+        />
+      ) : (
+        <MaterialIcons
+          name="person"
+          size={20}
+          color={isDead ? `${accent}44` : `${accent}CC`}
+        />
+      )}
     </View>
   );
 

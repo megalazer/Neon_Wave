@@ -5,6 +5,7 @@ import { getActiveAccountPerks } from '../../data/achievements';
 import { XP_THRESHOLDS, MAX_LEVEL, VITALITY_BASE, VITALITY_PER_GRIT_BASE, syncRenown } from '../../data/leveling';
 import { getFriendForPath } from '../../data/friends';
 import { PATH_RELATIONSHIP_MODIFIERS } from '../../data/relationships';
+import { generatePortrait, seededPortraitRng } from '../../engine/portraitGenerator';
 
 // Applies all active account perks to a freshly-built run. Reads unlocked account
 // achievements off the shared draft. Called exactly once per run init, after the
@@ -146,6 +147,10 @@ export const createCharacterSlice = (set) => ({
           stats: { ...baseStats },
           equippedCyberware: [draft.starterCyberware],
           maxCyberwareSlots: 3,
+          portrait: draft.portrait || generatePortrait(
+            { name: draft.name, class: classMap[draft.path] || 'STREET_SAMURAI' },
+            seededPortraitRng(`${draft.path}_${draft.name || 'operator'}`),
+          ),
         },
       ];
 

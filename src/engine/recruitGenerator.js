@@ -4,6 +4,7 @@ import { CYBERWARE_ITEMS } from '../data/cyberware';
 import { getClassProfile } from '../data/classProfiles';
 import { generateNetrunnerQuickhacks } from '../data/quickhacks';
 import { pickTrait, pickVoiceLine, pickBackstory } from '../data/recruitTraits';
+import { generatePortrait } from './portraitGenerator.js';
 
 function randInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -94,7 +95,7 @@ export function generateRecruit(contractsCompleted, currentTurn, qualityOverride
   const humanityMax = cfg.humanityBase;
   const cost = Math.round(randInt(cfg.costRange.min, cfg.costRange.max) / 500) * 500;
 
-  return {
+  const recruit = {
     id: `rec_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
     name:   pickRandomName(quality),
     handle: pickRandomHandle(quality),
@@ -116,8 +117,10 @@ export function generateRecruit(contractsCompleted, currentTurn, qualityOverride
     quickhacks: cls === 'netrunner' ? generateNetrunnerQuickhacks() : null,
     expiresAtTurn: currentTurn + 15,
     arrivalNarration: pickRandom(cfg.arrivalNarrations),
-trait:     pickTrait(quality),
-voiceLine: pickVoiceLine(cls, faction),
-backstory: pickBackstory(cls, faction, quality),
+    trait: pickTrait(quality),
+    voiceLine: pickVoiceLine(cls, faction),
+    backstory: pickBackstory(cls, faction, quality),
   };
+
+  return { ...recruit, portrait: generatePortrait(recruit) };
 }

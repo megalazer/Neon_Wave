@@ -11,18 +11,22 @@ import LogEntry from '../components/LogEntry';
 import AdvanceCycleFAB from '../components/AdvanceCycleFAB';
 import { advanceTurn } from '../engine/turnPipeline';
 import { colors } from '../theme/colors';
+import PortraitPreview from '../components/recruit/PortraitPreview';
 
 const BANNER_HEIGHT = 90;
 
 function CrewSlot({ member }) {
   const hpPct = member ? `${Math.round((member.vitals.current / member.vitals.max) * 100)}%` : '0%';
   const mpPct = member ? `${Math.round((member.neural.current / member.neural.max) * 100)}%` : '0%';
-  const avatarColor = member ? (member.classColor || colors.primary) : `${colors.primary}40`;
 
   return (
     <View style={styles.crewSlot}>
       <View style={[styles.crewAvatar, member && styles.crewAvatarFilled]}>
-        <MaterialIcons name="person" size={16} color={avatarColor} />
+        {member ? (
+          <PortraitPreview character={member} portrait={member.portrait} size={30} borderColor="transparent" backgroundColor="transparent" showMissingHint={false} />
+        ) : (
+          <MaterialIcons name="person" size={16} color={`${colors.primary}40`} />
+        )}
       </View>
       <View style={styles.crewInfo}>
         <Text style={[styles.crewName, member && styles.crewNameFilled]}>

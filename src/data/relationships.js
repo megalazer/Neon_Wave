@@ -68,6 +68,8 @@ export const INTERACTIONS = [
   {
     id: 'int_talk',
     label: '[TALK]',
+    icon: 'chat-bubble-outline',
+    desc: 'Small talk. Low risk, steady.',
     baseBond: 3,
     creditCost: 0,
     cooldown: 1,
@@ -79,6 +81,8 @@ export const INTERACTIONS = [
   {
     id: 'int_compliment',
     label: '[COMPLIMENT]',
+    icon: 'thumb-up-off-alt',
+    desc: 'Flatter them. Loses value if overused.',
     baseBond: 4,
     creditCost: 0,
     cooldown: 2,
@@ -90,6 +94,8 @@ export const INTERACTIONS = [
   {
     id: 'int_gift',
     label: '[SEND_GIFT]',
+    icon: 'card-giftcard',
+    desc: 'A gift. Costs credits; match their taste.',
     baseBond: 8,
     creditCost: 250,
     cooldown: 3,
@@ -101,6 +107,8 @@ export const INTERACTIONS = [
   {
     id: 'int_drink',
     label: '[SHARE_DRINK]',
+    icon: 'local-bar',
+    desc: 'Share a round. Lifts morale.',
     baseBond: 5,
     creditCost: 50,
     cooldown: 4,
@@ -112,6 +120,8 @@ export const INTERACTIONS = [
   {
     id: 'int_confide',
     label: '[CONFIDE]',
+    icon: 'lock-open',
+    desc: 'Open up. Requires TRUSTED+.',
     baseBond: 6,
     creditCost: 0,
     cooldown: 6,
@@ -120,10 +130,75 @@ export const INTERACTIONS = [
     factionBleed: 1,
     moraleDelta: 2,
   },
+  {
+    id: 'int_insult',
+    label: '[INSULT]',
+    icon: 'sentiment-very-dissatisfied',
+    desc: 'A hostile jab. Lands as banter or backfires.',
+    baseBond: 0, creditCost: 0, cooldown: 2, stat: 'face', minTier: null,
+    factionBleed: 0, moraleDelta: 0,
+    successBond: 2, failBond: -6, successMorale: 1, failMorale: -2,
+  },
+  {
+    id: 'int_seduce',
+    label: '[SEDUCE]',
+    icon: 'favorite-border',
+    desc: 'A romantic gambit. High reward, high risk.',
+    baseBond: 0, creditCost: 0, cooldown: 5, stat: 'face', minTier: 'ACQUAINTANCE',
+    factionBleed: 0, moraleDelta: 0,
+    successBond: 10, failBond: -5, successMorale: 3, failMorale: -2,
+  },
 ];
 
 export function getInteraction(id) {
   return INTERACTIONS.find((ix) => ix.id === id) ?? null;
+}
+
+// ── Interaction dialogue ──────────────────────────────────────────────────────
+
+export const INTERACTION_DIALOGUE = {
+  int_talk: {
+    success: ['{name} nods along, easy and open.', '{name} actually laughs at your story.'],
+    partial: ['{name} half-listens, eyes on the door.', '{name} grunts. Not in the mood.'],
+  },
+  int_compliment: {
+    success: ['{name} fights down a grin.', '{name} pretends not to care, but stands taller.'],
+    partial: ['{name} shrugs it off.', '{name} side-eyes you. Lay it on thinner.'],
+    insincere: ["{name} doesn't think that was funny. Heard it too many times.", '{name} rolls their eyes. "Sure."'],
+  },
+  int_gift: {
+    success: ['{name} turns the gift over, genuinely pleased.', '{name} smirks. "You remembered."'],
+  },
+  int_drink: {
+    success: ['{name} clinks your glass. The night gets easier.', '{name} downs it and waves for another round.'],
+    partial: ['{name} appreciates the drink but still throws it in your face.', '{name} sips, unimpressed, and changes the subject.'],
+  },
+  int_confide: {
+    success: ['{name} opens up. Something real passes between you.', '{name} trusts you with a piece of the truth.'],
+    partial: ['{name} clams up halfway through. Too soon.', '{name} deflects with a joke.'],
+  },
+  int_insult: {
+    success: ['{name} barks a laugh. "Yeah, screw you too." The banter lands.', '{name} grins — they give as good as they get.'],
+    rejected: ["{name} doesn't think that was funny.", "{name}'s jaw tightens. That one cut."],
+  },
+  int_seduce: {
+    success: ['{name} holds your gaze a beat too long. Something shifts.', '{name} leans in. "...Go on."'],
+    rejected: ['{name} steps back. "Not like that." It gets awkward.', '{name} laughs it off, but the air goes cold.'],
+  },
+};
+
+const GENERIC_DIALOGUE = {
+  success: 'The gesture lands.',
+  partial: 'They appreciate the attempt, barely.',
+  insincere: "They see right through it. Doesn't land.",
+  rejected: 'That backfired.',
+};
+
+export function pickDialogue(interactionId, intensity, rng = Math.random) {
+  const byId = INTERACTION_DIALOGUE[interactionId];
+  const pool = byId && (byId[intensity] || byId.success);
+  if (!pool || pool.length === 0) return GENERIC_DIALOGUE[intensity] || GENERIC_DIALOGUE.success;
+  return pool[Math.floor(rng() * pool.length)];
 }
 
 // ── Bond perks (descriptive; derived, NOT stored) ────────────────────────────
@@ -211,16 +286,28 @@ export function resolveInteraction(ctx) {
     mult *= (ctx.giftCategory === taste ? 1.5 : 0.75);
   }
 
-  if (!ix.stat) intensity = 'success';
-  else if (!success) intensity = 'partial';
-  // intensity already set to 'insincere' above when applicable
-
-  const bondDelta = Math.round(ix.baseBond * mult);
+  let bondDelta;
+  if (ix.successBond !== undefined || ix.failBond !== undefined) {
+    // Bidirectional (insult / seduce): explicit win/lose outcomes
+    if (success) {
+      bondDelta = ix.successBond ?? 0;
+      moraleDelta = ix.successMorale ?? moraleDelta;
+      intensity = 'success';
+    } else {
+      bondDelta = ix.failBond ?? 0;
+      moraleDelta = ix.failMorale ?? moraleDelta;
+      intensity = 'rejected';
+    }
+  } else {
+    if (!ix.stat) intensity = 'success';
+    else if (!success) intensity = 'partial';
+    bondDelta = Math.round(ix.baseBond * mult);
+  }
   const newBond = clamp(ctx.entityBond + bondDelta, BOND_MIN, BOND_MAX);
   const tierBefore = bondTierFromValue(ctx.entityBond);
   const tierAfter = bondTierFromValue(newBond);
 
-  const factionBleed = ctx.entityFaction
+  const factionBleed = (ctx.entityFaction && bondDelta > 0)
     ? Math.max(0, Math.round((ix.factionBleed ?? 0) * mult))
     : 0;
 
