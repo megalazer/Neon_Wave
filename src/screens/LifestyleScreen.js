@@ -28,6 +28,9 @@ import ConfirmModal from '../components/ConfirmModal';
 import MinigameStub from '../components/MinigameStub';
 import TradeModal from '../components/TradeModal';
 import Sparkline from '../components/Sparkline';
+import { INTERACTIONS, bondTierFromValue, BOND_MIN, BOND_MAX, getBondPerks, BOND_TIER_RANK, fixerTierFromRep } from '../data/relationships';
+import { FRIENDS } from '../data/friends';
+import { FIXERS } from '../data/fixers';
 import { colors } from '../theme/colors';
 
 const SCREEN_W = Dimensions.get('window').width;
@@ -44,10 +47,11 @@ function fmtCR(n) {
 // ─── SegmentedTabs ────────────────────────────────────────────────────────────
 function SegmentedTabs({ active, onSelect, achievementsUnread }) {
   const TABS = [
-    { id: 'assets', label: 'ASSETS' },
-    { id: 'exchange', label: 'EXCHANGE' },
-    { id: 'factions', label: 'FACTIONS' },
-    { id: 'achievements', label: 'TROPHIES', dot: achievementsUnread },
+    { id: 'assets', label: 'ASSETS', icon: 'account-balance-wallet' },
+    { id: 'exchange', label: 'EXCHANGE', icon: 'show-chart' },
+    { id: 'factions', label: 'FACTIONS', icon: 'groups' },
+    { id: 'relations', label: 'BONDS', icon: 'favorite' },
+    { id: 'achievements', label: 'TROPHIES', icon: 'emoji-events', dot: achievementsUnread },
   ];
   return (
     <View style={styles.segmented}>
@@ -63,6 +67,7 @@ function SegmentedTabs({ active, onSelect, achievementsUnread }) {
             }}
             activeOpacity={0.8}
           >
+            <MaterialIcons name={tab.icon} size={20} color={isActive ? colors.primary : colors.outline} />
             <Text style={[styles.segTabText, isActive && styles.segTabTextActive]}>
               {tab.label}
             </Text>
@@ -828,6 +833,395 @@ function FactionsTab({ rep }) {
   );
 }
 
+
+// ─── GiftPicker ───────────────────────────────────────────────────────────────
+function GiftPicker({ visible, onPick, onCancel }) {
+  if (!visible) return null;
+  const opts = [
+    { id: 'tech',   label: 'TECH',    icon: 'memory',        color: colors.tertiaryFixed },
+    { id: 'luxury', label: 'LUXURY',  icon: 'diamond',       color: colors.secondaryFixed },
+    { id: 'street', label: 'STREET',  icon: 'local-bar',     color: colors.secondary },
+  ];
+  return (
+    <View style={relStyles.backdrop}>
+      <View style={relStyles.giftModal}>
+        <Text style={relStyles.giftTitle}>CHOOSE_GIFT</Text>
+        {opts.map((o) => (
+          <TouchableOpacity
+            key={o.id}
+            style={[relStyles.giftBtn, { borderColor: o.color }]}
+            onPress={() => onPick(o.id)}
+            activeOpacity={0.8}
+          >
+            <MaterialIcons name={o.icon} size={14} color={o.color} />
+            <Text style={[relStyles.giftBtnText, { color: o.color }]}>{o.label}</Text>
+          </TouchableOpacity>
+        ))}
+        <TouchableOpacity style={relStyles.giftCancel} onPress={onCancel} activeOpacity={0.8}>
+          <Text style={relStyles.giftCancelText}>[CANCEL]</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+// ─── RelationCard ─────────────────────────────────────────────────────────────
+function RelationCard({ entity, kind, tier, pct, bond, accent, onOpen }) {
+  const tierRank = (BOND_TIER_RANK[tier] ?? 0);
+  const perks = getBondPerks(tierRank);
+
+  return (
+    <TouchableOpacity style={[relStyles.card, { borderLeftColor: accent }]} onPress={onOpen} activeOpacity={0.85}>
+      {/* Header: name + faction tag */}
+      <View style={relStyles.headerRow}>
+        <View style={relStyles.titleBlock}>
+          <Text style={[relStyles.name, { color: accent }]}>{entity.name || entity.handle}</Text>
+          {entity.class && (
+            <Text style={relStyles.role}>{entity.class.toUpperCase()}</Text>
+          )}
+          {entity.bio && (
+            <Text style={relStyles.bio} numberOfLines={2}>{entity.bio}</Text>
+          )}
+        </View>
+        {entity.tag && (
+          <View style={[relStyles.tagChip, { borderColor: accent }]}>
+            <Text style={[relStyles.tagText, { color: accent }]}>{entity.tag}</Text>
+          </View>
+        )}
+      </View>
+
+      {/* Heart */}
+      <View style={relStyles.heartRow}>
+        <MaterialIcons name="favorite" size={18} color={accent} />
+      </View>
+
+      {/* Bond bar */}
+      <View style={relStyles.bondRow}>
+        <Text style={[relStyles.tier, { color: accent }]}>{tier}</Text>
+        <Text style={relStyles.bondValue}>{bond}</Text>
+      </View>
+      <View style={relStyles.barTrack}>
+        <View style={[relStyles.barFill, { width: `${Math.max(2, pct)}%`, backgroundColor: accent }]} />
+      </View>
+
+      {/* Hidden perks */}
+      {perks.length > 0 && (
+        <View style={relStyles.perksRow}>
+          {perks.map((p, i) => (
+            <Text key={i} style={[relStyles.perkTag, { color: accent }]}>
+              {p.tag}
+            </Text>
+          ))}
+        </View>
+      )}
+
+      {/* Tap hint */}
+      <View style={relStyles.tapHintRow}>
+        <Text style={relStyles.tapHint}>TAP_TO_INTERACT</Text>
+        <MaterialIcons name="chevron-right" size={14} color={colors.outline} />
+      </View>
+    </TouchableOpacity>
+  );
+}
+
+
+// ─── InteractionMenu ──────────────────────────────────────────────────────────
+function InteractionMenu({ entity, kind, tier, pct, bond, accent, credits, turnNumber, lastOutcome, onInteract, onFavor, onBack }) {
+  const allowed = INTERACTIONS.filter((ix) => {
+    if (kind === 'fixer') return ix.id === 'int_talk' || ix.id === 'int_gift';
+    return true;
+  });
+  const tierRank = (BOND_TIER_RANK[tier] ?? 0);
+  const perks = getBondPerks(tierRank);
+
+  return (
+    <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      {/* Back button */}
+      <TouchableOpacity style={relStyles.menuBack} onPress={onBack}>
+        <MaterialIcons name="arrow-back" size={16} color={colors.primary} />
+        <Text style={relStyles.menuBackText}>BACK</Text>
+      </TouchableOpacity>
+
+      {/* Header: card visuals */}
+      <View style={[relStyles.card, { borderLeftColor: accent }]}>
+        <View style={relStyles.headerRow}>
+          <View style={relStyles.titleBlock}>
+            <Text style={[relStyles.name, { color: accent }]}>{entity.name || entity.handle}</Text>
+            {entity.class && (
+              <Text style={relStyles.role}>{entity.class.toUpperCase()}</Text>
+            )}
+            {entity.bio && (
+              <Text style={relStyles.bio} numberOfLines={4}>{entity.bio}</Text>
+            )}
+          </View>
+          {entity.tag && (
+            <View style={[relStyles.tagChip, { borderColor: accent }]}>
+              <Text style={[relStyles.tagText, { color: accent }]}>{entity.tag}</Text>
+            </View>
+          )}
+        </View>
+        <View style={relStyles.heartRow}>
+          <MaterialIcons name="favorite" size={18} color={accent} />
+        </View>
+        <View style={relStyles.bondRow}>
+          <Text style={[relStyles.tier, { color: accent }]}>{tier}</Text>
+          <Text style={relStyles.bondValue}>{bond}</Text>
+        </View>
+        <View style={relStyles.barTrack}>
+          <View style={[relStyles.barFill, { width: `${Math.max(2, pct)}%`, backgroundColor: accent }]} />
+        </View>
+        {perks.length > 0 && (
+          <View style={relStyles.perksRow}>
+            {perks.map((p, i) => (
+              <Text key={i} style={[relStyles.perkTag, { color: accent }]}>
+                {p.tag}
+              </Text>
+            ))}
+          </View>
+        )}
+      </View>
+
+      {/* Outcome banner */}
+      {lastOutcome && lastOutcome.id === entity.id && (
+        <View style={[relStyles.outcomeBanner, { borderLeftColor: (lastOutcome.intensity === 'rejected' || lastOutcome.intensity === 'insincere') ? colors.error : colors.tertiaryFixed }]}>
+          <Text style={relStyles.outcomeText}>{lastOutcome.text}</Text>
+          <Text style={relStyles.outcomeDelta}>{lastOutcome.bondDelta >= 0 ? '+' : ''}{lastOutcome.bondDelta} BOND</Text>
+        </View>
+      )}
+
+      {/* Interaction rows */}
+      {allowed.map((ix) => {
+        const locked = ix.minTier && tierRank < (BOND_TIER_RANK[ix.minTier] ?? 0);
+        const tooPoor = ix.creditCost > credits;
+        const onCd = ix.cooldown && entity.lastBondTurn != null && (turnNumber - entity.lastBondTurn) < ix.cooldown;
+        const disabled = locked || tooPoor || onCd;
+        const meta = locked ? `LOCKED · ${ix.minTier}` : onCd ? 'COOLDOWN' : ix.creditCost > 0 ? `${ix.creditCost} CR` : '';
+        return (
+          <TouchableOpacity
+            key={ix.id}
+            style={[relStyles.menuRow, disabled && relStyles.btnDisabled, { borderLeftColor: accent }]}
+            disabled={disabled}
+            onPress={() => onInteract(ix.id)}
+          >
+            <MaterialIcons name={ix.icon} size={18} color={accent} />
+            <View style={relStyles.menuRowText}>
+              <Text style={[relStyles.menuRowLabel, { color: accent }]}>{ix.label}</Text>
+              <Text style={relStyles.menuRowDesc}>{ix.desc}</Text>
+            </View>
+            {meta ? <Text style={relStyles.menuRowMeta}>{meta}</Text> : null}
+          </TouchableOpacity>
+        );
+      })}
+
+      {/* Favor row (friends only) */}
+      {kind === 'friend' && onFavor && !entity.favorUsed && tierRank >= 3 && (
+        <TouchableOpacity
+          style={[relStyles.menuRow, { borderLeftColor: colors.tertiaryFixed }]}
+          onPress={() => onFavor(entity.id)}
+        >
+          <MaterialIcons name="handshake" size={18} color={colors.tertiaryFixed} />
+          <View style={relStyles.menuRowText}>
+            <Text style={[relStyles.menuRowLabel, { color: colors.tertiaryFixed }]}>[CALL_FAVOR]</Text>
+            <Text style={relStyles.menuRowDesc}>Cash in a one-time favor.</Text>
+          </View>
+        </TouchableOpacity>
+      )}
+    </ScrollView>
+  );
+}
+// ─── RelationsTab ─────────────────────────────────────────────────────────────
+function RelationsTab({ crewMembers, friends, fixerRep, path, credits, onInteractCrew, onInteractFriend, onInteractFixer, onFavor, lastOutcome, turnNumber }) {
+  const nonPlayerCrew = (crewMembers || []).filter((m) => !m.isPlayer && m.alive !== false && (m.vitals?.current ?? 1) > 0);
+  const metFriends = Object.entries(friends || {}).filter(([, f]) => f.met);
+  const [selected, setSelected] = useState(null); // { kind, id }
+
+  // If a contact is selected, render InteractionMenu
+  if (selected) {
+    let menuEntity = null;
+    let menuKind = null;
+    let menuTier = null;
+    let menuPct = null;
+    let menuBond = null;
+    let menuAccent = colors.primary;
+    let menuLastBondTurn = null;
+
+    if (selected.kind === 'crew') {
+      const m = crewMembers.find((c) => c.id === selected.id);
+      if (!m || m.alive === false || (m.vitals?.current ?? 0) <= 0) { setSelected(null); return null; }
+      const b = m.bond ?? 0;
+      const factionDef = FACTIONS[m.faction];
+      menuEntity = { id: m.id, name: m.name, class: m.class, tag: factionDef?.tag, bio: m.backstory, favorUsed: false, lastBondTurn: m.lastBondTurn };
+      menuKind = 'crew';
+      menuTier = bondTierFromValue(b);
+      menuPct = Math.round(((b - BOND_MIN) / (BOND_MAX - BOND_MIN)) * 100);
+      menuBond = b;
+      menuAccent = m.classColor || colors.primary;
+    } else if (selected.kind === 'friend') {
+      const friend = friends[selected.id];
+      const friendDef = FRIENDS.find((f) => f.id === selected.id);
+      if (!friend?.met || !friendDef) { setSelected(null); return null; }
+      const b = friend.bond ?? 0;
+      const factionDef = FACTIONS[friendDef.faction];
+      menuEntity = { id: selected.id, name: friendDef.display || friendDef.name, tag: factionDef?.tag, bio: friendDef.bio, favorUsed: friend.favorUsed, lastBondTurn: friend.lastBondTurn };
+      menuKind = 'friend';
+      menuTier = bondTierFromValue(b);
+      menuPct = Math.round(((b - BOND_MIN) / (BOND_MAX - BOND_MIN)) * 100);
+      menuBond = b;
+      menuAccent = factionDef?.accent || colors.secondary;
+    } else if (selected.kind === 'fixer') {
+      const f = FIXERS.find((x) => x.id === selected.id);
+      if (!f) { setSelected(null); return null; }
+      const rep = fixerRep?.[f.id] ?? 0;
+      menuEntity = { id: f.id, name: f.name, handle: f.handle, tag: null, bio: f.bio };
+      menuKind = 'fixer';
+      menuTier = fixerTierFromRep(rep);
+      menuPct = Math.min(100, Math.round((rep / 20) * 100));
+      menuBond = rep;
+      menuAccent = f.color;
+    }
+
+    return (
+      <InteractionMenu
+        entity={menuEntity}
+        kind={menuKind}
+        tier={menuTier}
+        pct={menuPct}
+        bond={menuBond}
+        accent={menuAccent}
+        credits={credits}
+        turnNumber={turnNumber}
+        lastOutcome={lastOutcome}
+        onBack={() => setSelected(null)}
+        onInteract={(iid, gc) => {
+          if (selected.kind === 'crew') onInteractCrew(selected.id, iid, gc);
+          else if (selected.kind === 'friend') onInteractFriend(selected.id, iid, gc);
+          else onInteractFixer(selected.id, iid, gc);
+        }}
+        onFavor={onFavor}
+      />
+    );
+  }
+
+  return (
+    <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      {/* Summary strip */}
+      <View style={styles.achSummaryStrip}>
+        <View style={styles.summaryLeft}>
+          <View style={styles.summaryBlock}>
+            <Text style={styles.summaryBlockLabel}>PATH</Text>
+            <Text style={styles.summaryBlockValue}>{(path || '').toUpperCase()}</Text>
+          </View>
+        </View>
+        <View style={styles.summaryRight}>
+          <Text style={styles.summaryProtocol}>RELATIONSHIP_NETWORK</Text>
+        </View>
+      </View>
+
+      {/* ── Crew ── */}
+      <View style={styles.section}>
+        <SectionHeader index={1} label="CREW" accent={colors.primary} />
+        {nonPlayerCrew.length === 0 ? (
+          <Text style={relStyles.empty}>NO_CREW — RECRUIT IN HAVEN</Text>
+        ) : (
+          nonPlayerCrew.map((m) => {
+            const b = m.bond ?? 0;
+            const tier = bondTierFromValue(b);
+            const pct = Math.round(((b - BOND_MIN) / (BOND_MAX - BOND_MIN)) * 100);
+            const factionDef = FACTIONS[m.faction];
+            const entity = {
+              id: m.id,
+              name: m.name,
+              class: m.class,
+              tag: factionDef?.tag,
+              bio: m.backstory,
+              favorUsed: false,
+              lastBondTurn: m.lastBondTurn,
+            };
+            return (
+              <RelationCard
+                key={m.id}
+                entity={entity}
+                kind="crew"
+                tier={tier}
+                pct={pct}
+                bond={b}
+                accent={m.classColor || colors.primary}
+                onOpen={() => setSelected({ kind: 'crew', id: m.id })}
+              />
+            );
+          })
+        )}
+      </View>
+
+      {/* ── Friends ── */}
+      <View style={styles.section}>
+        <SectionHeader index={2} label="FRIENDS" accent={colors.secondary} />
+        {metFriends.length === 0 ? (
+          <Text style={relStyles.empty}>NO_FRIENDS_YET</Text>
+        ) : (
+          metFriends.map(([fid, friend]) => {
+            const friendDef = FRIENDS.find((f) => f.id === fid);
+            if (!friendDef) return null;
+            const b = friend.bond ?? 0;
+            const tier = bondTierFromValue(b);
+            const pct = Math.round(((b - BOND_MIN) / (BOND_MAX - BOND_MIN)) * 100);
+            const factionDef = FACTIONS[friendDef.faction];
+            const entity = {
+              id: fid,
+              name: friendDef.display || friendDef.name,
+              tag: factionDef?.tag,
+              bio: friendDef.bio,
+              favorUsed: friend.favorUsed,
+              lastBondTurn: friend.lastBondTurn,
+            };
+            return (
+              <RelationCard
+                key={fid}
+                entity={entity}
+                kind="friend"
+                tier={tier}
+                pct={pct}
+                bond={b}
+                accent={factionDef?.accent || colors.secondary}
+                onOpen={() => setSelected({ kind: 'friend', id: fid })}
+              />
+            );
+          })
+        )}
+      </View>
+
+      {/* ── Fixers ── */}
+      <View style={styles.section}>
+        <SectionHeader index={3} label="FIXERS" accent={colors.tertiaryFixed} />
+        {FIXERS.map((f) => {
+          const rep = fixerRep?.[f.id] ?? 0;
+          const tier = fixerTierFromRep(rep);
+          // Map fixer rep to a pct for the bar (max shown = 20)
+          const pct = Math.min(100, Math.round((rep / 20) * 100));
+          const entity = {
+            id: f.id,
+            name: f.name,
+            handle: f.handle,
+            tag: null,
+            bio: f.bio,
+          };
+          return (
+            <RelationCard
+              key={f.id}
+              entity={entity}
+              kind="fixer"
+              tier={tier}
+              pct={pct}
+              bond={rep}
+              accent={f.color}
+              onOpen={() => setSelected({ kind: 'fixer', id: f.id })}
+            />
+          );
+        })}
+      </View>
+    </ScrollView>
+  );
+}
 // ─── LifestyleScreen ──────────────────────────────────────────────────────────
 export default function LifestyleScreen() {
   const [activeSubTab, setActiveSubTab] = useState('assets');
@@ -856,6 +1250,18 @@ export default function LifestyleScreen() {
   const markAchievementsSeen = useStore((s) => s.markAchievementsSeen);
   const setSelectedTitle = useStore((s) => s.setSelectedTitle);
   const setSelectedTheme = useStore((s) => s.setSelectedTheme);
+  const crewMembers      = useStore((s) => s.crew.members);
+  const friends          = useStore((s) => s.relationship.friends);
+  const fixerRep         = useStore((s) => s.contract.fixerRep);
+  const path             = useStore((s) => s.character.path);
+  const interactWithCrew  = useStore((s) => s.interactWithCrew);
+  const interactWithFriend = useStore((s) => s.interactWithFriend);
+  const interactWithFixer  = useStore((s) => s.interactWithFixer);
+  const useFriendFavor     = useStore((s) => s.useFriendFavor);
+  const lastOutcome        = useStore((s) => s.relationship.lastOutcome);
+  const turnNumber         = useStore((s) => s.character.turnNumber);
+
+  const [giftPickerTarget, setGiftPickerTarget] = useState(null); // { kind:'crew'|'friend'|'fixer', id:string }
 
   // Clear the unread dot when the achievements tab is opened
   useEffect(() => {
@@ -915,6 +1321,41 @@ export default function LifestyleScreen() {
         />
       ) : activeSubTab === 'factions' ? (
         <FactionsTab rep={factionRep} />
+      ) : activeSubTab === 'relations' ? (
+        <RelationsTab
+          crewMembers={crewMembers}
+          friends={friends}
+          fixerRep={fixerRep}
+          path={path}
+          credits={credits}
+          onInteractCrew={(memberId, interactionId, giftCat) => {
+            if (interactionId === 'int_gift') {
+              setGiftPickerTarget({ kind: 'crew', id: memberId });
+            } else {
+              interactWithCrew(memberId, interactionId);
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            }
+          }}
+          onInteractFriend={(friendId, interactionId, giftCat) => {
+            if (interactionId === 'int_gift') {
+              setGiftPickerTarget({ kind: 'friend', id: friendId });
+            } else {
+              interactWithFriend(friendId, interactionId);
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            }
+          }}
+          onInteractFixer={(fixerId, interactionId, giftCat) => {
+            if (interactionId === 'int_gift') {
+              setGiftPickerTarget({ kind: 'fixer', id: fixerId });
+            } else {
+              interactWithFixer(fixerId, interactionId);
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            }
+          }}
+          onFavor={useFriendFavor}
+          lastOutcome={lastOutcome}
+          turnNumber={turnNumber}
+        />
       ) : activeSubTab === 'achievements' ? (
         <AchievementsTab
           state={useStore.getState()}
@@ -967,6 +1408,20 @@ export default function LifestyleScreen() {
           onCancel={() => setTradeTarget(null)}
         />
       )}
+
+      <GiftPicker
+        visible={giftPickerTarget !== null}
+        onPick={(category) => {
+          if (!giftPickerTarget) return;
+          const { kind, id } = giftPickerTarget;
+          if (kind === 'crew') interactWithCrew(id, 'int_gift', category);
+          else if (kind === 'friend') interactWithFriend(id, 'int_gift', category);
+          else if (kind === 'fixer') interactWithFixer(id, 'int_gift', category);
+          setGiftPickerTarget(null);
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        }}
+        onCancel={() => setGiftPickerTarget(null)}
+      />
     </View>
   );
 }
@@ -992,11 +1447,11 @@ const styles = StyleSheet.create({
   },
   segTab: {
     flex: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    paddingVertical: 11,
+    gap: 3,
+    paddingVertical: 9,
   },
   segTabActive: {
     backgroundColor: `${colors.primary}0F`,
@@ -1005,7 +1460,7 @@ const styles = StyleSheet.create({
   },
   segTabText: {
     fontFamily: 'KodeMono_700Bold',
-    fontSize: 11,
+    fontSize: 9,
     color: colors.outline,
     letterSpacing: 1.5,
     textTransform: 'uppercase',
@@ -1663,6 +2118,224 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: colors.outline,
     letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+});
+
+// ─── Relationship styles ─────────────────────────────────────────────────────
+const relStyles = StyleSheet.create({
+  // Card
+  card: {
+    borderWidth: 1,
+    borderColor: `${colors.outline}4D`,
+    borderLeftWidth: 3,
+    backgroundColor: colors.surfaceContainerLow,
+    padding: 12,
+    gap: 10,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  titleBlock: { gap: 2, flex: 1 },
+  name: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 14,
+    letterSpacing: 0.5,
+  },
+  role: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 9,
+    color: colors.outline,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  bio: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 9,
+    color: colors.onSurfaceVariant,
+    lineHeight: 14,
+  },
+  tagChip: {
+    borderWidth: 1,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  tagText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  // Bond bar
+  bondRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  tier: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 11,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  bondValue: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 14,
+    color: colors.onSurface,
+  },
+  barTrack: {
+    height: 5,
+    backgroundColor: colors.surfaceContainerHigh,
+    overflow: 'hidden',
+  },
+  barFill: {
+    height: '100%',
+  },
+  // Perks
+  perksRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  perkTag: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderWidth: 1,
+    borderColor: `${colors.outline}4D`,
+  },
+  // Heart
+  heartRow: { alignItems: 'center', paddingVertical: 2 },
+  // Tap hint
+  tapHintRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', gap: 2 },
+  tapHint: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    color: colors.outline,
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+  },
+  // Interaction menu
+  menuBack: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4 },
+  menuBackText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 10,
+    color: colors.primary,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  outcomeBanner: {
+    borderLeftWidth: 3,
+    backgroundColor: colors.surfaceContainerLow,
+    padding: 10,
+    gap: 4,
+  },
+  outcomeText: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 11,
+    color: colors.onSurfaceVariant,
+    lineHeight: 16,
+  },
+  outcomeDelta: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 9,
+    color: colors.outline,
+    letterSpacing: 1,
+  },
+  btnDisabled: { opacity: 0.4 },
+  menuRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    borderWidth: 1,
+    borderColor: `${colors.outline}4D`,
+    borderLeftWidth: 3,
+    backgroundColor: colors.surfaceContainerLow,
+    padding: 12,
+  },
+  menuRowText: { flex: 1, gap: 2 },
+  menuRowLabel: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 11,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  menuRowDesc: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 9,
+    color: colors.onSurfaceVariant,
+  },
+  menuRowMeta: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    color: colors.outline,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  // Empty state
+  empty: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 11,
+    color: colors.outline,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    paddingVertical: 20,
+    textAlign: 'center',
+  },
+  // Gift picker
+  backdrop: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  giftModal: {
+    width: SCREEN_W * 0.7,
+    backgroundColor: colors.surfaceContainerLowest,
+    borderWidth: 1,
+    borderColor: colors.outlineVariant,
+    padding: 20,
+    gap: 12,
+  },
+  giftTitle: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 12,
+    color: colors.onSurface,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+  },
+  giftBtn: {
+    borderWidth: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  giftBtnText: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 12,
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  giftCancel: {
+    paddingVertical: 8,
+    alignItems: 'center',
+  },
+  giftCancelText: {
+    fontFamily: 'KodeMono_400Regular',
+    fontSize: 10,
+    color: colors.outline,
+    letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
 });

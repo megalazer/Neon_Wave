@@ -104,6 +104,8 @@ export function generateRecruit(contractsCompleted, currentTurn, qualityOverride
     cost,
     exp:   0,
     level: 1,
+    bond:   0,
+    lastBondTurn: 0,
     alive: true,
     vitals:   { current: vitalsMax, max: vitalsMax },
     neural:   { current: neuralMax, max: neuralMax },
@@ -114,8 +116,8 @@ export function generateRecruit(contractsCompleted, currentTurn, qualityOverride
     quickhacks: cls === 'netrunner' ? generateNetrunnerQuickhacks() : null,
     expiresAtTurn: currentTurn + 15,
     arrivalNarration: pickRandom(cfg.arrivalNarrations),
-trait:     pickTrait(quality),
-voiceLine: pickVoiceLine(cls, faction),
-backstory: pickBackstory(cls, faction, quality),
+    trait: pickTrait(quality),
+    voiceLine: pickVoiceLine(cls, faction),
+    backstory: pickBackstory(cls, faction, quality),
   };
 }

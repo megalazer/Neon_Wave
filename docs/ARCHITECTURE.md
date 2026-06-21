@@ -13,7 +13,7 @@ neon-terminus/
     │   ├── colors.js           hex tokens + glow presets
     │   └── fonts.js            Kode Mono loading
     ├── store/
-    │   ├── index.js            13 slices, immer middleware + enableMapSet()
+    │   ├── index.js            14 slices, immer middleware + enableMapSet()
     │   └── slices/
     │       ├── characterSlice.js
     │       ├── crewSlice.js
@@ -25,6 +25,7 @@ neon-terminus/
     │       ├── exchangeSlice.js
     │       ├── factionSlice.js
     │       ├── achievementSlice.js
+    │       ├── relationshipSlice.js
     │       ├── legacySlice.js       stub — unused; real persistence in achievementSlice
     │       ├── devSlice.js
     │       └── testCombatSlice.js
@@ -50,11 +51,14 @@ neon-terminus/
     │   ├── fixers.js            5 fixers
     │   ├── factions.js          6 factions
     │   ├── achievements.js      25 achievements (17 account, 8 run)
+    │   ├── relationships.js     bond model + interaction resolver
+    │   ├── friends.js           3 life-path friends
     │   ├── eventPacing.js       cooldown + escalation constants
     │   ├── placeholderNarration.js  15 fallback lines
     │   ├── events/
     │   │   ├── flavor.js        42 flavor events
-    │   │   └── choices.js       19 choice events
+    │   │   ├── choices.js       19 choice events
+    │   │   └── relationships.js 8 relationship-driven events
     │   ├── contracts/
     │   │   ├── low.js           10 contracts
     │   │   ├── mid.js           4 contracts
@@ -119,14 +123,14 @@ neon-terminus/
 ### Navigation
 No navigation library. `App.js` is a 5-state machine (fonts→gameOver→init→battleActive→main). `activeTab` is `useState`. `ChoiceModal` is the unified overlay (always mounted).
 
-### Store (13 Zustand slices, immer + enableMapSet)
-character, crew, world, log, event, contract, vendor, exchange, faction, achievement, legacy (stub), dev, testCombat. Cross-slice writes happen inside immer `set`. Components subscribe with narrow selectors.
+### Store (14 Zustand slices, immer + enableMapSet)
+character, crew, world, log, event, contract, vendor, exchange, faction, achievement, relationship, legacy (stub), dev, testCombat. Cross-slice writes happen inside immer `set`. Components subscribe with narrow selectors.
 
 ### Turn Pipeline
-`advanceTurn()` in `engine/turnPipeline.js`: incrementTurn → tickTurn → tickPrices → tickFeed → tickVendor → trySpawnRecruit → tickAvailableOperatives → achievement polling → selectAndFireRandomEvent (if not blocked) → fallback narration. `devAdvanceTurns(n)` repeats n times without fallback.
+`advanceTurn()` in `engine/turnPipeline.js`: incrementTurn → tickTurn → tickPrices → tickFeed → tickVendor → trySpawnRecruit → tickAvailableOperatives → tickRelationships → achievement polling → selectAndFireRandomEvent (if not blocked) → fallback narration. `devAdvanceTurns(n)` repeats n times without fallback.
 
 ### Events
-42 flavor + 19 choice. Cooldown 4 turns, escalating choice probability. `ChoiceModal` handles both random events and contract stages.
+42 flavor + 19 choice + 8 relationship-driven events. Cooldown 4 turns, escalating choice probability. `ChoiceModal` handles both random events and contract stages.
 
 ### Contracts
 30 contracts (low/mid/high/faction/neutral) across 5 phase files; 10 are combat-capable. Lifecycle: feed → active → (combat) → resolving → feed. Multi-stage with stat checks. Combat bridge via `pendingCombatResult`.

@@ -3,6 +3,8 @@ import { resetNarrationHistory } from '../../data/placeholderNarration';
 import { CYBERWARE_ITEMS } from '../../data/cyberware';
 import { getActiveAccountPerks } from '../../data/achievements';
 import { XP_THRESHOLDS, MAX_LEVEL, VITALITY_BASE, VITALITY_PER_GRIT_BASE, syncRenown } from '../../data/leveling';
+import { getFriendForPath } from '../../data/friends';
+import { PATH_RELATIONSHIP_MODIFIERS } from '../../data/relationships';
 
 // Applies all active account perks to a freshly-built run. Reads unlocked account
 // achievements off the shared draft. Called exactly once per run init, after the
@@ -136,6 +138,8 @@ export const createCharacterSlice = (set) => ({
           class: classMap[draft.path] || 'STREET_SAMURAI',
           level: 1,
           exp: 0,
+          bond: 0,
+          lastBondTurn: 0,
           vitals:   { current: maxVitality, max: maxVitality },
           neural:   { current: 100, max: 100 },
           humanity: { current: 80 - humanityLoss, max: 80 },
@@ -158,6 +162,27 @@ export const createCharacterSlice = (set) => ({
       // Apply permanent account perks fresh for this run (after base player exists).
       applyAccountPerks(state);
       syncRenown(state);
+
+      // Seed the one life-path friend into the relationship slice for this run.
+      const pathFriend = getFriendForPath(state.character.path);
+      if (pathFriend) {
+        const bonuses = PATH_RELATIONSHIP_MODIFIERS[state.character.path]?.factionBondBias || {};
+        const startBond = Math.max(10, bonuses[pathFriend.faction] ?? 10);
+        if (!state.relationship) state.relationship = { friends: {} };
+        state.relationship.friends[pathFriend.id] = {
+          bond: startBond,
+          lastBondTurn: 0,
+          met: true,
+          favorUsed: false,
+        };
+        state.log.entries.push({
+          id: `friend_intro_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+          turn: 0,
+          text: pathFriend.introNarration,
+          timestamp: new Date().toISOString(),
+          type: 'narration',
+        });
+      }
     });
   },
 });

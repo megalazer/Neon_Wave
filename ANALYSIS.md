@@ -27,7 +27,7 @@ App.js                      state-machine shell: fonts → game-over → init �
 global.css / tailwind…      NativeWind setup (sharp corners, neon palette)
 src/
   theme/      colors.js (hex tokens + glow presets), fonts.js (Kode Mono + label styles)
-  store/      index.js (13 slices, immer) + slices/*
+  store/      index.js (14 slices, immer) + slices/*
   engine/     turnPipeline.js (the heartbeat), recruitGenerator.js
   data/       all game content as plain JS (no content hardcoded in logic)
   screens/    LogScreen, Haven, Cyber, Jobs, Lifestyle, Battle, GameOver, DevPanel, init/*
@@ -87,7 +87,7 @@ bumps `character.turnNumber += 1`) and `executeActivity` flows on Jobs call `adv
 
 ---
 
-## 5. State architecture — 13 Zustand slices
+## 5. State architecture — 14 Zustand slices
 
 Created in `src/store/index.js` with the **immer** middleware (`enableMapSet()` is called because
 `world.flags` and `event.firedEventIds` are `Set`s). Every slice is `(set, get) => ({ state, …actions })`.
@@ -104,6 +104,7 @@ Created in `src/store/index.js` with the **immer** middleware (`enableMapSet()` 
 | `exchange` | `coins{}`, `holdings{}`, `portfolioValueAtTurnStart`, `marketEvents` | `tickPrices`, `buyCoin`, `sellCoin` |
 | `faction` | `rep{factionId:number}` | `adjustFactionRep`, `getRepTier`, `resetFactionRep` |
 | `achievement` | `account{unlocked,selectedTitle,selectedTheme}`, `lifetime{…counters}`, `run{unlocked}`, `unseen`, `toastQueue` | `initAchievements`, `unlockAchievement`, `triggerAchievement`, `checkMilestones`, `incrementLifetime`, `recordPlayerDeath` |
+| `relationship` | `friends{}`, `lastOutcome`; crew bonds live on members, fixer bonds derive from fixerRep | `interactWithCrew`, `interactWithFriend`, `interactWithFixer`, `useFriendFavor`, `tickRelationships` |
 | `legacy` | `runs`, `highestTurn`, `unlockedFlags` | **stub** — see §12 |
 | `dev` | `enabled`, `panelOpen`, tap tracking | 7-tap unlock, ~40 debug actions |
 | `testCombat` | `combat{…}` full battle model | see §6.7 |
@@ -158,7 +159,7 @@ and `world.flags`; `contractSlice` mutates `faction.rep` via the shared `applyRe
   among living members (the player counts as a member).
 
 ### 6.5 Events (`data/events/`, `eventSlice`)
-- **42 flavor events** + **19 choice events**. Pacing constants (`data/eventPacing.js`):
+- **42 flavor events** + **19 choice events** + **8 relationship-driven events**. Pacing constants (`data/eventPacing.js`):
   `EVENT_COOLDOWN=4`, `FLAVOR_MIN_GAP=3`, `FLAVOR_MAX_GAP=7`, `FLAVOR_CHANCE=0.4`.
 - Each turn `selectAndFireRandomEvent`: after the choice cooldown, choice chance escalates
   `min(0.85, (turnsSinceChoice−4)*0.2)`; otherwise a flavor event fires at 40% inside its window,
@@ -167,7 +168,7 @@ and `world.flags`; `contractSlice` mutates `faction.rep` via the shared `applyRe
 - **Choice**: `{ weight, triggers{minTurn,requiredFlags,excludeFlags,faction,repAtLeast}, title, prompt,
   choices[] }`. A choice is either a flat `outcome` or a `statCheck{stat,threshold}` with `pass`/`fail`
   branches (roll = stat + `rand(0..5)`). Resolved via `resolveChoiceEvent` → effects applied + brief
-  outcome shown. Effects keys: `credits, morale, addFlags, factionDelta`.
+  outcome shown. Effects keys: `credits, morale, addFlags, factionDelta, bondDelta, friendBondDelta`.
 
 ### 6.6 Contracts (`data/contracts/`, `contractSlice`)
 - **30 contracts**: `low` 10, `mid` 4, `high` 3, `faction` 8, `neutral` 5; 10 are combat-capable. Shape: `{ tier, teamLevelRequired,
@@ -215,7 +216,14 @@ A dice-driven, round-based tactical layer. State lives under `combat`.
   at exactly 1 HP), `acc_boss_down` (high-threat kill). On exit, `BattleScreen` reads the outcome and, if a
   contract was waiting, calls `handleCombatResolution(outcome)` to resume the contract.
 
-### 6.8 Factions & reputation (`data/factions.js`, `factionSlice`)
+### 6.8 Relationships (`data/relationships.js`, `data/friends.js`, `relationshipSlice`)
+- Bonds clamp to `[0,100]` and tier as `STRANGER<ACQUAINTANCE<TRUSTED<LOYAL<BONDED`.
+- `initCharacter` seeds one origin friend (`Rico`, `Viv`, or `Sol`) into `relationship.friends`;
+  crew/generated recruits carry `bond` and `lastBondTurn` fields.
+- `LifestyleScreen` exposes the BONDS tab: crew/friend/fixer interaction cards, gifts, and one-time
+  friend favors. `tickRelationships` decays inactive crew/friend bonds every 5 turns.
+
+### 6.9 Factions & reputation (`data/factions.js`, `factionSlice`)
 - **6 factions** (language/meaning/signal themed): `fac_lexicon, fac_grammaton, fac_signal,
   fac_referent, fac_undertow, fac_static`, each with an accent color and sparse `rivals`.
 - Rep clamps to `[-100, 300]`; tiers `HOSTILE<COLD<NEUTRAL<FRIENDLY<ALLIED<EXALTED`.
@@ -223,7 +231,7 @@ A dice-driven, round-based tactical layer. State lives under `combat`.
   bleeds `ceil(amount*0.5)` off rivals. `LEGACY_FACTION_MAP` resolves old string labels to canonical ids.
   Rep gates contracts (`minFactionRep`), vendor stock (`factionReq`), and nudges event/recruit weighting.
 
-### 6.9 Economy
+### 6.10 Economy
 - **Vendor** (`vendorSlice`, `data/vendor.js`): rotating stock rebuilt every 8 turns from team-level
   unlocked tiers (`basic` always; `intermediate` ≥ TL4; `elite` ≥ TL7), filtered by `factionReq` and
   perk unlocks. Buying flags an item sold-out for the rotation.
@@ -233,7 +241,7 @@ A dice-driven, round-based tactical layer. State lives under `combat`.
 - **Lifestyle** (`data/lifestyle.js`): 4 real-estate + 4 vehicles (each with a `minigame` stub id and
   flavor `attributes`). Bought with `purchaseAsset`; assets are stored as id arrays on `character`.
 
-### 6.10 Achievements & persistence (`achievementSlice`, `data/achievements.js`)
+### 6.11 Achievements & persistence (`achievementSlice`, `data/achievements.js`)
 - **25 achievements**: 17 account-scope, 8 run-scope. `type` is `milestone` (a `condition(state)` polled
   each turn via `checkMilestones`) or `action` (fired directly via `triggerAchievement`).
 - **Account perks** are *derived*, never stored: `getActiveAccountPerks` maps unlocked account ids to
@@ -264,7 +272,7 @@ soft/hard reset.
 | `HavenScreen` | recruit/dismiss crew, buy recharges, watch team/pool tiers | `crew.*`, `contract.completedContracts`; recruit/dismiss/recharge actions |
 | `CyberScreen` | equip/unequip cyberware (loadout), buy from vendor, install quickhack modules | `crew.members`, `character.cyberwareInventory`; equip/unequip + vendor actions; tabs `StatsTab/VendorTab/QuickhackModuleSection` |
 | `JobsScreen` | browse the contract feed + activities; accept contract / launch test battle | `contract.feedItems/phase`, `faction.rep`; `acceptContract`, `executeActivity`, `startTestBattle` |
-| `LifestyleScreen` | buy real-estate/vehicles, trade crypto, view achievements/titles/themes & lifetime stats | `character` assets, `exchange.*`, `achievements.*` |
+| `LifestyleScreen` | buy real-estate/vehicles, trade crypto, manage bonds, view achievements/titles/themes & lifetime stats | `character` assets, `exchange.*`, `relationship.*`, `contract.fixerRep`, `achievements.*` |
 | `BattleScreen` | run dice combat (roll/target/abilities/confirm) | `combat`, orchestrates phases via effects; `exitBattle` → `handleCombatResolution` |
 | `GameOverScreen` | death recap + restart | `world.gameOverReason`, `character`, `achievements.account.selectedTitle`; `onRestart` |
 | `init/Path,Identity,Finalize` | pick origin/gender, name, starter cyberware | local draft → `initCharacter` |
@@ -302,7 +310,9 @@ resolution/debrief screen + abort confirm), branching on `event.activeChoiceEven
 | Quickhacks | 6 | `quickhacks.js` |
 | Flavor events | 42 | `events/flavor.js` |
 | Choice events | 19 | `events/choices.js` |
-| Contracts | 19 (low 4 / mid 4 / high 3 / faction 8) | `contracts/*` |
+| Contracts | 30 (low 10 / mid 4 / high 3 / faction 8 / neutral 5) | `contracts/*` |
+| Relationship events | 8 | `events/relationships.js` |
+| Friends | 3 | `friends.js` |
 | Fixers | 5 | `fixers.js` |
 | Factions | 6 | `factions.js` |
 | Enemies | 21 (low 7 / med 6 / high 7 / boss 1), 6 move types + block trait | `enemies.js`, `enemyTurn.js` |
@@ -345,8 +355,8 @@ death → combat defeat (player vitals 0) → GameOverScreen → restart
   legacy fallbacks — real fights come from `enemies.js` + `encounterGenerator.js`.
 - `enc_cyberpsycho` boss encounter exists but isn't yet wired to a contract (reachable via dev/test).
 - `MinigameStub` + lifestyle `minigame` ids are placeholders; no minigames implemented.
-- `docs/DESIGN.md` was empty (now the style guide) and `docs/ARCHITECTURE.md` describes a 6-slice
-  skeleton that the code outgrew (13 slices).
+- `docs/DESIGN.md` was empty (now the style guide) and older architecture docs described a 6-slice
+  skeleton that the code outgrew (14 slices).
 - No automated gameplay tests; the dev panel is the manual harness. Combat balance has a Monte-Carlo
   simulation (`scripts/sim_balance.mjs`, run with `bun`) targeting 3–5 round fights, risk scaling by tier.
 
@@ -356,7 +366,7 @@ death → combat defeat (player vitals 0) → GameOverScreen → restart
 - **No flat per-turn death** — there is no `engine/deathCheck.js` or `BASE_DEATH_CHANCE`; death is combat/dev only.
 - **Choice events are live**, not "not in MVP."
 - **3 origins**, not 6 (the "6" is the stat count).
-- **13 slices**, not 6.
+- **14 slices**, not 6.
 - **Income** is event/contract/exchange-driven, not a passive per-turn tick.
 - reanimated is **4**, not 3.
 

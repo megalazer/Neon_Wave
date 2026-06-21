@@ -4,6 +4,7 @@ import { ALL_FLAVOR_EVENTS, ALL_CHOICE_EVENTS } from '../../data/events/index';
 import { EVENT_COOLDOWN, FLAVOR_MIN_GAP, FLAVOR_MAX_GAP, FLAVOR_CHANCE } from '../../data/eventPacing';
 import { applyRepToDraft } from './factionSlice';
 import { resolveLegacyFaction } from '../../data/factions';
+import { bondTierFromValue } from '../../data/relationships';
 
 const SUCCESS_RATES = { low: 0.9, moderate: 0.7, high: 0.5 };
 
@@ -114,6 +115,50 @@ function applyEffects(state, effects) {
       applyRepToDraft(state, fid, delta); // resolves legacy labels + applies rivalry bleed
     }
   }
+  if (effects.bondDelta) {
+    const bd = effects.bondDelta;
+    const amount = bd.amount ?? 0;
+    if (!amount) return;
+    // Resolve target: specific memberId or first matching class
+    let target = null;
+    if (bd.targetMemberId) {
+      target = state.crew.members.find(
+        (m) => m.id === bd.targetMemberId && m.alive !== false && (m.vitals?.current ?? 1) > 0,
+      );
+    } else if (bd.targetClass) {
+      const cls = bd.targetClass.toLowerCase();
+      target = state.crew.members.find(
+        (m) => m.class?.toLowerCase() === cls && m.alive !== false && (m.vitals?.current ?? 1) > 0,
+      );
+    }
+    if (target) {
+      const before = target.bond ?? 0;
+      target.bond = clampVal(0, 100, before + amount);
+      const tierBefore = bondTierFromValue(before);
+      const tierAfter = bondTierFromValue(target.bond);
+      if (tierBefore !== tierAfter) {
+        state.log.entries.push({
+          id: `rel_evt_tier_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+          turn: state.character.turnNumber,
+          text: `BOND_UP: ${target.name} standing now ${tierAfter}.`,
+          timestamp: new Date().toISOString(),
+          type: 'acquisition',
+          accent: 'tertiary',
+        });
+      }
+    }
+  }
+  if (effects.friendBondDelta) {
+    const fd = effects.friendBondDelta;
+    const f = state.relationship?.friends?.[fd.friendId];
+    if (f?.met && fd.amount) {
+      f.bond = clampVal(0, 100, (f.bond ?? 0) + fd.amount);
+    }
+  }
+}
+
+function clampVal(lo, hi, v) {
+  return Math.max(lo, Math.min(hi, v));
 }
 
 // Checks whether an event's trigger conditions are met.
@@ -166,6 +211,41 @@ function isEligible(event, state) {
     const rep = repFor(state, faction);
     if (t.repAtLeast != null && rep < t.repAtLeast) return false;
     if (t.repAtMost  != null && rep > t.repAtMost)  return false;
+  }
+
+  // ── Relationship gates ─────────────────────────────────────────────────
+
+  // requiresClass: ≥1 living crew member of the given class(es)
+  if (t.requiresClass) {
+    const classes = Array.isArray(t.requiresClass) ? t.requiresClass : [t.requiresClass];
+    const lower = classes.map((c) => c.toLowerCase());
+    const has = state.crew.members.some(
+      (m) => m.alive !== false && (m.vitals?.current ?? 1) > 0 && lower.includes((m.class || '').toLowerCase()),
+    );
+    if (!has) return false;
+  }
+
+  // crewBondAtMost / crewBondAtLeast: bond threshold on any living member
+  if (t.crewBondAtMost != null || t.crewBondAtLeast != null) {
+    const living = state.crew.members.filter(
+      (m) => m.alive !== false && (m.vitals?.current ?? 1) > 0,
+    );
+    const anyMatch = living.some((m) => {
+      const b = m.bond ?? 0;
+      if (t.crewBondAtMost != null && b > t.crewBondAtMost) return false;
+      if (t.crewBondAtLeast != null && b < t.crewBondAtLeast) return false;
+      return true;
+    });
+    if (!anyMatch) return false;
+  }
+
+  // Friend gates
+  if (t.requiresFriendMet) {
+    const f = state.relationship?.friends?.[t.requiresFriendMet];
+    if (!f?.met) return false;
+    const fb = f.bond ?? 0;
+    if (t.friendBondAtLeast != null && fb < t.friendBondAtLeast) return false;
+    if (t.friendBondAtMost  != null && fb > t.friendBondAtMost)  return false;
   }
   return true;
 }
