@@ -170,7 +170,7 @@ and `world.flags`; `contractSlice` mutates `faction.rep` via the shared `applyRe
   outcome shown. Effects keys: `credits, morale, addFlags, factionDelta`.
 
 ### 6.6 Contracts (`data/contracts/`, `contractSlice`)
-- **19 contracts**: `low` 4, `mid` 4, `high` 3, `faction` 8. Shape: `{ tier, teamLevelRequired,
+- **30 contracts**: `low` 10, `mid` 4, `high` 3, `faction` 8, `neutral` 5; 10 are combat-capable. Shape: `{ tier, teamLevelRequired,
   fixerId, name, faction, factionRepReward/Penalty, minFactionRep?, payout, deposit, exp,
   stages[], success/failure/abortNarration }`. A stage: `{ label, title, prompt, choices[] }`; a
   choice mirrors choice-events (`statCheck` or flat), and its branch is one of

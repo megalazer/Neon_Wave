@@ -274,7 +274,6 @@ export const MID_CONTRACTS = [
     faction: 'fac_lexicon',
     factionRepReward: 16,
     factionRepPenalty: 10,
-    minFactionRep: 'FRIENDLY',
     description: 'A defecting Grammaton analyst wants out of the city. Remi has a buyer for the data she\'s carrying.',
     payout: 9000,
     deposit: 400,
@@ -328,6 +327,7 @@ export const MID_CONTRACTS = [
             outcome: {
               text: 'VESPER is non-combat. Whatever happens, it\'s on you.',
               branch: 'triggersBattle',
+              encounterId: 'enc_grammaton_cordon_mid',
               onVictory: {
                 branch: 'advance',
                 text: 'Cordon team is down. VESPER is shaken but moving. You\'re through.',
