@@ -6,6 +6,7 @@ import { generateEncounter, buildUnits } from '../src/engine/encounterGenerator.
 import { planEnemyTurn } from '../src/engine/enemyTurn.js';
 import { ENCOUNTERS } from '../src/data/encounters.js';
 import { VITALITY_BASE, VITALITY_PER_GRIT_BASE, vitalityGainPerLevel } from '../src/data/leveling.js';
+import { deriveStats } from '../src/data/origins.js';
 
 const ABIL = {
   netrunner: { cost: 1, kind: 'nuke', dmg: 15 },
@@ -65,12 +66,12 @@ function battle(party, hostile) {
 }
 
 const ORIG = {
-  corpo:      { cls: 'fixer',          grit: 10, neural: 100 },
-  street_kid: { cls: 'street_samurai', grit: 10, neural: 100 },
-  nomad:      { cls: 'ghost',          grit: 13, neural: 100 },
+  corpo:      { cls: 'fixer',          neural: 100 },
+  street_kid: { cls: 'street_samurai', neural: 100 },
+  nomad:      { cls: 'ghost',          neural: 100 },
 };
 const QUAL = { common: { hp: 75, neural: 55, grit: 8 }, rare: { hp: 105, neural: 85, grit: 12 } };
-const mkPlayer = (origin, level, nf = 1) => { const o = ORIG[origin]; return { id: 'player', isPlayer: true, class: o.cls, hp: playerHP(o.grit, level), neural: Math.round(o.neural * nf) }; };
+const mkPlayer = (origin, level, nf = 1) => { const o = ORIG[origin]; const stats = deriveStats(origin); return { id: 'player', isPlayer: true, class: o.cls, hp: playerHP(stats.grit, level), neural: Math.round(o.neural * nf) }; };
 const mkRec = (id, cls, q, level, nf = 1) => { const Q = QUAL[q]; return { id, class: cls, hp: recruitHP(Q.hp, Q.grit, level), neural: Math.round(Q.neural * nf) }; };
 
 const CELLS = [

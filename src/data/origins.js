@@ -1,7 +1,7 @@
 export const ORIGIN_MODIFIERS = {
-  corpo:      { face: 3, wire: 2, credits: 800 },
-  street_kid: { ghost: 3, edge: 2, credits: 200 },
-  nomad:      { grit: 3, chrome: 2, credits: 400 },
+  corpo:      { credits: 800 },
+  street_kid: { credits: 200 },
+  nomad:      { credits: 400 },
 };
 
 export const BASE_STATS = {
@@ -41,32 +41,32 @@ export const ORIGINS = [
     id: 'corpo',
     label: 'CORPO',
     badge: 'DATA_ENCLAVE',
-    desc: 'High-tier privilege access. Initialization at Corporate Plaza. Enhanced decryption logic.',
+    desc: 'High-tier privilege access. Initialization at Corporate Plaza. No innate stat bias.',
     color: '#00f3ff',
     onColor: '#00373a',
     icon: 'business',
-    bonusLine: '+3 FACE  +2 WIRE  +800 CR',
+    bonusLine: 'BASE_STATS_10  +800 CR',
     lockedBy: 'acc_corpo_run',
   },
   {
     id: 'street_kid',
     label: 'STREET_KID',
     badge: 'HUB_CONNECTED',
-    desc: 'Grid-native status. Initialization at Saltgate Market. Enhanced agility metrics.',
+    desc: 'Grid-native status. Initialization at Saltgate Market. No innate stat bias.',
     color: '#fe00fe',
     onColor: '#380038',
     icon: 'person',
-    bonusLine: '+3 GHOST  +2 EDGE  +200 CR',
+    bonusLine: 'BASE_STATS_10  +200 CR',
   },
   {
     id: 'nomad',
     label: 'NOMAD',
     badge: 'SIGNAL_VOID',
-    desc: 'Off-grid survivalist. Initialization at Periphery Wasteland. Machine-link mastery.',
+    desc: 'Off-grid survivalist. Initialization at Periphery Wasteland. No innate stat bias.',
     color: '#2ae500',
     onColor: '#053900',
     icon: 'terrain',
-    bonusLine: '+3 GRIT  +2 CHROME  +400 CR',
+    bonusLine: 'BASE_STATS_10  +400 CR',
   },
 ];
 
