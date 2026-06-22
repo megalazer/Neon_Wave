@@ -34,13 +34,20 @@ function getChoiceEvent(id) {
 function StatBadge({ stat, threshold, playerStats }) {
   const statVal = playerStats?.[stat] ?? 10;
   const label = stat.toUpperCase();
-  const difficulty =
-    threshold >= 15 ? 'EXTREME' :
-    threshold >= 14 ? 'HIGH' :
-    threshold >= 12 ? 'MOD' : 'LOW';
+  // Check resolves as statVal + d6(0..5) >= threshold, so chance is uniform over the gap.
+  const gap = threshold - statVal;
+  const chance = gap <= 0 ? 1 : gap >= 6 ? 0 : (6 - gap) / 6;
+  const pct = Math.round(chance * 100);
+  const color =
+    chance >= 1   ? `${colors.tertiaryFixed}CC` :
+    chance >= 0.5 ? `${colors.primary}CC` :
+    chance > 0    ? `${colors.secondary}CC` :
+                    `${colors.error}CC`;
   return (
     <View style={badge.wrap}>
-      <Text style={badge.text}>[REQ:{difficulty}_{label}:{statVal}]</Text>
+      <Text style={[badge.text, { color }]}>
+        [{label} {statVal}/{threshold} · {pct}%]
+      </Text>
     </View>
   );
 }
@@ -157,6 +164,18 @@ function ContractResolutionView({ resolution, contract, onDismiss }) {
           <Text style={[res.modifierLine, { color: `${accentColor}77` }]}>
             {`BASE ${resolution.baseCredits?.toLocaleString()} CR × ${(1 + resolution.modifierApplied).toFixed(2)} EXECUTION_BONUS`}
           </Text>
+        )}
+        {resolution.consequences && (
+          <View style={[res.rewardRow, { borderColor: `${colors.error}33` }]}>
+            <MaterialIcons name="warning" size={14} color={colors.error} />
+            <Text style={[res.rewardText, { color: colors.error }]}>
+              {[
+                resolution.consequences.hp ? `-${resolution.consequences.hp} HP` : null,
+                resolution.consequences.neural ? `-${resolution.consequences.neural} NEU` : null,
+                resolution.consequences.morale ? `${resolution.consequences.morale} MORALE` : null,
+              ].filter(Boolean).join('  ·  ')}
+            </Text>
+          </View>
         )}
       </ScrollView>
 

@@ -1,4 +1,4 @@
-import { ALL_CONTRACTS, getContract } from '../../data/contracts/index';
+import { ALL_CONTRACTS, getContract, contractCrewGateMet } from '../../data/contracts/index';
 import { applyXPToCrewMember } from '../../data/leveling';
 import { applyRepToDraft } from './factionSlice';
 import { repTierFromValue, tierMeetsRequirement } from '../../data/factions';
@@ -26,6 +26,7 @@ function _playerLevel(state) {
 function _canAccept(state, contract, pLevel, credits) {
   if (!contract) return false;
   if (pLevel < contract.teamLevelRequired) return false;
+  if (!contractCrewGateMet(state.crew.members, contract)) return false;
   if (!contractRepGateMet(state, contract)) return false;
   if (contract.deposit > 0 && credits < contract.deposit) return false;
   return true;
@@ -147,10 +148,58 @@ function _ensureAcceptableInFeed(state) {
   state.contract.feedItems = merged.slice(0, FEED_SIZE);
 }
 
+// ── Failure consequences by tier ────────────────────────────────────────────────
+// HP/neural are fractions of the operative's MAX pool so they scale with level.
+// morale is a flat 0–100 delta (already a percentage-like scale).
+const STAGE_FAIL_EFFECTS = {
+  LOW:  { hpDamagePct: 0.04, morale: -2 },
+  MID:  { hpDamagePct: 0.07, neuralDamagePct: 0.10, morale: -5 },
+  HIGH: { hpDamagePct: 0.10, neuralDamagePct: 0.15, morale: -8 },
+};
+
+const CONTRACT_FAIL_EFFECTS = {
+  LOW:  { hpDamagePct: 0.08, morale: -5 },
+  MID:  { hpDamagePct: 0.14, neuralDamagePct: 0.15, morale: -10 },
+  HIGH: { hpDamagePct: 0.20, neuralDamagePct: 0.25, morale: -15 },
+};
+
+// Applies an effects bag to the draft. Returns the absolute amounts actually
+// applied ({ hp, neural, morale, credits }) so callers can surface feedback.
+// Contracts never kill — death is combat-only — so player HP floors at 1.
 function _applyOutcomeEffects(state, effects) {
-  if (!effects) return;
+  const applied = { hp: 0, neural: 0, morale: 0, credits: 0 };
+  if (!effects) return applied;
+  const player = state.crew.members.find((m) => m.isPlayer);
+
   if (effects.credits !== undefined) {
+    const before = state.character.credits;
     state.character.credits = Math.max(0, state.character.credits + effects.credits);
+    applied.credits = state.character.credits - before;
+  }
+
+  if (player) {
+    const hpLoss =
+      (effects.hpDamage ?? 0) +
+      (effects.hpDamagePct ? Math.round(player.vitals.max * effects.hpDamagePct) : 0);
+    if (hpLoss > 0) {
+      const before = player.vitals.current;
+      player.vitals.current = Math.max(1, player.vitals.current - hpLoss);
+      applied.hp = before - player.vitals.current;
+    }
+    const neuralLoss =
+      (effects.neuralDamage ?? 0) +
+      (effects.neuralDamagePct ? Math.round(player.neural.max * effects.neuralDamagePct) : 0);
+    if (neuralLoss > 0) {
+      const before = player.neural.current;
+      player.neural.current = Math.max(0, player.neural.current - neuralLoss);
+      applied.neural = before - player.neural.current;
+    }
+  }
+
+  if (effects.morale !== undefined) {
+    const before = state.character.morale;
+    state.character.morale = Math.max(0, Math.min(100, state.character.morale + effects.morale));
+    applied.morale = state.character.morale - before;
   }
   if (effects.rewardModifier !== undefined) {
     state.contract.activeContractModifiers += effects.rewardModifier;
@@ -165,6 +214,30 @@ function _applyOutcomeEffects(state, effects) {
   if (effects.addFlags) {
     for (const flag of effects.addFlags) state.world.flags.add(flag);
   }
+  return applied;
+}
+
+// Builds a terse "−8 HP · −3 NEU · −5 MORALE" string from applied amounts, or '' if none.
+function _consequenceText(applied) {
+  if (!applied) return '';
+  const parts = [];
+  if (applied.hp)     parts.push(`-${applied.hp} HP`);
+  if (applied.neural) parts.push(`-${applied.neural} NEU`);
+  if (applied.morale) parts.push(`${applied.morale} MORALE`);
+  return parts.join(' · ');
+}
+
+// Pushes a SUSTAINED log entry for the damage taken on a failed stage/combat.
+function _logConsequences(state, applied, idPrefix) {
+  const summary = _consequenceText(applied);
+  if (!summary) return;
+  state.log.entries.push({
+    id: `${idPrefix}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    turn: state.character.turnNumber,
+    text: `SUSTAINED: ${summary}.`,
+    timestamp: new Date().toISOString(),
+    type: 'narration',
+  });
 }
 
 function _setResolution(state, contract, outcome) {
@@ -181,6 +254,17 @@ function _setResolution(state, contract, outcome) {
   const creditsEarned =
     outcome === 'success' ? Math.round(basePayout * (1 + modifier)) : basePayout;
 
+  // Apply contract-outcome consequences. A blown job wrecks you (HP/neural/morale);
+  // a voluntary abort only stings morale — you pull out before taking real damage.
+  let consequences = null;
+  if (outcome === 'failure') {
+    const failFx = CONTRACT_FAIL_EFFECTS[contract.tier] || CONTRACT_FAIL_EFFECTS.LOW;
+    consequences = _applyOutcomeEffects(state, failFx);
+  } else if (outcome === 'aborted') {
+    const failFx = CONTRACT_FAIL_EFFECTS[contract.tier] || CONTRACT_FAIL_EFFECTS.LOW;
+    consequences = _applyOutcomeEffects(state, { morale: failFx.morale });
+  }
+
   state.contract.resolution = {
     outcome,
     creditsEarned,
@@ -194,6 +278,8 @@ function _setResolution(state, contract, outcome) {
     modifierApplied: outcome === 'success' && modifier !== 0 ? modifier : null,
     baseCredits:     outcome === 'success' && modifier !== 0 ? basePayout : null,
     vehicleBonusApplied: outcome === 'success' && vehicleBonus > 0 ? vehicleBonus : null,
+    consequences: consequences && (consequences.hp || consequences.neural || consequences.morale)
+      ? consequences : null,
   };
   state.contract.phase = 'resolving';
 }
@@ -309,6 +395,7 @@ export const createContractSlice = (set, get) => ({
 
       const playerLevel = state.crew.members.find((m) => m.isPlayer)?.level ?? 1;
       if (playerLevel < contract.teamLevelRequired) return;
+      if (!contractCrewGateMet(state.crew.members, contract)) return;
 
       // Faction reputation gate (e.g. requires UNDERTOW_FRIENDLY)
       if (!contractRepGateMet(state, contract)) return;
@@ -382,6 +469,13 @@ export const createContractSlice = (set, get) => ({
 
       _applyOutcomeEffects(state, branchData.effects);
 
+      // Apply tier-based consequences for stage failure — HP/neural damage, morale loss
+      if (!passed) {
+        const failFx = STAGE_FAIL_EFFECTS[contract.tier] || STAGE_FAIL_EFFECTS.LOW;
+        const applied = _applyOutcomeEffects(state, failFx);
+        _logConsequences(state, applied, `con_dmg_${stage.id}`);
+      }
+
       state.contract.stageResults.push({
         stageId:     stage.id,
         stageLabel:  stage.label,
@@ -424,6 +518,16 @@ export const createContractSlice = (set, get) => ({
       const { branch, text } = victorData;
 
       _applyOutcomeEffects(state, victorData.effects);
+
+      // Apply tier-based consequences for a lost fight — HP/neural damage, morale loss
+      if (combatOutcome !== 'victory') {
+        const contract = getContract(state.contract.activeContractId);
+        if (contract) {
+          const failFx = STAGE_FAIL_EFFECTS[contract.tier] || STAGE_FAIL_EFFECTS.LOW;
+          const applied = _applyOutcomeEffects(state, failFx);
+          _logConsequences(state, applied, `con_dmg_${pending.stageId}`);
+        }
+      }
 
       state.contract.stageResults.push({
         stageId:     pending.stageId,
