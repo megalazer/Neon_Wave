@@ -12,7 +12,7 @@ export const LOW_CONTRACTS = [
     faction: 'fac_signal',
     factionRepReward: 10,
     factionRepPenalty: 6,
-    description: 'Intercept a corporate data stream relay in Lowport. Plant the tap, pull the feed, disappear.',
+    description: 'Intercept a corporate data stream relay in Lowport. Plant the tap, pull the feed and disappear. Easy enough right Choom?',
     payout: 1400,
     deposit: 0,
     exp: 90,
@@ -22,18 +22,18 @@ export const LOW_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'LOCATE RELAY',
-        prompt: 'The relay node is in a maintenance tunnel under Lowport. You have partial coordinates. Breach the access grid to pinpoint it, or move blind and trust instinct.',
+        prompt: 'The relay node is in a maintenance tunnel under Lowport. Breach the  gate to get to it, or move blind and trust whatever is left of your gut.',
         choices: [
           {
             id: 'sl_hack',
             label: 'Breach access grid',
             statCheck: { stat: 'wire', threshold: 11 },
             pass: {
-              text: 'Your deck slips through the grid\'s soft spots. Relay confirmed. You\'re in the tunnel before anyone notices the ping.',
+              text: 'Your deck slips through the grid like hot knife through its-probably-not-butter. You\'re in the tunnel before anyone notices.',
               branch: 'advance',
             },
             fail: {
-              text: 'Grid pings you. You disconnect in time but navigate blind. Costs twenty minutes.',
+              text: 'Damn the Grid pinged you. You manage to disconnect in time but that it cost you twenty minutes. Could have gone a lot worse',
               branch: 'advance',
             },
           },
@@ -41,7 +41,7 @@ export const LOW_CONTRACTS = [
             id: 'sl_instinct',
             label: 'Move blind, trust instincts',
             outcome: {
-              text: 'Old-fashioned. Follow the cable runs, listen for hum. Longer, no footprint.',
+              text: 'Old-fashioned breaking and entering just follwing the cable runs, listening for the hum, no footprint.',
               branch: 'advance',
             },
           },
@@ -56,23 +56,23 @@ export const LOW_CONTRACTS = [
         choices: [
           {
             id: 'sl_fast',
-            label: 'Work fast, accept traces',
-            statCheck: { stat: 'wire', threshold: 12 },
+            label: 'Work fast, might get traces',
+            statCheck: { stat: 'wire', threshold: 10},
             pass: {
-              text: 'Tap\'s in before the worker finishes their smoke break. Clean install.',
+              text: 'You tap in before the worker finishes their vape break. Clean install.',
               branch: 'advance',
             },
             fail: {
-              text: 'You fumble the splice. Tap connects but the data quality is degraded. Partial feed only.',
+              text: 'You fumble the splice. Nice one dumbass. The tap connects but the data quality is degraded. Partial feed only.',
               branch: 'advance',
             },
           },
           {
             id: 'sl_slow',
             label: 'Work clean, take the risk',
-            statCheck: { stat: 'wire', threshold: 10 },
+            statCheck: { stat: 'wire', threshold: 13},
             pass: {
-              text: 'Perfect install. Tap will run for weeks before anyone finds it.',
+              text: 'Perfect install . Tap will run for weeks before anyone finds it.',
               branch: 'advance',
             },
             fail: {
@@ -87,13 +87,13 @@ export const LOW_CONTRACTS = [
         stageNumber: 3,
         label: 'STAGE_03',
         title: 'EXFIL CLEAN',
-        prompt: 'Job\'s done. Exit: back through the access tunnel, empty but long, or service entrance that puts you on the main street. Faster, visible.',
+        prompt: 'Job\'s done. Exit: back through the access tunnel, empty and long probably safe, or service entrance that puts you on the main street. Faster, might get you spotted.',
         choices: [
           {
             id: 'sl_tunnel',
             label: 'Back through the tunnel',
             outcome: {
-              text: "Quiet exit. Nobody sees you. Remi confirms the tap is transmitting. Credits inbound. Remi's Net tightens \u2014 this is the first node.",
+              text: "Quiet exit. Nobody sees you or hears you. Remi confirms the tap is transmitting booyah. Credits inbound. Remi's Net tightens \u2014 this is the first node.",
               branch: 'advance',
             },
           },
@@ -106,15 +106,15 @@ export const LOW_CONTRACTS = [
               branch: 'advance',
             },
             fail: {
-              text: 'Patrol scanner flags your ID. You bluff through, but your face is in their log.',
+              text: 'Flocker Camera cathes your face. Another tally in Grammton\'s little black book.',
               branch: 'advance',
             },
           },
         ],
       },
     ],
-    successNarration: 'Signal tap operational. Data stream intercepted. Remi transfers full payout, minus commission.',
-    failureNarration: 'Tap was found and burned. Remi pays a fraction. More than nothing, less than agreed.',
+    successNarration: 'Signal tap operational. Data stream intercepted. Remi transfers the full payout, minus her generous commission of course.',
+    failureNarration: 'Tap was found and burned. Amateur hour. Remi pays you a fraction. More than nothing especially for a gutter rat',
     abortNarration: 'You pulled the job mid-run. Remi marks the abort in the ledger. No payout.',
   },
 
@@ -131,7 +131,7 @@ export const LOW_CONTRACTS = [
     faction: 'fac_undertow',
     factionRepReward: 10,
     factionRepPenalty: 6,
-    description: 'Three-stop courier run. Package origin unspecified. Delivery windows tight. No questions.',
+    description: 'Three-stop courier run. Package origin unspecified. Delivery windows tight. Couldnt they hire a QuickDash driver? ',
     payout: 1000,
     deposit: 0,
     exp: 60,
@@ -141,18 +141,18 @@ export const LOW_CONTRACTS = [
         stageNumber: 1,
         label: 'STAGE_01',
         title: 'PICKUP',
-        prompt: 'Package is in a locker at Saltgate transit hub. The key code Nyx sent is a single-use cipher. Decode it on the fly, or talk your way in.',
+        prompt: 'Package is in a locker at the Saltgate transit hub. The key code Nyx sent is a single-use cipher. Decode it on the fly, or talk your way in.',
         choices: [
           {
             id: 'pr_cipher',
             label: 'Decode the cipher',
-            statCheck: { stat: 'wire', threshold: 10 },
+            statCheck: { stat: 'wire', threshold: 13 },
             pass: {
-              text: 'Cipher decodes in under a minute. Black case, no markings. You don\'t ask.',
+              text: 'Cipher decodes in under a minute. Black case, no markings. Lets hope not a bomb...',
               branch: 'advance',
             },
             fail: {
-              text: 'Misread a character. Second attempt works. Two minutes behind schedule.',
+              text: 'Misread a character. Second attempt works. Two minutes behind schedule. Sure are lucky aren\'t you choom?',
               branch: 'advance',
             },
           },
@@ -161,11 +161,11 @@ export const LOW_CONTRACTS = [
             label: 'Talk the hub attendant into it',
             statCheck: { stat: 'face', threshold: 11 },
             pass: {
-              text: 'Attendant opens the locker without blinking. You can be charming when it matters.',
+              text: 'Attendant opens the locker without blinking.  .',
               branch: 'advance',
             },
             fail: {
-              text: 'Attendant asks for verification you don\'t have. You bail and use the cipher after all.',
+              text: 'Attendant asks for a badge . You delta and use the cipher.',
               branch: 'advance',
             },
           },
@@ -176,13 +176,13 @@ export const LOW_CONTRACTS = [
         stageNumber: 2,
         label: 'STAGE_02',
         title: 'CHECKPOINT',
-        prompt: 'Second stop runs through an Onyx Bureau patrol corridor. Vehicle scans running. Reroute through back streets, longer, invisible, or push straight through.',
+        prompt: 'Your second stop runs through an Grammaton patrol corridor. Flocker scans running. Reroute through back streets? or push straight through.',
         choices: [
           {
             id: 'pr_reroute',
             label: 'Reroute through back streets',
             outcome: {
-              text: 'Longer route, zero contact. Package arrives at second drop intact. Clock is tighter now.',
+              text: 'Longer route, but you lost some time. But hey heres to hoping theres nothing that will go off',
               branch: 'advance',
             },
           },
@@ -191,11 +191,11 @@ export const LOW_CONTRACTS = [
             label: 'Push straight through',
             statCheck: { stat: 'grit', threshold: 12 },
             pass: {
-              text: 'Scanner pings the case. You meet the patrol officer\'s eyes and don\'t blink. Waved through.',
+              text: 'Flocker cam pings the case. You meet the Grammaton officer\'s eyes and don\'t blink. Waved through like a pro.',
               branch: 'advance',
             },
             fail: {
-              text: 'Scanner flags an anomaly. You ditch the case in a trash chute, recover it two blocks later. Patrol logged your face.',
+              text: 'Flocker flags it. You ditch the case in a trash chute, recover it two blocks later. You definetly got canned',
               branch: 'advance',
             },
           },

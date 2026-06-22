@@ -1,17 +1,19 @@
 export const MAX_LEVEL = 10;
 
-// Total XP required to BE at level N (index = level - 1)
+// Total XP required to BE at level N (index = level - 1).
+// Pacing follows contract volume: low jobs cover early levels, mid jobs unlock
+// late-game access, and high jobs carry the final climb to max level.
 export const XP_THRESHOLDS = [
-  0,     // Level 1 — starting, no XP needed
-  100,   // Level 2
-  250,   // Level 3
-  450,   // Level 4
-  700,   // Level 5
-  1050,  // Level 6  (+350)
-  1500,  // Level 7  (+450)
-  2100,  // Level 8  (+600)
-  2900,  // Level 9  (+800)
-  4000,  // Level 10 (+1100 — steepest climb)
+  0,      // Level 1 — starting, no XP needed
+  300,    // Level 2
+  800,    // Level 3
+  1600,   // Level 4 — requires a deep low-tier run
+  2000,   // Level 5 — first mid-tier jobs unlock the full mid board
+  2900,   // Level 6
+  3800,   // Level 7
+  4700,   // Level 8
+  5400,   // Level 9 — mid-tier completion unlocks high-tier work
+  7000,   // Level 10 — first high-tier success opens apex contracts
 ];
 
 export function getLevelFromXP(xp) {
