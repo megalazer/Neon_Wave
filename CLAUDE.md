@@ -42,7 +42,7 @@ If a design decision conflicts between this file and the HTML exports, the HTML 
 - No per-turn death chance. Death only from combat flatline (player vitals reach 0) or dev panel.
 - Choice events are live: cooldown 4 turns, escalating probability min(0.85, (turnsSinceChoice-4)*0.2).
 - Flavor events fire at 40% probability between turns 3-7, forced past turn 7.
-- Crew cap: 4. MAX_LEVEL: 10. XP_THRESHOLDS: [0,100,250,450,700,1050,1500,2100,2900,4000].
+- Crew cap: 4. MID/HIGH contracts require 4 crew members. MAX_LEVEL: 10. XP_THRESHOLDS: [0,300,800,1600,2000,2900,3800,4700,5400,7000].
 - Achievement data (account + lifetime) persists across runs via AsyncStorage. Per-run character/crew/world state resets on death.
 
 ## File Structure

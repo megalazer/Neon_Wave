@@ -129,7 +129,7 @@ character, crew, world, log, event, contract, vendor, exchange, faction, achieve
 42 flavor + 19 choice. Cooldown 4 turns, escalating choice probability. `ChoiceModal` handles both random events and contract stages.
 
 ### Contracts
-30 contracts (low/mid/high/faction/neutral) across 5 phase files; 10 are combat-capable. Lifecycle: feed → active → (combat) → resolving → feed. Multi-stage with stat checks. Combat bridge via `pendingCombatResult`.
+30 contracts (low/mid/high/faction/neutral) across 5 phase files; 10 are combat-capable. Lifecycle: feed → active → (combat) → resolving → feed. Multi-stage with stat checks. Combat bridge via `pendingCombatResult`. MID/HIGH contracts also require a full 4-member crew before acceptance.
 
 ### Combat
 Dice-driven in `testCombatSlice`. Round phases: roll→targeting→executing→enemy_turn→endRound. Cyber pool from team neural. Enemies are faction-tagged (`data/enemies.js`); fights are built by `engine/encounterGenerator.js` from the contract's faction+tier+party level (level-scaled HP/damage), or an explicit named/boss `encounterId`. Enemy moves (basic/focus/aoe/ramp/priority/telegraph + block) resolve via `engine/enemyTurn.js`. Victory/defeat → `handleCombatResolution` if contract-active.

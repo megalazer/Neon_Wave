@@ -117,12 +117,12 @@ and `world.flags`; `contractSlice` mutates `faction.rep` via the shared `applyRe
 ## 6. Subsystems in detail
 
 ### 6.1 Character creation & stats
-- **3 origins** (`data/origins.js`): `corpo`, `street_kid`, `nomad`. Each gives stat modifiers + starting
-  credits + opening narration. (Note: 3 origins, but **6 stats** — `chrome, edge, ghost, face, grit, wire`,
-  base 10 each.) `deriveStats(path)` = base + origin mods.
+- **3 origins** (`data/origins.js`): `corpo`, `street_kid`, `nomad`. Each gives starting credits +
+  opening narration; all six starting stats are exactly 10. (Stats: `chrome, edge, ghost, face, grit,
+  wire`.) `deriveStats(path)` returns those base stats without origin stat bias.
 - `initCharacter(draft)` builds the player as `crew.members[0]` (`id:'player'`, `isPlayer:true`,
   class mapped `corpo→FIXER / street_kid→STREET_SAMURAI / nomad→GHOST`, level 1, neural 100,
-  vitals = grit-derived (`VITALITY_BASE + grit*VITALITY_PER_GRIT_BASE`, ~125 at base grit; nomad higher),
+  vitals = grit-derived (`VITALITY_BASE + grit*VITALITY_PER_GRIT_BASE`, ~125 at base grit),
   humanity `80 − starterHumanityCost`, `maxCyberwareSlots:3`, starter cyberware equipped), seeds the
   opening log line, and applies account perks.
 
@@ -150,7 +150,7 @@ and `world.flags`; `contractSlice` mutates `faction.rep` via the shared `applyRe
   vendor tiers. Netrunner recruits get a generated quickhack loadout.
 
 ### 6.4 Leveling (`data/leveling.js`)
-- `MAX_LEVEL = 10`; `XP_THRESHOLDS = [0,100,250,450,700,1050,1500,2100,2900,4000]` (cumulative).
+- `MAX_LEVEL = 10`; `XP_THRESHOLDS = [0,300,800,1600,2000,2900,3800,4700,5400,7000]` (cumulative).
 - `applyXPToCrewMember` raises level, grants **+1 to a random stat per level gained** (capped 20) and
   **grit-scaled max HP per level** (`vitalityGainPerLevel(grit)`, also healing by that amount),
   logs a `LEVEL_UP` line, and arms `world.pendingLevelUp` (first level-up per tick wins → `LevelUpBanner`).
@@ -176,8 +176,8 @@ and `world.flags`; `contractSlice` mutates `faction.rep` via the shared `applyRe
   choice mirrors choice-events (`statCheck` or flat), and its branch is one of
   `advance | complete | fail | triggersBattle` (battle branches carry `onVictory/onDefeat/encounterId`).
 - **Lifecycle (`phase`)**: `feed → active → (combat) → resolving → feed`.
-  - *feed* — `_pickFeedContracts` keeps ≤3, tier-diverse, gated by player level (and `minFactionRep`).
-  - *active* — `resolveStageChoice`; `triggersBattle` stores `pendingCombatResult` and sets `phase:'combat'`.
+  - *feed* — `_pickFeedContracts` keeps up to 6 items, prioritizes neutral fallback and tier diversity, then shows locked teasers after acceptable work.
+  - *active* — `acceptContract` gates by player level, MID/HIGH full-crew requirement (4 members), faction rep, and deposit before `resolveStageChoice` can run; `triggersBattle` stores `pendingCombatResult` and sets `phase:'combat'`.
   - *resolving* — `_setResolution` computes payout: success = `round(payout*(1+modifier))`,
     failure = `floor(payout/4)`, abort = 0. Stage pass threshold = `ceil(stages/2)`.
   - `dismissResolution` applies credits + XP, records completion, bumps fixer rep, applies faction rep
