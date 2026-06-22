@@ -18,7 +18,7 @@ import * as Haptics from 'expo-haptics';
 import { useStore } from '../store/index';
 import { advanceTurn } from '../engine/turnPipeline';
 import { ACTIVITIES } from '../data/activities';
-import { getContract } from '../data/contracts/index';
+import { getContract, getContractCrewRequirement } from '../data/contracts/index';
 import { getFixer, FIXERS } from '../data/fixers';
 import { getFaction, repTierFromValue, tierMeetsRequirement, FACTION_LIST } from '../data/factions';
 import { colors } from '../theme/colors';
@@ -173,9 +173,15 @@ const FIXER_ACCENT_COLORS = {
 };
 
 const TIER_LABELS = { LOW: 'LOW_TIER', MID: 'MID_TIER', HIGH: 'HIGH_TIER' };
+const TIER_FILTERS = [
+  { tag: 'ALL', accent: colors.primary, id: 'ALL' },
+  { tag: 'LOW', accent: colors.primary, id: 'LOW' },
+  { tag: 'MID', accent: colors.secondary, id: 'MID' },
+  { tag: 'HIGH', accent: colors.tertiaryFixed, id: 'HIGH' },
+];
 
 // --- ContractCard ---
-function ContractCard({ feedItem, playerLevel, credits, factionRep, onAccept }) {
+function ContractCard({ feedItem, playerLevel, crewCount, credits, factionRep, onAccept }) {
   const contract    = getContract(feedItem.id);
   const fixer       = contract ? getFixer(contract.fixerId) : null;
   const accentColor = fixer ? (FIXER_ACCENT_COLORS[fixer.accent] ?? colors.primary) : colors.outline;
@@ -191,8 +197,10 @@ function ContractCard({ feedItem, playerLevel, credits, factionRep, onAccept }) 
     !tierMeetsRequirement(repTierFromValue(factionRep?.[contract.faction] ?? 0), repReq);
 
   const locked     = playerLevel < contract.teamLevelRequired;
+  const crewRequired = getContractCrewRequirement(contract);
+  const crewLocked   = crewCount < crewRequired;
   const cantAfford = contract.deposit > 0 && credits < contract.deposit;
-  const disabled   = locked || repLocked || cantAfford;
+  const disabled   = locked || crewLocked || repLocked || cantAfford;
 
   const btnFillStyle = useAnimatedStyle(() => ({
     backgroundColor: interpolateColor(pressed.value, [0, 1], ['transparent', accentColor]),
@@ -276,6 +284,13 @@ function ContractCard({ feedItem, playerLevel, credits, factionRep, onAccept }) 
           <MaterialIcons name="lock" size={12} color={colors.outline} />
           <Text style={[styles.activityBtnText, { color: colors.outline, marginLeft: 4 }]}>
             REQUIRES_TL{contract.teamLevelRequired}
+          </Text>
+        </View>
+      ) : crewLocked ? (
+        <View style={[styles.activityBtn, { borderColor: colors.outline }]}>
+          <MaterialIcons name="groups" size={12} color={colors.outline} />
+          <Text style={[styles.activityBtnText, { color: colors.outline, marginLeft: 4 }]}>
+            REQUIRES_CREW_{crewCount}/{crewRequired}
           </Text>
         </View>
       ) : repLocked ? (
@@ -473,6 +488,7 @@ export default function JobsScreen({ onNavigate }) {
   const [activeTab, setActiveTab] = useState('contracts');
   const [activeMicrogame, setActiveMicrogame] = useState(null);
   const [factionFilter, setFactionFilter] = useState('ALL');
+  const [tierFilter, setTierFilter] = useState('ALL');
   const members       = useStore((s) => s.crew.members);
   const renown        = useStore((s) => s.character.renown);
   const playerLevel   = useStore((s) => s.crew.members.find((m) => m.isPlayer)?.level ?? 1);
@@ -495,17 +511,15 @@ export default function JobsScreen({ onNavigate }) {
     }
   }, []);
 
-  const filteredFeed = useMemo(() => {
-    if (factionFilter === 'ALL') return feedItems;
-    if (factionFilter === 'NEUTRAL') return feedItems.filter((item) => {
-      const c = getContract(item.id);
-      return c && !c.faction;
-    });
-    return feedItems.filter((item) => {
-      const c = getContract(item.id);
-      return c && c.faction === factionFilter;
-    });
-  }, [feedItems, factionFilter]);
+  const filteredFeed = useMemo(() => feedItems.filter((item) => {
+    const contract = getContract(item.id);
+    if (!contract) return false;
+    const matchesTier = tierFilter === 'ALL' || contract.tier === tierFilter;
+    const matchesFaction =
+      factionFilter === 'ALL' ||
+      (factionFilter === 'NEUTRAL' ? !contract.faction : contract.faction === factionFilter);
+    return matchesTier && matchesFaction;
+  }), [feedItems, factionFilter, tierFilter]);
 
   const handleExecute = useCallback(
     (activityId) => {
@@ -560,7 +574,7 @@ export default function JobsScreen({ onNavigate }) {
           <View style={styles.activitiesList}>
             <View style={styles.filterSection}>
               <View style={styles.filterHeaderRow}>
-                <Text style={styles.filterSectionLabel}>FILTER_BY_FACTION</Text>
+                <Text style={styles.filterSectionLabel}>JOB_FILTERS</Text>
                 <TouchableOpacity
                   style={[styles.rescanButton, (rerollCooldown > 0 || contractPhase !== 'feed') && styles.rescanButtonDisabled]}
                   disabled={rerollCooldown > 0 || contractPhase !== 'feed'}
@@ -572,29 +586,57 @@ export default function JobsScreen({ onNavigate }) {
                 </TouchableOpacity>
               </View>
 
-              <View style={styles.filterChipsContainer}>
-                {[{ tag: 'ALL', accent: colors.primary, id: 'ALL' },
-                  { tag: 'NEUTRAL', accent: colors.outline, id: 'NEUTRAL' },
-                  ...FACTION_LIST.map((f) => ({ tag: f.tag, accent: f.accent, id: f.id })),
-                ].map(({ tag, accent, id }) => {
-                  const active = factionFilter === id;
-                  return (
-                    <TouchableOpacity
-                      key={id}
-                      style={[
-                        styles.filterChip,
-                        active
-                          ? { backgroundColor: accent, borderColor: accent }
-                          : { borderColor: accent, borderWidth: 1 },
-                      ]}
-                      onPress={() => setFactionFilter(id)}
-                    >
-                      <Text style={[styles.filterChipText, active && { color: colors.background }]}>
-                        {tag}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
+              <View style={styles.filterGroup}>
+                <Text style={styles.filterGroupLabel}>TIER</Text>
+                <View style={styles.filterChipsContainer}>
+                  {TIER_FILTERS.map(({ tag, accent, id }) => {
+                    const active = tierFilter === id;
+                    return (
+                      <TouchableOpacity
+                        key={id}
+                        style={[
+                          styles.filterChip,
+                          active
+                            ? { backgroundColor: accent, borderColor: accent }
+                            : { borderColor: accent, borderWidth: 1 },
+                        ]}
+                        onPress={() => setTierFilter(id)}
+                      >
+                        <Text style={[styles.filterChipText, active && { color: colors.background }]}>
+                          {tag}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+              </View>
+
+              <View style={styles.filterGroup}>
+                <Text style={styles.filterGroupLabel}>FACTION</Text>
+                <View style={styles.filterChipsContainer}>
+                  {[{ tag: 'ALL', accent: colors.primary, id: 'ALL' },
+                    { tag: 'NEUTRAL', accent: colors.outline, id: 'NEUTRAL' },
+                    ...FACTION_LIST.map((f) => ({ tag: f.tag, accent: f.accent, id: f.id })),
+                  ].map(({ tag, accent, id }) => {
+                    const active = factionFilter === id;
+                    return (
+                      <TouchableOpacity
+                        key={id}
+                        style={[
+                          styles.filterChip,
+                          active
+                            ? { backgroundColor: accent, borderColor: accent }
+                            : { borderColor: accent, borderWidth: 1 },
+                        ]}
+                        onPress={() => setFactionFilter(id)}
+                      >
+                        <Text style={[styles.filterChipText, active && { color: colors.background }]}>
+                          {tag}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
               </View>
             </View>
 
@@ -610,6 +652,7 @@ export default function JobsScreen({ onNavigate }) {
                   key={item.id}
                   feedItem={item}
                   playerLevel={playerLevel}
+                  crewCount={members.length}
                   credits={credits}
                   factionRep={factionRep}
                   onAccept={handleAccept}
@@ -1008,6 +1051,17 @@ const styles = StyleSheet.create({
     fontSize: 9,
     color: `${colors.primary}99`,
     letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  filterGroup: {
+    gap: 6,
+    marginBottom: 10,
+  },
+  filterGroupLabel: {
+    fontFamily: 'KodeMono_700Bold',
+    fontSize: 8,
+    color: colors.outline,
+    letterSpacing: 1.4,
     textTransform: 'uppercase',
   },
   filterChipsContainer: {

@@ -10,12 +10,15 @@ import { LOW_CONTRACTS } from '../src/data/contracts/low.js';
 import { MID_CONTRACTS } from '../src/data/contracts/mid.js';
 import { HIGH_CONTRACTS } from '../src/data/contracts/high.js';
 import { FACTION_CONTRACTS } from '../src/data/contracts/faction.js';
+import { NEUTRAL_CONTRACTS } from '../src/data/contracts/neutral.js';
 import { repTierFromValue, tierMeetsRequirement } from '../src/data/factions.js';
 import { XP_THRESHOLDS, MAX_LEVEL } from '../src/data/leveling.js';
+import { ADVANCED_CONTRACT_CREW_REQUIRED, getContractCrewRequirement } from '../src/data/contracts/index.js';
 
 // ── Real data ────────────────────────────────────────────────────────────────
 
-const ALL_CONTRACTS = [...LOW_CONTRACTS, ...MID_CONTRACTS, ...HIGH_CONTRACTS, ...FACTION_CONTRACTS];
+const ALL_CONTRACTS = [...LOW_CONTRACTS, ...MID_CONTRACTS, ...HIGH_CONTRACTS, ...FACTION_CONTRACTS, ...NEUTRAL_CONTRACTS];
+const FEED_SIZE = 6;
 function getContract(id) {
   return ALL_CONTRACTS.find((c) => c.id === id) ?? null;
 }
@@ -32,17 +35,18 @@ function contractRepGateMet(rep, contract) {
 
 // ── Acceptable predicate (mirrors _canAccept) ────────────────────────────────
 
-function canAccept(rep, credits, pLevel, contract) {
+function canAccept(rep, credits, pLevel, crewCount, contract) {
   if (!contract) return false;
   if (pLevel < contract.teamLevelRequired) return false;
+  if (crewCount < getContractCrewRequirement(contract)) return false;
   if (!contractRepGateMet(rep, contract)) return false;
   if (contract.deposit > 0 && credits < contract.deposit) return false;
   return true;
 }
 
-// ── NEW _pickFeedContracts (acceptable-first) ────────────────────────────────
+// ── NEW _pickFeedContracts (acceptable-first, neutral fallback) ───────────────
 
-function pickFeedContracts(completed, feedItems, pLevel, credits, rep) {
+function pickFeedContracts(completed, feedItems, pLevel, credits, rep, crewCount) {
   const completedSet = new Set(completed);
   const inFeedSet    = new Set(feedItems.map((i) => i.id));
 
@@ -50,35 +54,45 @@ function pickFeedContracts(completed, feedItems, pLevel, credits, rep) {
     (c) => !completedSet.has(c.id) && !inFeedSet.has(c.id) && pLevel >= c.teamLevelRequired,
   );
 
+  const neutral = [];
   const acceptable = [];
   const locked = [];
   for (const c of eligible) {
-    if (canAccept(rep, credits, pLevel, c)) {
-      acceptable.push(c);
+    if (canAccept(rep, credits, pLevel, crewCount, c)) {
+      if (c.faction) {
+        acceptable.push(c);
+      } else {
+        neutral.push(c);
+      }
     } else {
       locked.push(c);
     }
   }
 
   const shuffle = (a) => a.slice().sort(() => Math.random() - 0.5);
+  const shuffledNeutral    = shuffle(neutral);
   const shuffledAcceptable = shuffle(acceptable);
-  const shuffledLocked = shuffle(locked);
+  const shuffledLocked     = shuffle(locked);
 
   const picks = [];
 
-  for (const tier of ['LOW', 'MID', 'HIGH']) {
-    const found = shuffledAcceptable.find((c) => c.tier === tier && !picks.some((p) => p.id === c.id));
-    if (found) picks.push(found);
-    if (picks.length >= 3) break;
+  if (shuffledNeutral.length > 0) {
+    picks.push(shuffledNeutral[0]);
   }
 
-  for (const c of shuffledAcceptable) {
-    if (picks.length >= 3) break;
+  for (const tier of ['LOW', 'MID', 'HIGH']) {
+    if (picks.length >= FEED_SIZE) break;
+    const found = shuffledAcceptable.find((c) => c.tier === tier && !picks.some((p) => p.id === c.id));
+    if (found) picks.push(found);
+  }
+
+  for (const c of [...shuffledNeutral, ...shuffledAcceptable]) {
+    if (picks.length >= FEED_SIZE) break;
     if (!picks.some((p) => p.id === c.id)) picks.push(c);
   }
 
   for (const c of shuffledLocked) {
-    if (picks.length >= 3) break;
+    if (picks.length >= FEED_SIZE) break;
     if (!picks.some((p) => p.id === c.id)) picks.push(c);
   }
 
@@ -113,25 +127,25 @@ function oldPickFeedContracts(completed, feedItems, pLevel) {
 
 // ── Feed helpers ─────────────────────────────────────────────────────────────
 
-function feedHasAcceptable(feedItems, rep, credits, pLevel) {
+function feedHasAcceptable(feedItems, rep, credits, pLevel, crewCount) {
   return feedItems.some((fi) => {
     const c = getContract(fi.id);
-    return canAccept(rep, credits, pLevel, c);
+    return canAccept(rep, credits, pLevel, crewCount, c);
   });
 }
 
 function ensureAcceptableInFeed(state) {
-  if (feedHasAcceptable(state.feed, state.rep, state.credits, state.pLevel)) return;
-  const newItems = pickFeedContracts(state.completed, state.feed, state.pLevel, state.credits, state.rep);
+  if (feedHasAcceptable(state.feed, state.rep, state.credits, state.pLevel, state.crewCount)) return;
+  const newItems = pickFeedContracts(state.completed, state.feed, state.pLevel, state.credits, state.rep, state.crewCount);
   const existing = state.feed;
   const toAdd = newItems.filter((n) => !existing.some((e) => e.id === n.id));
   const merged = [...existing, ...toAdd];
   merged.sort((a, b) => {
-    const aOk = canAccept(state.rep, state.credits, state.pLevel, getContract(a.id)) ? 1 : 0;
-    const bOk = canAccept(state.rep, state.credits, state.pLevel, getContract(b.id)) ? 1 : 0;
+    const aOk = canAccept(state.rep, state.credits, state.pLevel, state.crewCount, getContract(a.id)) ? 1 : 0;
+    const bOk = canAccept(state.rep, state.credits, state.pLevel, state.crewCount, getContract(b.id)) ? 1 : 0;
     return bOk - aOk;
   });
-  state.feed = merged.slice(0, 3);
+  state.feed = merged.slice(0, FEED_SIZE);
 }
 
 // ── XP / Level ───────────────────────────────────────────────────────────────
@@ -143,6 +157,47 @@ function getLevelFromXP(xp) {
   return 1;
 }
 
+function verifyCrewGate() {
+  const low = ALL_CONTRACTS.find((c) => c.tier === 'LOW');
+  const mid = ALL_CONTRACTS.find((c) => c.tier === 'MID' && !c.minFactionRep);
+  const high = ALL_CONTRACTS.find((c) => c.tier === 'HIGH');
+  const credits = 999999;
+  const highRep = high?.faction ? { [high.faction]: 300 } : {};
+
+  if (!low || !mid || !high) {
+    console.error('BUG: Missing tier fixture for crew gate verification');
+    process.exit(1);
+  }
+  if (getContractCrewRequirement(low) !== 1) {
+    console.error(`BUG: LOW crew requirement was ${getContractCrewRequirement(low)}, expected 1`);
+    process.exit(1);
+  }
+  if (getContractCrewRequirement(mid) !== ADVANCED_CONTRACT_CREW_REQUIRED) {
+    console.error(`BUG: MID crew requirement was ${getContractCrewRequirement(mid)}, expected ${ADVANCED_CONTRACT_CREW_REQUIRED}`);
+    process.exit(1);
+  }
+  if (getContractCrewRequirement(high) !== ADVANCED_CONTRACT_CREW_REQUIRED) {
+    console.error(`BUG: HIGH crew requirement was ${getContractCrewRequirement(high)}, expected ${ADVANCED_CONTRACT_CREW_REQUIRED}`);
+    process.exit(1);
+  }
+  if (canAccept({}, credits, MAX_LEVEL, ADVANCED_CONTRACT_CREW_REQUIRED - 1, mid)) {
+    console.error('BUG: MID contract accepted below crew gate');
+    process.exit(1);
+  }
+  if (canAccept(highRep, credits, MAX_LEVEL, ADVANCED_CONTRACT_CREW_REQUIRED - 1, high)) {
+    console.error('BUG: HIGH contract accepted below crew gate');
+    process.exit(1);
+  }
+  if (!canAccept({}, credits, MAX_LEVEL, ADVANCED_CONTRACT_CREW_REQUIRED, mid)) {
+    console.error('BUG: MID contract rejected at crew gate');
+    process.exit(1);
+  }
+  if (!canAccept(highRep, credits, MAX_LEVEL, ADVANCED_CONTRACT_CREW_REQUIRED, high)) {
+    console.error('BUG: HIGH contract rejected at crew gate');
+    process.exit(1);
+  }
+}
+
 // ── Simulation ───────────────────────────────────────────────────────────────
 
 function runSimulation() {
@@ -151,6 +206,7 @@ function runSimulation() {
     feed: [],
     pLevel: 1,
     credits: 0,
+    crewCount: 4,
     rep: {},        // { factionId: number }
     totalXP: 0,
   };
@@ -165,10 +221,9 @@ function runSimulation() {
 
   while (true) {
     // Populate feed
-    state.feed = pickFeedContracts(state.completed, state.feed, state.pLevel, state.credits, state.rep);
+    state.feed = pickFeedContracts(state.completed, state.feed, state.pLevel, state.credits, state.rep, state.crewCount);
     ensureAcceptableInFeed(state);
 
-    actions++;
     // Check eligible pool for acceptable contracts
     const completedSet = new Set(state.completed);
     const inFeedSet    = new Set(state.feed.map((i) => i.id));
@@ -177,15 +232,15 @@ function runSimulation() {
     );
 
     const eligibleAcceptable = eligible.filter((c) =>
-      canAccept(state.rep, state.credits, state.pLevel, c),
+      canAccept(state.rep, state.credits, state.pLevel, state.crewCount, c),
     );
 
     // INVARIANT: if eligible pool has acceptable → feed has acceptable
     invariantsChecked++;
-    const feedHasAcc = feedHasAcceptable(state.feed, state.rep, state.credits, state.pLevel);
+    const feedHasAcc = feedHasAcceptable(state.feed, state.rep, state.credits, state.pLevel, state.crewCount);
 
     if (eligibleAcceptable.length > 0 && !feedHasAcc) {
-      console.error(`INVARIANT VIOLATION at action ${actions}!`);
+      console.error(`INVARIANT VIOLATION at action ${actions + 1}!`);
       console.error(`  Eligible acceptable: ${eligibleAcceptable.map(c => c.id).join(', ')}`);
       console.error(`  Feed: ${state.feed.map(f => f.id).join(', ')}`);
       console.error(`  State: L${state.pLevel} credits=${state.credits} rep=${JSON.stringify(state.rep)}`);
@@ -200,21 +255,21 @@ function runSimulation() {
       const oldFeed = oldPickFeedContracts(state.completed, [], state.pLevel);
       const oldHasAcc = oldFeed.some((fi) => {
         const c = getContract(fi.id);
-        return canAccept(state.rep, state.credits, state.pLevel, c);
+        return canAccept(state.rep, state.credits, state.pLevel, state.crewCount, c);
       });
       if (!oldHasAcc) oldAllLocked++;
     }
     if (oldAllLocked > 0) {
       oldRegressionCount++;
       if (oldRegressionCount <= 3) {
-        console.log(`  [REGRESSION] OLD picker all-locked ${oldAllLocked}/${OLD_TRIALS} trials at L${state.pLevel} (action ${actions})`);
+        console.log(`  [REGRESSION] OLD picker all-locked ${oldAllLocked}/${OLD_TRIALS} trials at L${state.pLevel} (action ${actions + 1})`);
       }
     }
 
     // Find first acceptable contract in feed to accept
     const acceptedFi = state.feed.find((fi) => {
       const c = getContract(fi.id);
-      return canAccept(state.rep, state.credits, state.pLevel, c);
+      return canAccept(state.rep, state.credits, state.pLevel, state.crewCount, c);
     });
 
     if (!acceptedFi) {
@@ -237,6 +292,7 @@ function runSimulation() {
     // Simulate successful completion
     state.completed.push(contract.id);
     state.feed = state.feed.filter((fi) => fi.id !== contract.id);
+    actions++;
 
     // Apply rewards
     state.credits += contract.payout;
@@ -269,6 +325,8 @@ function runSimulation() {
 console.log('=== Contract Feed Invariant Verification ===\n');
 console.log(`Contracts loaded: ${ALL_CONTRACTS.length} total`);
 console.log(`XP thresholds: ${XP_THRESHOLDS.join(', ')}`);
+console.log(`Advanced crew gate: ${ADVANCED_CONTRACT_CREW_REQUIRED} members for MID/HIGH`);
+verifyCrewGate();
 
 const result = runSimulation();
 
