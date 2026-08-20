@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-20T20:56:50.147Z`  
-**Total Pulses Recorded:** `7`  
-**Current Telemetry Epoch:** `523701`
+**Last Sync:** `2026-08-20T22:02:34.983Z`  
+**Total Pulses Recorded:** `8`  
+**Current Telemetry Epoch:** `107614`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-20 22:02:34` | 8/10 | `fix(jobs): resolve stat modifier race condition on battle entry` | `pulse_hzylm4p1` |
 | `2026-08-20 20:56:50` | 7/10 | `chore(telemetry): update automated pulse telemetry state` | `pulse_nvosij4u` |
 | `2026-08-20 19:32:00` | 6/10 | `chore(jobs): rotate activity logging buffer window` | `pulse_249o67r4` |
 | `2026-08-20 18:57:16` | 5/10 | `chore(combat): rotate activity logging buffer window` | `pulse_5uhw3hhu` |
