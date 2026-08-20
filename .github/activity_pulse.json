@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-20T13:49:44.106Z",
-  "total_pulses": 1,
+  "last_updated": "2026-08-20T14:46:36.055Z",
+  "total_pulses": 2,
   "metrics": {
-    "neural_load_avg": 0.916,
-    "simulation_cycles": 1410,
-    "balance_parity_seed": 181061,
-    "engine_uptime_ticks": 50551
+    "neural_load_avg": 0.767,
+    "simulation_cycles": 1677,
+    "balance_parity_seed": 178044,
+    "engine_uptime_ticks": 50903
   },
   "recent_pulses": [
+    {
+      "id": "pulse_d0ql5ps5",
+      "timestamp": "2026-08-20T14:46:36.055Z",
+      "commit_sequence": "2/10",
+      "message": "test(jobs): record Monte Carlo survival distribution run",
+      "entropy": "9b9e4594"
+    },
     {
       "id": "pulse_efnjt1cd",
       "timestamp": "2026-08-20T13:49:44.106Z",
