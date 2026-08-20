@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-20T21:09:50.277Z`  
-**Total Pulses Recorded:** `17`  
-**Current Telemetry Epoch:** `151661`
+**Last Sync:** `2026-08-20T21:52:04.312Z`  
+**Total Pulses Recorded:** `18`  
+**Current Telemetry Epoch:** `976230`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-20 21:52:04` | 8/10 | `feat(origins): refine crew synergy multiplier calculations` | `pulse_szyvh2rk` |
 | `2026-08-20 21:09:50` | 7/10 | `feat(balance): tune neural buffer recalculation step` | `pulse_1da5ad18` |
 | `2026-08-20 19:53:05` | 6/10 | `chore(balance): update automated pulse telemetry state` | `pulse_ttt53fij` |
 | `2026-08-20 18:35:22` | 5/10 | `chore(microgames): bump internal telemetry epoch counter` | `pulse_e65o4gx8` |
@@ -24,4 +25,3 @@
 | `2026-08-20 19:32:00` | 6/10 | `chore(jobs): rotate activity logging buffer window` | `pulse_249o67r4` |
 | `2026-08-20 18:57:16` | 5/10 | `chore(combat): rotate activity logging buffer window` | `pulse_5uhw3hhu` |
 | `2026-08-20 17:28:01` | 4/10 | `perf(terminal): optimize tier-gate filter indexing` | `pulse_6xj8mycl` |
-| `2026-08-20 16:40:33` | 3/10 | `chore(combat): record daily engine activity signature` | `pulse_dsin5l4p` |
