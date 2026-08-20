@@ -1,0 +1,20 @@
+{
+  "project": "Neon Wave",
+  "last_updated": "2026-08-20T13:49:44.106Z",
+  "total_pulses": 1,
+  "metrics": {
+    "neural_load_avg": 0.916,
+    "simulation_cycles": 1410,
+    "balance_parity_seed": 181061,
+    "engine_uptime_ticks": 50551
+  },
+  "recent_pulses": [
+    {
+      "id": "pulse_efnjt1cd",
+      "timestamp": "2026-08-20T13:49:44.106Z",
+      "commit_sequence": "1/10",
+      "message": "feat(origins): tune neural buffer recalculation step",
+      "entropy": "13f14109"
+    }
+  ]
+}
