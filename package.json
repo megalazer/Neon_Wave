@@ -6,7 +6,13 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "auto-commit": "node scripts/auto_commit.mjs",
+    "auto-commit:10": "node scripts/auto_commit.mjs --count 10 --spread --push",
+    "auto-commit:random": "node scripts/auto_commit.mjs --min 3 --max 10 --random --spread --push",
+    "auto-commit:dry": "node scripts/auto_commit.mjs --count 10 --spread --dry-run",
+    "auto-commit:setup-daemon": "bash scripts/setup_launchd.sh",
+    "auto-commit:setup-cron": "bash scripts/setup_cron.sh"
   },
   "dependencies": {
     "@expo-google-fonts/kode-mono": "^0.4.1",

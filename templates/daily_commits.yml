@@ -1,0 +1,99 @@
+name: Daily Activity Pulse
+
+on:
+  schedule:
+    # Runs daily at 13:42 UTC (randomized minute to avoid top-of-hour cron queues)
+    - cron: '42 13 * * *'
+    # Optional secondary pulse at 21:15 UTC (can run multiple times or once daily)
+    - cron: '15 21 * * *'
+
+  # Allow manual trigger from GitHub UI anytime
+  workflow_dispatch:
+    inputs:
+      commit_count:
+        description: 'Number of commits to generate (default: 10)'
+        required: false
+        default: '10'
+      randomize:
+        description: 'Randomize commit count (1 to 10)'
+        required: false
+        type: boolean
+        default: false
+      spread_timestamps:
+        description: 'Spread timestamps across today (recommended for natural git history)'
+        required: false
+        type: boolean
+        default: true
+      theme:
+        description: 'Commit message theme (neon, conventional, mixed)'
+        required: false
+        default: 'neon'
+        type: choice
+        options:
+          - neon
+          - conventional
+          - mixed
+      dry_run:
+        description: 'Preview commits without pushing'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  auto-commit:
+    name: Generate Daily Commits
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Configure Git Identity
+        run: |
+          git config --global user.name "megalazer"
+          git config --global user.email "megalazershark@gmail.com"
+
+      - name: Run Auto-Commit Engine
+        env:
+          INPUT_COUNT: ${{ github.event.inputs.commit_count || '10' }}
+          INPUT_RANDOM: ${{ github.event.inputs.randomize || 'false' }}
+          INPUT_SPREAD: ${{ github.event.inputs.spread_timestamps || 'true' }}
+          INPUT_THEME: ${{ github.event.inputs.theme || 'neon' }}
+          INPUT_DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        run: |
+          ARGS=""
+
+          if [ "$INPUT_RANDOM" = "true" ]; then
+            ARGS="$ARGS --random --min 3 --max 10"
+          else
+            ARGS="$ARGS --count $INPUT_COUNT"
+          fi
+
+          if [ "$INPUT_SPREAD" = "true" ]; then
+            ARGS="$ARGS --spread"
+          fi
+
+          if [ -n "$INPUT_THEME" ]; then
+            ARGS="$ARGS --theme $INPUT_THEME"
+          fi
+
+          if [ "$INPUT_DRY_RUN" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          else
+            ARGS="$ARGS --push"
+          fi
+
+          echo "Running auto_commit.mjs with args: $ARGS"
+          node scripts/auto_commit.mjs $ARGS
