@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-20T23:07:44.541Z`  
-**Total Pulses Recorded:** `19`  
-**Current Telemetry Epoch:** `236624`
+**Last Sync:** `2026-08-21T00:44:01.189Z`  
+**Total Pulses Recorded:** `20`  
+**Current Telemetry Epoch:** `935749`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-21 00:44:01` | 10/10 | `refactor(contracts): streamline microgame result payload formatting` | `pulse_wyheqx0f` |
 | `2026-08-20 23:07:44` | 9/10 | `test(contracts): add regression checks for origin stat baseline` | `pulse_43nd95kl` |
 | `2026-08-20 21:52:04` | 8/10 | `feat(origins): refine crew synergy multiplier calculations` | `pulse_szyvh2rk` |
 | `2026-08-20 21:09:50` | 7/10 | `feat(balance): tune neural buffer recalculation step` | `pulse_1da5ad18` |
@@ -24,4 +25,3 @@
 | `2026-08-20 22:02:34` | 8/10 | `fix(jobs): resolve stat modifier race condition on battle entry` | `pulse_hzylm4p1` |
 | `2026-08-20 20:56:50` | 7/10 | `chore(telemetry): update automated pulse telemetry state` | `pulse_nvosij4u` |
 | `2026-08-20 19:32:00` | 6/10 | `chore(jobs): rotate activity logging buffer window` | `pulse_249o67r4` |
-| `2026-08-20 18:57:16` | 5/10 | `chore(combat): rotate activity logging buffer window` | `pulse_5uhw3hhu` |
