@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neon Wave // Auto-Commit Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070810;
+      --bg-card: rgba(14, 17, 34, 0.75);
+      --bg-card-hover: rgba(20, 24, 48, 0.85);
+      --border-color: rgba(0, 255, 204, 0.2);
+      --border-active: rgba(0, 255, 204, 0.6);
+      --cyan: #00ffcc;
+      --cyan-glow: 0 0 15px rgba(0, 255, 204, 0.5), 0 0 30px rgba(0, 255, 204, 0.2);
+      --magenta: #ff007f;
+      --magenta-glow: 0 0 15px rgba(255, 0, 127, 0.5), 0 0 30px rgba(255, 0, 127, 0.2);
+      --green: #39ff14;
+      --green-glow: 0 0 15px rgba(57, 255, 20, 0.5);
+      --red: #ff3344;
+      --red-glow: 0 0 15px rgba(255, 51, 68, 0.5);
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(0, 255, 204, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(255, 0, 127, 0.08) 0%, transparent 40%),
+        linear-gradient(rgba(7, 8, 16, 0.95), rgba(7, 8, 16, 0.95)),
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 204, 0.015) 2px, rgba(0, 255, 204, 0.015) 4px);
+      color: var(--text-main);
+      font-family: 'Fira Code', monospace;
+      min-height: 100vh;
+      padding: 24px 20px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 28px;
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-icon {
+      font-size: 28px;
+      animation: pulse-glow 3s infinite ease-in-out;
+    }
+
+    .logo-text h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 24px;
+      letter-spacing: 2px;
+      color: #fff;
+      text-transform: uppercase;
+      text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+    }
+
+    .logo-text p {
+      font-size: 11px;
+      color: var(--cyan);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .header-badges {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border: 1px solid var(--border-color);
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .badge-active {
+      border-color: rgba(57, 255, 20, 0.4);
+      color: var(--green);
+    }
+    .badge-active .badge-dot {
+      background-color: var(--green);
+      box-shadow: var(--green-glow);
+    }
+
+    .badge-paused {
+      border-color: rgba(255, 51, 68, 0.4);
+      color: var(--red);
+    }
+    .badge-paused .badge-dot {
+      background-color: var(--red);
+      box-shadow: var(--red-glow);
+    }
+
+    /* Master Control Card */
+    .hero-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--cyan);
+      box-shadow: var(--cyan-glow);
+      transition: background 0.3s ease;
+    }
+
+    .hero-card.paused::before {
+      background: var(--red);
+      box-shadow: var(--red-glow);
+    }
+
+    .hero-left h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 20px;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .hero-left p {
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .switch-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .switch-label {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .switch-label.on {
+      color: var(--green);
+      text-shadow: var(--green-glow);
+    }
+
+    .switch-label.off {
+      color: var(--red);
+      text-shadow: var(--red-glow);
+    }
+
+    /* Toggle Switch Component */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 72px;
+      height: 38px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 51, 68, 0.2);
+      border: 2px solid var(--red);
+      transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 34px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 26px;
+      width: 26px;
+      left: 4px;
+      bottom: 4px;
+      background-color: var(--red);
+      transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--red);
+    }
+
+    input:checked + .slider {
+      background-color: rgba(57, 255, 20, 0.2);
+      border-color: var(--green);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(34px);
+      background-color: var(--green);
+      box-shadow: 0 0 12px var(--green);
+    }
+
+    /* Grid Layout */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+    }
+
+    .stat-card:hover {
+      border-color: var(--border-active);
+      transform: translateY(-2px);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .stat-val {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--cyan);
+      text-shadow: 0 0 8px rgba(0, 255, 204, 0.3);
+    }
+
+    .stat-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Controls & Settings Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 860px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+      .hero-card {
+        flex-direction: column;
+        gap: 20px;
+        align-items: flex-start;
+      }
+    }
+
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 22px;
+      backdrop-filter: blur(10px);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .panel-header h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+
+    .actions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      text-transform: uppercase;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(0, 255, 204, 0.2), rgba(0, 255, 204, 0.05));
+      border-color: var(--cyan);
+      color: #fff;
+      box-shadow: 0 0 15px rgba(0, 255, 204, 0.15);
+    }
+    .btn-primary:hover {
+      background: rgba(0, 255, 204, 0.3);
+      box-shadow: var(--cyan-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-magenta {
+      background: linear-gradient(135deg, rgba(255, 0, 127, 0.2), rgba(255, 0, 127, 0.05));
+      border-color: var(--magenta);
+      color: #fff;
+      box-shadow: 0 0 15px rgba(255, 0, 127, 0.15);
+    }
+    .btn-magenta:hover {
+      background: rgba(255, 0, 127, 0.3);
+      box-shadow: var(--magenta-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: var(--text-main);
+    }
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--text-main);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: #fff;
+      padding: 8px 12px;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+      outline: none;
+    }
+    .form-control:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 8px rgba(0, 255, 204, 0.3);
+    }
+
+    .range-slider {
+      width: 100%;
+      accent-color: var(--cyan);
+      cursor: pointer;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .checkbox-row input {
+      accent-color: var(--cyan);
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Terminal Console Window */
+    .terminal-panel {
+      background: rgba(6, 8, 16, 0.95);
+      border: 1px solid rgba(0, 255, 204, 0.25);
+      border-radius: 12px;
+      margin-bottom: 24px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+    }
+
+    .terminal-bar {
+      background: rgba(14, 18, 36, 0.9);
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(0, 255, 204, 0.15);
+      font-size: 11px;
+      color: var(--cyan);
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #27c93f; }
+
+    .terminal-body {
+      padding: 14px;
+      height: 180px;
+      overflow-y: auto;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #39ff14;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* History Table */
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 12px;
+      color: var(--text-muted);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 11px;
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+    }
+
+    tr:hover td {
+      background: rgba(0, 255, 204, 0.03);
+    }
+
+    .commit-hash {
+      color: var(--cyan);
+      font-weight: 600;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 6px var(--cyan)); }
+      50% { transform: scale(1.08); filter: drop-shadow(0 0 14px var(--magenta)); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="logo-group">
+        <div class="logo-icon">⚡</div>
+        <div class="logo-text">
+          <h1>Neon Wave</h1>
+          <p>Auto-Commit // Pulse Command Center</p>
+        </div>
+      </div>
+      <div class="header-badges">
+        <div class="badge" id="system-time">SYNC: --:--:--</div>
+        <div class="badge badge-active" id="status-badge">
+          <span class="badge-dot"></span>
+          <span id="status-text">ACTIVE</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Master Switch Hero Card -->
+    <div class="hero-card" id="hero-card">
+      <div class="hero-left">
+        <h2>Automated Commit Engine</h2>
+        <p id="hero-desc">The background daemon is currently scheduled to create and push random telemetry commits to your private repo.</p>
+      </div>
+      <div class="switch-wrapper">
+        <span class="switch-label on" id="switch-text">ENABLED</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="master-toggle" checked onchange="toggleAutomation()">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Daily Target</div>
+        <div class="stat-val" id="stat-daily-count">10</div>
+        <div class="stat-sub" id="stat-spread-info">Spread: Active</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Pulses Recorded</div>
+        <div class="stat-val" id="stat-total-pulses">0</div>
+        <div class="stat-sub">Telemetry window: 50</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">LaunchAgent Daemon</div>
+        <div class="stat-val" id="stat-daemon-status" style="font-size: 16px; color: var(--green);">RUNNING</div>
+        <div class="stat-sub">Schedule: Daily 10:30 AM</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Repository</div>
+        <div class="stat-val" id="stat-branch" style="font-size: 16px;">origin/main</div>
+        <div class="stat-sub" id="stat-last-sync">Last: Just now</div>
+      </div>
+    </div>
+
+    <!-- Main Grid: Actions & Settings -->
+    <div class="main-grid">
+      <!-- Quick Trigger Actions -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3>⚡ Manual Override Triggers</h3>
+        </div>
+        <div class="actions-list">
+          <button class="btn btn-primary" id="btn-run-10" onclick="triggerCommits(10, false)">
+            <span>🚀 Fire 10 Commits Now</span>
+          </button>
+          <button class="btn btn-magenta" id="btn-run-random" onclick="triggerRandomCommits()">
+            <span>🎲 Fire Random Commits (3-10)</span>
+          </button>
+          <button class="btn btn-outline" id="btn-dry-run" onclick="triggerCommits(10, true)">
+            <span>🔍 Run Dry-Run Preview</span>
+          </button>
+          <button class="btn btn-outline" onclick="fetchStatus()">
+            <span>🔄 Refresh Status</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Settings Panel -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3>⚙️ Engine Configuration</h3>
+        </div>
+        <form id="config-form" onsubmit="saveConfiguration(event)">
+          <div class="form-group">
+            <div class="form-label">
+              <span>Daily Target Commits:</span>
+              <strong id="daily-count-val" style="color: var(--cyan);">10</strong>
+            </div>
+            <input type="range" class="range-slider" id="daily_commits" min="1" max="25" value="10" oninput="document.getElementById('daily-count-val').innerText = this.value">
+          </div>
+
+          <div class="form-group">
+            <div class="form-label">Commit Theme:</div>
+            <select class="form-control" id="theme">
+              <option value="neon">Neon Wave (Cyberpunk & Engine)</option>
+              <option value="conventional">Conventional Commits</option>
+              <option value="mixed">Mixed Hybrid</option>
+            </select>
+          </div>
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="spread" checked>
+            <span>Spread timestamps across today's active hours (08:00 - 23:00)</span>
+          </label>
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="auto_push" checked>
+            <span>Auto push to remote origin on execution</span>
+          </label>
+
+          <div style="margin-top: 16px;">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+              <span>💾 Save Configuration</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Terminal Console Log -->
+    <div class="terminal-panel">
+      <div class="terminal-bar">
+        <div class="terminal-dots">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+        </div>
+        <span>CONSOLE OUTPUT // STREAM</span>
+        <span id="terminal-status">IDLE</span>
+      </div>
+      <div class="terminal-body" id="terminal-output">[SYSTEM READY] Neon Wave Auto-Commit Control Hub initialized.
+Waiting for command or scheduled trigger...</div>
+    </div>
+
+    <!-- Recent Commit History Table -->
+    <div class="panel">
+      <div class="panel-header">
+        <h3>📜 Recent Repository Commits</h3>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Hash</th>
+              <th>Date & Time</th>
+              <th>Commit Subject</th>
+              <th>Author</th>
+            </tr>
+          </thead>
+          <tbody id="commit-table-body">
+            <tr>
+              <td colspan="4" style="text-align: center; color: var(--text-muted);">Loading recent commits...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let currentConfig = {};
+
+    function logTerminal(text) {
+      const term = document.getElementById('terminal-output');
+      term.innerText += '\n' + text;
+      term.scrollTop = term.scrollHeight;
+    }
+
+    function setTerminalStatus(status) {
+      document.getElementById('terminal-status').innerText = status;
+    }
+
+    async function fetchStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+        renderDashboard(data);
+      } catch (err) {
+        logTerminal(`[ERROR] Failed to fetch server status: ${err.message}`);
+      }
+    }
+
+    function renderDashboard(data) {
+      currentConfig = data.config || {};
+      const enabled = currentConfig.enabled !== false;
+
+      // Master switch & hero
+      const toggle = document.getElementById('master-toggle');
+      toggle.checked = enabled;
+
+      const switchText = document.getElementById('switch-text');
+      const heroCard = document.getElementById('hero-card');
+      const statusBadge = document.getElementById('status-badge');
+      const statusText = document.getElementById('status-text');
+      const heroDesc = document.getElementById('hero-desc');
+
+      if (enabled) {
+        switchText.className = 'switch-label on';
+        switchText.innerText = 'ENABLED';
+        heroCard.className = 'hero-card';
+        statusBadge.className = 'badge badge-active';
+        statusText.innerText = 'ACTIVE';
+        heroDesc.innerText = `Auto-commit is actively scheduled for ${currentConfig.daily_commits || 10} commits daily.`;
+      } else {
+        switchText.className = 'switch-label off';
+        switchText.innerText = 'PAUSED';
+        heroCard.className = 'hero-card paused';
+        statusBadge.className = 'badge badge-paused';
+        statusText.innerText = 'PAUSED';
+        heroDesc.innerText = 'Auto-commit is currently TOGGLED OFF. Scheduled tasks and runs will exit without committing.';
+      }
+
+      // Stats
+      document.getElementById('stat-daily-count').innerText = currentConfig.daily_commits || 10;
+      document.getElementById('daily-count-val').innerText = currentConfig.daily_commits || 10;
+      document.getElementById('daily_commits').value = currentConfig.daily_commits || 10;
+      document.getElementById('theme').value = currentConfig.theme || 'neon';
+      document.getElementById('spread').checked = currentConfig.spread !== false;
+      document.getElementById('auto_push').checked = currentConfig.auto_push !== false;
+      document.getElementById('stat-spread-info').innerText = currentConfig.spread ? 'Spread: Active' : 'Spread: Disabled';
+
+      const pulses = data.telemetry?.total_pulses || 0;
+      document.getElementById('stat-total-pulses').innerText = pulses;
+
+      const daemonStatus = data.daemon?.installed ? 'ACTIVE' : 'IDLE';
+      document.getElementById('stat-daemon-status').innerText = daemonStatus;
+      document.getElementById('stat-daemon-status').style.color = data.daemon?.installed ? 'var(--green)' : 'var(--text-muted)';
+
+      document.getElementById('stat-branch').innerText = data.git?.branch ? `origin/${data.git.branch}` : 'main';
+
+      if (currentConfig.last_run) {
+        const d = new Date(currentConfig.last_run);
+        document.getElementById('stat-last-sync').innerText = `Last: ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      }
+
+      // Render Commits
+      const tbody = document.getElementById('commit-table-body');
+      if (Array.isArray(data.commits) && data.commits.length > 0) {
+        tbody.innerHTML = data.commits.map(c => `
+          <tr>
+            <td class="commit-hash">${c.hash}</td>
+            <td style="color: var(--text-muted);">${c.date}</td>
+            <td style="font-weight: 500;">${escapeHtml(c.subject)}</td>
+            <td style="color: var(--cyan);">${escapeHtml(c.author)}</td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    async function toggleAutomation() {
+      const toggle = document.getElementById('master-toggle');
+      const targetState = toggle.checked;
+
+      setTerminalStatus('UPDATING...');
+      logTerminal(`[TOGGLE] Setting auto-commit master state to: ${targetState ? 'ENABLED' : 'PAUSED'}`);
+
+      try {
+        const res = await fetch('/api/toggle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled: targetState })
+        });
+        const result = await res.json();
+        if (result.success) {
+          logTerminal(`✓ Master state successfully saved as: ${result.enabled ? 'ENABLED' : 'PAUSED'}`);
+          fetchStatus();
+        }
+      } catch (err) {
+        logTerminal(`❌ Toggle request failed: ${err.message}`);
+        toggle.checked = !targetState;
+      } finally {
+        setTerminalStatus('IDLE');
+      }
+    }
+
+    async function saveConfiguration(e) {
+      e.preventDefault();
+      setTerminalStatus('SAVING...');
+      const daily_commits = parseInt(document.getElementById('daily_commits').value, 10);
+      const theme = document.getElementById('theme').value;
+      const spread = document.getElementById('spread').checked;
+      const auto_push = document.getElementById('auto_push').checked;
+
+      logTerminal(`[CONFIG] Saving new parameters (daily: ${daily_commits}, theme: ${theme}, spread: ${spread})...`);
+
+      try {
+        const res = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ daily_commits, theme, spread, auto_push })
+        });
+        const result = await res.json();
+        if (result.success) {
+          logTerminal(`✓ Configuration saved successfully!`);
+          fetchStatus();
+        }
+      } catch (err) {
+        logTerminal(`❌ Save failed: ${err.message}`);
+      } finally {
+        setTerminalStatus('IDLE');
+      }
+    }
+
+    async function triggerCommits(count, isDryRun) {
+      setTerminalStatus('EXECUTING...');
+      setButtonsDisabled(true);
+      logTerminal(`\n---------------------------------------------\n⚡ [TRIGGER] Executing ${count} commits (${isDryRun ? 'DRY-RUN' : 'LIVE'})...\n---------------------------------------------`);
+
+      try {
+        const res = await fetch('/api/trigger', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            count,
+            dry_run: isDryRun,
+            spread: currentConfig.spread !== false,
+            theme: currentConfig.theme || 'neon',
+            push: currentConfig.auto_push !== false && !isDryRun,
+          })
+        });
+
+        const data = await res.json();
+        if (data.output) {
+          logTerminal(data.output.trim());
+        }
+        if (data.success) {
+          logTerminal(`\n✨ Successfully finished execution!`);
+          fetchStatus();
+        } else {
+          logTerminal(`\n❌ Execution encountered an error.`);
+        }
+      } catch (err) {
+        logTerminal(`❌ Network error while triggering: ${err.message}`);
+      } finally {
+        setButtonsDisabled(false);
+        setTerminalStatus('IDLE');
+      }
+    }
+
+    async function triggerRandomCommits() {
+      setTerminalStatus('EXECUTING...');
+      setButtonsDisabled(true);
+      logTerminal(`\n---------------------------------------------\n🎲 [TRIGGER] Executing Random Commits (3-10)...\n---------------------------------------------`);
+
+      try {
+        const res = await fetch('/api/trigger', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            random: true,
+            min: 3,
+            max: 10,
+            dry_run: false,
+            spread: true,
+            theme: currentConfig.theme || 'neon',
+            push: true,
+          })
+        });
+
+        const data = await res.json();
+        if (data.output) {
+          logTerminal(data.output.trim());
+        }
+        logTerminal(`\n✨ Random commit run completed!`);
+        fetchStatus();
+      } catch (err) {
+        logTerminal(`❌ Random trigger failed: ${err.message}`);
+      } finally {
+        setButtonsDisabled(false);
+        setTerminalStatus('IDLE');
+      }
+    }
+
+    function setButtonsDisabled(disabled) {
+      document.getElementById('btn-run-10').disabled = disabled;
+      document.getElementById('btn-run-random').disabled = disabled;
+      document.getElementById('btn-dry-run').disabled = disabled;
+    }
+
+    // Live clock in header
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById('system-time').innerText = `SYNC: ${now.toLocaleTimeString()}`;
+    }, 1000);
+
+    // Initial load
+    fetchStatus();
+  </script>
+</body>
+</html>

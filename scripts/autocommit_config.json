@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "daily_commits": 10,
+  "randomize": false,
+  "min_commits": 3,
+  "max_commits": 10,
+  "spread": true,
+  "theme": "neon",
+  "schedule_time": "10:30",
+  "auto_push": true,
+  "last_run": "2026-08-20T20:25:00.000Z",
+  "total_runs": 2
+}

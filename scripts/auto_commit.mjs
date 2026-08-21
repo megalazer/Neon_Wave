@@ -325,23 +325,47 @@ function configureGitUser(authorName, authorEmail) {
 // Argument Parsing & CLI Logic
 // ==========================================
 
+function loadConfig() {
+  const configPath = resolve(REPO_ROOT, 'scripts', 'autocommit_config.json');
+  if (existsSync(configPath)) {
+    try {
+      return JSON.parse(readFileSync(configPath, 'utf8'));
+    } catch {
+      // ignore
+    }
+  }
+  return { enabled: true, daily_commits: 10, spread: true, theme: 'neon', auto_push: true };
+}
+
+function saveConfig(updated) {
+  const configPath = resolve(REPO_ROOT, 'scripts', 'autocommit_config.json');
+  try {
+    const current = loadConfig();
+    const merged = { ...current, ...updated };
+    writeFileSync(configPath, JSON.stringify(merged, null, 2) + '\n', 'utf8');
+  } catch {
+    // ignore
+  }
+}
+
 function parseArgs(args) {
+  const config = loadConfig();
   const options = {
     count: null,
-    min: 1,
-    max: 10,
-    random: false,
-    spread: false,
-    push: false,
+    min: config.min_commits ?? 1,
+    max: config.max_commits ?? 10,
+    random: config.randomize ?? false,
+    spread: config.spread ?? false,
+    push: config.auto_push ?? false,
     dryRun: false,
-    theme: 'neon',
+    force: false,
+    theme: config.theme ?? 'neon',
     file: '.github/activity_pulse.json',
     authorName: null,
     authorEmail: null,
     quiet: false,
     help: false,
   };
-
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (arg === '--help' || arg === '-h') {
@@ -360,6 +384,10 @@ function parseArgs(args) {
       options.push = true;
     } else if (arg === '--dry-run' || arg === '-d') {
       options.dryRun = true;
+    } else if (arg === '--dry-run' || arg === '-d') {
+      options.dryRun = true;
+    } else if (arg === '--force' || arg === '-f') {
+      options.force = true;
     } else if (arg === '--theme') {
       options.theme = args[++i];
     } else if (arg === '--file') {
@@ -455,18 +483,28 @@ export async function runAutoCommit(cliArgs = process.argv.slice(2)) {
     return { success: true, count: 0 };
   }
 
+  const config = loadConfig();
+
+  // Check enabled status unless forced or dry-run
+  if (!config.enabled && !opts.force && !opts.dryRun) {
+    if (!opts.quiet) {
+      console.log(`\n🛑 [PAUSED] Auto-commit is currently toggled OFF in dashboard.`);
+      console.log(`Toggle ON in dashboard or pass --force to run immediately.\n`);
+    }
+    return { success: true, count: 0, paused: true };
+  }
+
   // Determine commit count
   let targetCount = opts.count;
   if (targetCount === null) {
     if (opts.random) {
       targetCount = getRandomInt(opts.min, opts.max);
     } else {
-      targetCount = 10; // Default to 10 commits as requested
+      targetCount = config.daily_commits || 10;
     }
   }
 
   targetCount = Math.max(1, targetCount);
-
   if (!opts.quiet) {
     console.log(`\n=============================================`);
     console.log(`🚀 Neon Wave Auto-Commit Engine`);
@@ -549,6 +587,12 @@ export async function runAutoCommit(cliArgs = process.argv.slice(2)) {
       console.error(`❌ Git push failed: ${err.message}`);
       throw err;
     }
+  }
+  if (!opts.dryRun) {
+    saveConfig({
+      last_run: new Date().toISOString(),
+      total_runs: (config.total_runs || 0) + 1,
+    });
   }
 
   if (!opts.quiet) {

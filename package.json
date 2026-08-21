@@ -7,6 +7,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "dashboard": "node scripts/dashboard.mjs --open",
     "auto-commit": "node scripts/auto_commit.mjs",
     "auto-commit:10": "node scripts/auto_commit.mjs --count 10 --spread --push",
     "auto-commit:random": "node scripts/auto_commit.mjs --min 3 --max 10 --random --spread --push",

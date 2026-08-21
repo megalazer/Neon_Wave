@@ -13,16 +13,27 @@ The tool automatically generates realistic, cyberpunk-themed and conventional co
 - **Spread Timestamps (`--spread`)**: Distributes commits naturally across active hours of the day rather than dumping them all at the identical second.
 - **Realistic Commit Messages**: Dynamic pool of `feat`, `fix`, `perf`, `refactor`, `chore`, `docs`, and `test` messages styled for Neon Wave engine telemetry.
 - **Multi-Environment**:
-  1. **GitHub Actions (Cloud)** — 100% automated on GitHub's servers (no local computer required).
-  2. **Local CLI / npm scripts** — Manual or scriptable on-demand execution.
-  3. **macOS LaunchAgent / Crontab** — Background local scheduler.
+  1. **Web Control Dashboard** — Interactive cyberpunk UI to toggle the system ON/OFF and trigger commits.
+  2. **GitHub Actions (Cloud)** — 100% automated on GitHub's servers (no local computer required).
+  3. **Local CLI / npm scripts** — Manual or scriptable on-demand execution.
+  4. **macOS LaunchAgent / Crontab** — Background local scheduler.
+---
+
+## 🎛️ Method 0: Web Control Dashboard (Toggle ON / OFF)
+
+Launch the visual web dashboard in your browser:
+
+```bash
+npm run dashboard
+```
+- **Master ON / OFF Toggle**: Click the switch to immediately pause or enable all automated commit runs.
+- **Trigger Actions**: Click "Fire 10 Commits Now", "Fire Random Commits", or "Run Dry-Run Preview".
+- **Realtime Output**: Embedded cyberpunk terminal streams git commit output in real time.
+- **Live Stats**: Shows LaunchAgent daemon status, total pulse count, current branch, and recent commit history.
 
 ---
 
-## 🚀 Method 1: GitHub Actions (Recommended — Zero Maintenance)
-
-The workflow file `.github/workflows/daily_commits.yml` is already configured in the repository.
-
+## 🚀 Method 1: GitHub Actions (Cloud — Zero Maintenance)
 ### How it Works:
 1. **Automated Schedule**: Runs every day via GitHub Actions cron schedule.
 2. **Push Permissions**: Uses standard `GITHUB_TOKEN` with write access to push directly to `main`.
