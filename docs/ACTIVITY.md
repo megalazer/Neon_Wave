@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-21T14:13:00.825Z`  
-**Total Pulses Recorded:** `24`  
-**Current Telemetry Epoch:** `332319`
+**Last Sync:** `2026-08-21T14:26:39.738Z`  
+**Total Pulses Recorded:** `25`  
+**Current Telemetry Epoch:** `455481`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-21 14:26:39` | 5/10 | `chore(crews): rotate activity logging buffer window` | `pulse_q2r5f40k` |
 | `2026-08-21 14:13:00` | 4/10 | `chore(audio): sync pulse telemetry heartbeat` | `pulse_byamj2gs` |
 | `2026-08-21 13:59:42` | 3/10 | `chore(cache): update automated pulse telemetry state` | `pulse_ow6bawcu` |
 | `2026-08-21 13:43:18` | 2/10 | `feat(jobs): expand microgame timing threshold table` | `pulse_0yg470xk` |
@@ -24,4 +25,3 @@
 | `2026-08-20 16:08:02` | 3/10 | `feat(deck): refine crew synergy multiplier calculations` | `pulse_zmc7fbg9` |
 | `2026-08-20 14:59:01` | 2/10 | `refactor(matrix): modularize contract difficulty grading algorithms` | `pulse_42eb3czj` |
 | `2026-08-20 14:23:17` | 1/10 | `perf(matrix): optimize telemetry buffer serialization overhead` | `pulse_6054r1oc` |
-| `2026-08-21 00:38:40` | 10/10 | `fix(balance): remedy floating-point drift in balance simulator` | `pulse_hq882ix8` |
