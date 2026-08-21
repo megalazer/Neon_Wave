@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-21T15:13:11.447Z`  
-**Total Pulses Recorded:** `29`  
-**Current Telemetry Epoch:** `681759`
+**Last Sync:** `2026-08-21T15:26:26.555Z`  
+**Total Pulses Recorded:** `30`  
+**Current Telemetry Epoch:** `416790`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-21 15:26:26` | 10/10 | `chore(combat): refresh simulated encounter matrix seed` | `pulse_jbl5rxae` |
 | `2026-08-21 15:13:11` | 9/10 | `feat(cache): introduce multi-pass telemetry pulse verification` | `pulse_zwgnpt8v` |
 | `2026-08-21 14:57:46` | 8/10 | `chore(cache): sync pulse telemetry heartbeat` | `pulse_1qvv3zt5` |
 | `2026-08-21 14:51:02` | 7/10 | `chore(metrics): refresh simulated encounter matrix seed` | `pulse_p29efax6` |
@@ -24,4 +25,3 @@
 | `2026-08-20 21:52:04` | 8/10 | `feat(origins): refine crew synergy multiplier calculations` | `pulse_szyvh2rk` |
 | `2026-08-20 21:09:50` | 7/10 | `feat(balance): tune neural buffer recalculation step` | `pulse_1da5ad18` |
 | `2026-08-20 19:53:05` | 6/10 | `chore(balance): update automated pulse telemetry state` | `pulse_ttt53fij` |
-| `2026-08-20 18:35:22` | 5/10 | `chore(microgames): bump internal telemetry epoch counter` | `pulse_e65o4gx8` |
