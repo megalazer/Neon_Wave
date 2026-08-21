@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-21T13:34:35.436Z`  
-**Total Pulses Recorded:** `21`  
-**Current Telemetry Epoch:** `708293`
+**Last Sync:** `2026-08-21T13:43:18.451Z`  
+**Total Pulses Recorded:** `22`  
+**Current Telemetry Epoch:** `186218`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-21 13:43:18` | 2/10 | `feat(jobs): expand microgame timing threshold table` | `pulse_0yg470xk` |
 | `2026-08-21 13:34:35` | 1/10 | `chore(origins): calibrate neural grid synchronization stamp` | `pulse_ggwmt092` |
 | `2026-08-21 00:44:01` | 10/10 | `refactor(contracts): streamline microgame result payload formatting` | `pulse_wyheqx0f` |
 | `2026-08-20 23:07:44` | 9/10 | `test(contracts): add regression checks for origin stat baseline` | `pulse_43nd95kl` |
@@ -24,4 +25,3 @@
 | `2026-08-21 00:38:40` | 10/10 | `fix(balance): remedy floating-point drift in balance simulator` | `pulse_hq882ix8` |
 | `2026-08-20 23:19:49` | 9/10 | `fix(state): correct vitality scaling clamp in levelup routine` | `pulse_pb2o6mzx` |
 | `2026-08-20 22:02:34` | 8/10 | `fix(jobs): resolve stat modifier race condition on battle entry` | `pulse_hzylm4p1` |
-| `2026-08-20 20:56:50` | 7/10 | `chore(telemetry): update automated pulse telemetry state` | `pulse_nvosij4u` |
