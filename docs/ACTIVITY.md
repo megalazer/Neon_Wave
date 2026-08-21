@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-21T14:57:46.128Z`  
-**Total Pulses Recorded:** `28`  
-**Current Telemetry Epoch:** `774409`
+**Last Sync:** `2026-08-21T15:13:11.447Z`  
+**Total Pulses Recorded:** `29`  
+**Current Telemetry Epoch:** `681759`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-21 15:13:11` | 9/10 | `feat(cache): introduce multi-pass telemetry pulse verification` | `pulse_zwgnpt8v` |
 | `2026-08-21 14:57:46` | 8/10 | `chore(cache): sync pulse telemetry heartbeat` | `pulse_1qvv3zt5` |
 | `2026-08-21 14:51:02` | 7/10 | `chore(metrics): refresh simulated encounter matrix seed` | `pulse_p29efax6` |
 | `2026-08-21 14:34:23` | 6/10 | `chore(combat): bump internal telemetry epoch counter` | `pulse_lca20zrh` |
@@ -24,4 +25,3 @@
 | `2026-08-20 21:09:50` | 7/10 | `feat(balance): tune neural buffer recalculation step` | `pulse_1da5ad18` |
 | `2026-08-20 19:53:05` | 6/10 | `chore(balance): update automated pulse telemetry state` | `pulse_ttt53fij` |
 | `2026-08-20 18:35:22` | 5/10 | `chore(microgames): bump internal telemetry epoch counter` | `pulse_e65o4gx8` |
-| `2026-08-20 17:34:58` | 4/10 | `perf(jobs): vectorize microgame dice roll distributions` | `pulse_x090d5qn` |
