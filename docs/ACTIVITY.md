@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-22T15:14:36.700Z`  
-**Total Pulses Recorded:** `34`  
-**Current Telemetry Epoch:** `440781`
+**Last Sync:** `2026-08-22T15:38:49.201Z`  
+**Total Pulses Recorded:** `35`  
+**Current Telemetry Epoch:** `751892`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-22 15:38:49` | 5/10 | `test(jobs): verify microgame threshold boundary accuracy` | `pulse_yrvyaqp8` |
 | `2026-08-22 15:14:36` | 4/10 | `style(crews): align UI component margin tokens in JobScreen` | `pulse_nxgm5t42` |
 | `2026-08-22 14:44:47` | 3/10 | `chore(contracts): update automated pulse telemetry state` | `pulse_0kink56f` |
 | `2026-08-22 14:00:28` | 2/10 | `chore(origins): rotate activity logging buffer window` | `pulse_zmomkd0m` |
@@ -24,4 +25,3 @@
 | `2026-08-21 13:59:42` | 3/10 | `chore(cache): update automated pulse telemetry state` | `pulse_ow6bawcu` |
 | `2026-08-21 13:43:18` | 2/10 | `feat(jobs): expand microgame timing threshold table` | `pulse_0yg470xk` |
 | `2026-08-21 13:34:35` | 1/10 | `chore(origins): calibrate neural grid synchronization stamp` | `pulse_ggwmt092` |
-| `2026-08-21 00:44:01` | 10/10 | `refactor(contracts): streamline microgame result payload formatting` | `pulse_wyheqx0f` |

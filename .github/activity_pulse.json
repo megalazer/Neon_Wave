@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-22T15:14:36.700Z",
-  "total_pulses": 34,
+  "last_updated": "2026-08-22T15:38:49.201Z",
+  "total_pulses": 35,
   "metrics": {
-    "neural_load_avg": 0.826,
-    "simulation_cycles": 9112,
-    "balance_parity_seed": 440781,
-    "engine_uptime_ticks": 68403
+    "neural_load_avg": 0.948,
+    "simulation_cycles": 9438,
+    "balance_parity_seed": 751892,
+    "engine_uptime_ticks": 68882
   },
   "recent_pulses": [
+    {
+      "id": "pulse_yrvyaqp8",
+      "timestamp": "2026-08-22T15:38:49.201Z",
+      "commit_sequence": "5/10",
+      "message": "test(jobs): verify microgame threshold boundary accuracy",
+      "entropy": "b7d104ca"
+    },
     {
       "id": "pulse_nxgm5t42",
       "timestamp": "2026-08-22T15:14:36.700Z",
