@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-22T16:28:28.297Z`  
-**Total Pulses Recorded:** `37`  
-**Current Telemetry Epoch:** `625224`
+**Last Sync:** `2026-08-22T16:57:26.905Z`  
+**Total Pulses Recorded:** `38`  
+**Current Telemetry Epoch:** `182096`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-22 16:57:26` | 8/10 | `perf(origins): streamline enemy turn decision tree evaluation` | `pulse_ggpvpvf4` |
 | `2026-08-22 16:28:28` | 7/10 | `docs(deck): sync architecture telemetry specifications` | `pulse_hant2vsw` |
 | `2026-08-22 15:54:09` | 6/10 | `chore(encounters): refresh simulated encounter matrix seed` | `pulse_tb0lmvnw` |
 | `2026-08-22 15:38:49` | 5/10 | `test(jobs): verify microgame threshold boundary accuracy` | `pulse_yrvyaqp8` |
@@ -24,4 +25,3 @@
 | `2026-08-21 14:34:23` | 6/10 | `chore(combat): bump internal telemetry epoch counter` | `pulse_lca20zrh` |
 | `2026-08-21 14:26:39` | 5/10 | `chore(crews): rotate activity logging buffer window` | `pulse_q2r5f40k` |
 | `2026-08-21 14:13:00` | 4/10 | `chore(audio): sync pulse telemetry heartbeat` | `pulse_byamj2gs` |
-| `2026-08-21 13:59:42` | 3/10 | `chore(cache): update automated pulse telemetry state` | `pulse_ow6bawcu` |

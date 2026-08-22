@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-22T16:28:28.297Z",
-  "total_pulses": 37,
+  "last_updated": "2026-08-22T16:57:26.905Z",
+  "total_pulses": 38,
   "metrics": {
-    "neural_load_avg": 0.831,
-    "simulation_cycles": 10041,
-    "balance_parity_seed": 625224,
-    "engine_uptime_ticks": 70058
+    "neural_load_avg": 0.856,
+    "simulation_cycles": 10360,
+    "balance_parity_seed": 182096,
+    "engine_uptime_ticks": 70635
   },
   "recent_pulses": [
+    {
+      "id": "pulse_ggpvpvf4",
+      "timestamp": "2026-08-22T16:57:26.905Z",
+      "commit_sequence": "8/10",
+      "message": "perf(origins): streamline enemy turn decision tree evaluation",
+      "entropy": "b2287e45"
+    },
     {
       "id": "pulse_hant2vsw",
       "timestamp": "2026-08-22T16:28:28.297Z",
