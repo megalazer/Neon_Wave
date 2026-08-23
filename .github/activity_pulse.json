@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-23T14:33:34.326Z",
-  "total_pulses": 46,
+  "last_updated": "2026-08-23T14:48:05.629Z",
+  "total_pulses": 47,
   "metrics": {
-    "neural_load_avg": 0.818,
-    "simulation_cycles": 12287,
-    "balance_parity_seed": 616665,
-    "engine_uptime_ticks": 75309
+    "neural_load_avg": 0.723,
+    "simulation_cycles": 12375,
+    "balance_parity_seed": 352337,
+    "engine_uptime_ticks": 75921
   },
   "recent_pulses": [
+    {
+      "id": "pulse_8fdxrpdq",
+      "timestamp": "2026-08-23T14:48:05.629Z",
+      "commit_sequence": "7/10",
+      "message": "refactor(combat): clean up legacy vitality formula wrappers",
+      "entropy": "e018b66c"
+    },
     {
       "id": "pulse_x0aupqmk",
       "timestamp": "2026-08-23T14:33:34.326Z",

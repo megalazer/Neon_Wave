@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-23T14:33:34.326Z`  
-**Total Pulses Recorded:** `46`  
-**Current Telemetry Epoch:** `616665`
+**Last Sync:** `2026-08-23T14:48:05.629Z`  
+**Total Pulses Recorded:** `47`  
+**Current Telemetry Epoch:** `352337`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-23 14:48:05` | 7/10 | `refactor(combat): clean up legacy vitality formula wrappers` | `pulse_8fdxrpdq` |
 | `2026-08-23 14:33:34` | 6/10 | `docs(origins): sync architecture telemetry specifications` | `pulse_x0aupqmk` |
 | `2026-08-23 14:21:35` | 5/10 | `docs(jobs): document neural recharge curve derivation` | `pulse_tgxjs8kn` |
 | `2026-08-23 14:13:33` | 4/10 | `perf(shaders): vectorize microgame dice roll distributions` | `pulse_384bghj4` |
@@ -24,4 +25,3 @@
 | `2026-08-22 15:38:49` | 5/10 | `test(jobs): verify microgame threshold boundary accuracy` | `pulse_yrvyaqp8` |
 | `2026-08-22 15:14:36` | 4/10 | `style(crews): align UI component margin tokens in JobScreen` | `pulse_nxgm5t42` |
 | `2026-08-22 14:44:47` | 3/10 | `chore(contracts): update automated pulse telemetry state` | `pulse_0kink56f` |
-| `2026-08-22 14:00:28` | 2/10 | `chore(origins): rotate activity logging buffer window` | `pulse_zmomkd0m` |
