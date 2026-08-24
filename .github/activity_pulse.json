@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-24T15:14:46.869Z",
-  "total_pulses": 59,
+  "last_updated": "2026-08-24T15:36:44.730Z",
+  "total_pulses": 60,
   "metrics": {
-    "neural_load_avg": 0.841,
-    "simulation_cycles": 15532,
-    "balance_parity_seed": 548797,
-    "engine_uptime_ticks": 82609
+    "neural_load_avg": 0.937,
+    "simulation_cycles": 16030,
+    "balance_parity_seed": 480595,
+    "engine_uptime_ticks": 83499
   },
   "recent_pulses": [
+    {
+      "id": "pulse_16gsjckf",
+      "timestamp": "2026-08-24T15:36:44.730Z",
+      "commit_sequence": "10/10",
+      "message": "chore(audio): rotate activity logging buffer window",
+      "entropy": "583877a9"
+    },
     {
       "id": "pulse_6l7y7zsm",
       "timestamp": "2026-08-24T15:14:46.869Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "1/10",
       "message": "perf(matrix): optimize telemetry buffer serialization overhead",
       "entropy": "bfcaf03e"
-    },
-    {
-      "id": "pulse_hq882ix8",
-      "timestamp": "2026-08-21T00:38:40.628Z",
-      "commit_sequence": "10/10",
-      "message": "fix(balance): remedy floating-point drift in balance simulator",
-      "entropy": "331ec300"
     }
   ]
 }
