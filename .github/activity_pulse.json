@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-24T14:54:10.817Z",
-  "total_pulses": 57,
+  "last_updated": "2026-08-24T15:10:20.390Z",
+  "total_pulses": 58,
   "metrics": {
-    "neural_load_avg": 0.939,
-    "simulation_cycles": 14987,
-    "balance_parity_seed": 947560,
-    "engine_uptime_ticks": 81152
+    "neural_load_avg": 0.714,
+    "simulation_cycles": 15053,
+    "balance_parity_seed": 556657,
+    "engine_uptime_ticks": 81947
   },
   "recent_pulses": [
+    {
+      "id": "pulse_2ixpf4y5",
+      "timestamp": "2026-08-24T15:10:20.390Z",
+      "commit_sequence": "8/10",
+      "message": "refactor(balance): modularize contract difficulty grading algorithms",
+      "entropy": "48c04819"
+    },
     {
       "id": "pulse_yc0du5dd",
       "timestamp": "2026-08-24T14:54:10.817Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "9/10",
       "message": "fix(state): correct vitality scaling clamp in levelup routine",
       "entropy": "c8578980"
-    },
-    {
-      "id": "pulse_hzylm4p1",
-      "timestamp": "2026-08-20T22:02:34.983Z",
-      "commit_sequence": "8/10",
-      "message": "fix(jobs): resolve stat modifier race condition on battle entry",
-      "entropy": "91801677"
     }
   ]
 }
