@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-24T13:35:17.678Z`  
-**Total Pulses Recorded:** `51`  
-**Current Telemetry Epoch:** `404951`
+**Last Sync:** `2026-08-24T13:43:02.650Z`  
+**Total Pulses Recorded:** `52`  
+**Current Telemetry Epoch:** `662143`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-24 13:43:02` | 2/10 | `fix(terminal): patch memory leak in particle cache recycling` | `pulse_plfhkxqt` |
 | `2026-08-24 13:35:17` | 1/10 | `docs(audio): document neural recharge curve derivation` | `pulse_o8nb3v04` |
 | `2026-08-23 15:20:51` | 10/10 | `chore(encounters): record daily engine activity signature` | `pulse_usdu38t4` |
 | `2026-08-23 15:13:59` | 9/10 | `perf(microgames): optimize tier-gate filter indexing` | `pulse_o8jteiwj` |
@@ -24,4 +25,3 @@
 | `2026-08-22 17:42:32` | 10/10 | `fix(neural): realign phosphor overlay aspect ratio matrix` | `pulse_zp7atfrg` |
 | `2026-08-22 17:14:28` | 9/10 | `perf(microgames): vectorize microgame dice roll distributions` | `pulse_2hwjhkz1` |
 | `2026-08-22 16:57:26` | 8/10 | `perf(origins): streamline enemy turn decision tree evaluation` | `pulse_ggpvpvf4` |
-| `2026-08-22 16:28:28` | 7/10 | `docs(deck): sync architecture telemetry specifications` | `pulse_hant2vsw` |
