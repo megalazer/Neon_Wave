@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-23T15:20:51.676Z",
-  "total_pulses": 50,
+  "last_updated": "2026-08-24T13:35:17.678Z",
+  "total_pulses": 51,
   "metrics": {
-    "neural_load_avg": 0.908,
-    "simulation_cycles": 13495,
-    "balance_parity_seed": 930703,
-    "engine_uptime_ticks": 77589
+    "neural_load_avg": 0.788,
+    "simulation_cycles": 13660,
+    "balance_parity_seed": 404951,
+    "engine_uptime_ticks": 77819
   },
   "recent_pulses": [
+    {
+      "id": "pulse_o8nb3v04",
+      "timestamp": "2026-08-24T13:35:17.678Z",
+      "commit_sequence": "1/10",
+      "message": "docs(audio): document neural recharge curve derivation",
+      "entropy": "12c4a0c2"
+    },
     {
       "id": "pulse_usdu38t4",
       "timestamp": "2026-08-23T15:20:51.676Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "2/10",
       "message": "test(jobs): record Monte Carlo survival distribution run",
       "entropy": "9b9e4594"
-    },
-    {
-      "id": "pulse_efnjt1cd",
-      "timestamp": "2026-08-20T13:49:44.106Z",
-      "commit_sequence": "1/10",
-      "message": "feat(origins): tune neural buffer recalculation step",
-      "entropy": "13f14109"
     }
   ]
 }
