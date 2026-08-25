@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-25T13:32:57.049Z",
-  "total_pulses": 61,
+  "last_updated": "2026-08-25T13:44:29.482Z",
+  "total_pulses": 62,
   "metrics": {
-    "neural_load_avg": 0.804,
-    "simulation_cycles": 16126,
-    "balance_parity_seed": 445501,
-    "engine_uptime_ticks": 83927
+    "neural_load_avg": 0.897,
+    "simulation_cycles": 16314,
+    "balance_parity_seed": 974467,
+    "engine_uptime_ticks": 84220
   },
   "recent_pulses": [
+    {
+      "id": "pulse_rcqudplq",
+      "timestamp": "2026-08-25T13:44:29.482Z",
+      "commit_sequence": "2/10",
+      "message": "perf(balance): reduce GC churn during encounter generator warm-up",
+      "entropy": "e350965a"
+    },
     {
       "id": "pulse_9942as7p",
       "timestamp": "2026-08-25T13:32:57.049Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "3/10",
       "message": "feat(deck): refine crew synergy multiplier calculations",
       "entropy": "49532a91"
-    },
-    {
-      "id": "pulse_42eb3czj",
-      "timestamp": "2026-08-20T14:59:01.843Z",
-      "commit_sequence": "2/10",
-      "message": "refactor(matrix): modularize contract difficulty grading algorithms",
-      "entropy": "571dfa54"
     }
   ]
 }
