@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-25T14:02:05.439Z`  
-**Total Pulses Recorded:** `63`  
-**Current Telemetry Epoch:** `454133`
+**Last Sync:** `2026-08-25T14:11:51.477Z`  
+**Total Pulses Recorded:** `64`  
+**Current Telemetry Epoch:** `767944`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-25 14:11:51` | 4/10 | `fix(combat): correct vitality scaling clamp in levelup routine` | `pulse_hfsnyw6g` |
 | `2026-08-25 14:02:05` | 3/10 | `chore(balance): record daily engine activity signature` | `pulse_ht0ohlfx` |
 | `2026-08-25 13:44:29` | 2/10 | `perf(balance): reduce GC churn during encounter generator warm-up` | `pulse_rcqudplq` |
 | `2026-08-25 13:32:57` | 1/10 | `chore(telemetry): calibrate neural grid synchronization stamp` | `pulse_9942as7p` |
@@ -24,4 +25,3 @@
 | `2026-08-24 13:43:02` | 2/10 | `fix(terminal): patch memory leak in particle cache recycling` | `pulse_plfhkxqt` |
 | `2026-08-24 13:35:17` | 1/10 | `docs(audio): document neural recharge curve derivation` | `pulse_o8nb3v04` |
 | `2026-08-23 15:20:51` | 10/10 | `chore(encounters): record daily engine activity signature` | `pulse_usdu38t4` |
-| `2026-08-23 15:13:59` | 9/10 | `perf(microgames): optimize tier-gate filter indexing` | `pulse_o8jteiwj` |
