@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-25T14:35:14.717Z`  
-**Total Pulses Recorded:** `66`  
-**Current Telemetry Epoch:** `565284`
+**Last Sync:** `2026-08-25T14:47:35.246Z`  
+**Total Pulses Recorded:** `67`  
+**Current Telemetry Epoch:** `100378`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-25 14:47:35` | 7/10 | `test(balance): record Monte Carlo survival distribution run` | `pulse_qp8m1a1a` |
 | `2026-08-25 14:35:14` | 6/10 | `chore(encounters): bump internal telemetry epoch counter` | `pulse_xuuiz968` |
 | `2026-08-25 14:23:01` | 5/10 | `chore(microgames): sync pulse telemetry heartbeat` | `pulse_ii81ld3f` |
 | `2026-08-25 14:11:51` | 4/10 | `fix(combat): correct vitality scaling clamp in levelup routine` | `pulse_hfsnyw6g` |
@@ -24,4 +25,3 @@
 | `2026-08-24 14:25:45` | 5/10 | `perf(engine): streamline enemy turn decision tree evaluation` | `pulse_frd74qok` |
 | `2026-08-24 14:12:36` | 4/10 | `chore(neural): record daily engine activity signature` | `pulse_uzjt5qgw` |
 | `2026-08-24 14:05:00` | 3/10 | `chore(terminal): calibrate neural grid synchronization stamp` | `pulse_ii2m2z3w` |
-| `2026-08-24 13:43:02` | 2/10 | `fix(terminal): patch memory leak in particle cache recycling` | `pulse_plfhkxqt` |
