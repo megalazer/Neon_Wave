@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-26T15:04:12.249Z",
-  "total_pulses": 78,
+  "last_updated": "2026-08-26T15:13:50.943Z",
+  "total_pulses": 79,
   "metrics": {
-    "neural_load_avg": 0.764,
-    "simulation_cycles": 20594,
-    "balance_parity_seed": 898507,
-    "engine_uptime_ticks": 94695
+    "neural_load_avg": 0.916,
+    "simulation_cycles": 20721,
+    "balance_parity_seed": 549149,
+    "engine_uptime_ticks": 95150
   },
   "recent_pulses": [
+    {
+      "id": "pulse_6cdzm9tj",
+      "timestamp": "2026-08-26T15:13:50.943Z",
+      "commit_sequence": "9/10",
+      "message": "fix(crews): resolve stat modifier race condition on battle entry",
+      "entropy": "d641eb99"
+    },
     {
       "id": "pulse_p5f20lug",
       "timestamp": "2026-08-26T15:04:12.249Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "10/10",
       "message": "chore(combat): refresh simulated encounter matrix seed",
       "entropy": "16558deb"
-    },
-    {
-      "id": "pulse_zwgnpt8v",
-      "timestamp": "2026-08-21T15:13:11.447Z",
-      "commit_sequence": "9/10",
-      "message": "feat(cache): introduce multi-pass telemetry pulse verification",
-      "entropy": "6ba4e1eb"
     }
   ]
 }
