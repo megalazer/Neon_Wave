@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-26T14:28:09.858Z`  
-**Total Pulses Recorded:** `75`  
-**Current Telemetry Epoch:** `779159`
+**Last Sync:** `2026-08-26T14:38:21.045Z`  
+**Total Pulses Recorded:** `76`  
+**Current Telemetry Epoch:** `450565`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-26 14:38:21` | 6/10 | `fix(metrics): prevent out-of-order combat queue execution` | `pulse_2xrjwr52` |
 | `2026-08-26 14:28:09` | 5/10 | `test(encounters): validate contract reward bounds against tier caps` | `pulse_ddv5ja6f` |
 | `2026-08-26 14:11:11` | 4/10 | `chore(jobs): update automated pulse telemetry state` | `pulse_fb8jroo7` |
 | `2026-08-26 14:00:48` | 3/10 | `chore(balance): update automated pulse telemetry state` | `pulse_c4onhq1s` |
@@ -24,4 +25,3 @@
 | `2026-08-25 14:11:51` | 4/10 | `fix(combat): correct vitality scaling clamp in levelup routine` | `pulse_hfsnyw6g` |
 | `2026-08-25 14:02:05` | 3/10 | `chore(balance): record daily engine activity signature` | `pulse_ht0ohlfx` |
 | `2026-08-25 13:44:29` | 2/10 | `perf(balance): reduce GC churn during encounter generator warm-up` | `pulse_rcqudplq` |
-| `2026-08-25 13:32:57` | 1/10 | `chore(telemetry): calibrate neural grid synchronization stamp` | `pulse_9942as7p` |
