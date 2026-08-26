@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-25T15:32:38.270Z",
-  "total_pulses": 70,
+  "last_updated": "2026-08-26T13:32:22.737Z",
+  "total_pulses": 71,
   "metrics": {
-    "neural_load_avg": 0.877,
-    "simulation_cycles": 18090,
-    "balance_parity_seed": 680829,
-    "engine_uptime_ticks": 89510
+    "neural_load_avg": 0.722,
+    "simulation_cycles": 18483,
+    "balance_parity_seed": 338791,
+    "engine_uptime_ticks": 90120
   },
   "recent_pulses": [
+    {
+      "id": "pulse_297e1rnm",
+      "timestamp": "2026-08-26T13:32:22.737Z",
+      "commit_sequence": "1/10",
+      "message": "feat(telemetry): expand microgame timing threshold table",
+      "entropy": "3af417d0"
+    },
     {
       "id": "pulse_olfhtn7p",
       "timestamp": "2026-08-25T15:32:38.270Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "2/10",
       "message": "feat(jobs): expand microgame timing threshold table",
       "entropy": "901c7563"
-    },
-    {
-      "id": "pulse_ggwmt092",
-      "timestamp": "2026-08-21T13:34:35.436Z",
-      "commit_sequence": "1/10",
-      "message": "chore(origins): calibrate neural grid synchronization stamp",
-      "entropy": "88a0109e"
     }
   ]
 }
