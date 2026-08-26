@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-26T14:51:42.288Z`  
-**Total Pulses Recorded:** `77`  
-**Current Telemetry Epoch:** `916360`
+**Last Sync:** `2026-08-26T15:04:12.249Z`  
+**Total Pulses Recorded:** `78`  
+**Current Telemetry Epoch:** `898507`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-26 15:04:12` | 8/10 | `refactor(crews): unify neural capacity calculation helpers` | `pulse_p5f20lug` |
 | `2026-08-26 14:51:42` | 7/10 | `feat(cache): support dynamic phosphor bloom curve` | `pulse_ecjm0b55` |
 | `2026-08-26 14:38:21` | 6/10 | `fix(metrics): prevent out-of-order combat queue execution` | `pulse_2xrjwr52` |
 | `2026-08-26 14:28:09` | 5/10 | `test(encounters): validate contract reward bounds against tier caps` | `pulse_ddv5ja6f` |
@@ -24,4 +25,3 @@
 | `2026-08-25 14:35:14` | 6/10 | `chore(encounters): bump internal telemetry epoch counter` | `pulse_xuuiz968` |
 | `2026-08-25 14:23:01` | 5/10 | `chore(microgames): sync pulse telemetry heartbeat` | `pulse_ii81ld3f` |
 | `2026-08-25 14:11:51` | 4/10 | `fix(combat): correct vitality scaling clamp in levelup routine` | `pulse_hfsnyw6g` |
-| `2026-08-25 14:02:05` | 3/10 | `chore(balance): record daily engine activity signature` | `pulse_ht0ohlfx` |

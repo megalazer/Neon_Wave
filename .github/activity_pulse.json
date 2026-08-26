@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-26T14:51:42.288Z",
-  "total_pulses": 77,
+  "last_updated": "2026-08-26T15:04:12.249Z",
+  "total_pulses": 78,
   "metrics": {
-    "neural_load_avg": 0.939,
-    "simulation_cycles": 20138,
-    "balance_parity_seed": 916360,
-    "engine_uptime_ticks": 93791
+    "neural_load_avg": 0.764,
+    "simulation_cycles": 20594,
+    "balance_parity_seed": 898507,
+    "engine_uptime_ticks": 94695
   },
   "recent_pulses": [
+    {
+      "id": "pulse_p5f20lug",
+      "timestamp": "2026-08-26T15:04:12.249Z",
+      "commit_sequence": "8/10",
+      "message": "refactor(crews): unify neural capacity calculation helpers",
+      "entropy": "6105cccd"
+    },
     {
       "id": "pulse_ecjm0b55",
       "timestamp": "2026-08-26T14:51:42.288Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "9/10",
       "message": "feat(cache): introduce multi-pass telemetry pulse verification",
       "entropy": "6ba4e1eb"
-    },
-    {
-      "id": "pulse_1qvv3zt5",
-      "timestamp": "2026-08-21T14:57:46.128Z",
-      "commit_sequence": "8/10",
-      "message": "chore(cache): sync pulse telemetry heartbeat",
-      "entropy": "85e50bb5"
     }
   ]
 }
