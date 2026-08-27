@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-27T15:52:56.220Z",
-  "total_pulses": 83,
+  "last_updated": "2026-08-27T17:33:51.431Z",
+  "total_pulses": 84,
   "metrics": {
-    "neural_load_avg": 0.841,
-    "simulation_cycles": 22193,
-    "balance_parity_seed": 931258,
-    "engine_uptime_ticks": 96994
+    "neural_load_avg": 0.858,
+    "simulation_cycles": 22321,
+    "balance_parity_seed": 414703,
+    "engine_uptime_ticks": 97332
   },
   "recent_pulses": [
+    {
+      "id": "pulse_eib9r9a4",
+      "timestamp": "2026-08-27T17:33:51.431Z",
+      "commit_sequence": "4/10",
+      "message": "chore(jobs): calibrate neural grid synchronization stamp",
+      "entropy": "ff54f7ca"
+    },
     {
       "id": "pulse_55jjxxxc",
       "timestamp": "2026-08-27T15:52:56.220Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "5/10",
       "message": "test(jobs): verify microgame threshold boundary accuracy",
       "entropy": "b7d104ca"
-    },
-    {
-      "id": "pulse_nxgm5t42",
-      "timestamp": "2026-08-22T15:14:36.700Z",
-      "commit_sequence": "4/10",
-      "message": "style(crews): align UI component margin tokens in JobScreen",
-      "entropy": "b2a8014a"
     }
   ]
 }
