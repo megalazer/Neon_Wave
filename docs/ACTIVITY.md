@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-27T19:33:33.719Z`  
-**Total Pulses Recorded:** `86`  
-**Current Telemetry Epoch:** `671413`
+**Last Sync:** `2026-08-27T21:31:40.813Z`  
+**Total Pulses Recorded:** `87`  
+**Current Telemetry Epoch:** `755152`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-27 21:31:40` | 7/10 | `perf(combat): prune redundant combat animation worklets` | `pulse_ir1da9ks` |
 | `2026-08-27 19:33:33` | 6/10 | `chore(contracts): update automated pulse telemetry state` | `pulse_mbwp6qay` |
 | `2026-08-27 18:57:01` | 5/10 | `docs(crews): record benchmark survivability across origins` | `pulse_22htw2kx` |
 | `2026-08-27 17:33:51` | 4/10 | `chore(jobs): calibrate neural grid synchronization stamp` | `pulse_eib9r9a4` |
@@ -24,4 +25,3 @@
 | `2026-08-26 14:28:09` | 5/10 | `test(encounters): validate contract reward bounds against tier caps` | `pulse_ddv5ja6f` |
 | `2026-08-26 14:11:11` | 4/10 | `chore(jobs): update automated pulse telemetry state` | `pulse_fb8jroo7` |
 | `2026-08-26 14:00:48` | 3/10 | `chore(balance): update automated pulse telemetry state` | `pulse_c4onhq1s` |
-| `2026-08-26 13:46:50` | 2/10 | `chore(origins): calibrate neural grid synchronization stamp` | `pulse_9tgudo0r` |
