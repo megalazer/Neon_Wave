@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-27T22:06:47.559Z",
-  "total_pulses": 88,
+  "last_updated": "2026-08-27T23:43:59.014Z",
+  "total_pulses": 89,
   "metrics": {
-    "neural_load_avg": 0.733,
-    "simulation_cycles": 23414,
-    "balance_parity_seed": 665796,
-    "engine_uptime_ticks": 100134
+    "neural_load_avg": 0.71,
+    "simulation_cycles": 23865,
+    "balance_parity_seed": 367052,
+    "engine_uptime_ticks": 100798
   },
   "recent_pulses": [
+    {
+      "id": "pulse_o21aeugy",
+      "timestamp": "2026-08-27T23:43:59.014Z",
+      "commit_sequence": "9/10",
+      "message": "test(balance): validate contract reward bounds against tier caps",
+      "entropy": "1e4873eb"
+    },
     {
       "id": "pulse_m69zvmfz",
       "timestamp": "2026-08-27T22:06:47.559Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "10/10",
       "message": "fix(neural): realign phosphor overlay aspect ratio matrix",
       "entropy": "bc97d5ee"
-    },
-    {
-      "id": "pulse_2hwjhkz1",
-      "timestamp": "2026-08-22T17:14:28.863Z",
-      "commit_sequence": "9/10",
-      "message": "perf(microgames): vectorize microgame dice roll distributions",
-      "entropy": "e8438f5c"
     }
   ]
 }
