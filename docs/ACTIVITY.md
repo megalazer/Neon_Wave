@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-27T15:13:39.586Z`  
-**Total Pulses Recorded:** `82`  
-**Current Telemetry Epoch:** `456193`
+**Last Sync:** `2026-08-27T15:52:56.220Z`  
+**Total Pulses Recorded:** `83`  
+**Current Telemetry Epoch:** `931258`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-27 15:52:56` | 3/10 | `feat(sync): streamline contract tier-filtering cadence` | `pulse_55jjxxxc` |
 | `2026-08-27 15:13:39` | 2/10 | `fix(deck): resolve stat modifier race condition on battle entry` | `pulse_fzdn9ndq` |
 | `2026-08-27 14:12:45` | 1/10 | `chore(engine): record daily engine activity signature` | `pulse_l4slo5st` |
 | `2026-08-26 15:22:48` | 10/10 | `chore(encounters): calibrate neural grid synchronization stamp` | `pulse_kwjc0odc` |
@@ -24,4 +25,3 @@
 | `2026-08-26 13:32:22` | 1/10 | `feat(telemetry): expand microgame timing threshold table` | `pulse_297e1rnm` |
 | `2026-08-25 15:32:38` | 10/10 | `chore(metrics): refresh simulated encounter matrix seed` | `pulse_olfhtn7p` |
 | `2026-08-25 15:19:03` | 9/10 | `chore(engine): update automated pulse telemetry state` | `pulse_jxfedpl6` |
-| `2026-08-25 15:00:35` | 8/10 | `refactor(crews): decouple encounter generation from display state` | `pulse_f4wy6g68` |
