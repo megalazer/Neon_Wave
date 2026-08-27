@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-27T14:12:45.214Z",
-  "total_pulses": 81,
+  "last_updated": "2026-08-27T15:13:39.586Z",
+  "total_pulses": 82,
   "metrics": {
-    "neural_load_avg": 0.785,
-    "simulation_cycles": 21575,
-    "balance_parity_seed": 898138,
-    "engine_uptime_ticks": 96046
+    "neural_load_avg": 0.89,
+    "simulation_cycles": 21887,
+    "balance_parity_seed": 456193,
+    "engine_uptime_ticks": 96450
   },
   "recent_pulses": [
+    {
+      "id": "pulse_fzdn9ndq",
+      "timestamp": "2026-08-27T15:13:39.586Z",
+      "commit_sequence": "2/10",
+      "message": "fix(deck): resolve stat modifier race condition on battle entry",
+      "entropy": "181e3257"
+    },
     {
       "id": "pulse_l4slo5st",
       "timestamp": "2026-08-27T14:12:45.214Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "3/10",
       "message": "chore(contracts): update automated pulse telemetry state",
       "entropy": "fadaaf4e"
-    },
-    {
-      "id": "pulse_zmomkd0m",
-      "timestamp": "2026-08-22T14:00:28.077Z",
-      "commit_sequence": "2/10",
-      "message": "chore(origins): rotate activity logging buffer window",
-      "entropy": "33eb4284"
     }
   ]
 }
