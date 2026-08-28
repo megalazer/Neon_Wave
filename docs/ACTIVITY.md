@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-28T15:14:33.617Z`  
-**Total Pulses Recorded:** `99`  
-**Current Telemetry Epoch:** `688457`
+**Last Sync:** `2026-08-28T15:33:38.480Z`  
+**Total Pulses Recorded:** `100`  
+**Current Telemetry Epoch:** `215885`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-28 15:33:38` | 10/10 | `perf(combat): optimize tier-gate filter indexing` | `pulse_fncwlkjl` |
 | `2026-08-28 15:14:33` | 9/10 | `chore(matrix): update automated pulse telemetry state` | `pulse_18v6s69t` |
 | `2026-08-28 15:01:45` | 8/10 | `feat(telemetry): add adaptive entropy seed to combat resolution` | `pulse_3k9r6ktv` |
 | `2026-08-28 14:52:01` | 7/10 | `chore(balance): bump internal telemetry epoch counter` | `pulse_rp756jle` |
@@ -24,4 +25,3 @@
 | `2026-08-27 22:06:47` | 8/10 | `chore(crews): update automated pulse telemetry state` | `pulse_m69zvmfz` |
 | `2026-08-27 21:31:40` | 7/10 | `perf(combat): prune redundant combat animation worklets` | `pulse_ir1da9ks` |
 | `2026-08-27 19:33:33` | 6/10 | `chore(contracts): update automated pulse telemetry state` | `pulse_mbwp6qay` |
-| `2026-08-27 18:57:01` | 5/10 | `docs(crews): record benchmark survivability across origins` | `pulse_22htw2kx` |
