@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-28T14:52:01.976Z`  
-**Total Pulses Recorded:** `97`  
-**Current Telemetry Epoch:** `195204`
+**Last Sync:** `2026-08-28T15:01:45.537Z`  
+**Total Pulses Recorded:** `98`  
+**Current Telemetry Epoch:** `519040`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-28 15:01:45` | 8/10 | `feat(telemetry): add adaptive entropy seed to combat resolution` | `pulse_3k9r6ktv` |
 | `2026-08-28 14:52:01` | 7/10 | `chore(balance): bump internal telemetry epoch counter` | `pulse_rp756jle` |
 | `2026-08-28 14:36:53` | 6/10 | `chore(telemetry): calibrate neural grid synchronization stamp` | `pulse_7hyqcbxp` |
 | `2026-08-28 14:21:53` | 5/10 | `chore(balance): refresh simulated encounter matrix seed` | `pulse_p7wp7zlf` |
@@ -24,4 +25,3 @@
 | `2026-08-27 19:33:33` | 6/10 | `chore(contracts): update automated pulse telemetry state` | `pulse_mbwp6qay` |
 | `2026-08-27 18:57:01` | 5/10 | `docs(crews): record benchmark survivability across origins` | `pulse_22htw2kx` |
 | `2026-08-27 17:33:51` | 4/10 | `chore(jobs): calibrate neural grid synchronization stamp` | `pulse_eib9r9a4` |
-| `2026-08-27 15:52:56` | 3/10 | `feat(sync): streamline contract tier-filtering cadence` | `pulse_55jjxxxc` |

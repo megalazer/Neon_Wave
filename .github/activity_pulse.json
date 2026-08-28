@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-28T14:52:01.976Z",
-  "total_pulses": 97,
+  "last_updated": "2026-08-28T15:01:45.537Z",
+  "total_pulses": 98,
   "metrics": {
-    "neural_load_avg": 0.841,
-    "simulation_cycles": 26181,
-    "balance_parity_seed": 195204,
-    "engine_uptime_ticks": 104410
+    "neural_load_avg": 0.755,
+    "simulation_cycles": 26356,
+    "balance_parity_seed": 519040,
+    "engine_uptime_ticks": 104697
   },
   "recent_pulses": [
+    {
+      "id": "pulse_3k9r6ktv",
+      "timestamp": "2026-08-28T15:01:45.537Z",
+      "commit_sequence": "8/10",
+      "message": "feat(telemetry): add adaptive entropy seed to combat resolution",
+      "entropy": "298626d7"
+    },
     {
       "id": "pulse_rp756jle",
       "timestamp": "2026-08-28T14:52:01.976Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "9/10",
       "message": "perf(microgames): optimize tier-gate filter indexing",
       "entropy": "aac872b4"
-    },
-    {
-      "id": "pulse_khkixbjt",
-      "timestamp": "2026-08-23T14:57:54.867Z",
-      "commit_sequence": "8/10",
-      "message": "chore(origins): sync pulse telemetry heartbeat",
-      "entropy": "3ef4b828"
     }
   ]
 }
