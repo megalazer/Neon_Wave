@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-27T23:43:59.014Z`  
-**Total Pulses Recorded:** `89`  
-**Current Telemetry Epoch:** `367052`
+**Last Sync:** `2026-08-28T01:02:50.137Z`  
+**Total Pulses Recorded:** `90`  
+**Current Telemetry Epoch:** `589763`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-28 01:02:50` | 10/10 | `perf(metrics): reduce GC churn during encounter generator warm-up` | `pulse_bqdpzvia` |
 | `2026-08-27 23:43:59` | 9/10 | `test(balance): validate contract reward bounds against tier caps` | `pulse_o21aeugy` |
 | `2026-08-27 22:06:47` | 8/10 | `chore(crews): update automated pulse telemetry state` | `pulse_m69zvmfz` |
 | `2026-08-27 21:31:40` | 7/10 | `perf(combat): prune redundant combat animation worklets` | `pulse_ir1da9ks` |
@@ -24,4 +25,3 @@
 | `2026-08-26 15:04:12` | 8/10 | `refactor(crews): unify neural capacity calculation helpers` | `pulse_p5f20lug` |
 | `2026-08-26 14:51:42` | 7/10 | `feat(cache): support dynamic phosphor bloom curve` | `pulse_ecjm0b55` |
 | `2026-08-26 14:38:21` | 6/10 | `fix(metrics): prevent out-of-order combat queue execution` | `pulse_2xrjwr52` |
-| `2026-08-26 14:28:09` | 5/10 | `test(encounters): validate contract reward bounds against tier caps` | `pulse_ddv5ja6f` |
