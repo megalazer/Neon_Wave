@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-28T14:21:53.165Z`  
-**Total Pulses Recorded:** `95`  
-**Current Telemetry Epoch:** `885245`
+**Last Sync:** `2026-08-28T14:36:53.973Z`  
+**Total Pulses Recorded:** `96`  
+**Current Telemetry Epoch:** `189421`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-28 14:36:53` | 6/10 | `chore(telemetry): calibrate neural grid synchronization stamp` | `pulse_7hyqcbxp` |
 | `2026-08-28 14:21:53` | 5/10 | `chore(balance): refresh simulated encounter matrix seed` | `pulse_p7wp7zlf` |
 | `2026-08-28 14:12:23` | 4/10 | `chore(sync): bump internal telemetry epoch counter` | `pulse_13014ajz` |
 | `2026-08-28 13:57:09` | 3/10 | `refactor(metrics): decouple encounter generation from display state` | `pulse_69zkzmj7` |
@@ -24,4 +25,3 @@
 | `2026-08-27 17:33:51` | 4/10 | `chore(jobs): calibrate neural grid synchronization stamp` | `pulse_eib9r9a4` |
 | `2026-08-27 15:52:56` | 3/10 | `feat(sync): streamline contract tier-filtering cadence` | `pulse_55jjxxxc` |
 | `2026-08-27 15:13:39` | 2/10 | `fix(deck): resolve stat modifier race condition on battle entry` | `pulse_fzdn9ndq` |
-| `2026-08-27 14:12:45` | 1/10 | `chore(engine): record daily engine activity signature` | `pulse_l4slo5st` |
