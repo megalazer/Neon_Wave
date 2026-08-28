@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-28T14:12:23.302Z",
-  "total_pulses": 94,
+  "last_updated": "2026-08-28T14:21:53.165Z",
+  "total_pulses": 95,
   "metrics": {
-    "neural_load_avg": 0.768,
-    "simulation_cycles": 25272,
-    "balance_parity_seed": 978804,
-    "engine_uptime_ticks": 103526
+    "neural_load_avg": 0.72,
+    "simulation_cycles": 25727,
+    "balance_parity_seed": 885245,
+    "engine_uptime_ticks": 103646
   },
   "recent_pulses": [
+    {
+      "id": "pulse_p7wp7zlf",
+      "timestamp": "2026-08-28T14:21:53.165Z",
+      "commit_sequence": "5/10",
+      "message": "chore(balance): refresh simulated encounter matrix seed",
+      "entropy": "93f24a92"
+    },
     {
       "id": "pulse_13014ajz",
       "timestamp": "2026-08-28T14:12:23.302Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "6/10",
       "message": "docs(origins): sync architecture telemetry specifications",
       "entropy": "b197f4e9"
-    },
-    {
-      "id": "pulse_tgxjs8kn",
-      "timestamp": "2026-08-23T14:21:35.465Z",
-      "commit_sequence": "5/10",
-      "message": "docs(jobs): document neural recharge curve derivation",
-      "entropy": "223a3671"
     }
   ]
 }
