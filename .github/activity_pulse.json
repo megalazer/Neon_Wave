@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-28T14:36:53.973Z",
-  "total_pulses": 96,
+  "last_updated": "2026-08-28T14:52:01.976Z",
+  "total_pulses": 97,
   "metrics": {
-    "neural_load_avg": 0.787,
-    "simulation_cycles": 25795,
-    "balance_parity_seed": 189421,
-    "engine_uptime_ticks": 104053
+    "neural_load_avg": 0.841,
+    "simulation_cycles": 26181,
+    "balance_parity_seed": 195204,
+    "engine_uptime_ticks": 104410
   },
   "recent_pulses": [
+    {
+      "id": "pulse_rp756jle",
+      "timestamp": "2026-08-28T14:52:01.976Z",
+      "commit_sequence": "7/10",
+      "message": "chore(balance): bump internal telemetry epoch counter",
+      "entropy": "f42a814c"
+    },
     {
       "id": "pulse_7hyqcbxp",
       "timestamp": "2026-08-28T14:36:53.973Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "8/10",
       "message": "chore(origins): sync pulse telemetry heartbeat",
       "entropy": "3ef4b828"
-    },
-    {
-      "id": "pulse_8fdxrpdq",
-      "timestamp": "2026-08-23T14:48:05.629Z",
-      "commit_sequence": "7/10",
-      "message": "refactor(combat): clean up legacy vitality formula wrappers",
-      "entropy": "e018b66c"
     }
   ]
 }
