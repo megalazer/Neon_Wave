@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-28T13:32:47.292Z`  
-**Total Pulses Recorded:** `91`  
-**Current Telemetry Epoch:** `190769`
+**Last Sync:** `2026-08-28T13:52:00.906Z`  
+**Total Pulses Recorded:** `92`  
+**Current Telemetry Epoch:** `380175`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-28 13:52:00` | 2/10 | `chore(crews): sync pulse telemetry heartbeat` | `pulse_4fizngcp` |
 | `2026-08-28 13:32:47` | 1/10 | `refactor(shaders): standardize telemetry pulse schema definitions` | `pulse_gqn1b1zf` |
 | `2026-08-28 01:02:50` | 10/10 | `perf(metrics): reduce GC churn during encounter generator warm-up` | `pulse_bqdpzvia` |
 | `2026-08-27 23:43:59` | 9/10 | `test(balance): validate contract reward bounds against tier caps` | `pulse_o21aeugy` |
@@ -24,4 +25,3 @@
 | `2026-08-26 15:22:48` | 10/10 | `chore(encounters): calibrate neural grid synchronization stamp` | `pulse_kwjc0odc` |
 | `2026-08-26 15:13:50` | 9/10 | `fix(crews): resolve stat modifier race condition on battle entry` | `pulse_6cdzm9tj` |
 | `2026-08-26 15:04:12` | 8/10 | `refactor(crews): unify neural capacity calculation helpers` | `pulse_p5f20lug` |
-| `2026-08-26 14:51:42` | 7/10 | `feat(cache): support dynamic phosphor bloom curve` | `pulse_ecjm0b55` |
