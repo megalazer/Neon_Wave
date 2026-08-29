@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-29T13:37:55.329Z",
-  "total_pulses": 101,
+  "last_updated": "2026-08-29T14:21:27.776Z",
+  "total_pulses": 102,
   "metrics": {
-    "neural_load_avg": 0.845,
-    "simulation_cycles": 27372,
-    "balance_parity_seed": 756430,
-    "engine_uptime_ticks": 106276
+    "neural_load_avg": 0.895,
+    "simulation_cycles": 27424,
+    "balance_parity_seed": 216564,
+    "engine_uptime_ticks": 106455
   },
   "recent_pulses": [
+    {
+      "id": "pulse_lxdgf1ij",
+      "timestamp": "2026-08-29T14:21:27.776Z",
+      "commit_sequence": "2/10",
+      "message": "chore(combat): calibrate neural grid synchronization stamp",
+      "entropy": "4bbabef8"
+    },
     {
       "id": "pulse_d9gxzer1",
       "timestamp": "2026-08-29T13:37:55.329Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "3/10",
       "message": "chore(terminal): calibrate neural grid synchronization stamp",
       "entropy": "27777eae"
-    },
-    {
-      "id": "pulse_plfhkxqt",
-      "timestamp": "2026-08-24T13:43:02.650Z",
-      "commit_sequence": "2/10",
-      "message": "fix(terminal): patch memory leak in particle cache recycling",
-      "entropy": "97c26566"
     }
   ]
 }
