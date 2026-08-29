@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-29T16:20:06.793Z`  
-**Total Pulses Recorded:** `106`  
-**Current Telemetry Epoch:** `810314`
+**Last Sync:** `2026-08-29T16:59:00.884Z`  
+**Total Pulses Recorded:** `107`  
+**Current Telemetry Epoch:** `254188`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-29 16:59:00` | 7/10 | `docs(contracts): document neural recharge curve derivation` | `pulse_a4a28rjs` |
 | `2026-08-29 16:20:06` | 6/10 | `test(terminal): add regression checks for origin stat baseline` | `pulse_ylluwcf3` |
 | `2026-08-29 15:45:46` | 5/10 | `refactor(combat): streamline microgame result payload formatting` | `pulse_372fehmz` |
 | `2026-08-29 15:20:30` | 4/10 | `chore(audio): calibrate neural grid synchronization stamp` | `pulse_h4nv9p09` |
@@ -24,4 +25,3 @@
 | `2026-08-28 14:21:53` | 5/10 | `chore(balance): refresh simulated encounter matrix seed` | `pulse_p7wp7zlf` |
 | `2026-08-28 14:12:23` | 4/10 | `chore(sync): bump internal telemetry epoch counter` | `pulse_13014ajz` |
 | `2026-08-28 13:57:09` | 3/10 | `refactor(metrics): decouple encounter generation from display state` | `pulse_69zkzmj7` |
-| `2026-08-28 13:52:00` | 2/10 | `chore(crews): sync pulse telemetry heartbeat` | `pulse_4fizngcp` |
