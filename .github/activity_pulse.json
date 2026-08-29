@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-28T15:33:38.480Z",
-  "total_pulses": 100,
+  "last_updated": "2026-08-29T13:37:55.329Z",
+  "total_pulses": 101,
   "metrics": {
-    "neural_load_avg": 0.806,
-    "simulation_cycles": 27050,
-    "balance_parity_seed": 215885,
-    "engine_uptime_ticks": 105581
+    "neural_load_avg": 0.845,
+    "simulation_cycles": 27372,
+    "balance_parity_seed": 756430,
+    "engine_uptime_ticks": 106276
   },
   "recent_pulses": [
+    {
+      "id": "pulse_d9gxzer1",
+      "timestamp": "2026-08-29T13:37:55.329Z",
+      "commit_sequence": "1/10",
+      "message": "docs(balance): clarify contract tier gate prerequisites in docs",
+      "entropy": "60177ee7"
+    },
     {
       "id": "pulse_fncwlkjl",
       "timestamp": "2026-08-28T15:33:38.480Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "2/10",
       "message": "fix(terminal): patch memory leak in particle cache recycling",
       "entropy": "97c26566"
-    },
-    {
-      "id": "pulse_o8nb3v04",
-      "timestamp": "2026-08-24T13:35:17.678Z",
-      "commit_sequence": "1/10",
-      "message": "docs(audio): document neural recharge curve derivation",
-      "entropy": "12c4a0c2"
     }
   ]
 }

@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-28T15:33:38.480Z`  
-**Total Pulses Recorded:** `100`  
-**Current Telemetry Epoch:** `215885`
+**Last Sync:** `2026-08-29T13:37:55.329Z`  
+**Total Pulses Recorded:** `101`  
+**Current Telemetry Epoch:** `756430`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-29 13:37:55` | 1/10 | `docs(balance): clarify contract tier gate prerequisites in docs` | `pulse_d9gxzer1` |
 | `2026-08-28 15:33:38` | 10/10 | `perf(combat): optimize tier-gate filter indexing` | `pulse_fncwlkjl` |
 | `2026-08-28 15:14:33` | 9/10 | `chore(matrix): update automated pulse telemetry state` | `pulse_18v6s69t` |
 | `2026-08-28 15:01:45` | 8/10 | `feat(telemetry): add adaptive entropy seed to combat resolution` | `pulse_3k9r6ktv` |
@@ -24,4 +25,3 @@
 | `2026-08-27 23:43:59` | 9/10 | `test(balance): validate contract reward bounds against tier caps` | `pulse_o21aeugy` |
 | `2026-08-27 22:06:47` | 8/10 | `chore(crews): update automated pulse telemetry state` | `pulse_m69zvmfz` |
 | `2026-08-27 21:31:40` | 7/10 | `perf(combat): prune redundant combat animation worklets` | `pulse_ir1da9ks` |
-| `2026-08-27 19:33:33` | 6/10 | `chore(contracts): update automated pulse telemetry state` | `pulse_mbwp6qay` |
