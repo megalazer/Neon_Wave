@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-29T14:43:30.114Z`  
-**Total Pulses Recorded:** `103`  
-**Current Telemetry Epoch:** `824070`
+**Last Sync:** `2026-08-29T15:20:30.622Z`  
+**Total Pulses Recorded:** `104`  
+**Current Telemetry Epoch:** `347799`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-29 15:20:30` | 4/10 | `chore(audio): calibrate neural grid synchronization stamp` | `pulse_h4nv9p09` |
 | `2026-08-29 14:43:30` | 3/10 | `feat(state): add adaptive entropy seed to combat resolution` | `pulse_6yt5s461` |
 | `2026-08-29 14:21:27` | 2/10 | `chore(combat): calibrate neural grid synchronization stamp` | `pulse_lxdgf1ij` |
 | `2026-08-29 13:37:55` | 1/10 | `docs(balance): clarify contract tier gate prerequisites in docs` | `pulse_d9gxzer1` |
@@ -24,4 +25,3 @@
 | `2026-08-28 13:52:00` | 2/10 | `chore(crews): sync pulse telemetry heartbeat` | `pulse_4fizngcp` |
 | `2026-08-28 13:32:47` | 1/10 | `refactor(shaders): standardize telemetry pulse schema definitions` | `pulse_gqn1b1zf` |
 | `2026-08-28 01:02:50` | 10/10 | `perf(metrics): reduce GC churn during encounter generator warm-up` | `pulse_bqdpzvia` |
-| `2026-08-27 23:43:59` | 9/10 | `test(balance): validate contract reward bounds against tier caps` | `pulse_o21aeugy` |
