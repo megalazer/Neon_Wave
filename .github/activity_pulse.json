@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-30T14:50:13.138Z",
-  "total_pulses": 117,
+  "last_updated": "2026-08-30T14:56:53.990Z",
+  "total_pulses": 118,
   "metrics": {
-    "neural_load_avg": 0.853,
-    "simulation_cycles": 31604,
-    "balance_parity_seed": 890717,
-    "engine_uptime_ticks": 113820
+    "neural_load_avg": 0.856,
+    "simulation_cycles": 32001,
+    "balance_parity_seed": 864960,
+    "engine_uptime_ticks": 114311
   },
   "recent_pulses": [
+    {
+      "id": "pulse_53dywvj4",
+      "timestamp": "2026-08-30T14:56:53.990Z",
+      "commit_sequence": "8/10",
+      "message": "chore(deck): update automated pulse telemetry state",
+      "entropy": "6e1dc3b1"
+    },
     {
       "id": "pulse_z3khkuec",
       "timestamp": "2026-08-30T14:50:13.138Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "9/10",
       "message": "chore(engine): update automated pulse telemetry state",
       "entropy": "a65a0608"
-    },
-    {
-      "id": "pulse_f4wy6g68",
-      "timestamp": "2026-08-25T15:00:35.993Z",
-      "commit_sequence": "8/10",
-      "message": "refactor(crews): decouple encounter generation from display state",
-      "entropy": "d62abb0b"
     }
   ]
 }
