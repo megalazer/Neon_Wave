@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-30T13:58:56.862Z",
-  "total_pulses": 113,
+  "last_updated": "2026-08-30T14:08:58.716Z",
+  "total_pulses": 114,
   "metrics": {
-    "neural_load_avg": 0.893,
-    "simulation_cycles": 30634,
-    "balance_parity_seed": 413797,
-    "engine_uptime_ticks": 111340
+    "neural_load_avg": 0.935,
+    "simulation_cycles": 31048,
+    "balance_parity_seed": 501334,
+    "engine_uptime_ticks": 112184
   },
   "recent_pulses": [
+    {
+      "id": "pulse_kz3rtd09",
+      "timestamp": "2026-08-30T14:08:58.716Z",
+      "commit_sequence": "4/10",
+      "message": "refactor(origins): clean up legacy vitality formula wrappers",
+      "entropy": "335fd324"
+    },
     {
       "id": "pulse_6pavyzud",
       "timestamp": "2026-08-30T13:58:56.862Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "5/10",
       "message": "chore(microgames): sync pulse telemetry heartbeat",
       "entropy": "04b2b7e8"
-    },
-    {
-      "id": "pulse_hfsnyw6g",
-      "timestamp": "2026-08-25T14:11:51.477Z",
-      "commit_sequence": "4/10",
-      "message": "fix(combat): correct vitality scaling clamp in levelup routine",
-      "entropy": "1a753e8a"
     }
   ]
 }
