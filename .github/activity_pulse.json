@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-29T18:18:03.259Z",
-  "total_pulses": 110,
+  "last_updated": "2026-08-30T13:38:25.945Z",
+  "total_pulses": 111,
   "metrics": {
-    "neural_load_avg": 0.738,
-    "simulation_cycles": 29966,
-    "balance_parity_seed": 170592,
-    "engine_uptime_ticks": 109984
+    "neural_load_avg": 0.705,
+    "simulation_cycles": 30082,
+    "balance_parity_seed": 531367,
+    "engine_uptime_ticks": 110254
   },
   "recent_pulses": [
+    {
+      "id": "pulse_o8zpmcce",
+      "timestamp": "2026-08-30T13:38:25.945Z",
+      "commit_sequence": "1/10",
+      "message": "docs(deck): update combat engine event cycle diagram",
+      "entropy": "d530053f"
+    },
     {
       "id": "pulse_jw76s7qe",
       "timestamp": "2026-08-29T18:18:03.259Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "2/10",
       "message": "perf(balance): reduce GC churn during encounter generator warm-up",
       "entropy": "e350965a"
-    },
-    {
-      "id": "pulse_9942as7p",
-      "timestamp": "2026-08-25T13:32:57.049Z",
-      "commit_sequence": "1/10",
-      "message": "chore(telemetry): calibrate neural grid synchronization stamp",
-      "entropy": "4e803ae3"
     }
   ]
 }
