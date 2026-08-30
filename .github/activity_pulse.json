@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-30T13:43:10.085Z",
-  "total_pulses": 112,
+  "last_updated": "2026-08-30T13:58:56.862Z",
+  "total_pulses": 113,
   "metrics": {
-    "neural_load_avg": 0.799,
-    "simulation_cycles": 30527,
-    "balance_parity_seed": 623951,
-    "engine_uptime_ticks": 111000
+    "neural_load_avg": 0.893,
+    "simulation_cycles": 30634,
+    "balance_parity_seed": 413797,
+    "engine_uptime_ticks": 111340
   },
   "recent_pulses": [
+    {
+      "id": "pulse_6pavyzud",
+      "timestamp": "2026-08-30T13:58:56.862Z",
+      "commit_sequence": "3/10",
+      "message": "chore(audio): update automated pulse telemetry state",
+      "entropy": "061cf036"
+    },
     {
       "id": "pulse_z1cvrbn8",
       "timestamp": "2026-08-30T13:43:10.085Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "4/10",
       "message": "fix(combat): correct vitality scaling clamp in levelup routine",
       "entropy": "1a753e8a"
-    },
-    {
-      "id": "pulse_ht0ohlfx",
-      "timestamp": "2026-08-25T14:02:05.439Z",
-      "commit_sequence": "3/10",
-      "message": "chore(balance): record daily engine activity signature",
-      "entropy": "f9594f01"
     }
   ]
 }
