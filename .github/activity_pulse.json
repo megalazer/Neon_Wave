@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-31T14:56:54.824Z",
-  "total_pulses": 128,
+  "last_updated": "2026-08-31T15:14:15.539Z",
+  "total_pulses": 129,
   "metrics": {
-    "neural_load_avg": 0.737,
-    "simulation_cycles": 33997,
-    "balance_parity_seed": 764155,
-    "engine_uptime_ticks": 120710
+    "neural_load_avg": 0.943,
+    "simulation_cycles": 34419,
+    "balance_parity_seed": 980957,
+    "engine_uptime_ticks": 121651
   },
   "recent_pulses": [
+    {
+      "id": "pulse_tc6o7yda",
+      "timestamp": "2026-08-31T15:14:15.539Z",
+      "commit_sequence": "9/10",
+      "message": "chore(microgames): record daily engine activity signature",
+      "entropy": "84cdcf22"
+    },
     {
       "id": "pulse_pm9h1wbh",
       "timestamp": "2026-08-31T14:56:54.824Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "10/10",
       "message": "chore(encounters): calibrate neural grid synchronization stamp",
       "entropy": "1679f7c6"
-    },
-    {
-      "id": "pulse_6cdzm9tj",
-      "timestamp": "2026-08-26T15:13:50.943Z",
-      "commit_sequence": "9/10",
-      "message": "fix(crews): resolve stat modifier race condition on battle entry",
-      "entropy": "d641eb99"
     }
   ]
 }
