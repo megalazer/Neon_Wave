@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-30T15:18:38.242Z",
-  "total_pulses": 120,
+  "last_updated": "2026-08-31T13:36:07.721Z",
+  "total_pulses": 121,
   "metrics": {
-    "neural_load_avg": 0.94,
-    "simulation_cycles": 32352,
-    "balance_parity_seed": 165765,
-    "engine_uptime_ticks": 115097
+    "neural_load_avg": 0.846,
+    "simulation_cycles": 32510,
+    "balance_parity_seed": 533027,
+    "engine_uptime_ticks": 115564
   },
   "recent_pulses": [
+    {
+      "id": "pulse_5vib43ns",
+      "timestamp": "2026-08-31T13:36:07.721Z",
+      "commit_sequence": "1/10",
+      "message": "fix(deck): stabilize microgame input polling under frame drop",
+      "entropy": "9e00b31a"
+    },
     {
       "id": "pulse_14p2kh71",
       "timestamp": "2026-08-30T15:18:38.242Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "2/10",
       "message": "chore(origins): calibrate neural grid synchronization stamp",
       "entropy": "86eafe70"
-    },
-    {
-      "id": "pulse_297e1rnm",
-      "timestamp": "2026-08-26T13:32:22.737Z",
-      "commit_sequence": "1/10",
-      "message": "feat(telemetry): expand microgame timing threshold table",
-      "entropy": "3af417d0"
     }
   ]
 }
