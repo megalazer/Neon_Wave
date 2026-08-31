@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-31T14:25:09.388Z`  
-**Total Pulses Recorded:** `125`  
-**Current Telemetry Epoch:** `277670`
+**Last Sync:** `2026-08-31T14:33:27.533Z`  
+**Total Pulses Recorded:** `126`  
+**Current Telemetry Epoch:** `157511`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-31 14:33:27` | 6/10 | `chore(state): rotate activity logging buffer window` | `pulse_oxk3yfc5` |
 | `2026-08-31 14:25:09` | 5/10 | `fix(balance): fix contract reward rounding edge-case` | `pulse_3akkhre2` |
 | `2026-08-31 14:06:58` | 4/10 | `chore(deck): sync pulse telemetry heartbeat` | `pulse_i0t0uk8b` |
 | `2026-08-31 13:57:22` | 3/10 | `chore(telemetry): sync pulse telemetry heartbeat` | `pulse_91erc3uv` |
@@ -24,4 +25,3 @@
 | `2026-08-30 14:08:58` | 4/10 | `refactor(origins): clean up legacy vitality formula wrappers` | `pulse_kz3rtd09` |
 | `2026-08-30 13:58:56` | 3/10 | `chore(audio): update automated pulse telemetry state` | `pulse_6pavyzud` |
 | `2026-08-30 13:43:10` | 2/10 | `chore(shaders): refresh simulated encounter matrix seed` | `pulse_z1cvrbn8` |
-| `2026-08-30 13:38:25` | 1/10 | `docs(deck): update combat engine event cycle diagram` | `pulse_o8zpmcce` |

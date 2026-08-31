@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-08-31T14:25:09.388Z",
-  "total_pulses": 125,
+  "last_updated": "2026-08-31T14:33:27.533Z",
+  "total_pulses": 126,
   "metrics": {
-    "neural_load_avg": 0.891,
-    "simulation_cycles": 33404,
-    "balance_parity_seed": 277670,
-    "engine_uptime_ticks": 118086
+    "neural_load_avg": 0.828,
+    "simulation_cycles": 33526,
+    "balance_parity_seed": 157511,
+    "engine_uptime_ticks": 119063
   },
   "recent_pulses": [
+    {
+      "id": "pulse_oxk3yfc5",
+      "timestamp": "2026-08-31T14:33:27.533Z",
+      "commit_sequence": "6/10",
+      "message": "chore(state): rotate activity logging buffer window",
+      "entropy": "52a18777"
+    },
     {
       "id": "pulse_3akkhre2",
       "timestamp": "2026-08-31T14:25:09.388Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "7/10",
       "message": "feat(cache): support dynamic phosphor bloom curve",
       "entropy": "dce019eb"
-    },
-    {
-      "id": "pulse_2xrjwr52",
-      "timestamp": "2026-08-26T14:38:21.045Z",
-      "commit_sequence": "6/10",
-      "message": "fix(metrics): prevent out-of-order combat queue execution",
-      "entropy": "87c7e201"
     }
   ]
 }
