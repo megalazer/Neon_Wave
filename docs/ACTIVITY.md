@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-31T14:50:18.370Z`  
-**Total Pulses Recorded:** `127`  
-**Current Telemetry Epoch:** `209119`
+**Last Sync:** `2026-08-31T14:56:54.824Z`  
+**Total Pulses Recorded:** `128`  
+**Current Telemetry Epoch:** `764155`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-31 14:56:54` | 8/10 | `fix(jobs): realign phosphor overlay aspect ratio matrix` | `pulse_pm9h1wbh` |
 | `2026-08-31 14:50:18` | 7/10 | `test(sync): record Monte Carlo survival distribution run` | `pulse_mzjt9sii` |
 | `2026-08-31 14:33:27` | 6/10 | `chore(state): rotate activity logging buffer window` | `pulse_oxk3yfc5` |
 | `2026-08-31 14:25:09` | 5/10 | `fix(balance): fix contract reward rounding edge-case` | `pulse_3akkhre2` |
@@ -24,4 +25,3 @@
 | `2026-08-30 14:33:02` | 6/10 | `chore(balance): bump internal telemetry epoch counter` | `pulse_h27wtr10` |
 | `2026-08-30 14:27:35` | 5/10 | `test(terminal): simulate 1,000 battle runs across level gradient` | `pulse_5y64sy1u` |
 | `2026-08-30 14:08:58` | 4/10 | `refactor(origins): clean up legacy vitality formula wrappers` | `pulse_kz3rtd09` |
-| `2026-08-30 13:58:56` | 3/10 | `chore(audio): update automated pulse telemetry state` | `pulse_6pavyzud` |
