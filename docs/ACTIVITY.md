@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-08-31T13:36:07.721Z`  
-**Total Pulses Recorded:** `121`  
-**Current Telemetry Epoch:** `533027`
+**Last Sync:** `2026-08-31T13:51:18.531Z`  
+**Total Pulses Recorded:** `122`  
+**Current Telemetry Epoch:** `585903`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-08-31 13:51:18` | 2/10 | `perf(state): streamline enemy turn decision tree evaluation` | `pulse_tgfs8sqt` |
 | `2026-08-31 13:36:07` | 1/10 | `fix(deck): stabilize microgame input polling under frame drop` | `pulse_5vib43ns` |
 | `2026-08-30 15:18:38` | 10/10 | `chore(contracts): refresh simulated encounter matrix seed` | `pulse_14p2kh71` |
 | `2026-08-30 15:12:08` | 9/10 | `chore(audio): bump internal telemetry epoch counter` | `pulse_1t8dorxd` |
@@ -24,4 +25,3 @@
 | `2026-08-29 18:18:03` | 10/10 | `chore(terminal): refresh simulated encounter matrix seed` | `pulse_jw76s7qe` |
 | `2026-08-29 17:47:07` | 9/10 | `chore(jobs): record daily engine activity signature` | `pulse_dznw4oqs` |
 | `2026-08-29 17:12:05` | 8/10 | `chore(telemetry): sync pulse telemetry heartbeat` | `pulse_838nbiz5` |
-| `2026-08-29 16:59:00` | 7/10 | `docs(contracts): document neural recharge curve derivation` | `pulse_a4a28rjs` |
