@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-01T15:20:02.843Z",
-  "total_pulses": 139,
+  "last_updated": "2026-09-01T15:34:19.684Z",
+  "total_pulses": 140,
   "metrics": {
-    "neural_load_avg": 0.733,
-    "simulation_cycles": 36869,
-    "balance_parity_seed": 393436,
-    "engine_uptime_ticks": 126771
+    "neural_load_avg": 0.85,
+    "simulation_cycles": 37200,
+    "balance_parity_seed": 979994,
+    "engine_uptime_ticks": 127103
   },
   "recent_pulses": [
+    {
+      "id": "pulse_w6er7fx0",
+      "timestamp": "2026-09-01T15:34:19.684Z",
+      "commit_sequence": "10/10",
+      "message": "chore(crews): sync pulse telemetry heartbeat",
+      "entropy": "20d5cb31"
+    },
     {
       "id": "pulse_ozhzb5wa",
       "timestamp": "2026-09-01T15:20:02.843Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "1/10",
       "message": "refactor(shaders): standardize telemetry pulse schema definitions",
       "entropy": "d500be53"
-    },
-    {
-      "id": "pulse_bqdpzvia",
-      "timestamp": "2026-08-28T01:02:50.137Z",
-      "commit_sequence": "10/10",
-      "message": "perf(metrics): reduce GC churn during encounter generator warm-up",
-      "entropy": "b62caebb"
     }
   ]
 }
