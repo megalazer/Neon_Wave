@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-01T13:36:53.928Z",
-  "total_pulses": 131,
+  "last_updated": "2026-09-01T13:45:08.670Z",
+  "total_pulses": 132,
   "metrics": {
-    "neural_load_avg": 0.761,
-    "simulation_cycles": 34814,
-    "balance_parity_seed": 994733,
-    "engine_uptime_ticks": 122928
+    "neural_load_avg": 0.941,
+    "simulation_cycles": 35130,
+    "balance_parity_seed": 555296,
+    "engine_uptime_ticks": 123036
   },
   "recent_pulses": [
+    {
+      "id": "pulse_bgf6cpxn",
+      "timestamp": "2026-09-01T13:45:08.670Z",
+      "commit_sequence": "2/10",
+      "message": "perf(crews): prune redundant combat animation worklets",
+      "entropy": "0eaf2d1b"
+    },
     {
       "id": "pulse_4vcypwmf",
       "timestamp": "2026-09-01T13:36:53.928Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "3/10",
       "message": "feat(sync): streamline contract tier-filtering cadence",
       "entropy": "e49826ed"
-    },
-    {
-      "id": "pulse_fzdn9ndq",
-      "timestamp": "2026-08-27T15:13:39.586Z",
-      "commit_sequence": "2/10",
-      "message": "fix(deck): resolve stat modifier race condition on battle entry",
-      "entropy": "181e3257"
     }
   ]
 }

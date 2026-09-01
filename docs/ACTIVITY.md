@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-01T13:36:53.928Z`  
-**Total Pulses Recorded:** `131`  
-**Current Telemetry Epoch:** `994733`
+**Last Sync:** `2026-09-01T13:45:08.670Z`  
+**Total Pulses Recorded:** `132`  
+**Current Telemetry Epoch:** `555296`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-01 13:45:08` | 2/10 | `perf(crews): prune redundant combat animation worklets` | `pulse_bgf6cpxn` |
 | `2026-09-01 13:36:53` | 1/10 | `refactor(crews): decouple encounter generation from display state` | `pulse_4vcypwmf` |
 | `2026-08-31 15:20:30` | 10/10 | `perf(contracts): reduce GC churn during encounter generator warm-up` | `pulse_5mj2jhi4` |
 | `2026-08-31 15:14:15` | 9/10 | `chore(microgames): record daily engine activity signature` | `pulse_tc6o7yda` |
@@ -24,4 +25,3 @@
 | `2026-08-30 15:18:38` | 10/10 | `chore(contracts): refresh simulated encounter matrix seed` | `pulse_14p2kh71` |
 | `2026-08-30 15:12:08` | 9/10 | `chore(audio): bump internal telemetry epoch counter` | `pulse_1t8dorxd` |
 | `2026-08-30 14:56:53` | 8/10 | `chore(deck): update automated pulse telemetry state` | `pulse_53dywvj4` |
-| `2026-08-30 14:50:13` | 7/10 | `chore(combat): update automated pulse telemetry state` | `pulse_z3khkuec` |
