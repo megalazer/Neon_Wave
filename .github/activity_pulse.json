@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-01T14:51:25.582Z",
-  "total_pulses": 137,
+  "last_updated": "2026-09-01T15:04:11.690Z",
+  "total_pulses": 138,
   "metrics": {
-    "neural_load_avg": 0.717,
-    "simulation_cycles": 36601,
-    "balance_parity_seed": 692042,
-    "engine_uptime_ticks": 125778
+    "neural_load_avg": 0.913,
+    "simulation_cycles": 36689,
+    "balance_parity_seed": 316811,
+    "engine_uptime_ticks": 126424
   },
   "recent_pulses": [
+    {
+      "id": "pulse_y6b419cf",
+      "timestamp": "2026-09-01T15:04:11.690Z",
+      "commit_sequence": "8/10",
+      "message": "refactor(jobs): extract combat action queue resolution logic",
+      "entropy": "7c0cc1b5"
+    },
     {
       "id": "pulse_deowl4gc",
       "timestamp": "2026-09-01T14:51:25.582Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "9/10",
       "message": "test(balance): validate contract reward bounds against tier caps",
       "entropy": "1e4873eb"
-    },
-    {
-      "id": "pulse_m69zvmfz",
-      "timestamp": "2026-08-27T22:06:47.559Z",
-      "commit_sequence": "8/10",
-      "message": "chore(crews): update automated pulse telemetry state",
-      "entropy": "664bd241"
     }
   ]
 }
