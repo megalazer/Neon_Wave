@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-01T13:45:08.670Z`  
-**Total Pulses Recorded:** `132`  
-**Current Telemetry Epoch:** `555296`
+**Last Sync:** `2026-09-01T14:00:59.036Z`  
+**Total Pulses Recorded:** `133`  
+**Current Telemetry Epoch:** `696187`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-01 14:00:59` | 3/10 | `perf(metrics): flatten state subscription tree for faster renders` | `pulse_sy3ugsfr` |
 | `2026-09-01 13:45:08` | 2/10 | `perf(crews): prune redundant combat animation worklets` | `pulse_bgf6cpxn` |
 | `2026-09-01 13:36:53` | 1/10 | `refactor(crews): decouple encounter generation from display state` | `pulse_4vcypwmf` |
 | `2026-08-31 15:20:30` | 10/10 | `perf(contracts): reduce GC churn during encounter generator warm-up` | `pulse_5mj2jhi4` |
@@ -24,4 +25,3 @@
 | `2026-08-31 13:36:07` | 1/10 | `fix(deck): stabilize microgame input polling under frame drop` | `pulse_5vib43ns` |
 | `2026-08-30 15:18:38` | 10/10 | `chore(contracts): refresh simulated encounter matrix seed` | `pulse_14p2kh71` |
 | `2026-08-30 15:12:08` | 9/10 | `chore(audio): bump internal telemetry epoch counter` | `pulse_1t8dorxd` |
-| `2026-08-30 14:56:53` | 8/10 | `chore(deck): update automated pulse telemetry state` | `pulse_53dywvj4` |

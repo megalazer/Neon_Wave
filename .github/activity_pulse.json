@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-01T13:45:08.670Z",
-  "total_pulses": 132,
+  "last_updated": "2026-09-01T14:00:59.036Z",
+  "total_pulses": 133,
   "metrics": {
-    "neural_load_avg": 0.941,
-    "simulation_cycles": 35130,
-    "balance_parity_seed": 555296,
-    "engine_uptime_ticks": 123036
+    "neural_load_avg": 0.778,
+    "simulation_cycles": 35558,
+    "balance_parity_seed": 696187,
+    "engine_uptime_ticks": 123484
   },
   "recent_pulses": [
+    {
+      "id": "pulse_sy3ugsfr",
+      "timestamp": "2026-09-01T14:00:59.036Z",
+      "commit_sequence": "3/10",
+      "message": "perf(metrics): flatten state subscription tree for faster renders",
+      "entropy": "149305bc"
+    },
     {
       "id": "pulse_bgf6cpxn",
       "timestamp": "2026-09-01T13:45:08.670Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "4/10",
       "message": "chore(jobs): calibrate neural grid synchronization stamp",
       "entropy": "ff54f7ca"
-    },
-    {
-      "id": "pulse_55jjxxxc",
-      "timestamp": "2026-08-27T15:52:56.220Z",
-      "commit_sequence": "3/10",
-      "message": "feat(sync): streamline contract tier-filtering cadence",
-      "entropy": "e49826ed"
     }
   ]
 }
