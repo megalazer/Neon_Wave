@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-02T15:12:59.577Z",
-  "total_pulses": 149,
+  "last_updated": "2026-09-02T15:25:09.678Z",
+  "total_pulses": 150,
   "metrics": {
-    "neural_load_avg": 0.739,
-    "simulation_cycles": 39157,
-    "balance_parity_seed": 524674,
-    "engine_uptime_ticks": 131261
+    "neural_load_avg": 0.736,
+    "simulation_cycles": 39534,
+    "balance_parity_seed": 800854,
+    "engine_uptime_ticks": 131616
   },
   "recent_pulses": [
+    {
+      "id": "pulse_7v0dsfs0",
+      "timestamp": "2026-09-02T15:25:09.678Z",
+      "commit_sequence": "10/10",
+      "message": "perf(sync): vectorize microgame dice roll distributions",
+      "entropy": "cb2c7c89"
+    },
     {
       "id": "pulse_nprme33x",
       "timestamp": "2026-09-02T15:12:59.577Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "1/10",
       "message": "docs(balance): clarify contract tier gate prerequisites in docs",
       "entropy": "60177ee7"
-    },
-    {
-      "id": "pulse_fncwlkjl",
-      "timestamp": "2026-08-28T15:33:38.480Z",
-      "commit_sequence": "10/10",
-      "message": "perf(combat): optimize tier-gate filter indexing",
-      "entropy": "8121fdb5"
     }
   ]
 }
