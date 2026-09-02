@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-02T14:28:50.689Z`  
-**Total Pulses Recorded:** `145`  
-**Current Telemetry Epoch:** `392257`
+**Last Sync:** `2026-09-02T14:35:41.043Z`  
+**Total Pulses Recorded:** `146`  
+**Current Telemetry Epoch:** `127976`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-02 14:35:41` | 6/10 | `chore(neural): update automated pulse telemetry state` | `pulse_uhldll66` |
 | `2026-09-02 14:28:50` | 5/10 | `chore(deck): refresh simulated encounter matrix seed` | `pulse_1hwsxztp` |
 | `2026-09-02 14:09:47` | 4/10 | `refactor(metrics): unify neural capacity calculation helpers` | `pulse_0lkvhrd7` |
 | `2026-09-02 13:57:13` | 3/10 | `chore(balance): refresh simulated encounter matrix seed` | `pulse_vdeap278` |
@@ -24,4 +25,3 @@
 | `2026-09-01 14:16:15` | 4/10 | `style(deck): align UI component margin tokens in JobScreen` | `pulse_qszzm7tb` |
 | `2026-09-01 14:00:59` | 3/10 | `perf(metrics): flatten state subscription tree for faster renders` | `pulse_sy3ugsfr` |
 | `2026-09-01 13:45:08` | 2/10 | `perf(crews): prune redundant combat animation worklets` | `pulse_bgf6cpxn` |
-| `2026-09-01 13:36:53` | 1/10 | `refactor(crews): decouple encounter generation from display state` | `pulse_4vcypwmf` |
