@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-02T15:03:47.866Z`  
-**Total Pulses Recorded:** `148`  
-**Current Telemetry Epoch:** `464668`
+**Last Sync:** `2026-09-02T15:12:59.577Z`  
+**Total Pulses Recorded:** `149`  
+**Current Telemetry Epoch:** `524674`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-02 15:12:59` | 9/10 | `perf(telemetry): streamline enemy turn decision tree evaluation` | `pulse_nprme33x` |
 | `2026-09-02 15:03:47` | 8/10 | `perf(microgames): cache precomputed origin stat derivations` | `pulse_nh2zsfc6` |
 | `2026-09-02 14:49:23` | 7/10 | `chore(deck): update automated pulse telemetry state` | `pulse_2e8z3z5j` |
 | `2026-09-02 14:35:41` | 6/10 | `chore(neural): update automated pulse telemetry state` | `pulse_uhldll66` |
@@ -24,4 +25,3 @@
 | `2026-09-01 14:51:25` | 7/10 | `chore(jobs): update automated pulse telemetry state` | `pulse_deowl4gc` |
 | `2026-09-01 14:44:12` | 6/10 | `refactor(microgames): unify neural capacity calculation helpers` | `pulse_th36eitd` |
 | `2026-09-01 14:26:45` | 5/10 | `perf(telemetry): cache precomputed origin stat derivations` | `pulse_bid4ovy4` |
-| `2026-09-01 14:16:15` | 4/10 | `style(deck): align UI component margin tokens in JobScreen` | `pulse_qszzm7tb` |
