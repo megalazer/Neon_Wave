@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-01T15:34:19.684Z",
-  "total_pulses": 140,
+  "last_updated": "2026-09-02T13:37:19.694Z",
+  "total_pulses": 141,
   "metrics": {
-    "neural_load_avg": 0.85,
-    "simulation_cycles": 37200,
-    "balance_parity_seed": 979994,
-    "engine_uptime_ticks": 127103
+    "neural_load_avg": 0.746,
+    "simulation_cycles": 37524,
+    "balance_parity_seed": 581394,
+    "engine_uptime_ticks": 127665
   },
   "recent_pulses": [
+    {
+      "id": "pulse_ne6089go",
+      "timestamp": "2026-09-02T13:37:19.694Z",
+      "commit_sequence": "1/10",
+      "message": "perf(terminal): flatten state subscription tree for faster renders",
+      "entropy": "797076e5"
+    },
     {
       "id": "pulse_w6er7fx0",
       "timestamp": "2026-09-01T15:34:19.684Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "2/10",
       "message": "chore(crews): sync pulse telemetry heartbeat",
       "entropy": "e6922229"
-    },
-    {
-      "id": "pulse_gqn1b1zf",
-      "timestamp": "2026-08-28T13:32:47.292Z",
-      "commit_sequence": "1/10",
-      "message": "refactor(shaders): standardize telemetry pulse schema definitions",
-      "entropy": "d500be53"
     }
   ]
 }
