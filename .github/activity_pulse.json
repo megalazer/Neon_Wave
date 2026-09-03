@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-03T14:32:57.921Z",
-  "total_pulses": 155,
+  "last_updated": "2026-09-03T14:45:05.203Z",
+  "total_pulses": 156,
   "metrics": {
-    "neural_load_avg": 0.825,
-    "simulation_cycles": 41081,
-    "balance_parity_seed": 612554,
-    "engine_uptime_ticks": 134391
+    "neural_load_avg": 0.818,
+    "simulation_cycles": 41348,
+    "balance_parity_seed": 865392,
+    "engine_uptime_ticks": 135333
   },
   "recent_pulses": [
+    {
+      "id": "pulse_093yc4pa",
+      "timestamp": "2026-09-03T14:45:05.203Z",
+      "commit_sequence": "6/10",
+      "message": "refactor(origins): decouple encounter generation from display state",
+      "entropy": "ee867fb0"
+    },
     {
       "id": "pulse_ake9fc4e",
       "timestamp": "2026-09-03T14:32:57.921Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "7/10",
       "message": "docs(contracts): document neural recharge curve derivation",
       "entropy": "97c14deb"
-    },
-    {
-      "id": "pulse_ylluwcf3",
-      "timestamp": "2026-08-29T16:20:06.793Z",
-      "commit_sequence": "6/10",
-      "message": "test(terminal): add regression checks for origin stat baseline",
-      "entropy": "c4c442bb"
     }
   ]
 }
