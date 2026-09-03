@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-03T15:22:08.369Z`  
-**Total Pulses Recorded:** `159`  
-**Current Telemetry Epoch:** `841196`
+**Last Sync:** `2026-09-03T15:36:10.902Z`  
+**Total Pulses Recorded:** `160`  
+**Current Telemetry Epoch:** `644314`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-03 15:36:10` | 10/10 | `fix(sync): patch memory leak in particle cache recycling` | `pulse_p4fupdiz` |
 | `2026-09-03 15:22:08` | 9/10 | `docs(cache): update balance simulation notes and survival rates` | `pulse_uvlsoe4x` |
 | `2026-09-03 15:06:13` | 8/10 | `docs(jobs): sync architecture telemetry specifications` | `pulse_gngtg9mt` |
 | `2026-09-03 14:52:25` | 7/10 | `feat(telemetry): tune neural buffer recalculation step` | `pulse_7lwtseo4` |
@@ -24,4 +25,3 @@
 | `2026-09-02 15:03:47` | 8/10 | `perf(microgames): cache precomputed origin stat derivations` | `pulse_nh2zsfc6` |
 | `2026-09-02 14:49:23` | 7/10 | `chore(deck): update automated pulse telemetry state` | `pulse_2e8z3z5j` |
 | `2026-09-02 14:35:41` | 6/10 | `chore(neural): update automated pulse telemetry state` | `pulse_uhldll66` |
-| `2026-09-02 14:28:50` | 5/10 | `chore(deck): refresh simulated encounter matrix seed` | `pulse_1hwsxztp` |

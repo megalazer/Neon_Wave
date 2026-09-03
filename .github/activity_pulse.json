@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-03T15:22:08.369Z",
-  "total_pulses": 159,
+  "last_updated": "2026-09-03T15:36:10.902Z",
+  "total_pulses": 160,
   "metrics": {
-    "neural_load_avg": 0.886,
-    "simulation_cycles": 41992,
-    "balance_parity_seed": 841196,
-    "engine_uptime_ticks": 136941
+    "neural_load_avg": 0.877,
+    "simulation_cycles": 42305,
+    "balance_parity_seed": 644314,
+    "engine_uptime_ticks": 137494
   },
   "recent_pulses": [
+    {
+      "id": "pulse_p4fupdiz",
+      "timestamp": "2026-09-03T15:36:10.902Z",
+      "commit_sequence": "10/10",
+      "message": "fix(sync): patch memory leak in particle cache recycling",
+      "entropy": "b30a2b52"
+    },
     {
       "id": "pulse_uvlsoe4x",
       "timestamp": "2026-09-03T15:22:08.369Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "1/10",
       "message": "docs(deck): update combat engine event cycle diagram",
       "entropy": "d530053f"
-    },
-    {
-      "id": "pulse_jw76s7qe",
-      "timestamp": "2026-08-29T18:18:03.259Z",
-      "commit_sequence": "10/10",
-      "message": "chore(terminal): refresh simulated encounter matrix seed",
-      "entropy": "36479308"
     }
   ]
 }
