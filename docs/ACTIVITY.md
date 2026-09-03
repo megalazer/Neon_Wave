@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-03T14:14:03.165Z`  
-**Total Pulses Recorded:** `154`  
-**Current Telemetry Epoch:** `691523`
+**Last Sync:** `2026-09-03T14:32:57.921Z`  
+**Total Pulses Recorded:** `155`  
+**Current Telemetry Epoch:** `612554`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-03 14:32:57` | 5/10 | `perf(terminal): flatten state subscription tree for faster renders` | `pulse_ake9fc4e` |
 | `2026-09-03 14:14:03` | 4/10 | `chore(balance): rotate activity logging buffer window` | `pulse_r6119nbr` |
 | `2026-09-03 14:02:45` | 3/10 | `chore(deck): record daily engine activity signature` | `pulse_c7v9bzov` |
 | `2026-09-03 13:44:05` | 2/10 | `chore(state): update automated pulse telemetry state` | `pulse_fo8n0hti` |
@@ -24,4 +25,3 @@
 | `2026-09-02 13:57:13` | 3/10 | `chore(balance): refresh simulated encounter matrix seed` | `pulse_vdeap278` |
 | `2026-09-02 13:45:28` | 2/10 | `fix(combat): prevent out-of-order combat queue execution` | `pulse_ctvqq5kj` |
 | `2026-09-02 13:37:19` | 1/10 | `perf(terminal): flatten state subscription tree for faster renders` | `pulse_ne6089go` |
-| `2026-09-01 15:34:19` | 10/10 | `chore(crews): sync pulse telemetry heartbeat` | `pulse_w6er7fx0` |
