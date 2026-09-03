@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-03T13:44:05.026Z`  
-**Total Pulses Recorded:** `152`  
-**Current Telemetry Epoch:** `120535`
+**Last Sync:** `2026-09-03T14:02:45.567Z`  
+**Total Pulses Recorded:** `153`  
+**Current Telemetry Epoch:** `759217`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-03 14:02:45` | 3/10 | `chore(deck): record daily engine activity signature` | `pulse_c7v9bzov` |
 | `2026-09-03 13:44:05` | 2/10 | `chore(state): update automated pulse telemetry state` | `pulse_fo8n0hti` |
 | `2026-09-03 13:40:38` | 1/10 | `chore(encounters): rotate activity logging buffer window` | `pulse_mx38i9o6` |
 | `2026-09-02 15:25:09` | 10/10 | `perf(sync): vectorize microgame dice roll distributions` | `pulse_7v0dsfs0` |
@@ -24,4 +25,3 @@
 | `2026-09-02 13:37:19` | 1/10 | `perf(terminal): flatten state subscription tree for faster renders` | `pulse_ne6089go` |
 | `2026-09-01 15:34:19` | 10/10 | `chore(crews): sync pulse telemetry heartbeat` | `pulse_w6er7fx0` |
 | `2026-09-01 15:20:02` | 9/10 | `chore(encounters): update automated pulse telemetry state` | `pulse_ozhzb5wa` |
-| `2026-09-01 15:04:11` | 8/10 | `refactor(jobs): extract combat action queue resolution logic` | `pulse_y6b419cf` |
