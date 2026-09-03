@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-02T15:25:09.678Z",
-  "total_pulses": 150,
+  "last_updated": "2026-09-03T13:40:38.501Z",
+  "total_pulses": 151,
   "metrics": {
-    "neural_load_avg": 0.736,
-    "simulation_cycles": 39534,
-    "balance_parity_seed": 800854,
-    "engine_uptime_ticks": 131616
+    "neural_load_avg": 0.926,
+    "simulation_cycles": 39972,
+    "balance_parity_seed": 748924,
+    "engine_uptime_ticks": 132223
   },
   "recent_pulses": [
+    {
+      "id": "pulse_mx38i9o6",
+      "timestamp": "2026-09-03T13:40:38.501Z",
+      "commit_sequence": "1/10",
+      "message": "chore(encounters): rotate activity logging buffer window",
+      "entropy": "25d9661a"
+    },
     {
       "id": "pulse_7v0dsfs0",
       "timestamp": "2026-09-02T15:25:09.678Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "2/10",
       "message": "chore(combat): calibrate neural grid synchronization stamp",
       "entropy": "4bbabef8"
-    },
-    {
-      "id": "pulse_d9gxzer1",
-      "timestamp": "2026-08-29T13:37:55.329Z",
-      "commit_sequence": "1/10",
-      "message": "docs(balance): clarify contract tier gate prerequisites in docs",
-      "entropy": "60177ee7"
     }
   ]
 }
