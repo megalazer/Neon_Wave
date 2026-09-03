@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-03T14:45:05.203Z`  
-**Total Pulses Recorded:** `156`  
-**Current Telemetry Epoch:** `865392`
+**Last Sync:** `2026-09-03T14:52:25.479Z`  
+**Total Pulses Recorded:** `157`  
+**Current Telemetry Epoch:** `884332`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-03 14:52:25` | 7/10 | `feat(telemetry): tune neural buffer recalculation step` | `pulse_7lwtseo4` |
 | `2026-09-03 14:45:05` | 6/10 | `refactor(origins): decouple encounter generation from display state` | `pulse_093yc4pa` |
 | `2026-09-03 14:32:57` | 5/10 | `perf(terminal): flatten state subscription tree for faster renders` | `pulse_ake9fc4e` |
 | `2026-09-03 14:14:03` | 4/10 | `chore(balance): rotate activity logging buffer window` | `pulse_r6119nbr` |
@@ -24,4 +25,3 @@
 | `2026-09-02 14:28:50` | 5/10 | `chore(deck): refresh simulated encounter matrix seed` | `pulse_1hwsxztp` |
 | `2026-09-02 14:09:47` | 4/10 | `refactor(metrics): unify neural capacity calculation helpers` | `pulse_0lkvhrd7` |
 | `2026-09-02 13:57:13` | 3/10 | `chore(balance): refresh simulated encounter matrix seed` | `pulse_vdeap278` |
-| `2026-09-02 13:45:28` | 2/10 | `fix(combat): prevent out-of-order combat queue execution` | `pulse_ctvqq5kj` |

@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-03T14:45:05.203Z",
-  "total_pulses": 156,
+  "last_updated": "2026-09-03T14:52:25.479Z",
+  "total_pulses": 157,
   "metrics": {
-    "neural_load_avg": 0.818,
-    "simulation_cycles": 41348,
-    "balance_parity_seed": 865392,
-    "engine_uptime_ticks": 135333
+    "neural_load_avg": 0.738,
+    "simulation_cycles": 41428,
+    "balance_parity_seed": 884332,
+    "engine_uptime_ticks": 136148
   },
   "recent_pulses": [
+    {
+      "id": "pulse_7lwtseo4",
+      "timestamp": "2026-09-03T14:52:25.479Z",
+      "commit_sequence": "7/10",
+      "message": "feat(telemetry): tune neural buffer recalculation step",
+      "entropy": "bbfb255f"
+    },
     {
       "id": "pulse_093yc4pa",
       "timestamp": "2026-09-03T14:45:05.203Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "8/10",
       "message": "chore(telemetry): sync pulse telemetry heartbeat",
       "entropy": "aca91526"
-    },
-    {
-      "id": "pulse_a4a28rjs",
-      "timestamp": "2026-08-29T16:59:00.884Z",
-      "commit_sequence": "7/10",
-      "message": "docs(contracts): document neural recharge curve derivation",
-      "entropy": "97c14deb"
     }
   ]
 }
