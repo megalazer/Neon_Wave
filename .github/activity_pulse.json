@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-03T15:36:10.902Z",
-  "total_pulses": 160,
+  "last_updated": "2026-09-04T13:40:14.119Z",
+  "total_pulses": 161,
   "metrics": {
-    "neural_load_avg": 0.877,
-    "simulation_cycles": 42305,
-    "balance_parity_seed": 644314,
-    "engine_uptime_ticks": 137494
+    "neural_load_avg": 0.778,
+    "simulation_cycles": 42660,
+    "balance_parity_seed": 652626,
+    "engine_uptime_ticks": 138026
   },
   "recent_pulses": [
+    {
+      "id": "pulse_7wnjhjzj",
+      "timestamp": "2026-09-04T13:40:14.119Z",
+      "commit_sequence": "1/10",
+      "message": "fix(origins): stabilize microgame input polling under frame drop",
+      "entropy": "6b204519"
+    },
     {
       "id": "pulse_p4fupdiz",
       "timestamp": "2026-09-03T15:36:10.902Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "2/10",
       "message": "chore(shaders): refresh simulated encounter matrix seed",
       "entropy": "4aa998d0"
-    },
-    {
-      "id": "pulse_o8zpmcce",
-      "timestamp": "2026-08-30T13:38:25.945Z",
-      "commit_sequence": "1/10",
-      "message": "docs(deck): update combat engine event cycle diagram",
-      "entropy": "d530053f"
     }
   ]
 }
