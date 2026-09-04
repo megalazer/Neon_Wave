@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-04T14:13:29.268Z",
-  "total_pulses": 164,
+  "last_updated": "2026-09-04T14:25:38.005Z",
+  "total_pulses": 165,
   "metrics": {
-    "neural_load_avg": 0.911,
-    "simulation_cycles": 43821,
-    "balance_parity_seed": 234992,
-    "engine_uptime_ticks": 139233
+    "neural_load_avg": 0.782,
+    "simulation_cycles": 44315,
+    "balance_parity_seed": 361140,
+    "engine_uptime_ticks": 139762
   },
   "recent_pulses": [
+    {
+      "id": "pulse_f8lzvkhf",
+      "timestamp": "2026-09-04T14:25:38.005Z",
+      "commit_sequence": "5/10",
+      "message": "perf(contracts): prune redundant combat animation worklets",
+      "entropy": "242d1e28"
+    },
     {
       "id": "pulse_zr32a1z3",
       "timestamp": "2026-09-04T14:13:29.268Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "6/10",
       "message": "chore(balance): bump internal telemetry epoch counter",
       "entropy": "ab2b8a6d"
-    },
-    {
-      "id": "pulse_5y64sy1u",
-      "timestamp": "2026-08-30T14:27:35.369Z",
-      "commit_sequence": "5/10",
-      "message": "test(terminal): simulate 1,000 battle runs across level gradient",
-      "entropy": "b929788f"
     }
   ]
 }

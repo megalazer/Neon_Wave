@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-04T14:13:29.268Z`  
-**Total Pulses Recorded:** `164`  
-**Current Telemetry Epoch:** `234992`
+**Last Sync:** `2026-09-04T14:25:38.005Z`  
+**Total Pulses Recorded:** `165`  
+**Current Telemetry Epoch:** `361140`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-04 14:25:38` | 5/10 | `perf(contracts): prune redundant combat animation worklets` | `pulse_f8lzvkhf` |
 | `2026-09-04 14:13:29` | 4/10 | `fix(sync): realign phosphor overlay aspect ratio matrix` | `pulse_zr32a1z3` |
 | `2026-09-04 14:05:22` | 3/10 | `test(terminal): simulate 1,000 battle runs across level gradient` | `pulse_6c8p5eli` |
 | `2026-09-04 13:51:24` | 2/10 | `chore(audio): record daily engine activity signature` | `pulse_5tn3820m` |
@@ -24,4 +25,3 @@
 | `2026-09-03 14:02:45` | 3/10 | `chore(deck): record daily engine activity signature` | `pulse_c7v9bzov` |
 | `2026-09-03 13:44:05` | 2/10 | `chore(state): update automated pulse telemetry state` | `pulse_fo8n0hti` |
 | `2026-09-03 13:40:38` | 1/10 | `chore(encounters): rotate activity logging buffer window` | `pulse_mx38i9o6` |
-| `2026-09-02 15:25:09` | 10/10 | `perf(sync): vectorize microgame dice roll distributions` | `pulse_7v0dsfs0` |
