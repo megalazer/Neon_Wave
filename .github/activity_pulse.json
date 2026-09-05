@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-04T15:36:18.361Z",
-  "total_pulses": 170,
+  "last_updated": "2026-09-05T13:32:04.779Z",
+  "total_pulses": 171,
   "metrics": {
-    "neural_load_avg": 0.855,
-    "simulation_cycles": 45353,
-    "balance_parity_seed": 891785,
-    "engine_uptime_ticks": 142344
+    "neural_load_avg": 0.865,
+    "simulation_cycles": 45721,
+    "balance_parity_seed": 742179,
+    "engine_uptime_ticks": 142574
   },
   "recent_pulses": [
+    {
+      "id": "pulse_4tnvcwsy",
+      "timestamp": "2026-09-05T13:32:04.779Z",
+      "commit_sequence": "1/10",
+      "message": "fix(deck): prevent out-of-order combat queue execution",
+      "entropy": "dd74989d"
+    },
     {
       "id": "pulse_r7t41ag4",
       "timestamp": "2026-09-04T15:36:18.361Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "2/10",
       "message": "perf(state): streamline enemy turn decision tree evaluation",
       "entropy": "4d89470e"
-    },
-    {
-      "id": "pulse_5vib43ns",
-      "timestamp": "2026-08-31T13:36:07.721Z",
-      "commit_sequence": "1/10",
-      "message": "fix(deck): stabilize microgame input polling under frame drop",
-      "entropy": "9e00b31a"
     }
   ]
 }
