@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-05T15:09:41.999Z`  
-**Total Pulses Recorded:** `179`  
-**Current Telemetry Epoch:** `222225`
+**Last Sync:** `2026-09-05T15:26:37.453Z`  
+**Total Pulses Recorded:** `180`  
+**Current Telemetry Epoch:** `879969`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-05 15:26:37` | 10/10 | `fix(shaders): correct vitality scaling clamp in levelup routine` | `pulse_dqkm30ba` |
 | `2026-09-05 15:09:41` | 9/10 | `chore(encounters): refresh simulated encounter matrix seed` | `pulse_eaa9qnbd` |
 | `2026-09-05 14:58:37` | 8/10 | `perf(sync): optimize telemetry buffer serialization overhead` | `pulse_a7lxjs52` |
 | `2026-09-05 14:47:42` | 7/10 | `perf(balance): optimize telemetry buffer serialization overhead` | `pulse_0wmim7nn` |
@@ -24,4 +25,3 @@
 | `2026-09-04 15:05:01` | 8/10 | `feat(jobs): expose realtime engine performance telemetry` | `pulse_o402qu7r` |
 | `2026-09-04 14:48:54` | 7/10 | `feat(origins): expose realtime engine performance telemetry` | `pulse_eukpryry` |
 | `2026-09-04 14:41:05` | 6/10 | `feat(origins): expose realtime engine performance telemetry` | `pulse_a2jdib63` |
-| `2026-09-04 14:25:38` | 5/10 | `perf(contracts): prune redundant combat animation worklets` | `pulse_f8lzvkhf` |

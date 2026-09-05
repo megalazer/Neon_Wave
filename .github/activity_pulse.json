@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-05T15:09:41.999Z",
-  "total_pulses": 179,
+  "last_updated": "2026-09-05T15:26:37.453Z",
+  "total_pulses": 180,
   "metrics": {
-    "neural_load_avg": 0.73,
-    "simulation_cycles": 47805,
-    "balance_parity_seed": 222225,
-    "engine_uptime_ticks": 146847
+    "neural_load_avg": 0.855,
+    "simulation_cycles": 48301,
+    "balance_parity_seed": 879969,
+    "engine_uptime_ticks": 147407
   },
   "recent_pulses": [
+    {
+      "id": "pulse_dqkm30ba",
+      "timestamp": "2026-09-05T15:26:37.453Z",
+      "commit_sequence": "10/10",
+      "message": "fix(shaders): correct vitality scaling clamp in levelup routine",
+      "entropy": "387ea8ce"
+    },
     {
       "id": "pulse_eaa9qnbd",
       "timestamp": "2026-09-05T15:09:41.999Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "1/10",
       "message": "refactor(crews): decouple encounter generation from display state",
       "entropy": "5da754e4"
-    },
-    {
-      "id": "pulse_5mj2jhi4",
-      "timestamp": "2026-08-31T15:20:30.227Z",
-      "commit_sequence": "10/10",
-      "message": "perf(contracts): reduce GC churn during encounter generator warm-up",
-      "entropy": "f6cc243f"
     }
   ]
 }
