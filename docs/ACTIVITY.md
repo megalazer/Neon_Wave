@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-05T14:06:48.576Z`  
-**Total Pulses Recorded:** `174`  
-**Current Telemetry Epoch:** `669180`
+**Last Sync:** `2026-09-05T14:25:37.028Z`  
+**Total Pulses Recorded:** `175`  
+**Current Telemetry Epoch:** `245335`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-05 14:25:37` | 5/10 | `docs(cache): update combat engine event cycle diagram` | `pulse_zlajojs7` |
 | `2026-09-05 14:06:48` | 4/10 | `feat(balance): refine crew synergy multiplier calculations` | `pulse_px163fxm` |
 | `2026-09-05 13:56:09` | 3/10 | `docs(engine): document neural recharge curve derivation` | `pulse_p1345tt8` |
 | `2026-09-05 13:43:47` | 2/10 | `refactor(metrics): modularize contract difficulty grading algorithms` | `pulse_paj6fw82` |
@@ -24,4 +25,3 @@
 | `2026-09-04 14:05:22` | 3/10 | `test(terminal): simulate 1,000 battle runs across level gradient` | `pulse_6c8p5eli` |
 | `2026-09-04 13:51:24` | 2/10 | `chore(audio): record daily engine activity signature` | `pulse_5tn3820m` |
 | `2026-09-04 13:40:14` | 1/10 | `fix(origins): stabilize microgame input polling under frame drop` | `pulse_7wnjhjzj` |
-| `2026-09-03 15:36:10` | 10/10 | `fix(sync): patch memory leak in particle cache recycling` | `pulse_p4fupdiz` |

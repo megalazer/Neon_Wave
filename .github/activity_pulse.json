@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-05T14:06:48.576Z",
-  "total_pulses": 174,
+  "last_updated": "2026-09-05T14:25:37.028Z",
+  "total_pulses": 175,
   "metrics": {
-    "neural_load_avg": 0.87,
-    "simulation_cycles": 46476,
-    "balance_parity_seed": 669180,
-    "engine_uptime_ticks": 144624
+    "neural_load_avg": 0.868,
+    "simulation_cycles": 46965,
+    "balance_parity_seed": 245335,
+    "engine_uptime_ticks": 145436
   },
   "recent_pulses": [
+    {
+      "id": "pulse_zlajojs7",
+      "timestamp": "2026-09-05T14:25:37.028Z",
+      "commit_sequence": "5/10",
+      "message": "docs(cache): update combat engine event cycle diagram",
+      "entropy": "31d3dfa5"
+    },
     {
       "id": "pulse_px163fxm",
       "timestamp": "2026-09-05T14:06:48.576Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "6/10",
       "message": "chore(state): rotate activity logging buffer window",
       "entropy": "52a18777"
-    },
-    {
-      "id": "pulse_3akkhre2",
-      "timestamp": "2026-08-31T14:25:09.388Z",
-      "commit_sequence": "5/10",
-      "message": "fix(balance): fix contract reward rounding edge-case",
-      "entropy": "be0faced"
     }
   ]
 }
