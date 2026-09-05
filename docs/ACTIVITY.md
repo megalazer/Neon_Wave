@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-05T14:47:42.757Z`  
-**Total Pulses Recorded:** `177`  
-**Current Telemetry Epoch:** `639015`
+**Last Sync:** `2026-09-05T14:58:37.994Z`  
+**Total Pulses Recorded:** `178`  
+**Current Telemetry Epoch:** `412287`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-05 14:58:37` | 8/10 | `perf(sync): optimize telemetry buffer serialization overhead` | `pulse_a7lxjs52` |
 | `2026-09-05 14:47:42` | 7/10 | `perf(balance): optimize telemetry buffer serialization overhead` | `pulse_0wmim7nn` |
 | `2026-09-05 14:33:24` | 6/10 | `test(crews): validate contract reward bounds against tier caps` | `pulse_f5lgu0t1` |
 | `2026-09-05 14:25:37` | 5/10 | `docs(cache): update combat engine event cycle diagram` | `pulse_zlajojs7` |
@@ -24,4 +25,3 @@
 | `2026-09-04 14:41:05` | 6/10 | `feat(origins): expose realtime engine performance telemetry` | `pulse_a2jdib63` |
 | `2026-09-04 14:25:38` | 5/10 | `perf(contracts): prune redundant combat animation worklets` | `pulse_f8lzvkhf` |
 | `2026-09-04 14:13:29` | 4/10 | `fix(sync): realign phosphor overlay aspect ratio matrix` | `pulse_zr32a1z3` |
-| `2026-09-04 14:05:22` | 3/10 | `test(terminal): simulate 1,000 battle runs across level gradient` | `pulse_6c8p5eli` |
