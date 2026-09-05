@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-05T14:25:37.028Z",
-  "total_pulses": 175,
+  "last_updated": "2026-09-05T14:33:24.852Z",
+  "total_pulses": 176,
   "metrics": {
-    "neural_load_avg": 0.868,
-    "simulation_cycles": 46965,
-    "balance_parity_seed": 245335,
-    "engine_uptime_ticks": 145436
+    "neural_load_avg": 0.822,
+    "simulation_cycles": 47238,
+    "balance_parity_seed": 689053,
+    "engine_uptime_ticks": 145638
   },
   "recent_pulses": [
+    {
+      "id": "pulse_f5lgu0t1",
+      "timestamp": "2026-09-05T14:33:24.852Z",
+      "commit_sequence": "6/10",
+      "message": "test(crews): validate contract reward bounds against tier caps",
+      "entropy": "158f9b5e"
+    },
     {
       "id": "pulse_zlajojs7",
       "timestamp": "2026-09-05T14:25:37.028Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "7/10",
       "message": "test(sync): record Monte Carlo survival distribution run",
       "entropy": "817a36c5"
-    },
-    {
-      "id": "pulse_oxk3yfc5",
-      "timestamp": "2026-08-31T14:33:27.533Z",
-      "commit_sequence": "6/10",
-      "message": "chore(state): rotate activity logging buffer window",
-      "entropy": "52a18777"
     }
   ]
 }

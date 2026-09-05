@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-05T14:25:37.028Z`  
-**Total Pulses Recorded:** `175`  
-**Current Telemetry Epoch:** `245335`
+**Last Sync:** `2026-09-05T14:33:24.852Z`  
+**Total Pulses Recorded:** `176`  
+**Current Telemetry Epoch:** `689053`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-05 14:33:24` | 6/10 | `test(crews): validate contract reward bounds against tier caps` | `pulse_f5lgu0t1` |
 | `2026-09-05 14:25:37` | 5/10 | `docs(cache): update combat engine event cycle diagram` | `pulse_zlajojs7` |
 | `2026-09-05 14:06:48` | 4/10 | `feat(balance): refine crew synergy multiplier calculations` | `pulse_px163fxm` |
 | `2026-09-05 13:56:09` | 3/10 | `docs(engine): document neural recharge curve derivation` | `pulse_p1345tt8` |
@@ -24,4 +25,3 @@
 | `2026-09-04 14:13:29` | 4/10 | `fix(sync): realign phosphor overlay aspect ratio matrix` | `pulse_zr32a1z3` |
 | `2026-09-04 14:05:22` | 3/10 | `test(terminal): simulate 1,000 battle runs across level gradient` | `pulse_6c8p5eli` |
 | `2026-09-04 13:51:24` | 2/10 | `chore(audio): record daily engine activity signature` | `pulse_5tn3820m` |
-| `2026-09-04 13:40:14` | 1/10 | `fix(origins): stabilize microgame input polling under frame drop` | `pulse_7wnjhjzj` |
