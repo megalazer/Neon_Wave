@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-06T15:07:42.760Z`  
-**Total Pulses Recorded:** `189`  
-**Current Telemetry Epoch:** `154031`
+**Last Sync:** `2026-09-06T15:20:19.919Z`  
+**Total Pulses Recorded:** `190`  
+**Current Telemetry Epoch:** `459753`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-06 15:20:19` | 10/10 | `perf(telemetry): streamline enemy turn decision tree evaluation` | `pulse_figpw2rx` |
 | `2026-09-06 15:07:42` | 9/10 | `docs(metrics): update combat engine event cycle diagram` | `pulse_9wrx5qix` |
 | `2026-09-06 14:58:54` | 8/10 | `perf(metrics): optimize telemetry buffer serialization overhead` | `pulse_gp83basy` |
 | `2026-09-06 14:43:56` | 7/10 | `perf(matrix): cache precomputed origin stat derivations` | `pulse_dvwk9wlx` |
@@ -24,4 +25,3 @@
 | `2026-09-05 14:58:37` | 8/10 | `perf(sync): optimize telemetry buffer serialization overhead` | `pulse_a7lxjs52` |
 | `2026-09-05 14:47:42` | 7/10 | `perf(balance): optimize telemetry buffer serialization overhead` | `pulse_0wmim7nn` |
 | `2026-09-05 14:33:24` | 6/10 | `test(crews): validate contract reward bounds against tier caps` | `pulse_f5lgu0t1` |
-| `2026-09-05 14:25:37` | 5/10 | `docs(cache): update combat engine event cycle diagram` | `pulse_zlajojs7` |
