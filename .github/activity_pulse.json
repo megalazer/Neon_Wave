@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-06T13:55:23.745Z",
-  "total_pulses": 183,
+  "last_updated": "2026-09-06T14:08:20.585Z",
+  "total_pulses": 184,
   "metrics": {
-    "neural_load_avg": 0.944,
-    "simulation_cycles": 49046,
-    "balance_parity_seed": 988029,
-    "engine_uptime_ticks": 148405
+    "neural_load_avg": 0.851,
+    "simulation_cycles": 49488,
+    "balance_parity_seed": 617484,
+    "engine_uptime_ticks": 148806
   },
   "recent_pulses": [
+    {
+      "id": "pulse_mp2zxk84",
+      "timestamp": "2026-09-06T14:08:20.585Z",
+      "commit_sequence": "4/10",
+      "message": "refactor(jobs): standardize telemetry pulse schema definitions",
+      "entropy": "7ad80778"
+    },
     {
       "id": "pulse_p4wljyp5",
       "timestamp": "2026-09-06T13:55:23.745Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "5/10",
       "message": "perf(telemetry): cache precomputed origin stat derivations",
       "entropy": "c8457f2b"
-    },
-    {
-      "id": "pulse_qszzm7tb",
-      "timestamp": "2026-09-01T14:16:15.657Z",
-      "commit_sequence": "4/10",
-      "message": "style(deck): align UI component margin tokens in JobScreen",
-      "entropy": "9b3df0ef"
     }
   ]
 }
