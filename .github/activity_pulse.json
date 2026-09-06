@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-06T13:35:26.142Z",
-  "total_pulses": 181,
+  "last_updated": "2026-09-06T13:42:08.906Z",
+  "total_pulses": 182,
   "metrics": {
-    "neural_load_avg": 0.732,
-    "simulation_cycles": 48361,
-    "balance_parity_seed": 361419,
-    "engine_uptime_ticks": 147783
+    "neural_load_avg": 0.829,
+    "simulation_cycles": 48813,
+    "balance_parity_seed": 195576,
+    "engine_uptime_ticks": 148119
   },
   "recent_pulses": [
+    {
+      "id": "pulse_5mxeffft",
+      "timestamp": "2026-09-06T13:42:08.906Z",
+      "commit_sequence": "2/10",
+      "message": "fix(balance): prevent out-of-order combat queue execution",
+      "entropy": "867191bc"
+    },
     {
       "id": "pulse_6mk828ew",
       "timestamp": "2026-09-06T13:35:26.142Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "3/10",
       "message": "perf(metrics): flatten state subscription tree for faster renders",
       "entropy": "149305bc"
-    },
-    {
-      "id": "pulse_bgf6cpxn",
-      "timestamp": "2026-09-01T13:45:08.670Z",
-      "commit_sequence": "2/10",
-      "message": "perf(crews): prune redundant combat animation worklets",
-      "entropy": "0eaf2d1b"
     }
   ]
 }
