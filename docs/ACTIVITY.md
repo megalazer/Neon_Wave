@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-06T14:43:56.593Z`  
-**Total Pulses Recorded:** `187`  
-**Current Telemetry Epoch:** `586522`
+**Last Sync:** `2026-09-06T14:58:54.307Z`  
+**Total Pulses Recorded:** `188`  
+**Current Telemetry Epoch:** `692191`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-06 14:58:54` | 8/10 | `perf(metrics): optimize telemetry buffer serialization overhead` | `pulse_gp83basy` |
 | `2026-09-06 14:43:56` | 7/10 | `perf(matrix): cache precomputed origin stat derivations` | `pulse_dvwk9wlx` |
 | `2026-09-06 14:33:05` | 6/10 | `chore(sync): bump internal telemetry epoch counter` | `pulse_vjo2ja4h` |
 | `2026-09-06 14:20:54` | 5/10 | `chore(cache): update automated pulse telemetry state` | `pulse_rowi5l25` |
@@ -24,4 +25,3 @@
 | `2026-09-05 14:33:24` | 6/10 | `test(crews): validate contract reward bounds against tier caps` | `pulse_f5lgu0t1` |
 | `2026-09-05 14:25:37` | 5/10 | `docs(cache): update combat engine event cycle diagram` | `pulse_zlajojs7` |
 | `2026-09-05 14:06:48` | 4/10 | `feat(balance): refine crew synergy multiplier calculations` | `pulse_px163fxm` |
-| `2026-09-05 13:56:09` | 3/10 | `docs(engine): document neural recharge curve derivation` | `pulse_p1345tt8` |

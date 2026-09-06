@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-06T14:43:56.593Z",
-  "total_pulses": 187,
+  "last_updated": "2026-09-06T14:58:54.307Z",
+  "total_pulses": 188,
   "metrics": {
-    "neural_load_avg": 0.939,
-    "simulation_cycles": 50440,
-    "balance_parity_seed": 586522,
-    "engine_uptime_ticks": 150447
+    "neural_load_avg": 0.767,
+    "simulation_cycles": 50822,
+    "balance_parity_seed": 692191,
+    "engine_uptime_ticks": 151022
   },
   "recent_pulses": [
+    {
+      "id": "pulse_gp83basy",
+      "timestamp": "2026-09-06T14:58:54.307Z",
+      "commit_sequence": "8/10",
+      "message": "perf(metrics): optimize telemetry buffer serialization overhead",
+      "entropy": "9658d372"
+    },
     {
       "id": "pulse_dvwk9wlx",
       "timestamp": "2026-09-06T14:43:56.593Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "9/10",
       "message": "chore(encounters): update automated pulse telemetry state",
       "entropy": "68ac0efb"
-    },
-    {
-      "id": "pulse_y6b419cf",
-      "timestamp": "2026-09-01T15:04:11.690Z",
-      "commit_sequence": "8/10",
-      "message": "refactor(jobs): extract combat action queue resolution logic",
-      "entropy": "7c0cc1b5"
     }
   ]
 }
