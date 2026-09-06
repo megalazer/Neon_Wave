@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-06T13:42:08.906Z",
-  "total_pulses": 182,
+  "last_updated": "2026-09-06T13:55:23.745Z",
+  "total_pulses": 183,
   "metrics": {
-    "neural_load_avg": 0.829,
-    "simulation_cycles": 48813,
-    "balance_parity_seed": 195576,
-    "engine_uptime_ticks": 148119
+    "neural_load_avg": 0.944,
+    "simulation_cycles": 49046,
+    "balance_parity_seed": 988029,
+    "engine_uptime_ticks": 148405
   },
   "recent_pulses": [
+    {
+      "id": "pulse_p4wljyp5",
+      "timestamp": "2026-09-06T13:55:23.745Z",
+      "commit_sequence": "3/10",
+      "message": "chore(deck): record daily engine activity signature",
+      "entropy": "49ca4303"
+    },
     {
       "id": "pulse_5mxeffft",
       "timestamp": "2026-09-06T13:42:08.906Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "4/10",
       "message": "style(deck): align UI component margin tokens in JobScreen",
       "entropy": "9b3df0ef"
-    },
-    {
-      "id": "pulse_sy3ugsfr",
-      "timestamp": "2026-09-01T14:00:59.036Z",
-      "commit_sequence": "3/10",
-      "message": "perf(metrics): flatten state subscription tree for faster renders",
-      "entropy": "149305bc"
     }
   ]
 }
