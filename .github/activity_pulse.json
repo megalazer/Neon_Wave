@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-07T14:37:19.875Z",
-  "total_pulses": 196,
+  "last_updated": "2026-09-07T14:50:13.534Z",
+  "total_pulses": 197,
   "metrics": {
-    "neural_load_avg": 0.706,
-    "simulation_cycles": 53676,
-    "balance_parity_seed": 430301,
-    "engine_uptime_ticks": 156014
+    "neural_load_avg": 0.847,
+    "simulation_cycles": 53824,
+    "balance_parity_seed": 638544,
+    "engine_uptime_ticks": 156784
   },
   "recent_pulses": [
+    {
+      "id": "pulse_aurx5itr",
+      "timestamp": "2026-09-07T14:50:13.534Z",
+      "commit_sequence": "7/10",
+      "message": "style(sync): align UI component margin tokens in JobScreen",
+      "entropy": "d50c9de5"
+    },
     {
       "id": "pulse_n2p67c5u",
       "timestamp": "2026-09-07T14:37:19.875Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "8/10",
       "message": "perf(microgames): cache precomputed origin stat derivations",
       "entropy": "46aabb82"
-    },
-    {
-      "id": "pulse_2e8z3z5j",
-      "timestamp": "2026-09-02T14:49:23.489Z",
-      "commit_sequence": "7/10",
-      "message": "chore(deck): update automated pulse telemetry state",
-      "entropy": "35c28737"
     }
   ]
 }
