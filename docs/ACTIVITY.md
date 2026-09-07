@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-07T14:02:44.973Z`  
-**Total Pulses Recorded:** `193`  
-**Current Telemetry Epoch:** `205530`
+**Last Sync:** `2026-09-07T14:07:58.299Z`  
+**Total Pulses Recorded:** `194`  
+**Current Telemetry Epoch:** `593237`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-07 14:07:58` | 4/10 | `chore(terminal): rotate activity logging buffer window` | `pulse_klopdiqa` |
 | `2026-09-07 14:02:44` | 3/10 | `chore(neural): sync pulse telemetry heartbeat` | `pulse_vu9o32gs` |
 | `2026-09-07 13:50:02` | 2/10 | `fix(neural): fix contract reward rounding edge-case` | `pulse_8do1h9g2` |
 | `2026-09-07 13:37:06` | 1/10 | `feat(jobs): tune neural buffer recalculation step` | `pulse_hzx91o19` |
@@ -24,4 +25,3 @@
 | `2026-09-06 13:42:08` | 2/10 | `fix(balance): prevent out-of-order combat queue execution` | `pulse_5mxeffft` |
 | `2026-09-06 13:35:26` | 1/10 | `fix(deck): stabilize microgame input polling under frame drop` | `pulse_6mk828ew` |
 | `2026-09-05 15:26:37` | 10/10 | `fix(shaders): correct vitality scaling clamp in levelup routine` | `pulse_dqkm30ba` |
-| `2026-09-05 15:09:41` | 9/10 | `chore(encounters): refresh simulated encounter matrix seed` | `pulse_eaa9qnbd` |
