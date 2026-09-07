@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-07T14:57:26.981Z",
-  "total_pulses": 198,
+  "last_updated": "2026-09-07T15:15:40.107Z",
+  "total_pulses": 199,
   "metrics": {
-    "neural_load_avg": 0.724,
-    "simulation_cycles": 54231,
-    "balance_parity_seed": 429624,
-    "engine_uptime_ticks": 157615
+    "neural_load_avg": 0.741,
+    "simulation_cycles": 54373,
+    "balance_parity_seed": 963369,
+    "engine_uptime_ticks": 157875
   },
   "recent_pulses": [
+    {
+      "id": "pulse_vxaud1s0",
+      "timestamp": "2026-09-07T15:15:40.107Z",
+      "commit_sequence": "9/10",
+      "message": "chore(shaders): refresh simulated encounter matrix seed",
+      "entropy": "c439fa38"
+    },
     {
       "id": "pulse_4wcxyscs",
       "timestamp": "2026-09-07T14:57:26.981Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "10/10",
       "message": "perf(sync): vectorize microgame dice roll distributions",
       "entropy": "cb2c7c89"
-    },
-    {
-      "id": "pulse_nprme33x",
-      "timestamp": "2026-09-02T15:12:59.577Z",
-      "commit_sequence": "9/10",
-      "message": "perf(telemetry): streamline enemy turn decision tree evaluation",
-      "entropy": "9bde0732"
     }
   ]
 }
