@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-06T15:20:19.919Z`  
-**Total Pulses Recorded:** `190`  
-**Current Telemetry Epoch:** `459753`
+**Last Sync:** `2026-09-07T13:37:06.397Z`  
+**Total Pulses Recorded:** `191`  
+**Current Telemetry Epoch:** `146610`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-07 13:37:06` | 1/10 | `feat(jobs): tune neural buffer recalculation step` | `pulse_hzx91o19` |
 | `2026-09-06 15:20:19` | 10/10 | `perf(telemetry): streamline enemy turn decision tree evaluation` | `pulse_figpw2rx` |
 | `2026-09-06 15:07:42` | 9/10 | `docs(metrics): update combat engine event cycle diagram` | `pulse_9wrx5qix` |
 | `2026-09-06 14:58:54` | 8/10 | `perf(metrics): optimize telemetry buffer serialization overhead` | `pulse_gp83basy` |
@@ -24,4 +25,3 @@
 | `2026-09-05 15:09:41` | 9/10 | `chore(encounters): refresh simulated encounter matrix seed` | `pulse_eaa9qnbd` |
 | `2026-09-05 14:58:37` | 8/10 | `perf(sync): optimize telemetry buffer serialization overhead` | `pulse_a7lxjs52` |
 | `2026-09-05 14:47:42` | 7/10 | `perf(balance): optimize telemetry buffer serialization overhead` | `pulse_0wmim7nn` |
-| `2026-09-05 14:33:24` | 6/10 | `test(crews): validate contract reward bounds against tier caps` | `pulse_f5lgu0t1` |
