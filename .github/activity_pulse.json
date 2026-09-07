@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-07T14:24:03.349Z",
-  "total_pulses": 195,
+  "last_updated": "2026-09-07T14:37:19.875Z",
+  "total_pulses": 196,
   "metrics": {
-    "neural_load_avg": 0.922,
-    "simulation_cycles": 53272,
-    "balance_parity_seed": 811785,
-    "engine_uptime_ticks": 155124
+    "neural_load_avg": 0.706,
+    "simulation_cycles": 53676,
+    "balance_parity_seed": 430301,
+    "engine_uptime_ticks": 156014
   },
   "recent_pulses": [
+    {
+      "id": "pulse_n2p67c5u",
+      "timestamp": "2026-09-07T14:37:19.875Z",
+      "commit_sequence": "6/10",
+      "message": "feat(contracts): tune neural buffer recalculation step",
+      "entropy": "41b9c1f9"
+    },
     {
       "id": "pulse_n353rsbt",
       "timestamp": "2026-09-07T14:24:03.349Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "7/10",
       "message": "chore(deck): update automated pulse telemetry state",
       "entropy": "35c28737"
-    },
-    {
-      "id": "pulse_uhldll66",
-      "timestamp": "2026-09-02T14:35:41.043Z",
-      "commit_sequence": "6/10",
-      "message": "chore(neural): update automated pulse telemetry state",
-      "entropy": "d76e81b7"
     }
   ]
 }

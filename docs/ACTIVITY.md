@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-07T14:24:03.349Z`  
-**Total Pulses Recorded:** `195`  
-**Current Telemetry Epoch:** `811785`
+**Last Sync:** `2026-09-07T14:37:19.875Z`  
+**Total Pulses Recorded:** `196`  
+**Current Telemetry Epoch:** `430301`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-07 14:37:19` | 6/10 | `feat(contracts): tune neural buffer recalculation step` | `pulse_n2p67c5u` |
 | `2026-09-07 14:24:03` | 5/10 | `chore(contracts): update automated pulse telemetry state` | `pulse_n353rsbt` |
 | `2026-09-07 14:07:58` | 4/10 | `chore(terminal): rotate activity logging buffer window` | `pulse_klopdiqa` |
 | `2026-09-07 14:02:44` | 3/10 | `chore(neural): sync pulse telemetry heartbeat` | `pulse_vu9o32gs` |
@@ -24,4 +25,3 @@
 | `2026-09-06 14:08:20` | 4/10 | `refactor(jobs): standardize telemetry pulse schema definitions` | `pulse_mp2zxk84` |
 | `2026-09-06 13:55:23` | 3/10 | `chore(deck): record daily engine activity signature` | `pulse_p4wljyp5` |
 | `2026-09-06 13:42:08` | 2/10 | `fix(balance): prevent out-of-order combat queue execution` | `pulse_5mxeffft` |
-| `2026-09-06 13:35:26` | 1/10 | `fix(deck): stabilize microgame input polling under frame drop` | `pulse_6mk828ew` |
