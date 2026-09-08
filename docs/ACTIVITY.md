@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-08T14:14:33.845Z`  
-**Total Pulses Recorded:** `204`  
-**Current Telemetry Epoch:** `650058`
+**Last Sync:** `2026-09-08T14:31:08.617Z`  
+**Total Pulses Recorded:** `205`  
+**Current Telemetry Epoch:** `966449`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-08 14:31:08` | 5/10 | `chore(neural): update automated pulse telemetry state` | `pulse_a9oqvvdl` |
 | `2026-09-08 14:14:33` | 4/10 | `perf(contracts): reduce GC churn during encounter generator warm-up` | `pulse_38j7zvfm` |
 | `2026-09-08 14:03:52` | 3/10 | `chore(terminal): rotate activity logging buffer window` | `pulse_q9yqk2gy` |
 | `2026-09-08 13:50:23` | 2/10 | `chore(origins): rotate activity logging buffer window` | `pulse_vsw5kxgt` |
@@ -24,4 +25,3 @@
 | `2026-09-07 14:02:44` | 3/10 | `chore(neural): sync pulse telemetry heartbeat` | `pulse_vu9o32gs` |
 | `2026-09-07 13:50:02` | 2/10 | `fix(neural): fix contract reward rounding edge-case` | `pulse_8do1h9g2` |
 | `2026-09-07 13:37:06` | 1/10 | `feat(jobs): tune neural buffer recalculation step` | `pulse_hzx91o19` |
-| `2026-09-06 15:20:19` | 10/10 | `perf(telemetry): streamline enemy turn decision tree evaluation` | `pulse_figpw2rx` |
