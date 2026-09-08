@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-08T14:49:59.953Z",
-  "total_pulses": 207,
+  "last_updated": "2026-09-08T15:00:34.860Z",
+  "total_pulses": 208,
   "metrics": {
-    "neural_load_avg": 0.938,
-    "simulation_cycles": 56747,
-    "balance_parity_seed": 836413,
-    "engine_uptime_ticks": 162126
+    "neural_load_avg": 0.746,
+    "simulation_cycles": 57017,
+    "balance_parity_seed": 900131,
+    "engine_uptime_ticks": 162645
   },
   "recent_pulses": [
+    {
+      "id": "pulse_e25low0k",
+      "timestamp": "2026-09-08T15:00:34.860Z",
+      "commit_sequence": "8/10",
+      "message": "refactor(state): standardize telemetry pulse schema definitions",
+      "entropy": "b54fdc43"
+    },
     {
       "id": "pulse_cj2rhbfz",
       "timestamp": "2026-09-08T14:49:59.953Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "9/10",
       "message": "docs(cache): update balance simulation notes and survival rates",
       "entropy": "852afe88"
-    },
-    {
-      "id": "pulse_gngtg9mt",
-      "timestamp": "2026-09-03T15:06:13.652Z",
-      "commit_sequence": "8/10",
-      "message": "docs(jobs): sync architecture telemetry specifications",
-      "entropy": "8791917b"
     }
   ]
 }
