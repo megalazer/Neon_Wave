@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-08T14:41:41.722Z`  
-**Total Pulses Recorded:** `206`  
-**Current Telemetry Epoch:** `283734`
+**Last Sync:** `2026-09-08T14:49:59.953Z`  
+**Total Pulses Recorded:** `207`  
+**Current Telemetry Epoch:** `836413`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-08 14:49:59` | 7/10 | `docs(cache): update balance simulation notes and survival rates` | `pulse_cj2rhbfz` |
 | `2026-09-08 14:41:41` | 6/10 | `feat(cache): expose realtime engine performance telemetry` | `pulse_evy9v762` |
 | `2026-09-08 14:31:08` | 5/10 | `chore(neural): update automated pulse telemetry state` | `pulse_a9oqvvdl` |
 | `2026-09-08 14:14:33` | 4/10 | `perf(contracts): reduce GC churn during encounter generator warm-up` | `pulse_38j7zvfm` |
@@ -24,4 +25,3 @@
 | `2026-09-07 14:24:03` | 5/10 | `chore(contracts): update automated pulse telemetry state` | `pulse_n353rsbt` |
 | `2026-09-07 14:07:58` | 4/10 | `chore(terminal): rotate activity logging buffer window` | `pulse_klopdiqa` |
 | `2026-09-07 14:02:44` | 3/10 | `chore(neural): sync pulse telemetry heartbeat` | `pulse_vu9o32gs` |
-| `2026-09-07 13:50:02` | 2/10 | `fix(neural): fix contract reward rounding edge-case` | `pulse_8do1h9g2` |
