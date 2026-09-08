@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-08T15:21:43.032Z`  
-**Total Pulses Recorded:** `209`  
-**Current Telemetry Epoch:** `504731`
+**Last Sync:** `2026-09-08T15:31:18.936Z`  
+**Total Pulses Recorded:** `210`  
+**Current Telemetry Epoch:** `757095`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-08 15:31:18` | 10/10 | `refactor(terminal): clean up legacy vitality formula wrappers` | `pulse_uq8juddx` |
 | `2026-09-08 15:21:43` | 9/10 | `chore(encounters): bump internal telemetry epoch counter` | `pulse_xn52r55p` |
 | `2026-09-08 15:00:34` | 8/10 | `refactor(state): standardize telemetry pulse schema definitions` | `pulse_e25low0k` |
 | `2026-09-08 14:49:59` | 7/10 | `docs(cache): update balance simulation notes and survival rates` | `pulse_cj2rhbfz` |
@@ -24,4 +25,3 @@
 | `2026-09-07 14:57:26` | 8/10 | `chore(sync): refresh simulated encounter matrix seed` | `pulse_4wcxyscs` |
 | `2026-09-07 14:50:13` | 7/10 | `style(sync): align UI component margin tokens in JobScreen` | `pulse_aurx5itr` |
 | `2026-09-07 14:37:19` | 6/10 | `feat(contracts): tune neural buffer recalculation step` | `pulse_n2p67c5u` |
-| `2026-09-07 14:24:03` | 5/10 | `chore(contracts): update automated pulse telemetry state` | `pulse_n353rsbt` |
