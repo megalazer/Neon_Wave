@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-09T20:43:41.350Z`  
-**Total Pulses Recorded:** `218`  
-**Current Telemetry Epoch:** `922938`
+**Last Sync:** `2026-09-09T21:24:03.724Z`  
+**Total Pulses Recorded:** `219`  
+**Current Telemetry Epoch:** `471499`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-09 21:24:03` | 9/10 | `docs(jobs): document neural recharge curve derivation` | `pulse_4ex6ca3a` |
 | `2026-09-09 20:43:41` | 8/10 | `chore(neural): refresh simulated encounter matrix seed` | `pulse_v3eide9b` |
 | `2026-09-09 19:52:01` | 7/10 | `feat(crews): tune neural buffer recalculation step` | `pulse_73cpx5mg` |
 | `2026-09-09 18:49:24` | 6/10 | `perf(sync): streamline enemy turn decision tree evaluation` | `pulse_geibfjaa` |
@@ -24,4 +25,3 @@
 | `2026-09-08 14:49:59` | 7/10 | `docs(cache): update balance simulation notes and survival rates` | `pulse_cj2rhbfz` |
 | `2026-09-08 14:41:41` | 6/10 | `feat(cache): expose realtime engine performance telemetry` | `pulse_evy9v762` |
 | `2026-09-08 14:31:08` | 5/10 | `chore(neural): update automated pulse telemetry state` | `pulse_a9oqvvdl` |
-| `2026-09-08 14:14:33` | 4/10 | `perf(contracts): reduce GC churn during encounter generator warm-up` | `pulse_38j7zvfm` |

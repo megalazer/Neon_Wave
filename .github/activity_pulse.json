@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-09T20:43:41.350Z",
-  "total_pulses": 218,
+  "last_updated": "2026-09-09T21:24:03.724Z",
+  "total_pulses": 219,
   "metrics": {
-    "neural_load_avg": 0.906,
-    "simulation_cycles": 59777,
-    "balance_parity_seed": 922938,
-    "engine_uptime_ticks": 166807
+    "neural_load_avg": 0.86,
+    "simulation_cycles": 60052,
+    "balance_parity_seed": 471499,
+    "engine_uptime_ticks": 166909
   },
   "recent_pulses": [
+    {
+      "id": "pulse_4ex6ca3a",
+      "timestamp": "2026-09-09T21:24:03.724Z",
+      "commit_sequence": "9/10",
+      "message": "docs(jobs): document neural recharge curve derivation",
+      "entropy": "37fcecbd"
+    },
     {
       "id": "pulse_v3eide9b",
       "timestamp": "2026-09-09T20:43:41.350Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "10/10",
       "message": "style(neural): tune neon cyan/magenta contrast gradient",
       "entropy": "86923972"
-    },
-    {
-      "id": "pulse_duncwz7h",
-      "timestamp": "2026-09-04T15:23:19.665Z",
-      "commit_sequence": "9/10",
-      "message": "chore(terminal): bump internal telemetry epoch counter",
-      "entropy": "dfccd730"
     }
   ]
 }
