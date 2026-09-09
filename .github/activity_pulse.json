@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-09T21:24:03.724Z",
-  "total_pulses": 219,
+  "last_updated": "2026-09-09T22:35:16.881Z",
+  "total_pulses": 220,
   "metrics": {
-    "neural_load_avg": 0.86,
-    "simulation_cycles": 60052,
-    "balance_parity_seed": 471499,
-    "engine_uptime_ticks": 166909
+    "neural_load_avg": 0.904,
+    "simulation_cycles": 60260,
+    "balance_parity_seed": 833589,
+    "engine_uptime_ticks": 167749
   },
   "recent_pulses": [
+    {
+      "id": "pulse_kdfd551v",
+      "timestamp": "2026-09-09T22:35:16.881Z",
+      "commit_sequence": "10/10",
+      "message": "refactor(shaders): unify neural capacity calculation helpers",
+      "entropy": "224ed241"
+    },
     {
       "id": "pulse_4ex6ca3a",
       "timestamp": "2026-09-09T21:24:03.724Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "1/10",
       "message": "fix(deck): prevent out-of-order combat queue execution",
       "entropy": "dd74989d"
-    },
-    {
-      "id": "pulse_r7t41ag4",
-      "timestamp": "2026-09-04T15:36:18.361Z",
-      "commit_sequence": "10/10",
-      "message": "style(neural): tune neon cyan/magenta contrast gradient",
-      "entropy": "86923972"
     }
   ]
 }
