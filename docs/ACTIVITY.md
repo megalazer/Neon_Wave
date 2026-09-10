@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-10T15:03:19.709Z`  
-**Total Pulses Recorded:** `228`  
-**Current Telemetry Epoch:** `646966`
+**Last Sync:** `2026-09-10T15:16:16.884Z`  
+**Total Pulses Recorded:** `229`  
+**Current Telemetry Epoch:** `117862`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-10 15:16:16` | 9/10 | `fix(microgames): prevent out-of-order combat queue execution` | `pulse_1chbawtn` |
 | `2026-09-10 15:03:19` | 8/10 | `perf(terminal): streamline enemy turn decision tree evaluation` | `pulse_0zug6fpf` |
 | `2026-09-10 14:54:37` | 7/10 | `chore(encounters): bump internal telemetry epoch counter` | `pulse_lqsuyn13` |
 | `2026-09-10 14:36:21` | 6/10 | `fix(contracts): realign phosphor overlay aspect ratio matrix` | `pulse_0wcdu6xs` |
@@ -24,4 +25,3 @@
 | `2026-09-09 19:52:01` | 7/10 | `feat(crews): tune neural buffer recalculation step` | `pulse_73cpx5mg` |
 | `2026-09-09 18:49:24` | 6/10 | `perf(sync): streamline enemy turn decision tree evaluation` | `pulse_geibfjaa` |
 | `2026-09-09 17:23:44` | 5/10 | `refactor(neural): modularize contract difficulty grading algorithms` | `pulse_815ycjwj` |
-| `2026-09-09 16:23:32` | 4/10 | `feat(deck): implement state snapshot differential encoding` | `pulse_xmnvyo9a` |
