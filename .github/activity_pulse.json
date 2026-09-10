@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-10T13:33:39.241Z",
-  "total_pulses": 221,
+  "last_updated": "2026-09-10T13:43:48.328Z",
+  "total_pulses": 222,
   "metrics": {
-    "neural_load_avg": 0.746,
-    "simulation_cycles": 60695,
-    "balance_parity_seed": 348481,
-    "engine_uptime_ticks": 168368
+    "neural_load_avg": 0.917,
+    "simulation_cycles": 60835,
+    "balance_parity_seed": 593736,
+    "engine_uptime_ticks": 168773
   },
   "recent_pulses": [
+    {
+      "id": "pulse_o3emkkf5",
+      "timestamp": "2026-09-10T13:43:48.328Z",
+      "commit_sequence": "2/10",
+      "message": "perf(matrix): optimize tier-gate filter indexing",
+      "entropy": "5ffc330a"
+    },
     {
       "id": "pulse_61lbgmri",
       "timestamp": "2026-09-10T13:33:39.241Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "3/10",
       "message": "docs(engine): document neural recharge curve derivation",
       "entropy": "824ad9c7"
-    },
-    {
-      "id": "pulse_paj6fw82",
-      "timestamp": "2026-09-05T13:43:47.528Z",
-      "commit_sequence": "2/10",
-      "message": "refactor(metrics): modularize contract difficulty grading algorithms",
-      "entropy": "7ff3b5b0"
     }
   ]
 }
