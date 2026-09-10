@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-10T14:03:20.086Z",
-  "total_pulses": 223,
+  "last_updated": "2026-09-10T14:14:49.201Z",
+  "total_pulses": 224,
   "metrics": {
-    "neural_load_avg": 0.863,
-    "simulation_cycles": 61150,
-    "balance_parity_seed": 412434,
-    "engine_uptime_ticks": 169760
+    "neural_load_avg": 0.903,
+    "simulation_cycles": 61577,
+    "balance_parity_seed": 740426,
+    "engine_uptime_ticks": 170502
   },
   "recent_pulses": [
+    {
+      "id": "pulse_k7firokw",
+      "timestamp": "2026-09-10T14:14:49.201Z",
+      "commit_sequence": "4/10",
+      "message": "chore(metrics): bump internal telemetry epoch counter",
+      "entropy": "c669218c"
+    },
     {
       "id": "pulse_2312q7ph",
       "timestamp": "2026-09-10T14:03:20.086Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "5/10",
       "message": "docs(cache): update combat engine event cycle diagram",
       "entropy": "31d3dfa5"
-    },
-    {
-      "id": "pulse_px163fxm",
-      "timestamp": "2026-09-05T14:06:48.576Z",
-      "commit_sequence": "4/10",
-      "message": "feat(balance): refine crew synergy multiplier calculations",
-      "entropy": "c32e6100"
     }
   ]
 }
