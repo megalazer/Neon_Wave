@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-11T14:55:12.211Z`  
-**Total Pulses Recorded:** `237`  
-**Current Telemetry Epoch:** `631781`
+**Last Sync:** `2026-09-11T15:12:57.298Z`  
+**Total Pulses Recorded:** `238`  
+**Current Telemetry Epoch:** `502848`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-11 15:12:57` | 8/10 | `perf(engine): vectorize microgame dice roll distributions` | `pulse_7e9f8acv` |
 | `2026-09-11 14:55:12` | 7/10 | `chore(telemetry): calibrate neural grid synchronization stamp` | `pulse_24b1fzkn` |
 | `2026-09-11 14:44:36` | 6/10 | `chore(balance): bump internal telemetry epoch counter` | `pulse_2cwleg2c` |
 | `2026-09-11 14:26:53` | 5/10 | `refactor(engine): unify neural capacity calculation helpers` | `pulse_o4lt8o88` |
@@ -24,4 +25,3 @@
 | `2026-09-10 14:36:21` | 6/10 | `fix(contracts): realign phosphor overlay aspect ratio matrix` | `pulse_0wcdu6xs` |
 | `2026-09-10 14:26:23` | 5/10 | `refactor(telemetry): extract combat action queue resolution logic` | `pulse_zmsivgmp` |
 | `2026-09-10 14:14:49` | 4/10 | `chore(metrics): bump internal telemetry epoch counter` | `pulse_k7firokw` |
-| `2026-09-10 14:03:20` | 3/10 | `feat(contracts): support dynamic phosphor bloom curve` | `pulse_2312q7ph` |
