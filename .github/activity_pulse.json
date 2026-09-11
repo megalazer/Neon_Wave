@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-11T13:31:27.791Z",
-  "total_pulses": 231,
+  "last_updated": "2026-09-11T13:48:45.313Z",
+  "total_pulses": 232,
   "metrics": {
-    "neural_load_avg": 0.824,
-    "simulation_cycles": 63363,
-    "balance_parity_seed": 708039,
-    "engine_uptime_ticks": 175068
+    "neural_load_avg": 0.836,
+    "simulation_cycles": 63627,
+    "balance_parity_seed": 247365,
+    "engine_uptime_ticks": 175176
   },
   "recent_pulses": [
+    {
+      "id": "pulse_im4k2j14",
+      "timestamp": "2026-09-11T13:48:45.313Z",
+      "commit_sequence": "2/10",
+      "message": "docs(jobs): document neural recharge curve derivation",
+      "entropy": "705da0b7"
+    },
     {
       "id": "pulse_yig5v6bk",
       "timestamp": "2026-09-11T13:31:27.791Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "3/10",
       "message": "chore(deck): record daily engine activity signature",
       "entropy": "49ca4303"
-    },
-    {
-      "id": "pulse_5mxeffft",
-      "timestamp": "2026-09-06T13:42:08.906Z",
-      "commit_sequence": "2/10",
-      "message": "fix(balance): prevent out-of-order combat queue execution",
-      "entropy": "867191bc"
     }
   ]
 }
