@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-11T15:12:57.298Z",
-  "total_pulses": 238,
+  "last_updated": "2026-09-11T15:18:35.394Z",
+  "total_pulses": 239,
   "metrics": {
-    "neural_load_avg": 0.728,
-    "simulation_cycles": 65074,
-    "balance_parity_seed": 502848,
-    "engine_uptime_ticks": 179672
+    "neural_load_avg": 0.896,
+    "simulation_cycles": 65298,
+    "balance_parity_seed": 129821,
+    "engine_uptime_ticks": 180391
   },
   "recent_pulses": [
+    {
+      "id": "pulse_c8b7j7dm",
+      "timestamp": "2026-09-11T15:18:35.394Z",
+      "commit_sequence": "9/10",
+      "message": "test(jobs): validate contract reward bounds against tier caps",
+      "entropy": "b8226a3f"
+    },
     {
       "id": "pulse_7e9f8acv",
       "timestamp": "2026-09-11T15:12:57.298Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "10/10",
       "message": "perf(telemetry): streamline enemy turn decision tree evaluation",
       "entropy": "0660b016"
-    },
-    {
-      "id": "pulse_9wrx5qix",
-      "timestamp": "2026-09-06T15:07:42.760Z",
-      "commit_sequence": "9/10",
-      "message": "docs(metrics): update combat engine event cycle diagram",
-      "entropy": "c1909b57"
     }
   ]
 }
