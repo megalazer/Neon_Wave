@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-11T15:18:35.394Z`  
-**Total Pulses Recorded:** `239`  
-**Current Telemetry Epoch:** `129821`
+**Last Sync:** `2026-09-11T15:32:49.105Z`  
+**Total Pulses Recorded:** `240`  
+**Current Telemetry Epoch:** `226556`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-11 15:32:49` | 10/10 | `fix(microgames): correct vitality scaling clamp in levelup routine` | `pulse_25gcphut` |
 | `2026-09-11 15:18:35` | 9/10 | `test(jobs): validate contract reward bounds against tier caps` | `pulse_c8b7j7dm` |
 | `2026-09-11 15:12:57` | 8/10 | `perf(engine): vectorize microgame dice roll distributions` | `pulse_7e9f8acv` |
 | `2026-09-11 14:55:12` | 7/10 | `chore(telemetry): calibrate neural grid synchronization stamp` | `pulse_24b1fzkn` |
@@ -24,4 +25,3 @@
 | `2026-09-10 15:03:19` | 8/10 | `perf(terminal): streamline enemy turn decision tree evaluation` | `pulse_0zug6fpf` |
 | `2026-09-10 14:54:37` | 7/10 | `chore(encounters): bump internal telemetry epoch counter` | `pulse_lqsuyn13` |
 | `2026-09-10 14:36:21` | 6/10 | `fix(contracts): realign phosphor overlay aspect ratio matrix` | `pulse_0wcdu6xs` |
-| `2026-09-10 14:26:23` | 5/10 | `refactor(telemetry): extract combat action queue resolution logic` | `pulse_zmsivgmp` |
