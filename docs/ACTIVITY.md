@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-11T13:48:45.313Z`  
-**Total Pulses Recorded:** `232`  
-**Current Telemetry Epoch:** `247365`
+**Last Sync:** `2026-09-11T13:59:03.687Z`  
+**Total Pulses Recorded:** `233`  
+**Current Telemetry Epoch:** `486107`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-11 13:59:03` | 3/10 | `perf(origins): flatten state subscription tree for faster renders` | `pulse_zvt2isth` |
 | `2026-09-11 13:48:45` | 2/10 | `docs(jobs): document neural recharge curve derivation` | `pulse_im4k2j14` |
 | `2026-09-11 13:31:27` | 1/10 | `chore(deck): refresh simulated encounter matrix seed` | `pulse_yig5v6bk` |
 | `2026-09-10 15:32:17` | 10/10 | `feat(microgames): implement state snapshot differential encoding` | `pulse_40arwm9h` |
@@ -24,4 +25,3 @@
 | `2026-09-10 13:33:39` | 1/10 | `test(sync): validate contract reward bounds against tier caps` | `pulse_61lbgmri` |
 | `2026-09-09 22:35:16` | 10/10 | `refactor(shaders): unify neural capacity calculation helpers` | `pulse_kdfd551v` |
 | `2026-09-09 21:24:03` | 9/10 | `docs(jobs): document neural recharge curve derivation` | `pulse_4ex6ca3a` |
-| `2026-09-09 20:43:41` | 8/10 | `chore(neural): refresh simulated encounter matrix seed` | `pulse_v3eide9b` |
