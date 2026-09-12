@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-12T14:23:26.737Z",
-  "total_pulses": 245,
+  "last_updated": "2026-09-12T14:36:03.779Z",
+  "total_pulses": 246,
   "metrics": {
-    "neural_load_avg": 0.771,
-    "simulation_cycles": 66641,
-    "balance_parity_seed": 449818,
-    "engine_uptime_ticks": 183408
+    "neural_load_avg": 0.716,
+    "simulation_cycles": 67031,
+    "balance_parity_seed": 963935,
+    "engine_uptime_ticks": 183803
   },
   "recent_pulses": [
+    {
+      "id": "pulse_chv8xlc0",
+      "timestamp": "2026-09-12T14:36:03.779Z",
+      "commit_sequence": "6/10",
+      "message": "perf(engine): optimize telemetry buffer serialization overhead",
+      "entropy": "6fb2bb93"
+    },
     {
       "id": "pulse_bp61j6q5",
       "timestamp": "2026-09-12T14:23:26.737Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "7/10",
       "message": "style(sync): align UI component margin tokens in JobScreen",
       "entropy": "d50c9de5"
-    },
-    {
-      "id": "pulse_n2p67c5u",
-      "timestamp": "2026-09-07T14:37:19.875Z",
-      "commit_sequence": "6/10",
-      "message": "feat(contracts): tune neural buffer recalculation step",
-      "entropy": "41b9c1f9"
     }
   ]
 }
