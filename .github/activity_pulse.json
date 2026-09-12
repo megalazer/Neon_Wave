@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-12T14:36:03.779Z",
-  "total_pulses": 246,
+  "last_updated": "2026-09-12T14:48:05.148Z",
+  "total_pulses": 247,
   "metrics": {
-    "neural_load_avg": 0.716,
-    "simulation_cycles": 67031,
-    "balance_parity_seed": 963935,
-    "engine_uptime_ticks": 183803
+    "neural_load_avg": 0.87,
+    "simulation_cycles": 67297,
+    "balance_parity_seed": 222620,
+    "engine_uptime_ticks": 184013
   },
   "recent_pulses": [
+    {
+      "id": "pulse_mnmqfnkl",
+      "timestamp": "2026-09-12T14:48:05.148Z",
+      "commit_sequence": "7/10",
+      "message": "docs(encounters): record benchmark survivability across origins",
+      "entropy": "d573c7d0"
+    },
     {
       "id": "pulse_chv8xlc0",
       "timestamp": "2026-09-12T14:36:03.779Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "8/10",
       "message": "chore(sync): refresh simulated encounter matrix seed",
       "entropy": "e0e0c6e5"
-    },
-    {
-      "id": "pulse_aurx5itr",
-      "timestamp": "2026-09-07T14:50:13.534Z",
-      "commit_sequence": "7/10",
-      "message": "style(sync): align UI component margin tokens in JobScreen",
-      "entropy": "d50c9de5"
     }
   ]
 }
