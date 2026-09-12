@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-12T14:48:05.148Z`  
-**Total Pulses Recorded:** `247`  
-**Current Telemetry Epoch:** `222620`
+**Last Sync:** `2026-09-12T14:55:13.309Z`  
+**Total Pulses Recorded:** `248`  
+**Current Telemetry Epoch:** `829874`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-12 14:55:13` | 8/10 | `feat(balance): tune neural buffer recalculation step` | `pulse_hg9g6jhs` |
 | `2026-09-12 14:48:05` | 7/10 | `docs(encounters): record benchmark survivability across origins` | `pulse_mnmqfnkl` |
 | `2026-09-12 14:36:03` | 6/10 | `perf(engine): optimize telemetry buffer serialization overhead` | `pulse_chv8xlc0` |
 | `2026-09-12 14:23:26` | 5/10 | `perf(contracts): optimize tier-gate filter indexing` | `pulse_bp61j6q5` |
@@ -24,4 +25,3 @@
 | `2026-09-11 14:44:36` | 6/10 | `chore(balance): bump internal telemetry epoch counter` | `pulse_2cwleg2c` |
 | `2026-09-11 14:26:53` | 5/10 | `refactor(engine): unify neural capacity calculation helpers` | `pulse_o4lt8o88` |
 | `2026-09-11 14:10:19` | 4/10 | `chore(state): record daily engine activity signature` | `pulse_xoornolg` |
-| `2026-09-11 13:59:03` | 3/10 | `perf(origins): flatten state subscription tree for faster renders` | `pulse_zvt2isth` |
