@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-11T15:32:49.105Z",
-  "total_pulses": 240,
+  "last_updated": "2026-09-12T13:34:38.271Z",
+  "total_pulses": 241,
   "metrics": {
-    "neural_load_avg": 0.743,
-    "simulation_cycles": 65476,
-    "balance_parity_seed": 226556,
-    "engine_uptime_ticks": 180930
+    "neural_load_avg": 0.843,
+    "simulation_cycles": 65938,
+    "balance_parity_seed": 422947,
+    "engine_uptime_ticks": 181290
   },
   "recent_pulses": [
+    {
+      "id": "pulse_97sm9vnk",
+      "timestamp": "2026-09-12T13:34:38.271Z",
+      "commit_sequence": "1/10",
+      "message": "docs(audio): record benchmark survivability across origins",
+      "entropy": "a2cae566"
+    },
     {
       "id": "pulse_25gcphut",
       "timestamp": "2026-09-11T15:32:49.105Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "2/10",
       "message": "fix(neural): fix contract reward rounding edge-case",
       "entropy": "e9196293"
-    },
-    {
-      "id": "pulse_hzx91o19",
-      "timestamp": "2026-09-07T13:37:06.397Z",
-      "commit_sequence": "1/10",
-      "message": "feat(jobs): tune neural buffer recalculation step",
-      "entropy": "eb98e6b7"
     }
   ]
 }
