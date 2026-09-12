@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-12T15:13:12.280Z",
-  "total_pulses": 249,
+  "last_updated": "2026-09-12T15:24:32.540Z",
+  "total_pulses": 250,
   "metrics": {
-    "neural_load_avg": 0.715,
-    "simulation_cycles": 68021,
-    "balance_parity_seed": 152031,
-    "engine_uptime_ticks": 185743
+    "neural_load_avg": 0.719,
+    "simulation_cycles": 68148,
+    "balance_parity_seed": 874366,
+    "engine_uptime_ticks": 186067
   },
   "recent_pulses": [
+    {
+      "id": "pulse_q5vr9zv9",
+      "timestamp": "2026-09-12T15:24:32.540Z",
+      "commit_sequence": "10/10",
+      "message": "refactor(neural): extract combat action queue resolution logic",
+      "entropy": "d18c3e64"
+    },
     {
       "id": "pulse_2k3igccu",
       "timestamp": "2026-09-12T15:13:12.280Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "1/10",
       "message": "fix(combat): fix contract reward rounding edge-case",
       "entropy": "c38ce535"
-    },
-    {
-      "id": "pulse_ejmqzig6",
-      "timestamp": "2026-09-07T15:24:03.709Z",
-      "commit_sequence": "10/10",
-      "message": "fix(state): resolve async tick loop drift during high neural load",
-      "entropy": "e8f6410e"
     }
   ]
 }

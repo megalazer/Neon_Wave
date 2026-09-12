@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-12T15:13:12.280Z`  
-**Total Pulses Recorded:** `249`  
-**Current Telemetry Epoch:** `152031`
+**Last Sync:** `2026-09-12T15:24:32.540Z`  
+**Total Pulses Recorded:** `250`  
+**Current Telemetry Epoch:** `874366`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-12 15:24:32` | 10/10 | `refactor(neural): extract combat action queue resolution logic` | `pulse_q5vr9zv9` |
 | `2026-09-12 15:13:12` | 9/10 | `chore(metrics): rotate activity logging buffer window` | `pulse_2k3igccu` |
 | `2026-09-12 14:55:13` | 8/10 | `feat(balance): tune neural buffer recalculation step` | `pulse_hg9g6jhs` |
 | `2026-09-12 14:48:05` | 7/10 | `docs(encounters): record benchmark survivability across origins` | `pulse_mnmqfnkl` |
@@ -24,4 +25,3 @@
 | `2026-09-11 15:12:57` | 8/10 | `perf(engine): vectorize microgame dice roll distributions` | `pulse_7e9f8acv` |
 | `2026-09-11 14:55:12` | 7/10 | `chore(telemetry): calibrate neural grid synchronization stamp` | `pulse_24b1fzkn` |
 | `2026-09-11 14:44:36` | 6/10 | `chore(balance): bump internal telemetry epoch counter` | `pulse_2cwleg2c` |
-| `2026-09-11 14:26:53` | 5/10 | `refactor(engine): unify neural capacity calculation helpers` | `pulse_o4lt8o88` |
