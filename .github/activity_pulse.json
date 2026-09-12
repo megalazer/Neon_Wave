@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-12T13:34:38.271Z",
-  "total_pulses": 241,
+  "last_updated": "2026-09-12T13:43:42.448Z",
+  "total_pulses": 242,
   "metrics": {
-    "neural_load_avg": 0.843,
-    "simulation_cycles": 65938,
-    "balance_parity_seed": 422947,
-    "engine_uptime_ticks": 181290
+    "neural_load_avg": 0.883,
+    "simulation_cycles": 66137,
+    "balance_parity_seed": 631399,
+    "engine_uptime_ticks": 181822
   },
   "recent_pulses": [
+    {
+      "id": "pulse_he3xv7ts",
+      "timestamp": "2026-09-12T13:43:42.448Z",
+      "commit_sequence": "2/10",
+      "message": "test(terminal): add regression checks for origin stat baseline",
+      "entropy": "89d560c8"
+    },
     {
       "id": "pulse_97sm9vnk",
       "timestamp": "2026-09-12T13:34:38.271Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "3/10",
       "message": "chore(neural): sync pulse telemetry heartbeat",
       "entropy": "38a0ef23"
-    },
-    {
-      "id": "pulse_8do1h9g2",
-      "timestamp": "2026-09-07T13:50:02.743Z",
-      "commit_sequence": "2/10",
-      "message": "fix(neural): fix contract reward rounding edge-case",
-      "entropy": "e9196293"
     }
   ]
 }
