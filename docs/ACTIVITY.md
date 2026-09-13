@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-13T14:01:12.086Z`  
-**Total Pulses Recorded:** `253`  
-**Current Telemetry Epoch:** `982944`
+**Last Sync:** `2026-09-13T14:13:38.306Z`  
+**Total Pulses Recorded:** `254`  
+**Current Telemetry Epoch:** `181780`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-13 14:13:38` | 4/10 | `feat(combat): streamline contract tier-filtering cadence` | `pulse_fp5zfxpf` |
 | `2026-09-13 14:01:12` | 3/10 | `chore(crews): bump internal telemetry epoch counter` | `pulse_8ouz6eiv` |
 | `2026-09-13 13:48:44` | 2/10 | `chore(contracts): record daily engine activity signature` | `pulse_3qcj8y0h` |
 | `2026-09-13 13:37:39` | 1/10 | `chore(origins): update automated pulse telemetry state` | `pulse_5aubaaen` |
@@ -24,4 +25,3 @@
 | `2026-09-12 13:43:42` | 2/10 | `test(terminal): add regression checks for origin stat baseline` | `pulse_he3xv7ts` |
 | `2026-09-12 13:34:38` | 1/10 | `docs(audio): record benchmark survivability across origins` | `pulse_97sm9vnk` |
 | `2026-09-11 15:32:49` | 10/10 | `fix(microgames): correct vitality scaling clamp in levelup routine` | `pulse_25gcphut` |
-| `2026-09-11 15:18:35` | 9/10 | `test(jobs): validate contract reward bounds against tier caps` | `pulse_c8b7j7dm` |
