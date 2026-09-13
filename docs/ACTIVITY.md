@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-13T14:58:46.079Z`  
-**Total Pulses Recorded:** `258`  
-**Current Telemetry Epoch:** `521405`
+**Last Sync:** `2026-09-13T15:13:56.133Z`  
+**Total Pulses Recorded:** `259`  
+**Current Telemetry Epoch:** `852177`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-13 15:13:56` | 9/10 | `perf(state): optimize tier-gate filter indexing` | `pulse_1x5p88mo` |
 | `2026-09-13 14:58:46` | 8/10 | `perf(engine): flatten state subscription tree for faster renders` | `pulse_p8o1iorv` |
 | `2026-09-13 14:50:55` | 7/10 | `chore(neural): record daily engine activity signature` | `pulse_3u6qvsh6` |
 | `2026-09-13 14:31:50` | 6/10 | `docs(deck): record benchmark survivability across origins` | `pulse_2m3wnb6r` |
@@ -24,4 +25,3 @@
 | `2026-09-12 14:48:05` | 7/10 | `docs(encounters): record benchmark survivability across origins` | `pulse_mnmqfnkl` |
 | `2026-09-12 14:36:03` | 6/10 | `perf(engine): optimize telemetry buffer serialization overhead` | `pulse_chv8xlc0` |
 | `2026-09-12 14:23:26` | 5/10 | `perf(contracts): optimize tier-gate filter indexing` | `pulse_bp61j6q5` |
-| `2026-09-12 14:11:59` | 4/10 | `chore(jobs): update automated pulse telemetry state` | `pulse_guoq0wun` |

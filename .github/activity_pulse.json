@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-13T14:58:46.079Z",
-  "total_pulses": 258,
+  "last_updated": "2026-09-13T15:13:56.133Z",
+  "total_pulses": 259,
   "metrics": {
-    "neural_load_avg": 0.866,
-    "simulation_cycles": 69773,
-    "balance_parity_seed": 521405,
-    "engine_uptime_ticks": 192003
+    "neural_load_avg": 0.804,
+    "simulation_cycles": 69923,
+    "balance_parity_seed": 852177,
+    "engine_uptime_ticks": 192994
   },
   "recent_pulses": [
+    {
+      "id": "pulse_1x5p88mo",
+      "timestamp": "2026-09-13T15:13:56.133Z",
+      "commit_sequence": "9/10",
+      "message": "perf(state): optimize tier-gate filter indexing",
+      "entropy": "0cca8848"
+    },
     {
       "id": "pulse_p8o1iorv",
       "timestamp": "2026-09-13T14:58:46.079Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "10/10",
       "message": "refactor(terminal): clean up legacy vitality formula wrappers",
       "entropy": "b4f27a35"
-    },
-    {
-      "id": "pulse_xn52r55p",
-      "timestamp": "2026-09-08T15:21:43.032Z",
-      "commit_sequence": "9/10",
-      "message": "chore(encounters): bump internal telemetry epoch counter",
-      "entropy": "2266b67d"
     }
   ]
 }
