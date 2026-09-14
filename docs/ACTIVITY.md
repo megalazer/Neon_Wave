@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-14T14:58:37.528Z`  
-**Total Pulses Recorded:** `268`  
-**Current Telemetry Epoch:** `798560`
+**Last Sync:** `2026-09-14T15:14:40.640Z`  
+**Total Pulses Recorded:** `269`  
+**Current Telemetry Epoch:** `951129`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-14 15:14:40` | 9/10 | `perf(cache): prune redundant combat animation worklets` | `pulse_oeoiz2yk` |
 | `2026-09-14 14:58:37` | 8/10 | `fix(engine): clamp neural drain floor on zero-cost abilities` | `pulse_dzqjhpit` |
 | `2026-09-14 14:44:59` | 7/10 | `chore(microgames): sync pulse telemetry heartbeat` | `pulse_qo8weh2n` |
 | `2026-09-14 14:32:24` | 6/10 | `chore(origins): calibrate neural grid synchronization stamp` | `pulse_vpbw5co3` |
@@ -24,4 +25,3 @@
 | `2026-09-13 14:50:55` | 7/10 | `chore(neural): record daily engine activity signature` | `pulse_3u6qvsh6` |
 | `2026-09-13 14:31:50` | 6/10 | `docs(deck): record benchmark survivability across origins` | `pulse_2m3wnb6r` |
 | `2026-09-13 14:21:23` | 5/10 | `fix(crews): realign phosphor overlay aspect ratio matrix` | `pulse_1jk2xv5q` |
-| `2026-09-13 14:13:38` | 4/10 | `feat(combat): streamline contract tier-filtering cadence` | `pulse_fp5zfxpf` |
