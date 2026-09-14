@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-14T14:44:59.894Z",
-  "total_pulses": 267,
+  "last_updated": "2026-09-14T14:58:37.528Z",
+  "total_pulses": 268,
   "metrics": {
-    "neural_load_avg": 0.88,
-    "simulation_cycles": 71651,
-    "balance_parity_seed": 727534,
-    "engine_uptime_ticks": 198470
+    "neural_load_avg": 0.809,
+    "simulation_cycles": 71961,
+    "balance_parity_seed": 798560,
+    "engine_uptime_ticks": 198890
   },
   "recent_pulses": [
+    {
+      "id": "pulse_dzqjhpit",
+      "timestamp": "2026-09-14T14:58:37.528Z",
+      "commit_sequence": "8/10",
+      "message": "fix(engine): clamp neural drain floor on zero-cost abilities",
+      "entropy": "cc2d24a3"
+    },
     {
       "id": "pulse_qo8weh2n",
       "timestamp": "2026-09-14T14:44:59.894Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "9/10",
       "message": "docs(jobs): document neural recharge curve derivation",
       "entropy": "37fcecbd"
-    },
-    {
-      "id": "pulse_v3eide9b",
-      "timestamp": "2026-09-09T20:43:41.350Z",
-      "commit_sequence": "8/10",
-      "message": "chore(neural): refresh simulated encounter matrix seed",
-      "entropy": "caee7a54"
     }
   ]
 }
