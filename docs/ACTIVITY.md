@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-13T15:23:56.304Z`  
-**Total Pulses Recorded:** `260`  
-**Current Telemetry Epoch:** `592063`
+**Last Sync:** `2026-09-14T13:39:17.834Z`  
+**Total Pulses Recorded:** `261`  
+**Current Telemetry Epoch:** `130575`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-14 13:39:17` | 1/10 | `feat(microgames): add adaptive entropy seed to combat resolution` | `pulse_kxrd67rv` |
 | `2026-09-13 15:23:56` | 10/10 | `docs(telemetry): update combat engine event cycle diagram` | `pulse_56s66ji1` |
 | `2026-09-13 15:13:56` | 9/10 | `perf(state): optimize tier-gate filter indexing` | `pulse_1x5p88mo` |
 | `2026-09-13 14:58:46` | 8/10 | `perf(engine): flatten state subscription tree for faster renders` | `pulse_p8o1iorv` |
@@ -24,4 +25,3 @@
 | `2026-09-12 15:13:12` | 9/10 | `chore(metrics): rotate activity logging buffer window` | `pulse_2k3igccu` |
 | `2026-09-12 14:55:13` | 8/10 | `feat(balance): tune neural buffer recalculation step` | `pulse_hg9g6jhs` |
 | `2026-09-12 14:48:05` | 7/10 | `docs(encounters): record benchmark survivability across origins` | `pulse_mnmqfnkl` |
-| `2026-09-12 14:36:03` | 6/10 | `perf(engine): optimize telemetry buffer serialization overhead` | `pulse_chv8xlc0` |

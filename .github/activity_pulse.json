@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-13T15:23:56.304Z",
-  "total_pulses": 260,
+  "last_updated": "2026-09-14T13:39:17.834Z",
+  "total_pulses": 261,
   "metrics": {
-    "neural_load_avg": 0.803,
-    "simulation_cycles": 70074,
-    "balance_parity_seed": 592063,
-    "engine_uptime_ticks": 193512
+    "neural_load_avg": 0.896,
+    "simulation_cycles": 70218,
+    "balance_parity_seed": 130575,
+    "engine_uptime_ticks": 194374
   },
   "recent_pulses": [
+    {
+      "id": "pulse_kxrd67rv",
+      "timestamp": "2026-09-14T13:39:17.834Z",
+      "commit_sequence": "1/10",
+      "message": "feat(microgames): add adaptive entropy seed to combat resolution",
+      "entropy": "42693924"
+    },
     {
       "id": "pulse_56s66ji1",
       "timestamp": "2026-09-13T15:23:56.304Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "2/10",
       "message": "perf(audio): vectorize microgame dice roll distributions",
       "entropy": "4218f759"
-    },
-    {
-      "id": "pulse_ngeu8j2a",
-      "timestamp": "2026-09-09T13:34:42.397Z",
-      "commit_sequence": "1/10",
-      "message": "perf(terminal): cache precomputed origin stat derivations",
-      "entropy": "bfe7adf9"
     }
   ]
 }
