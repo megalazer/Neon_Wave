@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-14T13:49:56.531Z",
-  "total_pulses": 262,
+  "last_updated": "2026-09-14T14:02:04.905Z",
+  "total_pulses": 263,
   "metrics": {
-    "neural_load_avg": 0.857,
-    "simulation_cycles": 70324,
-    "balance_parity_seed": 324818,
-    "engine_uptime_ticks": 195303
+    "neural_load_avg": 0.802,
+    "simulation_cycles": 70697,
+    "balance_parity_seed": 969369,
+    "engine_uptime_ticks": 195948
   },
   "recent_pulses": [
+    {
+      "id": "pulse_o6x870uj",
+      "timestamp": "2026-09-14T14:02:04.905Z",
+      "commit_sequence": "3/10",
+      "message": "chore(origins): refresh simulated encounter matrix seed",
+      "entropy": "da20896f"
+    },
     {
       "id": "pulse_htocqjyy",
       "timestamp": "2026-09-14T13:49:56.531Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "4/10",
       "message": "feat(deck): implement state snapshot differential encoding",
       "entropy": "917cd4d6"
-    },
-    {
-      "id": "pulse_1vfi9vqo",
-      "timestamp": "2026-09-09T16:07:25.463Z",
-      "commit_sequence": "3/10",
-      "message": "feat(engine): expand microgame timing threshold table",
-      "entropy": "fa85ad15"
     }
   ]
 }
