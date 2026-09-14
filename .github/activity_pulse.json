@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-18T15:04:31.922Z",
-  "total_pulses": 286,
+  "last_updated": "2026-09-14T13:34:06.918Z",
+  "total_pulses": 287,
   "metrics": {
-    "neural_load_avg": 0.788,
-    "simulation_cycles": 76766,
-    "balance_parity_seed": 692783,
-    "engine_uptime_ticks": 207927
+    "neural_load_avg": 0.791,
+    "simulation_cycles": 76952,
+    "balance_parity_seed": 441007,
+    "engine_uptime_ticks": 208333
   },
   "recent_pulses": [
+    {
+      "id": "pulse_hm6zojb9",
+      "timestamp": "2026-09-14T13:34:06.918Z",
+      "commit_sequence": "1/1",
+      "message": "chore(contracts): bump internal telemetry epoch counter",
+      "entropy": "b2f88d0a"
+    },
     {
       "id": "pulse_tc6qo2sx",
       "timestamp": "2026-09-18T15:04:31.922Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "8/10",
       "message": "perf(engine): vectorize microgame dice roll distributions",
       "entropy": "05454577"
-    },
-    {
-      "id": "pulse_24b1fzkn",
-      "timestamp": "2026-09-11T14:55:12.211Z",
-      "commit_sequence": "7/10",
-      "message": "chore(telemetry): calibrate neural grid synchronization stamp",
-      "entropy": "46637617"
     }
   ]
 }
