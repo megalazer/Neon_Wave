@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-14T14:02:04.905Z",
-  "total_pulses": 263,
+  "last_updated": "2026-09-14T14:07:11.636Z",
+  "total_pulses": 264,
   "metrics": {
-    "neural_load_avg": 0.802,
-    "simulation_cycles": 70697,
-    "balance_parity_seed": 969369,
-    "engine_uptime_ticks": 195948
+    "neural_load_avg": 0.767,
+    "simulation_cycles": 71059,
+    "balance_parity_seed": 689389,
+    "engine_uptime_ticks": 196661
   },
   "recent_pulses": [
+    {
+      "id": "pulse_4r9gmxfp",
+      "timestamp": "2026-09-14T14:07:11.636Z",
+      "commit_sequence": "4/10",
+      "message": "docs(telemetry): clarify contract tier gate prerequisites in docs",
+      "entropy": "22eace56"
+    },
     {
       "id": "pulse_o6x870uj",
       "timestamp": "2026-09-14T14:02:04.905Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "5/10",
       "message": "refactor(neural): modularize contract difficulty grading algorithms",
       "entropy": "928b6da2"
-    },
-    {
-      "id": "pulse_xmnvyo9a",
-      "timestamp": "2026-09-09T16:23:32.433Z",
-      "commit_sequence": "4/10",
-      "message": "feat(deck): implement state snapshot differential encoding",
-      "entropy": "917cd4d6"
     }
   ]
 }
