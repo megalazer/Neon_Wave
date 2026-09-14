@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-14T15:14:40.640Z",
-  "total_pulses": 269,
+  "last_updated": "2026-09-14T15:18:22.454Z",
+  "total_pulses": 270,
   "metrics": {
-    "neural_load_avg": 0.726,
-    "simulation_cycles": 72278,
-    "balance_parity_seed": 951129,
-    "engine_uptime_ticks": 199306
+    "neural_load_avg": 0.794,
+    "simulation_cycles": 72567,
+    "balance_parity_seed": 773367,
+    "engine_uptime_ticks": 199881
   },
   "recent_pulses": [
+    {
+      "id": "pulse_4shqb64a",
+      "timestamp": "2026-09-14T15:18:22.454Z",
+      "commit_sequence": "10/10",
+      "message": "perf(shaders): cache precomputed origin stat derivations",
+      "entropy": "9744255f"
+    },
     {
       "id": "pulse_oeoiz2yk",
       "timestamp": "2026-09-14T15:14:40.640Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "1/10",
       "message": "test(sync): validate contract reward bounds against tier caps",
       "entropy": "b5c3e8c1"
-    },
-    {
-      "id": "pulse_kdfd551v",
-      "timestamp": "2026-09-09T22:35:16.881Z",
-      "commit_sequence": "10/10",
-      "message": "refactor(shaders): unify neural capacity calculation helpers",
-      "entropy": "224ed241"
     }
   ]
 }
