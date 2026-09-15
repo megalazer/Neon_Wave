@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-14T15:18:22.454Z`  
-**Total Pulses Recorded:** `270`  
-**Current Telemetry Epoch:** `773367`
+**Last Sync:** `2026-09-15T13:36:50.149Z`  
+**Total Pulses Recorded:** `271`  
+**Current Telemetry Epoch:** `155265`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-15 13:36:50` | 1/10 | `chore(telemetry): sync pulse telemetry heartbeat` | `pulse_ou8z2ixc` |
 | `2026-09-14 15:18:22` | 10/10 | `perf(shaders): cache precomputed origin stat derivations` | `pulse_4shqb64a` |
 | `2026-09-14 15:14:40` | 9/10 | `perf(cache): prune redundant combat animation worklets` | `pulse_oeoiz2yk` |
 | `2026-09-14 14:58:37` | 8/10 | `fix(engine): clamp neural drain floor on zero-cost abilities` | `pulse_dzqjhpit` |
@@ -24,4 +25,3 @@
 | `2026-09-13 15:13:56` | 9/10 | `perf(state): optimize tier-gate filter indexing` | `pulse_1x5p88mo` |
 | `2026-09-13 14:58:46` | 8/10 | `perf(engine): flatten state subscription tree for faster renders` | `pulse_p8o1iorv` |
 | `2026-09-13 14:50:55` | 7/10 | `chore(neural): record daily engine activity signature` | `pulse_3u6qvsh6` |
-| `2026-09-13 14:31:50` | 6/10 | `docs(deck): record benchmark survivability across origins` | `pulse_2m3wnb6r` |
