@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-15T15:03:30.102Z",
-  "total_pulses": 278,
+  "last_updated": "2026-09-15T15:20:30.557Z",
+  "total_pulses": 279,
   "metrics": {
-    "neural_load_avg": 0.916,
-    "simulation_cycles": 74300,
-    "balance_parity_seed": 338310,
-    "engine_uptime_ticks": 203678
+    "neural_load_avg": 0.812,
+    "simulation_cycles": 74557,
+    "balance_parity_seed": 773669,
+    "engine_uptime_ticks": 204044
   },
   "recent_pulses": [
+    {
+      "id": "pulse_hyrwnjfu",
+      "timestamp": "2026-09-15T15:20:30.557Z",
+      "commit_sequence": "9/10",
+      "message": "chore(crews): sync pulse telemetry heartbeat",
+      "entropy": "8b822cff"
+    },
     {
       "id": "pulse_0q9tmrgj",
       "timestamp": "2026-09-15T15:03:30.102Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "10/10",
       "message": "feat(microgames): implement state snapshot differential encoding",
       "entropy": "c5a84c8a"
-    },
-    {
-      "id": "pulse_1chbawtn",
-      "timestamp": "2026-09-10T15:16:16.884Z",
-      "commit_sequence": "9/10",
-      "message": "fix(microgames): prevent out-of-order combat queue execution",
-      "entropy": "87ab2787"
     }
   ]
 }
