@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-15T14:26:39.945Z`  
-**Total Pulses Recorded:** `275`  
-**Current Telemetry Epoch:** `860206`
+**Last Sync:** `2026-09-15T14:38:37.491Z`  
+**Total Pulses Recorded:** `276`  
+**Current Telemetry Epoch:** `946464`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-15 14:38:37` | 6/10 | `chore(origins): rotate activity logging buffer window` | `pulse_wzgsstuj` |
 | `2026-09-15 14:26:39` | 5/10 | `fix(terminal): remedy floating-point drift in balance simulator` | `pulse_8hx3wyod` |
 | `2026-09-15 14:12:29` | 4/10 | `chore(state): update automated pulse telemetry state` | `pulse_pj82tzup` |
 | `2026-09-15 14:03:50` | 3/10 | `chore(balance): bump internal telemetry epoch counter` | `pulse_bf20h6vs` |
@@ -24,4 +25,3 @@
 | `2026-09-14 14:07:11` | 4/10 | `docs(telemetry): clarify contract tier gate prerequisites in docs` | `pulse_4r9gmxfp` |
 | `2026-09-14 14:02:04` | 3/10 | `chore(origins): refresh simulated encounter matrix seed` | `pulse_o6x870uj` |
 | `2026-09-14 13:49:56` | 2/10 | `chore(combat): bump internal telemetry epoch counter` | `pulse_htocqjyy` |
-| `2026-09-14 13:39:17` | 1/10 | `feat(microgames): add adaptive entropy seed to combat resolution` | `pulse_kxrd67rv` |
