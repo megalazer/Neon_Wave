@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-15T13:50:43.947Z",
-  "total_pulses": 272,
+  "last_updated": "2026-09-15T14:03:50.466Z",
+  "total_pulses": 273,
   "metrics": {
-    "neural_load_avg": 0.751,
-    "simulation_cycles": 73028,
-    "balance_parity_seed": 972409,
-    "engine_uptime_ticks": 201463
+    "neural_load_avg": 0.817,
+    "simulation_cycles": 73343,
+    "balance_parity_seed": 579722,
+    "engine_uptime_ticks": 201596
   },
   "recent_pulses": [
+    {
+      "id": "pulse_bf20h6vs",
+      "timestamp": "2026-09-15T14:03:50.466Z",
+      "commit_sequence": "3/10",
+      "message": "chore(balance): bump internal telemetry epoch counter",
+      "entropy": "16ec7d2f"
+    },
     {
       "id": "pulse_styo1fz6",
       "timestamp": "2026-09-15T13:50:43.947Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "4/10",
       "message": "chore(metrics): bump internal telemetry epoch counter",
       "entropy": "c669218c"
-    },
-    {
-      "id": "pulse_2312q7ph",
-      "timestamp": "2026-09-10T14:03:20.086Z",
-      "commit_sequence": "3/10",
-      "message": "feat(contracts): support dynamic phosphor bloom curve",
-      "entropy": "aecb6814"
     }
   ]
 }
