@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-15T14:12:29.407Z",
-  "total_pulses": 274,
+  "last_updated": "2026-09-15T14:26:39.945Z",
+  "total_pulses": 275,
   "metrics": {
-    "neural_load_avg": 0.747,
-    "simulation_cycles": 73674,
-    "balance_parity_seed": 601887,
-    "engine_uptime_ticks": 202265
+    "neural_load_avg": 0.734,
+    "simulation_cycles": 74016,
+    "balance_parity_seed": 860206,
+    "engine_uptime_ticks": 202861
   },
   "recent_pulses": [
+    {
+      "id": "pulse_8hx3wyod",
+      "timestamp": "2026-09-15T14:26:39.945Z",
+      "commit_sequence": "5/10",
+      "message": "fix(terminal): remedy floating-point drift in balance simulator",
+      "entropy": "31fef2ca"
+    },
     {
       "id": "pulse_pj82tzup",
       "timestamp": "2026-09-15T14:12:29.407Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "6/10",
       "message": "fix(contracts): realign phosphor overlay aspect ratio matrix",
       "entropy": "fb8db20e"
-    },
-    {
-      "id": "pulse_zmsivgmp",
-      "timestamp": "2026-09-10T14:26:23.254Z",
-      "commit_sequence": "5/10",
-      "message": "refactor(telemetry): extract combat action queue resolution logic",
-      "entropy": "5b4382a4"
     }
   ]
 }
