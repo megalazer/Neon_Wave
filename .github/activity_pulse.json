@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-15T13:36:50.149Z",
-  "total_pulses": 271,
+  "last_updated": "2026-09-15T13:50:43.947Z",
+  "total_pulses": 272,
   "metrics": {
-    "neural_load_avg": 0.783,
-    "simulation_cycles": 72877,
-    "balance_parity_seed": 155265,
-    "engine_uptime_ticks": 200819
+    "neural_load_avg": 0.751,
+    "simulation_cycles": 73028,
+    "balance_parity_seed": 972409,
+    "engine_uptime_ticks": 201463
   },
   "recent_pulses": [
+    {
+      "id": "pulse_styo1fz6",
+      "timestamp": "2026-09-15T13:50:43.947Z",
+      "commit_sequence": "2/10",
+      "message": "chore(encounters): update automated pulse telemetry state",
+      "entropy": "73934e22"
+    },
     {
       "id": "pulse_ou8z2ixc",
       "timestamp": "2026-09-15T13:36:50.149Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "3/10",
       "message": "feat(contracts): support dynamic phosphor bloom curve",
       "entropy": "aecb6814"
-    },
-    {
-      "id": "pulse_o3emkkf5",
-      "timestamp": "2026-09-10T13:43:48.328Z",
-      "commit_sequence": "2/10",
-      "message": "perf(matrix): optimize tier-gate filter indexing",
-      "entropy": "5ffc330a"
     }
   ]
 }
