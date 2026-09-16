@@ -1,14 +1,21 @@
 {
   "project": "Neon Wave",
-  "last_updated": "2026-09-16T13:30:41.383Z",
-  "total_pulses": 281,
+  "last_updated": "2026-09-16T14:30:29.518Z",
+  "total_pulses": 282,
   "metrics": {
-    "neural_load_avg": 0.91,
-    "simulation_cycles": 75286,
-    "balance_parity_seed": 357932,
-    "engine_uptime_ticks": 205535
+    "neural_load_avg": 0.727,
+    "simulation_cycles": 75394,
+    "balance_parity_seed": 489342,
+    "engine_uptime_ticks": 206222
   },
   "recent_pulses": [
+    {
+      "id": "pulse_04n7245o",
+      "timestamp": "2026-09-16T14:30:29.518Z",
+      "commit_sequence": "2/3",
+      "message": "feat(contracts): add adaptive entropy seed to combat resolution",
+      "entropy": "82141c94"
+    },
     {
       "id": "pulse_ycx90bij",
       "timestamp": "2026-09-16T13:30:41.383Z",
@@ -351,13 +358,6 @@
       "commit_sequence": "3/10",
       "message": "perf(origins): flatten state subscription tree for faster renders",
       "entropy": "62b23582"
-    },
-    {
-      "id": "pulse_im4k2j14",
-      "timestamp": "2026-09-11T13:48:45.313Z",
-      "commit_sequence": "2/10",
-      "message": "docs(jobs): document neural recharge curve derivation",
-      "entropy": "705da0b7"
     }
   ]
 }

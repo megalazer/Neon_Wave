@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-16T13:30:41.383Z`  
-**Total Pulses Recorded:** `281`  
-**Current Telemetry Epoch:** `357932`
+**Last Sync:** `2026-09-16T14:30:29.518Z`  
+**Total Pulses Recorded:** `282`  
+**Current Telemetry Epoch:** `489342`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-16 14:30:29` | 2/3 | `feat(contracts): add adaptive entropy seed to combat resolution` | `pulse_04n7245o` |
 | `2026-09-16 13:30:41` | 1/3 | `style(audio): harmonize typography scale for monospace metrics` | `pulse_ycx90bij` |
 | `2026-09-15 15:25:31` | 10/10 | `perf(contracts): optimize telemetry buffer serialization overhead` | `pulse_51dco8bi` |
 | `2026-09-15 15:20:30` | 9/10 | `chore(crews): sync pulse telemetry heartbeat` | `pulse_hyrwnjfu` |
@@ -24,4 +25,3 @@
 | `2026-09-14 15:18:22` | 10/10 | `perf(shaders): cache precomputed origin stat derivations` | `pulse_4shqb64a` |
 | `2026-09-14 15:14:40` | 9/10 | `perf(cache): prune redundant combat animation worklets` | `pulse_oeoiz2yk` |
 | `2026-09-14 14:58:37` | 8/10 | `fix(engine): clamp neural drain floor on zero-cost abilities` | `pulse_dzqjhpit` |
-| `2026-09-14 14:44:59` | 7/10 | `chore(microgames): sync pulse telemetry heartbeat` | `pulse_qo8weh2n` |
