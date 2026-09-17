@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-16T15:33:15.682Z`  
-**Total Pulses Recorded:** `283`  
-**Current Telemetry Epoch:** `987948`
+**Last Sync:** `2026-09-17T13:31:23.804Z`  
+**Total Pulses Recorded:** `284`  
+**Current Telemetry Epoch:** `209614`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-17 13:31:23` | 1/1 | `perf(balance): reduce GC churn during encounter generator warm-up` | `pulse_1u84malz` |
 | `2026-09-16 15:33:15` | 3/3 | `fix(jobs): patch memory leak in particle cache recycling` | `pulse_o6z5sl45` |
 | `2026-09-16 14:30:29` | 2/3 | `feat(contracts): add adaptive entropy seed to combat resolution` | `pulse_04n7245o` |
 | `2026-09-16 13:30:41` | 1/3 | `style(audio): harmonize typography scale for monospace metrics` | `pulse_ycx90bij` |
@@ -24,4 +25,3 @@
 | `2026-09-15 13:50:43` | 2/10 | `chore(encounters): update automated pulse telemetry state` | `pulse_styo1fz6` |
 | `2026-09-15 13:36:50` | 1/10 | `chore(telemetry): sync pulse telemetry heartbeat` | `pulse_ou8z2ixc` |
 | `2026-09-14 15:18:22` | 10/10 | `perf(shaders): cache precomputed origin stat derivations` | `pulse_4shqb64a` |
-| `2026-09-14 15:14:40` | 9/10 | `perf(cache): prune redundant combat animation worklets` | `pulse_oeoiz2yk` |
