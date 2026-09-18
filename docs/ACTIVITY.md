@@ -2,14 +2,15 @@
 
 > Automated repository pulse logs and simulation heartbeat.
 
-**Last Sync:** `2026-09-18T13:56:56.907Z`  
-**Total Pulses Recorded:** `285`  
-**Current Telemetry Epoch:** `128022`
+**Last Sync:** `2026-09-18T15:04:31.922Z`  
+**Total Pulses Recorded:** `286`  
+**Current Telemetry Epoch:** `692783`
 
 ## Recent Pulse History
 
 | Timestamp | Sequence | Commit Message | Pulse ID |
 |:---|:---:|:---|:---|
+| `2026-09-18 15:04:31` | 2/2 | `docs(deck): update balance simulation notes and survival rates` | `pulse_tc6qo2sx` |
 | `2026-09-18 13:56:56` | 1/2 | `style(balance): tune neon cyan/magenta contrast gradient` | `pulse_memtwu7w` |
 | `2026-09-17 13:31:23` | 1/1 | `perf(balance): reduce GC churn during encounter generator warm-up` | `pulse_1u84malz` |
 | `2026-09-16 15:33:15` | 3/3 | `fix(jobs): patch memory leak in particle cache recycling` | `pulse_o6z5sl45` |
@@ -24,4 +25,3 @@
 | `2026-09-15 14:12:29` | 4/10 | `chore(state): update automated pulse telemetry state` | `pulse_pj82tzup` |
 | `2026-09-15 14:03:50` | 3/10 | `chore(balance): bump internal telemetry epoch counter` | `pulse_bf20h6vs` |
 | `2026-09-15 13:50:43` | 2/10 | `chore(encounters): update automated pulse telemetry state` | `pulse_styo1fz6` |
-| `2026-09-15 13:36:50` | 1/10 | `chore(telemetry): sync pulse telemetry heartbeat` | `pulse_ou8z2ixc` |
